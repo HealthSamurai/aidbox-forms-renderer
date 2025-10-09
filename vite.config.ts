@@ -9,6 +9,16 @@ import crypto from "node:crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const peerDependencies = Object.keys(pkg.peerDependencies || {});
+const externalDeps = new Set([...peerDependencies, "react", "react-dom"]);
+const subpathMatchers = [...externalDeps]
+  .filter((dep) => !dep.includes("/"))
+  .map((dep) => new RegExp(`^${dep}/`));
+const rollupExternal = [
+  ...externalDeps,
+  "react/jsx-runtime",
+  ...subpathMatchers,
+];
+const typescriptCompilerFolder = resolve(__dirname, "node_modules/typescript");
 
 const isBuildApp = process.env.BUILD_TARGET === "app";
 
@@ -44,6 +54,9 @@ export default defineConfig(({ command }) => {
       dts({
         rollupTypes: true,
         tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+        rollupOptions: {
+          typescriptCompilerFolder,
+        },
       }),
     ],
     css: {
@@ -63,10 +76,7 @@ export default defineConfig(({ command }) => {
           formats: ["es"],
         },
         rollupOptions: {
-          external: [
-            ...peerDependencies,
-            ...peerDependencies.map((dep) => new RegExp(`^${dep}/`)),
-          ],
+          external: rollupExternal,
         },
         copyPublicDir: false,
       },
