@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitOverride": true,
+    "skipLibCheck": true
+  },
   "include": ["lib"]
 }

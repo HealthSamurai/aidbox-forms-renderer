@@ -4,6 +4,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
+const tsconfigRootDir = new URL("./", import.meta.url).pathname;
+
 export default tseslint.config(
   { ignores: ["dist"] },
   {
@@ -23,7 +25,19 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "error",
+    },
+  },
+  {
+    files: ["lib/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.lib.json"],
+        tsconfigRootDir,
+      },
+    },
+    rules: {
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
     },
   },
 );

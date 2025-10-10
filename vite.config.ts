@@ -71,7 +71,7 @@ export default defineConfig(({ command }) => {
       ...baseConfig,
       build: {
         lib: {
-          entry: resolve(__dirname, "lib/index.ts"),
+          entry: resolve(__dirname, "lib/index.tsx"),
           fileName: "index",
           formats: ["es"],
         },

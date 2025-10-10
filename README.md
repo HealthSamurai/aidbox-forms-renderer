@@ -1,134 +1,33 @@
-# FHIRPath Editor
+# Aidbox Forms Renderer
 
-A React component library for editing and evaluating FHIRPath expressions with real-time feedback.
-
-## Online Demo
-
-Try the interactive demo at [https://healthsamurai.github.io/aidbox-forms-renderer/](https://healthsamurai.github.io/aidbox-forms-renderer/)
-
-## Installation
-
-```bash
-npm install aidbox-forms-renderer
-# or
-yarn add aidbox-forms-renderer
-```
-
-## Usage
-
-The library provides an `Editor` component for working with FHIRPath expressions:
-
-### Uncontrolled Component (with defaultValue)
+Minimal React renderer for HL7® FHIR® Questionnaires. State is always a canonical `QuestionnaireResponse`, so the data you display is the data you can submit.
 
 ```tsx
-import { Editor } from "aidbox-forms-renderer";
-import r4 from "fhirpath/fhir-context/r4";
-
-function MyFhirPathEditor() {
-  // FHIRPath expression to evaluate
-  const defaultExpr = "(1 + 2) * 3";
-  const handleChange = (newValue) =>
-    console.log("Expression changed:", newValue);
-
-  // Simple FHIR resource to evaluate FHIRPath against
-  const data = {
-    resourceType: "Patient",
-    id: "example",
-    name: [
-      {
-        family: "Smith",
-        given: ["John"],
-      },
-    ],
-    birthDate: "1970-01-01",
-  };
-
-  const fhirSchema = []; // Replace with actual schema data
-
-  return (
-    <Editor
-      defaultValue={defaultExpr}
-      onChange={handleChange}
-      data={data}
-      schema={fhirSchema}
-      model={r4}
-    />
-  );
-}
-```
-
-### Controlled Component (with value)
-
-```tsx
-import { Editor } from "aidbox-forms-renderer";
-import r4 from "fhirpath/fhir-context/r4";
+import { Renderer, type Questionnaire, type QuestionnaireResponse } from "aidbox-forms-renderer";
 import { useState } from "react";
 
-function MyFhirPathEditor() {
-  // FHIRPath expression state
-  const [expression, setExpression] = useState("(1 + 2) * 3");
+const questionnaire: Questionnaire = {
+  resourceType: "Questionnaire",
+  item: [
+    { linkId: "first", text: "First name", type: "string", required: true },
+    { linkId: "consent", text: "Consent to treatment", type: "boolean" },
+  ],
+};
 
-  // Simple FHIR resource to evaluate FHIRPath against
-  const data = {
-    resourceType: "Patient",
-    id: "example",
-    name: [
-      {
-        family: "Smith",
-        given: ["John"],
-      },
-    ],
-    birthDate: "1970-01-01",
-  };
-
-  const fhirSchema = []; // Replace with actual schema data
+export function IntakeForm() {
+  const [response, setResponse] = useState<QuestionnaireResponse | null>(null);
 
   return (
-    <Editor
-      value={expression}
-      onChange={setExpression}
-      data={data}
-      schema={fhirSchema}
-      model={r4}
+    <Renderer
+      questionnaire={questionnaire}
+      initialResponse={response ?? undefined}
+      onChange={setResponse}
+      onSubmit={setResponse}
     />
   );
 }
 ```
 
-## Props
+Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle), `npm test`, `npm run lint`.
 
-| Prop           | Type                    | Required | Description                                     |
-| -------------- | ----------------------- | -------- | ----------------------------------------------- |
-| `value`        | string                  | No       | Current FHIRPath expression (controlled mode)   |
-| `defaultValue` | string                  | No       | Initial FHIRPath expression (uncontrolled mode) |
-| `onChange`     | (value: string) => void | No       | Callback for expression changes                 |
-| `data`         | any                     | Yes      | The context data to evaluate FHIRPath against   |
-| `variables`    | Record<string, any>     | No       | External bindings available to expressions      |
-| `schema`       | FhirSchema[]            | Yes      | FHIR schema definitions for validation          |
-| `model`        | Model                   | Yes      | FHIR version model data                         |
-| `debug`        | boolean                 | No       | Enable debug mode                               |
-
-## Component Modes
-
-The Editor component supports both controlled and uncontrolled modes:
-
-- **Controlled Mode**: Provide the `value` prop and handle changes with `onChange`.
-- **Uncontrolled Mode**: Provide only the `defaultValue` prop (initial value) and optionally handle changes with `onChange`.
-
-Note: Do not provide both `value` and `defaultValue` at the same time. If both are provided, `defaultValue` will be ignored and a warning will be logged to the console.
-
-## Features
-
-- Low-code environment for developing and testing FHIRPath expressions
-- Interactive visual editor with instant feedback
-- Real-time evaluation against FHIR resources
-- Support for external variable bindings
-- Schema-based validation with autocomplete suggestions
-- Syntax highlighting and error detection
-- Reduces development time for complex FHIRPath queries
-
-## Todo
-- [x] Support $total special variable
-- [x] Support type evaluation of `aggregate` call
-- [ ] Support dynamic index access
-- [ ] Support unit token
+Architecture and rationale live as doc comments in the source (`lib/state/`, `lib/form-provider.tsx`, `lib/questionnaire-renderer.tsx`).
