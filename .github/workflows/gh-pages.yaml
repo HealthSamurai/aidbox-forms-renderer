@@ -17,13 +17,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install Dependencies
         run: npm install
 
       - name: Build
-        run: BUILD_TARGET=app npm run build -- --base=/aidbox-forms-renderer
+        run: BUILD_TARGET=demo npm run build -- --base=/aidbox-forms-renderer
 
       - name: Add GitHub ribbon to built files
         run: |

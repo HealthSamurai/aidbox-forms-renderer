@@ -20,7 +20,7 @@ const rollupExternal = [
 ];
 const typescriptCompilerFolder = resolve(__dirname, "node_modules/typescript");
 
-const isBuildApp = process.env.BUILD_TARGET === "app";
+const isBuildDemo = process.env.BUILD_TARGET === "demo";
 
 function generateScopedName(
   command: string,
@@ -64,9 +64,13 @@ export default defineConfig(({ command }) => {
         generateScopedName: generateScopedName.bind(null, command),
       },
     },
+    test: {
+      environment: "jsdom",
+      setupFiles: [resolve(__dirname, "lib/__tests__/setup-tests.ts")],
+    },
   };
 
-  if (!isBuildApp) {
+  if (!isBuildDemo) {
     return {
       ...baseConfig,
       build: {

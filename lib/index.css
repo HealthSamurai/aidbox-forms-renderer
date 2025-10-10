@@ -3,11 +3,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  background: #ffffff;
   color: #1a202c;
-  max-width: 640px;
 }
 
 .q-title {
