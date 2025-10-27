@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isQuestion, isRepeatingGroup } from "../../utils.ts";
+import { isNonRepeatingGroup, isQuestion, isRepeatingGroup } from "../../utils.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -12,6 +12,46 @@ const minOccurs = (value: number) => ({
 const maxOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
   valueInteger: value,
+});
+
+const minValueInteger = (value: number) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/minValue",
+  valueInteger: value,
+});
+
+const maxValueInteger = (value: number) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/maxValue",
+  valueInteger: value,
+});
+
+const minValueDate = (value: string) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/minValue",
+  valueDate: value,
+});
+
+const maxValueDate = (value: string) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/maxValue",
+  valueDate: value,
+});
+
+const minValueDateTime = (value: string) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/minValue",
+  valueDateTime: value,
+});
+
+const maxValueDateTime = (value: string) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/maxValue",
+  valueDateTime: value,
+});
+
+const minValueQuantity = (value: { value: number; unit?: string }) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/minValue",
+  valueQuantity: value,
+});
+
+const maxValueQuantity = (value: { value: number; unit?: string }) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/maxValue",
+  valueQuantity: value,
 });
 
 describe("validation", () => {
@@ -90,8 +130,10 @@ describe("validation", () => {
           linkId: "age",
           text: "Age",
           type: "integer",
-          minValueInteger: 0,
-          maxValueInteger: 120,
+          extension: [
+            minValueInteger(0),
+            maxValueInteger(120),
+          ],
         },
       ],
     };
@@ -124,15 +166,19 @@ describe("validation", () => {
           linkId: "birth",
           text: "Date of birth",
           type: "date",
-          minValueDate: "2000-01-01",
-          maxValueDate: "2020-12-31",
+          extension: [
+            minValueDate("2000-01-01"),
+            maxValueDate("2020-12-31"),
+          ],
         },
         {
           linkId: "check-in",
           text: "Check-in",
           type: "dateTime",
-          minValueDateTime: "2024-01-01T00:00:00Z",
-          maxValueDateTime: "2024-12-31T23:59:59Z",
+          extension: [
+            minValueDateTime("2024-01-01T00:00:00Z"),
+            maxValueDateTime("2024-12-31T23:59:59Z"),
+          ],
         },
       ],
     };
@@ -174,8 +220,10 @@ describe("validation", () => {
           linkId: "weight",
           text: "Weight",
           type: "quantity",
-          minValueQuantity: { value: 10, unit: "kg" },
-          maxValueQuantity: { value: 200, unit: "kg" },
+          extension: [
+            minValueQuantity({ value: 10, unit: "kg" }),
+            maxValueQuantity({ value: 200, unit: "kg" }),
+          ],
         },
       ],
     };
@@ -330,8 +378,8 @@ describe("validation", () => {
 
     const store = new FormStore(questionnaire);
     const group = store.lookupStore("lifestyle");
-    expect(group && isRepeatingGroup(group)).toBe(false);
-    if (!group || isRepeatingGroup(group)) return;
+    expect(group && isNonRepeatingGroup(group)).toBe(true);
+    if (!group || !isNonRepeatingGroup(group)) return;
 
     expect(store.validateAll()).toBe(false);
     expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);

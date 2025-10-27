@@ -2,11 +2,9 @@ import { createElement } from "react";
 import { INodeStore } from "../../stores/types.ts";
 import { observer } from "mobx-react-lite";
 
-type ItemTextElement = "label" | "p" | "span";
-
 interface ItemTextProps {
   item: INodeStore;
-  as?: ItemTextElement;
+  as?: "label" | "span" | "legend";
   id?: string;
   className?: string;
   htmlFor?: string | undefined;

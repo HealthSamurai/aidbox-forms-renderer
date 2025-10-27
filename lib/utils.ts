@@ -15,6 +15,8 @@ import {
   Element,
   Extension,
   type OperationOutcomeIssue,
+  Quantity,
+  QuestionnaireItem,
 } from "fhir/r5";
 
 export function getItemLabelId(item: INodeStore): string {
@@ -65,6 +67,8 @@ export const EXT = {
     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INIT:
     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+  SDC_MIN_VALUE: "http://hl7.org/fhir/StructureDefinition/minValue",
+  SDC_MAX_VALUE: "http://hl7.org/fhir/StructureDefinition/maxValue",
 } as const;
 
 export function findExtension(
@@ -72,6 +76,64 @@ export function findExtension(
   url: string,
 ): Extension | undefined {
   return element.extension?.find((e) => e.url === url);
+}
+
+function isQuantity(value: unknown): value is Quantity {
+  return typeof value === "object" && value !== null && "value" in value;
+}
+
+export function getIntegerBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueInteger;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueInteger;
+  return {
+    min: typeof min === "number" ? min : undefined,
+    max: typeof max === "number" ? max : undefined,
+  };
+}
+
+export function getDecimalBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDecimal;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDecimal;
+  return {
+    min: typeof min === "number" ? min : undefined,
+    max: typeof max === "number" ? max : undefined,
+  };
+}
+
+export function getDateBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDate;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDate;
+  return {
+    min: typeof min === "string" ? min : undefined,
+    max: typeof max === "string" ? max : undefined,
+  };
+}
+
+export function getDateTimeBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDateTime;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDateTime;
+  return {
+    min: typeof min === "string" ? min : undefined,
+    max: typeof max === "string" ? max : undefined,
+  };
+}
+
+export function getTimeBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueTime;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueTime;
+  return {
+    min: typeof min === "string" ? min : undefined,
+    max: typeof max === "string" ? max : undefined,
+  };
+}
+
+export function getQuantityBounds(item: QuestionnaireItem) {
+  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueQuantity;
+  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueQuantity;
+  return {
+    min: isQuantity(min) ? min : undefined,
+    max: isQuantity(max) ? max : undefined,
+  };
 }
 
 export function omit<T extends object, K extends keyof T>(
@@ -168,7 +230,9 @@ export function answerHasValue<T extends AnswerableQuestionType>(
   return true;
 }
 
-export function getItemDescribedBy<T>(item: IQuestionStore<T>) {
+export function getItemDescribedBy<T extends AnswerableQuestionType>(
+  item: IQuestionStore<T>,
+) {
   const describedByPieces = [
     item.help ? getItemHelpId(item) : undefined,
     item.hasErrors ? getItemErrorId(item) : undefined,

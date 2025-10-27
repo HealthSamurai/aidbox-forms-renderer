@@ -36,68 +36,40 @@ export const AnswerList = observer(function AnswerList<
   const labelId = getItemLabelId(item);
   const describedById = getItemDescribedBy(item);
 
-  if (!item.repeats) {
-    const answer = item.answers.at(0);
-    if (answer) {
-      return (
-        <div className="af-answer-list">
-          <div className="af-answer">
-            <Observer>
-              {() => {
-                return renderRow({
-                  value: answer.value,
-                  setValue: (v) => {
-                    item.setAnswer(0, v);
-                  },
-                  index: 0,
-                  inputId: `${sanitizeForId(answer.path)}-${baseId}`,
-                  labelId,
-                  answer,
-                  describedById,
-                });
-              }}
-            </Observer>
-            {!!answer.children?.length && (
-              <div className="af-answer-children">
-                <ItemsList items={answer.children} />
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  }
+  const answers = item.repeats ? item.answers : item.answers.slice(0, 1);
 
   return (
     <div className="af-answer-list">
-      {item.answers.map((answer, i) => {
+      {answers.map((answer, i) => {
         return (
           <div className="af-answer" key={answer.key}>
             <Observer>
-              {() =>
-                renderRow({
-                  value: answer.value,
-                  setValue: (v) => item.setAnswer(i, v),
-                  index: i,
-                  inputId: `${sanitizeForId(answer.path)}-${baseId}`,
-                  labelId,
-                  answer: answer,
-                  describedById,
-                })
-              }
+              {() => (
+                <>
+                  {renderRow({
+                    value: answer.value,
+                    setValue: (v) => item.setAnswer(i, v),
+                    index: i,
+                    inputId: `${sanitizeForId(answer.path)}-${baseId}`,
+                    labelId,
+                    answer,
+                    describedById,
+                  })}
+                </>
+              )}
             </Observer>
-            <div className="af-answer-toolbar">
-              <button
-                type="button"
-                className="af-answer-remove"
-                onClick={() => item.removeAnswer(i)}
-                disabled={!item.canRemove}
-              >
-                Remove
-              </button>
-            </div>
+            {item.repeats && (
+              <div className="af-answer-toolbar">
+                <button
+                  type="button"
+                  className="af-answer-remove"
+                  onClick={() => item.removeAnswer(i)}
+                  disabled={!item.canRemove}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
             {!!answer.children?.length && (
               <div className="af-answer-children">
                 <ItemsList items={answer.children} />

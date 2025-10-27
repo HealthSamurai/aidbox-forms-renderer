@@ -10,7 +10,7 @@ export const DisplayNode = observer(function DisplayNode({
 }) {
   return (
     <div className="af-item-display-wrapper" data-linkid={item.linkId}>
-      <ItemText item={item} as="p" className="af-item-display" />
+      <ItemText item={item} as="span" className="af-item-display" />
     </div>
   );
 });

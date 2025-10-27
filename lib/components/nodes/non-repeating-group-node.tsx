@@ -11,11 +11,7 @@ export const NonRepeatingGroupNode = observer(function NonRepeatingGroupNode({
 }) {
   return (
     <fieldset className="af-group" data-linkid={item.linkId}>
-      {item.template.text && (
-        <legend>
-          <ItemText item={item} />
-        </legend>
-      )}
+      {item.template.text && <ItemText as="legend" item={item} />}
       <div className="af-group-children">
         <ItemsList items={item.children} />
       </div>

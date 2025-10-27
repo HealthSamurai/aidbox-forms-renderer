@@ -21,6 +21,10 @@ export const Form = observer(function FormRoot({
     }
 
     const dispose = autorun(() => {
+      if (!store.response) {
+        return;
+      }
+
       onChange(store.response);
     });
 

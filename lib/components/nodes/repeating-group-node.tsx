@@ -11,11 +11,7 @@ export const RepeatingGroupNode = observer(function RepeatingGroupNode({
 }) {
   return (
     <fieldset className="af-group" data-linkid={item.linkId}>
-      {item.template.text && (
-        <legend>
-          <ItemText item={item} />
-        </legend>
-      )}
+      {item.template.text && <ItemText as="legend" item={item} />}
 
       <div className="af-group-instance-list">
         {item.instances.map((instance, ix) => (

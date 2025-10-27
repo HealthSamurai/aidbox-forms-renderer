@@ -19,7 +19,16 @@ import {
 import { AbstractNodeStore } from "./abstract-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 
-import { answerHasValue, makeIssue } from "../utils.ts";
+import {
+  answerHasValue,
+  getDateBounds,
+  getDateTimeBounds,
+  getDecimalBounds,
+  getIntegerBounds,
+  getQuantityBounds,
+  getTimeBounds,
+  makeIssue,
+} from "../utils.ts";
 
 export class QuestionStore<
     T extends AnswerableQuestionType = AnswerableQuestionType,
@@ -179,43 +188,60 @@ export class QuestionStore<
       case "string":
       case "text":
         return this.validateStringValue(answer.value, index);
-      case "integer":
+      case "integer": {
+        const bounds = getIntegerBounds(this.template);
         return this.validateNumericValue(
           answer.value,
           index,
-          "minValueInteger",
-          "maxValueInteger",
+          bounds.min,
+          bounds.max,
         );
-      case "decimal":
+      }
+      case "decimal": {
+        const bounds = getDecimalBounds(this.template);
         return this.validateNumericValue(
           answer.value,
           index,
-          "minValueDecimal",
-          "maxValueDecimal",
+          bounds.min,
+          bounds.max,
         );
-      case "date":
+      }
+      case "date": {
+        const bounds = getDateBounds(this.template);
         return this.validateComparableValue(
           answer.value,
           index,
-          "minValueDate",
-          "maxValueDate",
+          bounds.min,
+          bounds.max,
         );
-      case "dateTime":
+      }
+      case "dateTime": {
+        const bounds = getDateTimeBounds(this.template);
         return this.validateComparableValue(
           answer.value,
           index,
-          "minValueDateTime",
-          "maxValueDateTime",
+          bounds.min,
+          bounds.max,
         );
-      case "time":
+      }
+      case "time": {
+        const bounds = getTimeBounds(this.template);
         return this.validateComparableValue(
           answer.value,
           index,
-          "minValueTime",
-          "maxValueTime",
+          bounds.min,
+          bounds.max,
         );
-      case "quantity":
-        return this.validateQuantityValue(answer.value, index);
+      }
+      case "quantity": {
+        const bounds = getQuantityBounds(this.template);
+        return this.validateQuantityValue(
+          answer.value,
+          index,
+          bounds.min,
+          bounds.max,
+        );
+      }
       case "boolean":
         return [];
       case "url":
@@ -266,16 +292,14 @@ export class QuestionStore<
   private validateNumericValue(
     value: AnswerValueFor<T> | null,
     index: number,
-    minKey: keyof QuestionnaireItem,
-    maxKey: keyof QuestionnaireItem,
+    min?: number,
+    max?: number,
   ): OperationOutcomeIssue[] {
     if (typeof value !== "number") {
       return [];
     }
 
     const issues: OperationOutcomeIssue[] = [];
-    const min = this.template[minKey] as number | undefined;
-    const max = this.template[maxKey] as number | undefined;
 
     if (min != null && value < min) {
       issues.push(
@@ -301,16 +325,14 @@ export class QuestionStore<
   private validateComparableValue(
     value: AnswerValueFor<T> | null,
     index: number,
-    minKey: keyof QuestionnaireItem,
-    maxKey: keyof QuestionnaireItem,
+    min?: string,
+    max?: string,
   ): OperationOutcomeIssue[] {
     if (typeof value !== "string") {
       return [];
     }
 
     const issues: OperationOutcomeIssue[] = [];
-    const min = this.template[minKey] as string | undefined;
-    const max = this.template[maxKey] as string | undefined;
 
     if (min != null && value < min) {
       issues.push(
@@ -336,6 +358,8 @@ export class QuestionStore<
   private validateQuantityValue(
     value: AnswerValueFor<T> | null,
     index: number,
+    min: Quantity | undefined,
+    max: Quantity | undefined,
   ): OperationOutcomeIssue[] {
     const quantity = value as Quantity | null;
     if (!quantity || typeof quantity.value !== "number") {
@@ -343,7 +367,6 @@ export class QuestionStore<
     }
 
     const issues: OperationOutcomeIssue[] = [];
-    const min = this.template.minValueQuantity as Quantity | undefined;
     if (min?.value != null && quantity.value < min.value) {
       issues.push(
         makeIssue(
@@ -353,7 +376,6 @@ export class QuestionStore<
       );
     }
 
-    const max = this.template.maxValueQuantity as Quantity | undefined;
     if (max?.value != null && quantity.value > max.value) {
       issues.push(
         makeIssue(
