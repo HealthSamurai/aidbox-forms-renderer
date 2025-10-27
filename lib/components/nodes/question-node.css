@@ -1,0 +1,43 @@
+.af-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.af-item input,
+.af-item textarea,
+.af-item select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+
+.af-item input:focus,
+.af-item textarea:focus,
+.af-item select:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.2);
+}
+
+.af-item textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.af-item-attachment input,
+.af-item-attachment textarea,
+.af-item-quantity input {
+  margin-bottom: 0.5rem;
+}
+
+.af-item-boolean {
+  flex-direction: column;
+}
+
+.af-item-boolean input {
+  width: auto;
+  margin-right: 0.5rem;
+}

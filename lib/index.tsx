@@ -1,21 +1,7 @@
-import "./index.css";
+import { useMemo } from "react";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
-import QuestionnaireRenderer from "./components/questionnaire-renderer.tsx";
-import { StateContextProvider } from "./components/state-context-provider.tsx";
-
-export type { AnswerPrimitive } from "./types";
-export type {
-  Attachment,
-  Coding,
-  Quantity,
-  Questionnaire,
-  QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
-  QuestionnaireResponse,
-  QuestionnaireResponseItem,
-  QuestionnaireResponseItemAnswer,
-  Reference,
-} from "fhir/r5";
+import { FormStore } from "./stores/form-store.ts";
+import { Form } from "./components/form.tsx";
 
 type RendererProps = {
   questionnaire: Questionnaire;
@@ -27,18 +13,15 @@ type RendererProps = {
 function Renderer({
   questionnaire,
   initialResponse,
-  onChange,
   onSubmit,
+  onChange,
 }: RendererProps) {
-  return (
-    <StateContextProvider
-      questionnaire={questionnaire}
-      initialResponse={initialResponse}
-      onChange={onChange}
-    >
-      <QuestionnaireRenderer onSubmit={onSubmit} />
-    </StateContextProvider>
+  const store = useMemo(
+    () => new FormStore(questionnaire, initialResponse),
+    [questionnaire, initialResponse],
   );
+
+  return <Form store={store} onSubmit={onSubmit} onChange={onChange} />;
 }
 
 export default Renderer;

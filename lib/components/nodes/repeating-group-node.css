@@ -1,0 +1,71 @@
+.af-group {
+  border: 1px solid #cbd5f5;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.af-group > legend {
+  padding: 0 0.25rem;
+  font-weight: 600;
+}
+
+.af-group-instance-list {
+}
+
+.af-group-instance {
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.af-group-instance + .af-group-instance {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.af-group-instance-children {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.af-group-instance-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.af-group-instance-remove {
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e53e3e;
+  background: #fff5f5;
+  color: #c53030;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.af-group-instance-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.af-group-instance-list-toolbar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.af-group-instance-list-add {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #2f855a;
+  background: #38a169;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.af-group-instance-list-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

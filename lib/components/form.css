@@ -1,0 +1,56 @@
+.af-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  color: #1a202c;
+}
+
+.af-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.af-description {
+  margin: 0;
+  color: #4a5568;
+}
+
+.af-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.af-empty {
+  margin: 0;
+  color: #718096;
+  font-style: italic;
+}
+
+.af-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.af-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #2b6cb0;
+  background: #3182ce;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.af-actions button[type="button"] {
+  border-color: #718096;
+  background: #fff;
+  color: #2d3748;
+}
+
+.af-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

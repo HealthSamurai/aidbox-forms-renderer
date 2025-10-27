@@ -1,0 +1,18 @@
+.af-item-label {
+  font-weight: 500;
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.af-item-label-inline {
+  flex-direction: row;
+}
+
+.af-item-prefix {
+  color: #718096;
+}
+
+.af-item-required {
+  color: #e53e3e;
+}

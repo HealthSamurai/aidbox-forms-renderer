@@ -1,10 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 
-import {
-  default as Renderer,
-  type Questionnaire,
-  type QuestionnaireResponse,
-} from "../lib";
+import { default as Renderer } from "../lib";
+
+import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
 const sampleQuestionnaire: Questionnaire = {
   resourceType: "Questionnaire",
@@ -89,6 +87,100 @@ const sampleQuestionnaire: Questionnaire = {
       text: "Preferred follow-up date and time",
       type: "dateTime",
     },
+    {
+      linkId: "10",
+      text: "Household members",
+      prefix: "B",
+      type: "group",
+      repeats: true,
+      item: [
+        {
+          linkId: "10.1",
+          text: "Member name",
+          type: "string",
+          required: true,
+        },
+        {
+          linkId: "10.2",
+          text: "Relationship to patient",
+          type: "coding",
+          answerOption: [
+            { valueCoding: { code: "spouse", display: "Spouse/Partner" } },
+            { valueCoding: { code: "child", display: "Child" } },
+            { valueCoding: { code: "parent", display: "Parent/Guardian" } },
+            { valueCoding: { code: "other", display: "Other" } },
+          ],
+        },
+        {
+          linkId: "10.3",
+          text: "Contact details",
+          type: "group",
+          item: [
+            {
+              linkId: "10.3.1",
+              text: "Phone number",
+              type: "string",
+            },
+            {
+              linkId: "10.3.2",
+              text: "Preferred contact time",
+              type: "time",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      linkId: "11",
+      text: "Current medications",
+      type: "group",
+      item: [
+        {
+          linkId: "11.1",
+          text: "Do you regularly take any prescribed medication?",
+          type: "boolean",
+          item: [
+            {
+              linkId: "11.1.1",
+              text: "Medication details",
+              type: "group",
+              repeats: true,
+              item: [
+                {
+                  linkId: "11.1.1.1",
+                  text: "Medication name",
+                  type: "string",
+                  required: true,
+                },
+                {
+                  linkId: "11.1.1.2",
+                  text: "Dosage",
+                  type: "quantity",
+                },
+                {
+                  linkId: "11.1.1.3",
+                  text: "Notes",
+                  type: "text",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      linkId: "12",
+      text: "Known allergies",
+      type: "string",
+      repeats: true,
+      item: [
+        {
+          linkId: "12.1",
+          text: "Describe the reaction",
+          type: "text",
+        },
+      ],
+    },
   ],
 };
 
@@ -163,6 +255,7 @@ export function App() {
       <section className="flex h-[calc(100vh-4rem)] flex-col overflow-auto rounded-xl border border-slate-200 bg-white">
         <Renderer
           questionnaire={questionnaire}
+          onSubmit={setQuestionnaireResponse}
           onChange={setQuestionnaireResponse}
         />
       </section>

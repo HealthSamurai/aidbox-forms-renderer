@@ -61,5 +61,11 @@
     "immer": "^10.1.3",
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^4.1.1",
+    "nanoid": "^5.1.6"
   }
 }
