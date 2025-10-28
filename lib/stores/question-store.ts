@@ -20,13 +20,14 @@ import { AbstractNodeStore } from "./abstract-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 
 import {
-  answerHasValue,
+  answerHasContent,
   getDateBounds,
   getDateTimeBounds,
   getDecimalBounds,
   getIntegerBounds,
   getQuantityBounds,
   getTimeBounds,
+  getValue,
   makeIssue,
 } from "../utils.ts";
 
@@ -56,7 +57,7 @@ export class QuestionStore<
 
     if (first?.answer) {
       first.answer.forEach((answer) => {
-        this.pushAnswer(this.extractAnswerValue(answer), answer.item);
+        this.pushAnswer(getValue(answer, this.type) ?? null, answer.item);
       });
     }
 
@@ -149,7 +150,7 @@ export class QuestionStore<
       return [];
     }
 
-    const populatedAnswers = this.answers.filter(answerHasValue);
+    const populatedAnswers = this.answers.filter(answerHasContent);
     const issues: OperationOutcomeIssue[] = [];
 
     if (this.minOccurs > 0 && populatedAnswers.length < this.minOccurs) {
@@ -386,40 +387,6 @@ export class QuestionStore<
     }
 
     return issues;
-  }
-
-  private extractAnswerValue(
-    answer: QuestionnaireResponseItemAnswer,
-  ): AnswerValueFor<T> | null {
-    switch (this.type) {
-      case "boolean":
-        return (answer.valueBoolean ?? null) as AnswerValueFor<T>;
-      case "decimal":
-        return (answer.valueDecimal ?? null) as AnswerValueFor<T>;
-      case "integer":
-        return (answer.valueInteger ?? null) as AnswerValueFor<T>;
-      case "date":
-        return (answer.valueDate ?? null) as AnswerValueFor<T>;
-      case "dateTime":
-        return (answer.valueDateTime ?? null) as AnswerValueFor<T>;
-      case "time":
-        return (answer.valueTime ?? null) as AnswerValueFor<T>;
-      case "string":
-      case "text":
-        return (answer.valueString ?? null) as AnswerValueFor<T>;
-      case "url":
-        return (answer.valueUri ?? null) as AnswerValueFor<T>;
-      case "coding":
-        return (answer.valueCoding ?? null) as AnswerValueFor<T>;
-      case "attachment":
-        return (answer.valueAttachment ?? null) as AnswerValueFor<T>;
-      case "reference":
-        return (answer.valueReference ?? null) as AnswerValueFor<T>;
-      case "quantity":
-        return (answer.valueQuantity ?? null) as AnswerValueFor<T>;
-      default:
-        return null;
-    }
   }
 
   @computed

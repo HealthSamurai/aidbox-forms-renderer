@@ -41,3 +41,6 @@
 ### Coding guidelines
 * do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores
 * rely on MobX decorators instead and call `makeObservable(this)` in constructor
+* prefer undefined over null to encode absence of value
+* when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
+* prefer small isolated tests with dedicated test data

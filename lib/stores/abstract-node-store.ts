@@ -2,10 +2,16 @@ import { INodeScope, INodeStore, IFormStore, IBaseNodeStore } from "./types.ts";
 import {
   OperationOutcomeIssue,
   QuestionnaireItem,
-  type QuestionnaireResponseItem,
+  QuestionnaireItemEnableWhen,
+  QuestionnaireResponseItem,
 } from "fhir/r5";
 import { computed, makeObservable, observable, runInAction } from "mobx";
-import { EXT, findExtension } from "../utils.ts";
+import {
+  evaluateEnableWhenCondition,
+  EXT,
+  findExtension,
+  isQuestion,
+} from "../utils.ts";
 
 export abstract class AbstractNodeStore implements IBaseNodeStore {
   readonly template: QuestionnaireItem;
@@ -115,8 +121,21 @@ export abstract class AbstractNodeStore implements IBaseNodeStore {
 
   @computed
   get isEnabled() {
-    // todo: implement enableWhen expression evaluation
-    return true;
+    if (this.parentStore && !this.parentStore.isEnabled) {
+      return false;
+    }
+
+    const enableWhen = this.template.enableWhen;
+    if (!enableWhen || enableWhen.length === 0) {
+      return true;
+    }
+
+    const behavior = this.template.enableBehavior ?? "any";
+    const results = enableWhen.map((condition) =>
+      this.evaluateEnableWhen(condition),
+    );
+
+    return behavior === "all" ? results.every(Boolean) : results.some(Boolean);
   }
 
   @computed
@@ -175,4 +194,13 @@ export abstract class AbstractNodeStore implements IBaseNodeStore {
   }
 
   abstract get responseItems(): QuestionnaireResponseItem[];
+
+  private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {
+    const target = this.lookupStore(condition.question);
+    if (!isQuestion(target)) {
+      return false;
+    }
+
+    return evaluateEnableWhenCondition(condition, target);
+  }
 }

@@ -10,7 +10,7 @@ const sampleQuestionnaire: Questionnaire = {
   status: "active",
   title: "Basic Intake Form",
   description:
-    "A primitive rendering of a FHIR Questionnaire supporting core item types.",
+    "A primitive rendering of a FHIR Questionnaire supporting core item types, conditional enableWhen logic, and repeating answers.",
   item: [
     {
       linkId: "1",
@@ -53,6 +53,35 @@ const sampleQuestionnaire: Questionnaire = {
       ],
     },
     {
+      linkId: "2.1",
+      text: "Typical duration of each session (minutes)",
+      type: "integer",
+      enableWhen: [
+        {
+          question: "2",
+          operator: "=",
+          answerCoding: { code: "daily" },
+        },
+        {
+          question: "2",
+          operator: "=",
+          answerCoding: { code: "weekly" },
+        },
+      ],
+    },
+    {
+      linkId: "2.2",
+      text: "Great job maintaining regular activity!",
+      type: "display",
+      enableWhen: [
+        {
+          question: "2",
+          operator: "=",
+          answerCoding: { code: "daily" },
+        },
+      ],
+    },
+    {
       linkId: "3",
       text: "Do you have any dietary restrictions?",
       type: "text",
@@ -68,9 +97,45 @@ const sampleQuestionnaire: Questionnaire = {
       type: "decimal",
     },
     {
+      linkId: "5.1",
+      text: "Alert: lab value above the typical range — consider follow-up.",
+      type: "display",
+      enableWhen: [
+        {
+          question: "5",
+          operator: ">=",
+          answerDecimal: 7.5,
+        },
+      ],
+    },
+    {
       linkId: "6",
       text: "Do you currently smoke?",
       type: "boolean",
+    },
+    {
+      linkId: "6.1",
+      text: "Smoking details",
+      type: "group",
+      enableWhen: [
+        {
+          question: "6",
+          operator: "=",
+          answerBoolean: true,
+        },
+      ],
+      item: [
+        {
+          linkId: "6.1.1",
+          text: "Average cigarettes per day",
+          type: "integer",
+        },
+        {
+          linkId: "6.1.2",
+          text: "Interested in cessation support?",
+          type: "boolean",
+        },
+      ],
     },
     {
       linkId: "7",
@@ -165,6 +230,24 @@ const sampleQuestionnaire: Questionnaire = {
               ],
             },
           ],
+        },
+      ],
+    },
+    {
+      linkId: "13",
+      text: "Number of falls in the past 12 months",
+      type: "integer",
+    },
+    {
+      linkId: "13.1",
+      text: "Describe each fall",
+      type: "text",
+      repeats: true,
+      enableWhen: [
+        {
+          question: "13",
+          operator: ">",
+          answerInteger: 0,
         },
       ],
     },
