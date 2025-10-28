@@ -28,8 +28,6 @@ export const ReferenceNode = observer(function ReferenceNode({
         item={item}
         renderRow={({ value, setValue, labelId, describedById }) => {
           const reference = value ?? {};
-          const ariaDescribedBy = describedById ?? undefined;
-
           const handleReferenceChange = (nextRef: string) => {
             const draft: Reference = {
               ...reference,
@@ -50,7 +48,7 @@ export const ReferenceNode = observer(function ReferenceNode({
             <div>
               <TextInput
                 ariaLabelledBy={labelId}
-                ariaDescribedBy={ariaDescribedBy}
+                ariaDescribedBy={describedById}
                 value={reference.reference ?? ""}
                 onChange={handleReferenceChange}
                 disabled={item.readOnly}
@@ -58,7 +56,7 @@ export const ReferenceNode = observer(function ReferenceNode({
               />
               <TextInput
                 ariaLabelledBy={labelId}
-                ariaDescribedBy={ariaDescribedBy}
+                ariaDescribedBy={describedById}
                 value={reference.display ?? ""}
                 onChange={handleDisplayChange}
                 disabled={item.readOnly}

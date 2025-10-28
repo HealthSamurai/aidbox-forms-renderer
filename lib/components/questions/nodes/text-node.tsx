@@ -15,19 +15,16 @@ export const TextNode = observer(function TextNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <TextArea
-              id={inputId}
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={ariaDescribedBy}
-              value={value ?? ""}
-              onChange={setValue}
-              disabled={item.readOnly}
-            />
-          );
-        }}
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <TextArea
+            id={inputId}
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+            value={value ?? ""}
+            onChange={setValue}
+            disabled={item.readOnly}
+          />
+        )}
       />
       <ItemErrors item={item} />
     </div>

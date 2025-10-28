@@ -15,21 +15,18 @@ export const UrlNode = observer(function UrlNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <TextInput
-              id={inputId}
-              type="url"
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={ariaDescribedBy}
-              value={value ?? ""}
-              onChange={setValue}
-              disabled={item.readOnly}
-              placeholder="https://example.com"
-            />
-          );
-        }}
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <TextInput
+            id={inputId}
+            type="url"
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+            value={value ?? ""}
+            onChange={setValue}
+            disabled={item.readOnly}
+            placeholder="https://example.com"
+          />
+        )}
       />
       <ItemErrors item={item} />
     </div>

@@ -2,8 +2,13 @@ import { observer } from "mobx-react-lite";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
-import { Checkbox } from "../../controls/checkbox.tsx";
+import { RadioGroup } from "../../controls/radio-group.tsx";
 import { IQuestionStore } from "../../../stores/types.ts";
+
+const booleanOptions = [
+  { value: true, label: "Yes" },
+  { value: false, label: "No" },
+];
 
 export const BooleanNode = observer(function BooleanNode({
   item,
@@ -15,19 +20,17 @@ export const BooleanNode = observer(function BooleanNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <Checkbox
-              id={inputId}
-              checked={value ?? false}
-              onChange={(checked) => setValue(checked)}
-              disabled={item.readOnly}
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={ariaDescribedBy}
-            />
-          );
-        }}
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <RadioGroup
+            name={inputId}
+            value={value ?? null}
+            options={booleanOptions}
+            onChange={(next) => setValue(next)}
+            disabled={item.readOnly}
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+          />
+        )}
       />
       <ItemErrors item={item} />
     </div>

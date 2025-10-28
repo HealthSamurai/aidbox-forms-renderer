@@ -15,20 +15,17 @@ export const DecimalNode = observer(function DecimalNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <NumberInput
-              id={inputId}
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={ariaDescribedBy}
-              value={value ?? null}
-              onChange={setValue}
-              disabled={item.readOnly}
-              step="any"
-            />
-          );
-        }}
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <NumberInput
+            id={inputId}
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+            value={value ?? null}
+            onChange={setValue}
+            disabled={item.readOnly}
+            step="any"
+          />
+        )}
       />
       <ItemErrors item={item} />
     </div>

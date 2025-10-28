@@ -9,9 +9,11 @@ export const ItemsList = observer(function ItemsList({
 }) {
   return (
     <>
-      {items.map((it) => (
-        <ItemNode key={it.path} item={it} />
-      ))}
+      {items
+        .filter((it) => it.isEnabled)
+        .map((it) => (
+          <ItemNode key={it.path} item={it} />
+        ))}
     </>
   );
 });

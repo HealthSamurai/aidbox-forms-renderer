@@ -1,0 +1,22 @@
+.af-radio-group {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.af-radio-option {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.af-radio-option input[type="radio"] {
+  accent-color: #3182ce;
+}
+
+.af-radio-option input[type="radio"]:disabled + span {
+  color: #a0aec0;
+}

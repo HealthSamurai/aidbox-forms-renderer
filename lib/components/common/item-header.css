@@ -16,3 +16,10 @@
 .af-item-required {
   color: #e53e3e;
 }
+
+.af-required {
+  color: #e53e3e;
+  margin-left: 0.25rem;
+  font-weight: 600;
+  line-height: 1;
+}

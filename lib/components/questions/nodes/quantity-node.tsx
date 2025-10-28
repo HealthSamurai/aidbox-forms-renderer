@@ -16,30 +16,28 @@ export const QuantityNode = observer(function QuantityNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, labelId, describedById }) => {
-          const v = value ?? {};
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <div className="af-quantity-grid">
-              <NumberInput
-                ariaLabelledBy={labelId}
-                ariaDescribedBy={ariaDescribedBy}
-                value={v.value ?? null}
-                step="any"
-                onChange={(x) => setValue({ ...v, value: x ?? undefined })}
-                disabled={item.readOnly}
-              />
-              <TextInput
-                ariaLabelledBy={labelId}
-                ariaDescribedBy={ariaDescribedBy}
-                value={v.unit ?? ""}
-                onChange={(t) => setValue({ ...v, unit: t })}
-                disabled={item.readOnly}
-                placeholder="unit"
-              />
-            </div>
-          );
-        }}
+        renderRow={({ value, setValue, labelId, describedById }) => (
+          <div className="af-quantity-grid">
+            <NumberInput
+              ariaLabelledBy={labelId}
+              ariaDescribedBy={describedById}
+              value={value?.value ?? null}
+              step="any"
+              onChange={(x) =>
+                setValue({ ...(value ?? {}), value: x ?? undefined })
+              }
+              disabled={item.readOnly}
+            />
+            <TextInput
+              ariaLabelledBy={labelId}
+              ariaDescribedBy={describedById}
+              value={value?.unit ?? ""}
+              onChange={(t) => setValue({ ...(value ?? {}), unit: t })}
+              disabled={item.readOnly}
+              placeholder="unit"
+            />
+          </div>
+        )}
       />
       <ItemErrors item={item} />
     </div>

@@ -24,8 +24,6 @@ export const AttachmentNode = observer(function AttachmentNode({
         item={item}
         renderRow={({ value, setValue, inputId, labelId, describedById }) => {
           const attachment = value ?? {};
-          const describedByAttrId = describedById ?? undefined;
-
           const handleUrlChange = (url: string) => {
             const draft: Attachment = { ...attachment, url: url || undefined };
             setValue(pruneAttachment(draft));
@@ -83,7 +81,7 @@ export const AttachmentNode = observer(function AttachmentNode({
                 onChange={handleFileChange}
                 disabled={item.readOnly}
                 aria-labelledby={labelId}
-                aria-describedby={describedByAttrId}
+                aria-describedby={describedById}
               />
               {attachment.title ? (
                 <div>
@@ -97,7 +95,7 @@ export const AttachmentNode = observer(function AttachmentNode({
                 id={`${inputId}-url`}
                 type="url"
                 ariaLabelledBy={labelId}
-                ariaDescribedBy={describedByAttrId}
+                ariaDescribedBy={describedById}
                 value={attachment.url ?? ""}
                 onChange={handleUrlChange}
                 disabled={item.readOnly}
@@ -106,7 +104,7 @@ export const AttachmentNode = observer(function AttachmentNode({
               <TextInput
                 id={`${inputId}-title`}
                 ariaLabelledBy={labelId}
-                ariaDescribedBy={describedByAttrId}
+                ariaDescribedBy={describedById}
                 value={attachment.title ?? ""}
                 onChange={handleTitleChange}
                 disabled={item.readOnly}

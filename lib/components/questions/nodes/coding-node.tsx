@@ -41,40 +41,35 @@ export const CodingNode = observer(function CodingNode({
       {hasChoices ? (
         <AnswerList
           item={item}
-          renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-            const selectedKey = value ? codingKey(value) : "";
-
-            const ariaDescribedBy = describedById ?? undefined;
-            return (
-              <select
-                id={inputId}
-                className="af-input"
-                value={selectedKey}
-                onChange={(event) => {
-                  const nextKey = event.target.value;
-                  if (!nextKey) {
-                    setValue(null);
-                    return;
-                  }
-                  setValue(optionMap.get(nextKey) ?? null);
-                }}
-                disabled={item.readOnly}
-                aria-labelledby={labelId}
-                aria-describedby={ariaDescribedBy}
-              >
-                <option value="">Select an option</option>
-                {options.map((coding) => {
-                  const key = codingKey(coding);
-                  const label = coding.display ?? coding.code ?? key;
-                  return (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </select>
-            );
-          }}
+          renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+            <select
+              id={inputId}
+              className="af-input"
+              value={value ? codingKey(value) : ""}
+              onChange={(event) => {
+                const nextKey = event.target.value;
+                if (!nextKey) {
+                  setValue(null);
+                  return;
+                }
+                setValue(optionMap.get(nextKey) ?? null);
+              }}
+              disabled={item.readOnly}
+              aria-labelledby={labelId}
+              aria-describedby={describedById}
+            >
+              <option value="">Select an option</option>
+              {options.map((coding) => {
+                const key = codingKey(coding);
+                const label = coding.display ?? coding.code ?? key;
+                return (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
+          )}
         />
       ) : (
         <div className="af-empty">No answer options configured.</div>

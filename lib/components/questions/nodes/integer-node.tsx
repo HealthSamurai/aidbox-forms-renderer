@@ -15,22 +15,19 @@ export const IntegerNode = observer(function IntegerNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => {
-          const ariaDescribedBy = describedById ?? undefined;
-          return (
-            <NumberInput
-              id={inputId}
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={ariaDescribedBy}
-              value={value ?? null}
-              onChange={(value) =>
-                setValue(value != null ? Math.round(value) : null)
-              }
-              disabled={item.readOnly}
-              step={1}
-            />
-          );
-        }}
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <NumberInput
+            id={inputId}
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+            value={value ?? null}
+            onChange={(value) =>
+              setValue(value != null ? Math.round(value) : null)
+            }
+            disabled={item.readOnly}
+            step={1}
+          />
+        )}
       />
       <ItemErrors item={item} />
     </div>

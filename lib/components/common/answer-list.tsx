@@ -78,16 +78,18 @@ export const AnswerList = observer(function AnswerList<
           </div>
         );
       })}
-      <div className="af-answer-list-toolbar">
-        <button
-          type="button"
-          className="af-answer-add"
-          onClick={() => item.addAnswer()}
-          disabled={!item.canAdd}
-        >
-          Add another
-        </button>
-      </div>
+      {item.repeats && (
+        <div className="af-answer-list-toolbar">
+          <button
+            type="button"
+            className="af-answer-add"
+            onClick={() => item.addAnswer()}
+            disabled={!item.canAdd}
+          >
+            Add another
+          </button>
+        </div>
+      )}
     </div>
   );
 });
