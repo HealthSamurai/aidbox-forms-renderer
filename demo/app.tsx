@@ -1,277 +1,42 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 
 import { default as Renderer } from "../lib";
 
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { demoSamples } from "./samples";
 
-const sampleQuestionnaire: Questionnaire = {
-  resourceType: "Questionnaire",
-  id: "basic-intake",
-  status: "active",
-  title: "Basic Intake Form",
-  description:
-    "A primitive rendering of a FHIR Questionnaire supporting core item types, conditional enableWhen logic, and repeating answers.",
-  item: [
-    {
-      linkId: "1",
-      text: "Patient Details",
-      prefix: "A",
-      type: "group",
-      item: [
-        {
-          linkId: "1.1",
-          text: "First name",
-          type: "string",
-          required: true,
-        },
-        {
-          linkId: "1.2",
-          text: "Last name",
-          type: "string",
-          required: true,
-        },
-        {
-          linkId: "1.3",
-          text: "Birth date",
-          type: "date",
-        },
-        {
-          linkId: "1.4",
-          text: "Contact email",
-          type: "string",
-        },
-      ],
-    },
-    {
-      linkId: "2",
-      text: "How often do you exercise?",
-      type: "coding",
-      answerOption: [
-        { valueCoding: { code: "daily", display: "Daily" } },
-        { valueCoding: { code: "weekly", display: "A few times a week" } },
-        { valueCoding: { code: "rarely", display: "Rarely" } },
-      ],
-    },
-    {
-      linkId: "2.1",
-      text: "Typical duration of each session (minutes)",
-      type: "integer",
-      enableWhen: [
-        {
-          question: "2",
-          operator: "=",
-          answerCoding: { code: "daily" },
-        },
-        {
-          question: "2",
-          operator: "=",
-          answerCoding: { code: "weekly" },
-        },
-      ],
-    },
-    {
-      linkId: "2.2",
-      text: "Great job maintaining regular activity!",
-      type: "display",
-      enableWhen: [
-        {
-          question: "2",
-          operator: "=",
-          answerCoding: { code: "daily" },
-        },
-      ],
-    },
-    {
-      linkId: "3",
-      text: "Do you have any dietary restrictions?",
-      type: "text",
-    },
-    {
-      linkId: "4",
-      text: "Height (cm)",
-      type: "integer",
-    },
-    {
-      linkId: "5",
-      text: "Most recent lab value",
-      type: "decimal",
-    },
-    {
-      linkId: "5.1",
-      text: "Alert: lab value above the typical range — consider follow-up.",
-      type: "display",
-      enableWhen: [
-        {
-          question: "5",
-          operator: ">=",
-          answerDecimal: 7.5,
-        },
-      ],
-    },
-    {
-      linkId: "6",
-      text: "Do you currently smoke?",
-      type: "boolean",
-    },
-    {
-      linkId: "6.1",
-      text: "Smoking details",
-      type: "group",
-      enableWhen: [
-        {
-          question: "6",
-          operator: "=",
-          answerBoolean: true,
-        },
-      ],
-      item: [
-        {
-          linkId: "6.1.1",
-          text: "Average cigarettes per day",
-          type: "integer",
-        },
-        {
-          linkId: "6.1.2",
-          text: "Interested in cessation support?",
-          type: "boolean",
-        },
-      ],
-    },
-    {
-      linkId: "7",
-      text: "Double-check your information before submitting.",
-      type: "display",
-    },
-    {
-      linkId: "8",
-      text: "Preferred appointment time",
-      type: "time",
-    },
-    {
-      linkId: "9",
-      text: "Preferred follow-up date and time",
-      type: "dateTime",
-    },
-    {
-      linkId: "10",
-      text: "Household members",
-      prefix: "B",
-      type: "group",
-      repeats: true,
-      item: [
-        {
-          linkId: "10.1",
-          text: "Member name",
-          type: "string",
-          required: true,
-        },
-        {
-          linkId: "10.2",
-          text: "Relationship to patient",
-          type: "coding",
-          answerOption: [
-            { valueCoding: { code: "spouse", display: "Spouse/Partner" } },
-            { valueCoding: { code: "child", display: "Child" } },
-            { valueCoding: { code: "parent", display: "Parent/Guardian" } },
-            { valueCoding: { code: "other", display: "Other" } },
-          ],
-        },
-        {
-          linkId: "10.3",
-          text: "Contact details",
-          type: "group",
-          item: [
-            {
-              linkId: "10.3.1",
-              text: "Phone number",
-              type: "string",
-            },
-            {
-              linkId: "10.3.2",
-              text: "Preferred contact time",
-              type: "time",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      linkId: "11",
-      text: "Current medications",
-      type: "group",
-      item: [
-        {
-          linkId: "11.1",
-          text: "Do you regularly take any prescribed medication?",
-          type: "boolean",
-          item: [
-            {
-              linkId: "11.1.1",
-              text: "Medication details",
-              type: "group",
-              repeats: true,
-              item: [
-                {
-                  linkId: "11.1.1.1",
-                  text: "Medication name",
-                  type: "string",
-                  required: true,
-                },
-                {
-                  linkId: "11.1.1.2",
-                  text: "Dosage",
-                  type: "quantity",
-                },
-                {
-                  linkId: "11.1.1.3",
-                  text: "Notes",
-                  type: "text",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      linkId: "13",
-      text: "Number of falls in the past 12 months",
-      type: "integer",
-    },
-    {
-      linkId: "13.1",
-      text: "Describe each fall",
-      type: "text",
-      repeats: true,
-      enableWhen: [
-        {
-          question: "13",
-          operator: ">",
-          answerInteger: 0,
-        },
-      ],
-    },
-    {
-      linkId: "12",
-      text: "Known allergies",
-      type: "string",
-      repeats: true,
-      item: [
-        {
-          linkId: "12.1",
-          text: "Describe the reaction",
-          type: "text",
-        },
-      ],
-    },
-  ],
-};
+const cloneQuestionnaire = (input: Questionnaire): Questionnaire =>
+  JSON.parse(JSON.stringify(input)) as Questionnaire;
 
 export function App() {
+  const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
+    if (typeof window === "undefined") {
+      return demoSamples[0]!.id;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const candidate = params.get("sample");
+    return demoSamples.some((sample) => sample.id === candidate)
+      ? (candidate as string)
+      : demoSamples[0]!.id;
+  });
+  const selectedSample = useMemo(
+    () => demoSamples.find((sample) => sample.id === selectedSampleId),
+    [selectedSampleId],
+  );
+  const initialQuestionnaire = useMemo(
+    () =>
+      selectedSample
+        ? cloneQuestionnaire(selectedSample.questionnaire)
+        : ({} as Questionnaire),
+    [selectedSample],
+  );
   const [questionnaire, setQuestionnaire] =
-    useState<Questionnaire>(sampleQuestionnaire);
+    useState<Questionnaire>(initialQuestionnaire);
   const [questionnaireSource, setQuestionnaireSource] = useState(() =>
-    JSON.stringify(sampleQuestionnaire, null, 2),
+    JSON.stringify(initialQuestionnaire, null, 2),
   );
   const [questionnaireError, setQuestionnaireError] = useState<string | null>(
     null,
@@ -284,8 +49,50 @@ export function App() {
     [questionnaire],
   );
 
+  const editorExtensions = useMemo(() => [json()], []);
+  const responseViewerExtensions = editorExtensions;
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set("sample", selectedSampleId);
+    window.history.replaceState(null, "", url);
+  }, [selectedSampleId]);
+
   const hasPendingChanges =
     questionnaireSource !== canonicalQuestionnaireSource;
+
+  const sampleOptions = useMemo(
+    () =>
+      demoSamples.map((sample) => ({
+        id: sample.id,
+        label: sample.label,
+      })),
+    [],
+  );
+
+  const handleSelectSample = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const nextId = event.target.value;
+      setSelectedSampleId(nextId);
+
+      const nextSample = demoSamples.find((sample) => sample.id === nextId);
+      if (!nextSample) {
+        return;
+      }
+
+      const cloned = cloneQuestionnaire(nextSample.questionnaire);
+
+      setQuestionnaire(cloned);
+      setQuestionnaireResponse(null);
+      const encoded = JSON.stringify(cloned, null, 2);
+      setQuestionnaireSource(encoded);
+      setQuestionnaireError(null);
+    },
+    [],
+  );
 
   const handleApplyQuestionnaire = useCallback(() => {
     try {
@@ -322,12 +129,28 @@ export function App() {
             </button>
           ) : null}
         </div>
-        <textarea
-          aria-label="Questionnaire JSON"
-          value={questionnaireSource}
-          onChange={(event) => setQuestionnaireSource(event.target.value)}
-          className="flex-1 resize-y rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-sm leading-6 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-        />
+        <select
+          id="sample-select"
+          value={selectedSampleId}
+          onChange={handleSelectSample}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          {sampleOptions.map((sample) => (
+            <option key={sample.id} value={sample.id}>
+              {sample.label}
+            </option>
+          ))}
+        </select>
+        <div className="flex-1 overflow-hidden rounded-lg border border-slate-200 flex">
+          <CodeMirror
+            aria-label="Questionnaire JSON"
+            value={questionnaireSource}
+            className="h-full"
+            style={{ height: "100%", width: "100%" }}
+            extensions={editorExtensions}
+            onChange={(value) => setQuestionnaireSource(value)}
+          />
+        </div>
         {questionnaireError ? (
           <p className="rounded-lg bg-red-200 px-3 py-2 text-sm text-red-800">
             {questionnaireError}
@@ -347,12 +170,15 @@ export function App() {
         <div className="flex items-center justify-between gap-4">
           <h2 className="py-1 text-lg font-medium">Questionnaire Response</h2>
         </div>
-        <textarea
-          aria-label="Questionnaire Response JSON"
-          value={JSON.stringify(questionnaireResponse ?? {}, null, 2)}
-          readOnly
-          className="flex-1 resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-sm leading-6 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-        />
+        <div className="flex-1 overflow-hidden rounded-lg border border-slate-200">
+          <CodeMirror
+            aria-label="Questionnaire Response JSON"
+            value={JSON.stringify(questionnaireResponse ?? {}, null, 2)}
+            className="h-full"
+            extensions={responseViewerExtensions}
+            readOnly
+          />
+        </div>
       </aside>
     </main>
   );

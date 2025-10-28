@@ -10,3 +10,7 @@ body {
   background: #edf2f7;
   color: #1a202c;
 }
+
+.cm-editor {
+  height: 100%;
+}

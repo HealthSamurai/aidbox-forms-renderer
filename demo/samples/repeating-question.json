@@ -1,0 +1,36 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "repeating-question",
+  "status": "active",
+  "title": "Repeating Question Answers",
+  "description": "Shows how repeating questions render add/remove controls.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Use the + button to capture multiple favorite books. Try adding and removing entries to see the repeating question UI."
+    },
+    {
+      "linkId": "favorite-books",
+      "type": "string",
+      "text": "Favorite books",
+      "repeats": true
+    },
+    {
+      "linkId": "favorite-genres",
+      "type": "string",
+      "text": "Favorite genres",
+      "repeats": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+          "valueInteger": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "numeric-thresholds",
+  "status": "active",
+  "title": "Numeric Comparisons",
+  "description": "Highlights enableWhen using greater/less-than operators.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Enter a value to trigger comparison-based messages. Try numbers above and below the thresholds called out."
+    },
+    {
+      "linkId": "temperature",
+      "type": "decimal",
+      "text": "Body temperature (°C)"
+    },
+    {
+      "linkId": "fever-alert",
+      "type": "display",
+      "text": "⚠️ Fever suspected. Recommend follow-up.",
+      "enableWhen": [
+        {
+          "question": "temperature",
+          "operator": ">=",
+          "answerDecimal": 38
+        }
+      ]
+    },
+    {
+      "linkId": "hypothermia-alert",
+      "type": "display",
+      "text": "⚠️ Temperature is low. Monitor closely.",
+      "enableWhen": [
+        {
+          "question": "temperature",
+          "operator": "<",
+          "answerDecimal": 35
+        }
+      ]
+    }
+  ]
+}

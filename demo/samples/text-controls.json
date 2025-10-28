@@ -1,0 +1,44 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "text-controls",
+  "status": "active",
+  "title": "Basic Text Inputs",
+  "description": "Shows plain text-based controls rendered by the form.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "This sample renders simple string, text, uri and date/time inputs. Try typing into each field to observe validation and layout."
+    },
+    {
+      "linkId": "short-string",
+      "type": "string",
+      "text": "Your nickname"
+    },
+    {
+      "linkId": "long-text",
+      "type": "text",
+      "text": "Tell us about your favorite hobby"
+    },
+    {
+      "linkId": "url",
+      "type": "url",
+      "text": "Personal website"
+    },
+    {
+      "linkId": "date",
+      "type": "date",
+      "text": "Important date"
+    },
+    {
+      "linkId": "time",
+      "type": "time",
+      "text": "Preferred reminder time"
+    },
+    {
+      "linkId": "date-time",
+      "type": "dateTime",
+      "text": "Deadline"
+    }
+  ]
+}

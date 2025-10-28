@@ -1,0 +1,50 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "nested-follow-ups",
+  "status": "active",
+  "title": "Nested Follow-up Items",
+  "description": "Illustrates child questions attached to answers.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Answer the initial question to reveal layered follow-ups. This demonstrates how child items can appear beneath a parent question."
+    },
+    {
+      "linkId": "primary-concern",
+      "type": "string",
+      "text": "Primary concern today",
+      "item": [
+        {
+          "linkId": "concern-duration",
+          "type": "integer",
+          "text": "How many days has this been an issue?"
+        },
+        {
+          "linkId": "severity",
+          "type": "coding",
+          "text": "Severity",
+          "answerOption": [
+            { "valueCoding": { "code": "mild", "display": "Mild" } },
+            { "valueCoding": { "code": "moderate", "display": "Moderate" } },
+            { "valueCoding": { "code": "severe", "display": "Severe" } }
+          ],
+          "item": [
+            {
+              "linkId": "severe-notes",
+              "type": "text",
+              "text": "Provide more detail if severity is severe",
+              "enableWhen": [
+                {
+                  "question": "severity",
+                  "operator": "=",
+                  "answerCoding": { "code": "severe" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "boolean-gating",
+  "status": "active",
+  "title": "Boolean EnableWhen",
+  "description": "Demonstrates a dependent question driven by a yes/no toggle.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Toggle the switch to reveal the follow-up group. This mirrors a common pattern for asking optional details."
+    },
+    {
+      "linkId": "owns-car",
+      "type": "boolean",
+      "text": "Do you own a car?"
+    },
+    {
+      "linkId": "car-details",
+      "type": "group",
+      "text": "Car details",
+      "enableWhen": [
+        {
+          "question": "owns-car",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ],
+      "item": [
+        {
+          "linkId": "car-model",
+          "type": "string",
+          "text": "Model"
+        },
+        {
+          "linkId": "car-year",
+          "type": "integer",
+          "text": "Year"
+        }
+      ]
+    }
+  ]
+}

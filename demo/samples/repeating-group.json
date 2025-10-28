@@ -1,0 +1,44 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "repeating-group",
+  "status": "active",
+  "title": "Repeating Group Instances",
+  "description": "Demonstrates repeating groups with nested child questions.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Add multiple household members. Each instance maintains its own set of child fields."
+    },
+    {
+      "linkId": "household",
+      "type": "group",
+      "text": "Household member",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "member-name",
+          "type": "string",
+          "text": "Name",
+          "required": true
+        },
+        {
+          "linkId": "member-age",
+          "type": "integer",
+          "text": "Age"
+        },
+        {
+          "linkId": "member-role",
+          "type": "coding",
+          "text": "Relationship",
+          "answerOption": [
+            { "valueCoding": { "code": "spouse", "display": "Spouse/Partner" } },
+            { "valueCoding": { "code": "child", "display": "Child" } },
+            { "valueCoding": { "code": "parent", "display": "Parent/Guardian" } },
+            { "valueCoding": { "code": "other", "display": "Other" } }
+          ]
+        }
+      ]
+    }
+  ]
+}
