@@ -1,0 +1,91 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-dynamic-bounds",
+  "status": "active",
+  "title": "Dynamic Min/Max Expressions",
+  "description": "Demonstrates minValueExpression and maxValueExpression enforcing context-aware ranges.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Target values are constrained using expressions derived from earlier answers. Try entering values outside the suggested window."
+    },
+    {
+      "linkId": "goals",
+      "type": "group",
+      "text": "Metabolic goals",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "baselineWeight",
+            "expression": "%context.item.where(linkId='current-weight').answer.valueDecimal.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "baselineGlucose",
+            "expression": "%context.item.where(linkId='current-glucose').answer.valueInteger.last()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "current-weight",
+          "type": "decimal",
+          "text": "Current weight (kg)"
+        },
+        {
+          "linkId": "target-weight",
+          "type": "decimal",
+          "text": "Target weight (kg)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "iif(%baselineWeight.exists(), %baselineWeight - 10, 40)"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "iif(%baselineWeight.exists(), %baselineWeight - 2, 90)"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "current-glucose",
+          "type": "integer",
+          "text": "Current fasting glucose (mg/dL)"
+        },
+        {
+          "linkId": "target-glucose",
+          "type": "integer",
+          "text": "Target fasting glucose (mg/dL)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 20, 70)"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 5, 110)"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

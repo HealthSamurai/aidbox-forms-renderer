@@ -1,0 +1,78 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-calculated",
+  "status": "active",
+  "title": "Calculated BMI",
+  "description": "Demonstrates calculatedExpression with shared variables.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Enter height and weight to calculate BMI automatically. Changing either value recalculates BMI until you override it."
+    },
+    {
+      "linkId": "metrics",
+      "type": "group",
+      "text": "Body metrics",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "heightCm",
+            "expression": "%context.item.where(linkId='height').answer.valueDecimal.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "weightKg",
+            "expression": "%context.item.where(linkId='weight').answer.valueDecimal.last()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "height",
+          "type": "decimal",
+          "text": "Height (cm)"
+        },
+        {
+          "linkId": "weight",
+          "type": "decimal",
+          "text": "Weight (kg)"
+        },
+        {
+          "linkId": "bmi",
+          "type": "decimal",
+          "text": "Body mass index",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "name": "bmiCalc",
+                "expression": "iif(%heightCm.exists() and %weightKg.exists(), (%weightKg / ((%heightCm / 100) * (%heightCm / 100))).round(1), {})"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "category",
+          "type": "display",
+          "text": "BMI category updates once BMI is available.",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "%context.item.where(linkId='bmi').answer.valueDecimal.exists()"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

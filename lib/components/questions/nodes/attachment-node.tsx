@@ -4,6 +4,7 @@ import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { TextInput } from "../../controls/text-input.tsx";
+import { Button } from "../../controls/button.tsx";
 import { IQuestionStore } from "../../../stores/types.ts";
 import type { Attachment } from "fhir/r5";
 import {
@@ -111,13 +112,15 @@ export const AttachmentNode = observer(function AttachmentNode({
                 placeholder="Title"
               />
               <div>
-                <button
+                <Button
                   type="button"
+                  size="sm"
+                  variant="secondary"
                   onClick={handleClearFile}
                   disabled={item.readOnly || !hasFile}
                 >
                   Clear attachment
-                </button>
+                </Button>
               </div>
             </div>
           );

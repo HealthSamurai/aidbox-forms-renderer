@@ -1,51 +1,54 @@
 import "./repeating-group-node.css";
-import { observer } from "mobx-react-lite";
+import React from "react";
+import { Observer, observer } from "mobx-react-lite";
 import { IRepeatingGroupStore } from "../../stores/types.ts";
 import { ItemText } from "../common/item-text.tsx";
-import { ItemsList } from "../common/item-list.tsx";
+import { ItemErrors } from "../common/item-errors.tsx";
+import { Button } from "../controls/button.tsx";
+import { RepeatingGroupInstance } from "./repeating-group-instance.tsx";
 
 export const RepeatingGroupNode = observer(function RepeatingGroupNode({
   item,
 }: {
   item: IRepeatingGroupStore;
 }) {
+  const handleAddClick = React.useCallback(() => {
+    if (!item.canAdd) {
+      return;
+    }
+    item.addInstance();
+  }, [item]);
+
   return (
     <fieldset className="af-group" data-linkid={item.linkId}>
       {item.template.text && <ItemText as="legend" item={item} />}
 
       <div className="af-group-instance-list">
-        {item.instances.map((instance, ix) => (
-          <section
-            key={instance.path}
-            className="af-group-instance"
-            data-instance={ix}
-          >
-            <div className="af-group-instance-children">
-              <ItemsList items={instance.children} />
-            </div>
-            <div className="af-group-instance-toolbar">
-              <button
-                type="button"
-                className="af-group-instance-remove"
-                onClick={() => item.removeInstance(ix)}
-                disabled={!item.canRemove}
-              >
-                Remove section
-              </button>
-            </div>
-          </section>
-        ))}
+        <Observer>
+          {() => (
+            <>
+              {item.instances.map((instance) => (
+                <RepeatingGroupInstance
+                  key={instance.key}
+                  instance={instance}
+                  canRemove={item.canRemove}
+                />
+              ))}
+            </>
+          )}
+        </Observer>
       </div>
+      <ItemErrors item={item} />
 
       <div className="af-group-instance-list-toolbar">
-        <button
+        <Button
           type="button"
-          className="af-group-instance-list-add"
-          onClick={() => item.addInstance()}
+          variant="success"
+          onClick={handleAddClick}
           disabled={!item.canAdd}
         >
           Add section
-        </button>
+        </Button>
       </div>
     </fieldset>
   );

@@ -11,6 +11,20 @@ export class DisplayStore extends AbstractNodeStore implements IDisplayStore {
 
   @computed
   override get responseItems(): QuestionnaireResponseItem[] {
+    if (!this.isEnabled) {
+      return [];
+    }
+
+    const item: QuestionnaireResponseItem = {
+      linkId: this.linkId,
+      text: this.text,
+    };
+
+    return [item];
+  }
+
+  @computed
+  override get expressionItems(): QuestionnaireResponseItem[] {
     const item: QuestionnaireResponseItem = {
       linkId: this.linkId,
       text: this.text,

@@ -10,7 +10,7 @@ import type {
 
 import { FormStore } from "../form-store.ts";
 import { isGroup, isQuestion } from "../../utils.ts";
-import type { AnswerableQuestionType, IQuestionStore } from "../types.ts";
+import type { AnswerType, IQuestionStore } from "../types.ts";
 
 type EnableWhenAnswer =
   | boolean
@@ -22,7 +22,7 @@ type EnableWhenAnswer =
   | null;
 
 function makeCondition(
-  type: AnswerableQuestionType,
+  type: AnswerType,
   operator: QuestionnaireItemEnableWhen["operator"],
   expected: EnableWhenAnswer,
 ): QuestionnaireItemEnableWhen {
@@ -77,7 +77,7 @@ function makeCondition(
 }
 
 function createForm(
-  controlType: AnswerableQuestionType,
+  controlType: AnswerType,
   condition: QuestionnaireItemEnableWhen,
   options?: { repeats?: boolean },
 ) {
@@ -101,8 +101,8 @@ function createForm(
   };
 
   const form = new FormStore(questionnaire);
-  const control = form.lookupStore("control");
-  const dependent = form.lookupStore("dependent");
+  const control = form.scope.lookupNode("control");
+  const dependent = form.scope.lookupNode("dependent");
 
   if (!control || !isQuestion(control)) {
     throw new Error("Control item is not a question");
@@ -183,7 +183,7 @@ describe("enableWhen", () => {
     });
 
     const equalityCases: Array<{
-      type: AnswerableQuestionType;
+      type: AnswerType;
       match: EnableWhenAnswer;
       mismatch: EnableWhenAnswer;
     }> = [
@@ -227,7 +227,7 @@ describe("enableWhen", () => {
     ];
 
     it.each(equalityCases)(
-      "evaluates equality for %s answers",
+      "evaluates equality for $type answers",
       ({ type, match, mismatch }) => {
         const condition = makeCondition(type, "=", match);
         const { control, dependent } = createForm(type, condition);
@@ -293,7 +293,7 @@ describe("enableWhen", () => {
     });
 
     const comparisonCases: Array<{
-      type: AnswerableQuestionType;
+      type: AnswerType;
       operator: ">" | ">=" | "<" | "<=";
       expected: EnableWhenAnswer;
       values: EnableWhenAnswer[];
@@ -460,8 +460,8 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const control = form.lookupStore("control");
-      const dependent = form.lookupStore("dependent");
+      const control = form.scope.lookupNode("control");
+      const dependent = form.scope.lookupNode("dependent");
 
       expect(control && isQuestion(control)).toBe(true);
       expect(dependent && isQuestion(dependent)).toBe(true);
@@ -515,8 +515,8 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const control = form.lookupStore("control");
-      const dependent = form.lookupStore("dependent");
+      const control = form.scope.lookupNode("control");
+      const dependent = form.scope.lookupNode("dependent");
 
       expect(control && isQuestion(control)).toBe(true);
       expect(dependent && isQuestion(dependent)).toBe(true);
@@ -566,9 +566,9 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const flag = form.lookupStore("flag");
-      const score = form.lookupStore("score");
-      const dependent = form.lookupStore("dependent-any");
+      const flag = form.scope.lookupNode("flag");
+      const score = form.scope.lookupNode("score");
+      const dependent = form.scope.lookupNode("dependent-any");
 
       expect(flag && isQuestion(flag)).toBe(true);
       expect(score && isQuestion(score)).toBe(true);
@@ -623,9 +623,9 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const text = form.lookupStore("text");
-      const count = form.lookupStore("count");
-      const dependent = form.lookupStore("dependent-all");
+      const text = form.scope.lookupNode("text");
+      const count = form.scope.lookupNode("count");
+      const dependent = form.scope.lookupNode("dependent-all");
 
       expect(text && isQuestion(text)).toBe(true);
       expect(count && isQuestion(count)).toBe(true);
@@ -679,9 +679,9 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const toggle = form.lookupStore("toggle");
-      const group = form.lookupStore("group");
-      const child = form.lookupStore("child");
+      const toggle = form.scope.lookupNode("toggle");
+      const group = form.scope.lookupNode("group");
+      const child = form.scope.lookupNode("child");
 
       expect(toggle && isQuestion(toggle)).toBe(true);
       expect(group && isGroup(group)).toBe(true);
@@ -726,8 +726,8 @@ describe("enableWhen", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const text = form.lookupStore("text");
-      const dependent = form.lookupStore("dependent-neq");
+      const text = form.scope.lookupNode("text");
+      const dependent = form.scope.lookupNode("dependent-neq");
 
       expect(text && isQuestion(text)).toBe(true);
       expect(dependent).toBeDefined();

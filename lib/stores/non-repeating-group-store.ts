@@ -1,6 +1,6 @@
 import {
   IFormStore,
-  INodeScope,
+  IScope,
   INodeStore,
   INonRepeatingGroupStore,
 } from "./types.ts";
@@ -19,25 +19,28 @@ export class NonRepeatingGroupStore
   implements INonRepeatingGroupStore
 {
   @observable.shallow
-  children = observable.array<INodeStore>([], { deep: false });
+  children = observable.array<INodeStore>([], {
+    deep: false,
+    name: "NonRepeatingGroupStore.children",
+  });
 
   constructor(
     form: IFormStore,
     template: QuestionnaireItem,
     parentStore: INodeStore | null,
-    parentScope: INodeScope,
-    parentPath: string,
+    parentScope: IScope,
+    parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ) {
-    super(form, template, parentStore, parentScope, parentPath);
+    super(form, template, parentStore, parentScope, parentKey);
 
     this.children.replace(
       this.template.item?.map((item) =>
         this.form.createNodeStore(
           item,
           this,
-          this,
-          this.path,
+          this.scope,
+          this.key,
           responseItems
             ?.at(0)
             ?.item?.filter(({ linkId }) => linkId === item.linkId),
@@ -75,6 +78,10 @@ export class NonRepeatingGroupStore
 
   @computed
   override get responseItems() {
+    if (!this.isEnabled) {
+      return [];
+    }
+
     const childItems = this.children.flatMap((child) => child.responseItems);
 
     if (childItems.length === 0) {
@@ -86,6 +93,21 @@ export class NonRepeatingGroupStore
       text: this.text,
       item: childItems,
     };
+
+    return [item];
+  }
+
+  @computed
+  override get expressionItems(): QuestionnaireResponseItem[] {
+    const childItems = this.children.flatMap((child) => child.expressionItems);
+    const item: QuestionnaireResponseItem = {
+      linkId: this.linkId,
+      text: this.text,
+    };
+
+    if (childItems.length > 0) {
+      item.item = childItems;
+    }
 
     return [item];
   }

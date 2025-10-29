@@ -1,0 +1,55 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-initial",
+  "status": "active",
+  "title": "Initial Expression Defaults",
+  "description": "Shows how initialExpression can pre-populate answers while still letting users edit them.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Update your weekly activity plan. The goal suggestion uses an initial expression and can be overridden."
+    },
+    {
+      "linkId": "exercise",
+      "type": "group",
+      "text": "Weekly exercise",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "hoursAnswer",
+            "expression": "%context.item.where(linkId='current-hours').answer.valueInteger.last()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "current-hours",
+          "type": "integer",
+          "text": "How many hours did you exercise last week?"
+        },
+        {
+          "linkId": "goal-hours",
+          "type": "integer",
+          "text": "Goal hours for this week",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "iif(%hoursAnswer.exists(), %hoursAnswer + 1, 5)"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "coaching-note",
+          "type": "display",
+          "text": "Tip: Set a goal slightly higher than last week. The initial value shows a suggested target."
+        }
+      ]
+    }
+  ]
+}

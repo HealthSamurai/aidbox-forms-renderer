@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isNonRepeatingGroup, isQuestion, isRepeatingGroup } from "../../utils.ts";
+import {
+  isNonRepeatingGroup,
+  isQuestion,
+  isRepeatingGroup,
+} from "../../utils.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -69,15 +73,15 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("first-name");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("first-name");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
     expect(question.hasErrors).toBe(false);
     expect(question.issues).toHaveLength(0);
 
-    expect(store.validateAll()).toBe(false);
+    expect(form.validateAll()).toBe(false);
     expect(question.hasErrors).toBe(true);
     expect(question.issues.at(0)?.diagnostics).toMatch(/required/i);
 
@@ -85,7 +89,7 @@ describe("validation", () => {
     expect(question.issues).toHaveLength(1);
 
     question.setAnswer(0, "Alice");
-    expect(store.validateAll()).toBe(true);
+    expect(form.validateAll()).toBe(true);
     expect(question.hasErrors).toBe(false);
   });
 
@@ -103,8 +107,8 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("notes");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("notes");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
@@ -130,16 +134,13 @@ describe("validation", () => {
           linkId: "age",
           text: "Age",
           type: "integer",
-          extension: [
-            minValueInteger(0),
-            maxValueInteger(120),
-          ],
+          extension: [minValueInteger(0), maxValueInteger(120)],
         },
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("age");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("age");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
@@ -166,10 +167,7 @@ describe("validation", () => {
           linkId: "birth",
           text: "Date of birth",
           type: "date",
-          extension: [
-            minValueDate("2000-01-01"),
-            maxValueDate("2020-12-31"),
-          ],
+          extension: [minValueDate("2000-01-01"), maxValueDate("2020-12-31")],
         },
         {
           linkId: "check-in",
@@ -183,9 +181,9 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const birth = store.lookupStore("birth");
-    const checkIn = store.lookupStore("check-in");
+    const form = new FormStore(questionnaire);
+    const birth = form.scope.lookupNode("birth");
+    const checkIn = form.scope.lookupNode("check-in");
     expect(birth && checkIn && isQuestion(birth) && isQuestion(checkIn)).toBe(
       true,
     );
@@ -228,8 +226,8 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("weight");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("weight");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
@@ -270,13 +268,13 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const group = store.lookupStore("family-history");
+    const form = new FormStore(questionnaire);
+    const group = form.scope.lookupNode("family-history");
     expect(group && isRepeatingGroup(group)).toBe(true);
     if (!group || !isRepeatingGroup(group)) return;
 
     // Submit with empty answers
-    expect(store.validateAll()).toBe(false);
+    expect(form.validateAll()).toBe(false);
     expect(group.issues).toHaveLength(1);
     expect(group.issues[0]?.diagnostics).toMatch(/occurrence/i);
 
@@ -290,7 +288,7 @@ describe("validation", () => {
 
     question.setAnswer(0, "Diabetes");
     expect(group.issues).toHaveLength(0);
-    expect(store.validateAll()).toBe(true);
+    expect(form.validateAll()).toBe(true);
   });
 
   it("validates repeating question minOccurs across populated answers", () => {
@@ -308,12 +306,12 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("symptom");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("symptom");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
-    expect(store.validateAll()).toBe(false);
+    expect(form.validateAll()).toBe(false);
     expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
 
     question.setAnswer(0, "Cough");
@@ -347,9 +345,9 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    expect(store.validateAll()).toBe(true);
-    const question = store.lookupStore("readonly-question");
+    const form = new FormStore(questionnaire);
+    expect(form.validateAll()).toBe(true);
+    const question = form.scope.lookupNode("readonly-question");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
     expect(question.hasErrors).toBe(false);
@@ -376,12 +374,12 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const group = store.lookupStore("lifestyle");
+    const form = new FormStore(questionnaire);
+    const group = form.scope.lookupNode("lifestyle");
     expect(group && isNonRepeatingGroup(group)).toBe(true);
     if (!group || !isNonRepeatingGroup(group)) return;
 
-    expect(store.validateAll()).toBe(false);
+    expect(form.validateAll()).toBe(false);
     expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);
 
     const child = group.children.at(0);
@@ -389,7 +387,7 @@ describe("validation", () => {
     if (!child || !isQuestion(child)) return;
     child.setAnswer(0, "Runs daily");
 
-    expect(store.validateAll()).toBe(true);
+    expect(form.validateAll()).toBe(true);
     expect(group.hasErrors).toBe(false);
   });
 
@@ -407,17 +405,17 @@ describe("validation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("email");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("email");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
-    expect(store.validateAll()).toBe(false);
-    expect(store.isSubmitAttempted).toBe(true);
+    expect(form.validateAll()).toBe(false);
+    expect(form.isSubmitAttempted).toBe(true);
 
     question.setAnswer(0, "user@example.com");
-    expect(store.validateAll()).toBe(true);
-    expect(store.isSubmitAttempted).toBe(false);
+    expect(form.validateAll()).toBe(true);
+    expect(form.isSubmitAttempted).toBe(false);
     expect(question.hasErrors).toBe(false);
   });
 });

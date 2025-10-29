@@ -52,22 +52,25 @@
     "prettier": "^3.6.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-resizable-panels": "^3.0.6",
     "tailwindcss": "^4.1.16",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.2",
     "vite": "^7.1.12",
+    "vite-bundle-analyzer": "^1.2.3",
     "vite-css-modules": "^1.11.1",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "fhirpath": "^4.6.0",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^4.1.1",
     "react": ">=18",
     "react-dom": ">=18"
   },
   "dependencies": {
     "classnames": "^2.5.1",
-    "mobx": "^6.15.0",
-    "mobx-react-lite": "^4.1.1",
     "nanoid": "^5.1.6"
   }
 }

@@ -1,6 +1,6 @@
 import {
   IFormStore,
-  INodeScope,
+  IScope,
   INodeStore,
   IRepeatingGroupInstance,
   IRepeatingGroupStore,
@@ -24,11 +24,11 @@ export class RepeatingGroupStore
     form: IFormStore,
     template: QuestionnaireItem,
     parentStore: INodeStore | null,
-    parentScope: INodeScope,
-    parentPath: string,
+    parentScope: IScope,
+    parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ) {
-    super(form, template, parentStore, parentScope, parentPath);
+    super(form, template, parentStore, parentScope, parentKey);
 
     responseItems?.forEach((responseItem) => this.pushInstance(responseItem));
     this.ensureMinOccurs();
@@ -45,6 +45,7 @@ export class RepeatingGroupStore
   @observable.shallow
   readonly instances = observable.array<IRepeatingGroupInstance>([], {
     deep: false,
+    name: "RepeatingGroupStore.instances",
   });
 
   @computed
@@ -77,6 +78,7 @@ export class RepeatingGroupStore
   private pushInstance(responseItem?: QuestionnaireResponseItem) {
     const instance = new RepeatingGroupInstance(
       this,
+      this.scope,
       this.instances.length,
       responseItem,
     );
@@ -122,8 +124,26 @@ export class RepeatingGroupStore
 
   @computed
   override get responseItems(): QuestionnaireResponseItem[] {
+    if (!this.isEnabled) {
+      return [];
+    }
+
     return this.instances
       .map((instance) => instance.responseItem)
       .filter((item): item is QuestionnaireResponseItem => item !== null);
+  }
+
+  @computed
+  override get expressionItems(): QuestionnaireResponseItem[] {
+    if (this.instances.length === 0) {
+      return [
+        {
+          linkId: this.linkId,
+          text: this.text,
+        },
+      ];
+    }
+
+    return this.instances.map((instance) => instance.expressionItem);
   }
 }

@@ -1,10 +1,9 @@
-import { nanoid } from "nanoid";
-import { action, computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import type {
-  AnswerableQuestionType,
-  AnswerValueFor,
+  AnswerType,
+  AnswerValueType,
   IAnswerInstance,
-  INodeScope,
+  IScope,
   INodeStore,
   IQuestionStore,
 } from "./types.ts";
@@ -13,47 +12,43 @@ import type {
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 
-export class AnswerInstance<TType extends AnswerableQuestionType>
-  implements IAnswerInstance<AnswerValueFor<TType>>
+export class AnswerInstance<TType extends AnswerType>
+  implements IAnswerInstance<AnswerValueType<TType>>
 {
-  readonly key = nanoid();
-  readonly path: string;
-  readonly parentScope: INodeScope | undefined;
+  readonly key: string;
+  readonly scope: IScope;
 
   private readonly question: IQuestionStore<TType>;
 
-  @observable.shallow
-  readonly registry: Map<string, INodeStore> | undefined;
-
   @observable.ref
-  value: AnswerValueFor<TType> | null = null;
+  value: AnswerValueType<TType> | null = null;
 
   @observable.shallow
-  readonly children = observable.array<INodeStore>([], { deep: false });
+  readonly children = observable.array<INodeStore>([], {
+    deep: false,
+    name: "AnswerInstance.children",
+  });
 
   constructor(
     question: IQuestionStore<TType>,
+    scope: IScope,
     index: number,
-    initial: AnswerValueFor<TType> | null = null,
+    initial: AnswerValueType<TType> | null = null,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {
     makeObservable(this);
 
-    this.path = question.repeats ? `${question.path}/${index}` : question.path;
-    this.parentScope = question;
+    this.key = question.repeats ? `${question.key}_/_${index}` : question.key;
+    this.scope = scope.extend(question.repeats);
     this.question = question;
-
-    if (question.repeats) {
-      this.registry = observable.map<string, INodeStore>({}, { deep: false });
-    }
 
     const children =
       question.template.item?.map((item) =>
         question.form.createNodeStore(
           item,
           question,
-          this,
-          this.path,
+          this.scope,
+          this.key,
           responseItems.filter(({ linkId }) => linkId === item.linkId),
         ),
       ) ?? [];
@@ -62,38 +57,38 @@ export class AnswerInstance<TType extends AnswerableQuestionType>
     this.value = initial;
   }
 
-  @action
-  registerStore(node: INodeStore) {
-    if (this.registry) {
-      this.registry.set(node.linkId, node);
-    } else {
-      this.parentScope?.registerStore(node);
-    }
-  }
-
-  lookupStore(linkId: string) {
-    return this.registry?.get(linkId) ?? this.parentScope?.lookupStore(linkId);
-  }
-
   @computed
   get responseAnswer(): QuestionnaireResponseItemAnswer | null {
-    const valueFragment = this.buildValueFragment();
+    const fragment = this.buildValueFragment();
     const childItems = this.children.flatMap((child) => child.responseItems);
+    const hasValue = Object.keys(fragment).length > 0;
 
-    const hasValue = Object.keys(valueFragment).length > 0;
-    const hasChildren = childItems.length > 0;
-
-    if (!hasValue && !hasChildren) {
+    if (!hasValue && childItems.length === 0) {
       return null;
     }
 
-    const result: QuestionnaireResponseItemAnswer = { ...valueFragment };
+    const answer: QuestionnaireResponseItemAnswer = { ...fragment };
+    if (childItems.length > 0) {
+      answer.item = childItems;
+    }
+    return answer;
+  }
 
-    if (hasChildren) {
-      result.item = childItems;
+  @computed
+  get expressionAnswer(): QuestionnaireResponseItemAnswer | undefined {
+    const fragment = this.buildValueFragment();
+    const hasValue = Object.keys(fragment).length > 0;
+    const childItems = this.children.flatMap((child) => child.expressionItems);
+
+    if (!hasValue && childItems.length === 0) {
+      return undefined;
     }
 
-    return result;
+    const answer: QuestionnaireResponseItemAnswer = { ...fragment };
+    if (childItems.length > 0) {
+      answer.item = childItems;
+    }
+    return answer;
   }
 
   private buildValueFragment(): Partial<QuestionnaireResponseItemAnswer> {

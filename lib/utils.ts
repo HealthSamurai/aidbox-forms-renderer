@@ -1,6 +1,6 @@
 import {
-  AnswerableQuestionType,
-  AnswerValueFor,
+  AnswerType,
+  AnswerValueType,
   IAnswerInstance,
   IDisplayStore,
   IGroupStore,
@@ -9,6 +9,7 @@ import {
   IQuestionStore,
   IRepeatingGroupInstance,
   IRepeatingGroupStore,
+  OperationOutcomeIssueCode,
 } from "./stores/types.ts";
 import type {
   Attachment,
@@ -22,16 +23,20 @@ import type {
   Reference,
 } from "fhir/r5";
 
+export function sanitizeForId(value: string) {
+  return value.replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
 export function getItemLabelId(item: INodeStore): string {
-  return `af-${item.path}-label`;
+  return sanitizeForId(`af-${item.key}-label`);
 }
 
 export function getItemHelpId(item: INodeStore): string {
-  return `af-${item.path}-help`;
+  return sanitizeForId(`af-${item.key}-help`);
 }
 
 export function getItemErrorId(item: INodeStore): string {
-  return `af-${item.path}-errors`;
+  return sanitizeForId(`af-${item.key}-errors`);
 }
 
 export function isDisplay(it: INodeStore | undefined): it is IDisplayStore {
@@ -54,24 +59,26 @@ export function isNonRepeatingGroup(
   return it?.type === "group" && !it.repeats;
 }
 
-export function isQuestion<
-  TType extends AnswerableQuestionType = AnswerableQuestionType,
->(it: INodeStore | undefined): it is IQuestionStore<TType> {
+export function isQuestion<TType extends AnswerType = AnswerType>(
+  it: INodeStore | undefined,
+): it is IQuestionStore<TType> {
   return it?.type !== "group" && it?.type !== "display";
 }
 
+// prettier-ignore
 export const EXT = {
-  MIN: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
-  MAX: "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
-  HIDDEN: "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
-  SDC_ENABLE:
-    "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
-  SDC_CALC:
-    "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
-  SDC_INIT:
-    "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-  SDC_MIN_VALUE: "http://hl7.org/fhir/StructureDefinition/minValue",
-  SDC_MAX_VALUE: "http://hl7.org/fhir/StructureDefinition/maxValue",
+  MIN_OCCURS:           "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+  MAX_OCCURS:           "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+  MIN_VALUE:            "http://hl7.org/fhir/StructureDefinition/minValue",
+  MAX_VALUE:            "http://hl7.org/fhir/StructureDefinition/maxValue",
+  HIDDEN:               "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+  SDC_ENABLE_WHEN_EXPR: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+  SDC_CALCULATED_EXPR:  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+  SDC_INITIAL_EXPR:     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+  SDC_VARIABLE:         "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+  SDC_MIN_VALUE_EXPR:   "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
+  SDC_MAX_VALUE_EXPR:   "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
+  CQF_CALCULATED_VALUE: "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
 } as const;
 
 export function findExtension(
@@ -86,8 +93,8 @@ export function isQuantity(value: unknown): value is Quantity {
 }
 
 export function getIntegerBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueInteger;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueInteger;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueInteger;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueInteger;
   return {
     min: typeof min === "number" ? min : undefined,
     max: typeof max === "number" ? max : undefined,
@@ -95,8 +102,8 @@ export function getIntegerBounds(item: QuestionnaireItem) {
 }
 
 export function getDecimalBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDecimal;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDecimal;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueDecimal;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueDecimal;
   return {
     min: typeof min === "number" ? min : undefined,
     max: typeof max === "number" ? max : undefined,
@@ -104,8 +111,8 @@ export function getDecimalBounds(item: QuestionnaireItem) {
 }
 
 export function getDateBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDate;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDate;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueDate;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueDate;
   return {
     min: typeof min === "string" ? min : undefined,
     max: typeof max === "string" ? max : undefined,
@@ -113,8 +120,8 @@ export function getDateBounds(item: QuestionnaireItem) {
 }
 
 export function getDateTimeBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueDateTime;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueDateTime;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueDateTime;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueDateTime;
   return {
     min: typeof min === "string" ? min : undefined,
     max: typeof max === "string" ? max : undefined,
@@ -122,8 +129,8 @@ export function getDateTimeBounds(item: QuestionnaireItem) {
 }
 
 export function getTimeBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueTime;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueTime;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueTime;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueTime;
   return {
     min: typeof min === "string" ? min : undefined,
     max: typeof max === "string" ? max : undefined,
@@ -131,8 +138,8 @@ export function getTimeBounds(item: QuestionnaireItem) {
 }
 
 export function getQuantityBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.SDC_MIN_VALUE)?.valueQuantity;
-  const max = findExtension(item, EXT.SDC_MAX_VALUE)?.valueQuantity;
+  const min = findExtension(item, EXT.MIN_VALUE)?.valueQuantity;
+  const max = findExtension(item, EXT.MAX_VALUE)?.valueQuantity;
   return {
     min: isQuantity(min) ? min : undefined,
     max: isQuantity(max) ? max : undefined,
@@ -200,7 +207,7 @@ export function instanceHasResponses(
 }
 
 export function makeIssue(
-  code: OperationOutcomeIssue["code"],
+  code: OperationOutcomeIssueCode,
   diagnostics: string,
 ): OperationOutcomeIssue {
   return {
@@ -227,8 +234,8 @@ export function answerHasOwnValue(answer: IAnswerInstance<unknown>): boolean {
   return true;
 }
 
-export function answerHasContent<T extends AnswerableQuestionType>(
-  answer: IAnswerInstance<AnswerValueFor<T>>,
+export function answerHasContent<T extends AnswerType>(
+  answer: IAnswerInstance<AnswerValueType<T>>,
 ): boolean {
   if (answer.children.some((child) => child.responseItems.length > 0)) {
     return true;
@@ -237,7 +244,7 @@ export function answerHasContent<T extends AnswerableQuestionType>(
   return answerHasOwnValue(answer);
 }
 
-export function getItemDescribedBy<T extends AnswerableQuestionType>(
+export function getItemDescribedBy<T extends AnswerType>(
   item: IQuestionStore<T>,
 ) {
   const describedByPieces = [
@@ -247,12 +254,8 @@ export function getItemDescribedBy<T extends AnswerableQuestionType>(
   return describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 }
 
-export function sanitizeForId(value: string) {
-  return value.replace(/[^a-zA-Z0-9_-]/g, "-");
-}
-
 // prettier-ignore
-type KeySuffixFor<T extends AnswerableQuestionType> =
+type KeySuffixFor<T extends AnswerType> =
   T extends "boolean"    ? "Boolean"   :
   T extends "decimal"    ? "Decimal"   :
   T extends "integer"    ? "Integer"   :
@@ -270,16 +273,15 @@ type KeySuffixFor<T extends AnswerableQuestionType> =
 
 export type PolyKeyFor<
   Base extends string,
-  T extends AnswerableQuestionType,
+  T extends AnswerType,
 > = `${Base}${KeySuffixFor<T>}`;
 
-export type PolyCarrierFor<
-  Base extends string,
-  T extends AnswerableQuestionType,
-> = { [K in PolyKeyFor<Base, T>]?: unknown };
+export type PolyCarrierFor<Base extends string, T extends AnswerType> = {
+  [K in PolyKeyFor<Base, T>]?: unknown;
+};
 
 // prettier-ignore
-const SUFFIX_BY_TYPE: { [K in AnswerableQuestionType]: KeySuffixFor<K> } = {
+const SUFFIX_BY_TYPE: { [K in AnswerType]: KeySuffixFor<K> } = {
   boolean:    "Boolean",
   decimal:    "Decimal",
   integer:    "Integer",
@@ -295,32 +297,31 @@ const SUFFIX_BY_TYPE: { [K in AnswerableQuestionType]: KeySuffixFor<K> } = {
   quantity:   "Quantity",
 } as const;
 
-export function getPolymorphic<
-  Base extends string,
-  T extends AnswerableQuestionType,
->(
+export function getPolymorphic<Base extends string, T extends AnswerType>(
   obj: PolyCarrierFor<Base, T> | null | undefined,
   base: Base,
   type: T,
-): AnswerValueFor<T> | undefined {
+): AnswerValueType<T> | undefined {
   if (!obj) return undefined;
 
   // Build the key at runtime, e.g., "valueString" | "answerUri" | "fooQuantity"
   const suffix = SUFFIX_BY_TYPE[type];
   const key = `${base}${suffix}` satisfies PolyKeyFor<Base, T>;
 
-  return (obj as Record<string, unknown>)[key] as AnswerValueFor<T> | undefined;
+  return (obj as Record<string, unknown>)[key] as
+    | AnswerValueType<T>
+    | undefined;
 }
 
-export const getValue = <T extends AnswerableQuestionType>(
+export const getValue = <T extends AnswerType>(
   obj: PolyCarrierFor<"value", T> | null | undefined,
   type: T,
-): AnswerValueFor<T> | undefined => getPolymorphic(obj, "value", type);
+): AnswerValueType<T> | undefined => getPolymorphic(obj, "value", type);
 
-export const getAnswer = <T extends AnswerableQuestionType>(
+export const getAnswer = <T extends AnswerType>(
   obj: PolyCarrierFor<"answer", T> | null | undefined,
   type: T,
-): AnswerValueFor<T> | undefined => getPolymorphic(obj, "answer", type);
+): AnswerValueType<T> | undefined => getPolymorphic(obj, "answer", type);
 
 export function isCoding(value: unknown): value is Coding {
   return (
@@ -563,11 +564,7 @@ export function evaluateEnableWhenCondition(
   }
 }
 
-function valuesEqual(
-  actual: unknown,
-  expected: unknown,
-  type: AnswerableQuestionType,
-) {
+function valuesEqual(actual: unknown, expected: unknown, type: AnswerType) {
   switch (type) {
     case "decimal":
     case "integer":
@@ -603,7 +600,7 @@ function valuesEqual(
 function compareValues(
   actual: unknown,
   expected: unknown,
-  type: AnswerableQuestionType,
+  type: AnswerType,
 ): number | undefined {
   switch (type) {
     case "decimal":
@@ -641,4 +638,27 @@ function compareValues(
     default:
       return undefined;
   }
+}
+
+export function booleanify(value: unknown): boolean {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return false;
+    }
+    return booleanify(value[value.length - 1]);
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    return value !== 0 && !Number.isNaN(value);
+  }
+
+  if (typeof value === "string") {
+    return value.length > 0;
+  }
+
+  return value != null;
 }

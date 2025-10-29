@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { INonRepeatingGroupStore } from "../../stores/types.ts";
 import { ItemText } from "../common/item-text.tsx";
 import { ItemsList } from "../common/item-list.tsx";
+import { ItemErrors } from "../common/item-errors.tsx";
 
 export const NonRepeatingGroupNode = observer(function NonRepeatingGroupNode({
   item,
@@ -15,6 +16,7 @@ export const NonRepeatingGroupNode = observer(function NonRepeatingGroupNode({
       <div className="af-group-children">
         <ItemsList items={item.children} />
       </div>
+      <ItemErrors item={item} />
     </fieldset>
   );
 });

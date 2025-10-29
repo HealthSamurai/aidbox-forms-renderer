@@ -29,14 +29,14 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("nickname");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("nickname");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
     question.setAnswer(0, "Oli");
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/local-form",
@@ -48,6 +48,100 @@ describe("response generation", () => {
         },
       ],
     });
+  });
+
+  it("still serializes hidden items when they hold data", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      url: "Questionnaire/hidden",
+      status: "active",
+      item: [
+        {
+          linkId: "internal-flag",
+          text: "Internal flag",
+          type: "boolean",
+          extension: [
+            {
+              url: "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+              valueBoolean: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const flag = form.scope.lookupNode("internal-flag");
+    expect(flag && isQuestion(flag)).toBe(true);
+    if (!flag || !isQuestion(flag)) {
+      return;
+    }
+
+    flag.setAnswer(0, true);
+
+    expect(form.response).toEqual({
+      resourceType: "QuestionnaireResponse",
+      status: "in-progress",
+      questionnaire: "Questionnaire/hidden",
+      item: [
+        {
+          linkId: "internal-flag",
+          text: "Internal flag",
+          answer: [{ valueBoolean: true }],
+        },
+      ],
+    });
+  });
+
+  it("omits disabled items from the QuestionnaireResponse", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      url: "Questionnaire/conditional",
+      status: "active",
+      item: [
+        {
+          linkId: "toggle",
+          type: "boolean",
+          text: "Enable extra details",
+        },
+        {
+          linkId: "extra",
+          type: "string",
+          text: "Extra details",
+          enableWhen: [
+            {
+              question: "toggle",
+              operator: "=",
+              answerBoolean: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const toggle = form.scope.lookupNode("toggle");
+    const extra = form.scope.lookupNode("extra");
+    expect(toggle && extra && isQuestion(toggle) && isQuestion(extra)).toBe(
+      true,
+    );
+    if (!toggle || !extra || !isQuestion(toggle) || !isQuestion(extra)) {
+      return;
+    }
+
+    toggle.setAnswer(0, true);
+    extra.setAnswer(0, "Hello");
+
+    expect(form.response?.item?.some((item) => item.linkId === "extra")).toBe(
+      true,
+    );
+
+    toggle.setAnswer(0, false);
+
+    expect(extra.isEnabled).toBe(false);
+    expect(
+      form.response?.item?.some((item) => item.linkId === "extra"),
+    ).toBe(false);
   });
 
   it("omits QuestionnaireResponse.item when no answerable content is populated", () => {
@@ -64,12 +158,12 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("notes");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("notes");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/empty",
@@ -90,14 +184,14 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("first-name");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("first-name");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
     question.setAnswer(0, "Alice");
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/simple",
@@ -130,14 +224,14 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("ack");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("ack");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
     question.setAnswer(0, true);
 
-    expect(store.response.item).toEqual([
+    expect(form.response.item).toEqual([
       { linkId: "intro", text: "Introduction" },
       {
         linkId: "ack",
@@ -168,8 +262,8 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const group = store.lookupStore("demographics");
+    const form = new FormStore(questionnaire);
+    const group = form.scope.lookupNode("demographics");
     expect(group && isNonRepeatingGroup(group)).toBe(true);
     if (!group || !isNonRepeatingGroup(group)) return;
     const question = group.children.at(0);
@@ -178,7 +272,7 @@ describe("response generation", () => {
 
     question.setAnswer(0, true);
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/grouped",
@@ -213,8 +307,8 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("allergies");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("allergies");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
@@ -222,7 +316,7 @@ describe("response generation", () => {
     question.addAnswer("Dust");
     question.addAnswer(null);
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/repeating",
@@ -258,14 +352,14 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const group = store.lookupStore("family-history");
+    const form = new FormStore(questionnaire);
+    const group = form.scope.lookupNode("family-history");
     expect(group && isRepeatingGroup(group)).toBe(true);
     if (!group || !isRepeatingGroup(group)) return;
 
     group.addInstance();
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/empty-group",
@@ -294,8 +388,8 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const group = store.lookupStore("family-history");
+    const form = new FormStore(questionnaire);
+    const group = form.scope.lookupNode("family-history");
     expect(group && isRepeatingGroup(group)).toBe(true);
     if (!group || !isRepeatingGroup(group)) return;
 
@@ -320,7 +414,7 @@ describe("response generation", () => {
     firstQuestion.setAnswer(0, "Asthma");
     secondQuestion.setAnswer(0, "Diabetes");
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/family-history",
@@ -372,8 +466,8 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire);
-    const question = store.lookupStore("follow-up");
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("follow-up");
     expect(question && isQuestion(question)).toBe(true);
     if (!question || !isQuestion(question)) return;
 
@@ -387,7 +481,7 @@ describe("response generation", () => {
 
     child.setAnswer(0, "Allergies reviewed and no issues noted.");
 
-    expect(store.response).toEqual({
+    expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
       questionnaire: "Questionnaire/follow-up",
@@ -557,15 +651,15 @@ describe("response generation", () => {
           ],
         };
 
-        const store = new FormStore(questionnaire);
-        const question = store.lookupStore("answer");
+        const form = new FormStore(questionnaire);
+        const question = form.scope.lookupNode("answer");
         expect(question && isQuestion(question)).toBe(true);
         if (!question || !isQuestion(question)) return;
 
         question.setAnswer(0, value as never);
 
         const responseAnswer =
-          store.response.item?.at(0)?.answer?.at(0) ?? undefined;
+          form.response.item?.at(0)?.answer?.at(0) ?? undefined;
         expect(responseAnswer).toBeDefined();
         if (!responseAnswer) return;
 
@@ -652,8 +746,8 @@ describe("response generation", () => {
       ],
     };
 
-    const store = new FormStore(questionnaire, initialResponse);
+    const form = new FormStore(questionnaire, initialResponse);
 
-    expect(store.response).toEqual(initialResponse);
+    expect(form.response).toEqual(initialResponse);
   });
 });

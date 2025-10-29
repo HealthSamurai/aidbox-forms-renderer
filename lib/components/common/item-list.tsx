@@ -12,7 +12,7 @@ export const ItemsList = observer(function ItemsList({
       {items
         .filter((it) => it.isEnabled)
         .map((it) => (
-          <ItemNode key={it.path} item={it} />
+          <ItemNode key={it.key} item={it} />
         ))}
     </>
   );

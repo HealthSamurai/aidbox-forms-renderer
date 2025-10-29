@@ -8,7 +8,7 @@
     {
       "linkId": "intro",
       "type": "display",
-      "text": "Answer the initial question to reveal layered follow-ups. This demonstrates how child items can appear beneath a parent question."
+      "text": "This demonstrates how child items can appear beneath a parent question."
     },
     {
       "linkId": "primary-concern",

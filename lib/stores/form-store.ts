@@ -1,6 +1,21 @@
-import { IFormStore, INodeScope, INodeStore } from "./types.ts";
-import { action, computed, makeObservable, observable } from "mobx";
 import {
+  IExpressionSlot,
+  IFormStore,
+  IScope,
+  INodeStore,
+  IEvaluationEnvironmentProvider,
+  EvaluationEnvironment,
+} from "./types.ts";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
+import {
+  Expression,
+  OperationOutcomeIssue,
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireResponse,
@@ -10,24 +25,35 @@ import { QuestionStore } from "./question-store.ts";
 import { NonRepeatingGroupStore } from "./non-repeating-group-store.ts";
 import { DisplayStore } from "./display-store.ts";
 import { RepeatingGroupStore } from "./repeating-group-store.ts";
+import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
+import { ExpressionSlot } from "./expression-slot.ts";
+import { EXT, makeIssue } from "../utils.ts";
+import { DuplicateExpressionNameError, Scope } from "./scope.ts";
 
-export class FormStore implements IFormStore {
+export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
   questionnaire: Questionnaire;
   private readonly initialResponse: QuestionnaireResponse | undefined;
 
   @observable.shallow
-  readonly nodes = observable.array<INodeStore>([], { deep: false });
+  readonly children = observable.array<INodeStore>([], {
+    deep: false,
+    name: "FormStore.children",
+  });
+
+  readonly scope = new Scope(true);
+
+  private readonly expressionSlots: IExpressionSlot[] = [];
 
   @observable.shallow
-  private readonly registry = observable.map<string, INodeStore>(
-    {},
-    { deep: false },
+  private readonly expressionIssues = observable.array<OperationOutcomeIssue>(
+    [],
+    { deep: false, name: "FormStore.expressionIssues" },
   );
 
   @observable
   private submitAttempted = false;
 
-  context: Record<string, unknown> = {};
+  readonly recalcCoordinator = new EvaluationCoordinator();
 
   constructor(questionnaire: Questionnaire, response?: QuestionnaireResponse) {
     makeObservable(this);
@@ -35,29 +61,72 @@ export class FormStore implements IFormStore {
     this.questionnaire = questionnaire;
     this.initialResponse = response;
 
-    if (questionnaire.item) {
-      this.nodes.replace(
-        questionnaire.item.map((item) =>
-          this.createNodeStore(
-            item,
-            null,
-            this,
-            "",
-            this.initialResponse?.item?.filter(
-              ({ linkId }) => linkId === item.linkId,
+    runInAction(() => {
+      this.initializeExpressionInfrastructure();
+
+      if (questionnaire.item) {
+        this.children.replace(
+          questionnaire.item!.map((item) =>
+            this.createNodeStore(
+              item,
+              null,
+              this.scope,
+              "",
+              this.initialResponse?.item?.filter(
+                ({ linkId }) => linkId === item.linkId,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
+    });
+  }
+
+  @computed
+  get evaluationEnvironment(): EvaluationEnvironment {
+    return this.scope.mergeEnvironment({
+      questionnaire: this.questionnaire,
+      context: this.expressionResponse,
+    });
+  }
+
+  private initializeExpressionInfrastructure() {
+    this.questionnaire.extension
+      ?.filter((extension) => extension.url === EXT.SDC_VARIABLE)
+      .map((extension) => extension.valueExpression)
+      .filter(
+        (expression): expression is Expression => expression !== undefined,
+      )
+      .forEach((expression) => this.createExpressionSlot(expression));
+  }
+
+  private createExpressionSlot(expression: Expression): IExpressionSlot {
+    const slot: IExpressionSlot = new ExpressionSlot(
+      this.recalcCoordinator,
+      this,
+      "variable",
+      expression,
+    );
+
+    this.expressionSlots.push(slot);
+
+    try {
+      this.scope.registerExpression(slot);
+    } catch (e) {
+      if (e instanceof DuplicateExpressionNameError) {
+        this.recordExpressionIssue(makeIssue("invalid", e.message));
+      } else throw e;
     }
+
+    return slot;
   }
 
   @action
   createNodeStore(
     item: QuestionnaireItem,
     parentStore: INodeStore | null,
-    parentScope: INodeScope,
-    parentPath: string,
+    scope: IScope,
+    parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ): INodeStore {
     switch (item.type) {
@@ -66,10 +135,10 @@ export class FormStore implements IFormStore {
           this,
           item,
           parentStore,
-          parentScope,
-          parentPath,
+          scope,
+          parentKey,
         );
-        parentScope.registerStore(store);
+        scope.registerNode(store);
         return store;
       }
       case "group":
@@ -78,22 +147,22 @@ export class FormStore implements IFormStore {
             this,
             item,
             parentStore,
-            parentScope,
-            parentPath,
+            scope,
+            parentKey,
             responseItems,
           );
-          parentScope.registerStore(store);
+          scope.registerNode(store);
           return store;
         } else {
           const store = new NonRepeatingGroupStore(
             this,
             item,
             parentStore,
-            parentScope,
-            parentPath,
+            scope,
+            parentKey,
             responseItems,
           );
-          parentScope.registerStore(store);
+          scope.registerNode(store);
           return store;
         }
 
@@ -115,23 +184,14 @@ export class FormStore implements IFormStore {
           this,
           item,
           parentStore,
-          parentScope,
-          parentPath,
+          scope,
+          parentKey,
           responseItems,
         );
-        parentScope.registerStore(store);
+        scope.registerNode(store);
         return store;
       }
     }
-  }
-
-  lookupStore(linkId: string) {
-    return this.registry.get(linkId);
-  }
-
-  @action
-  registerStore(node: INodeStore) {
-    this.registry.set(node.linkId, node);
   }
 
   @computed
@@ -139,11 +199,16 @@ export class FormStore implements IFormStore {
     return this.submitAttempted;
   }
 
+  @computed
+  get issues(): OperationOutcomeIssue[] {
+    return [...this.expressionIssues];
+  }
+
   @action
   validateAll() {
     this.submitAttempted = true;
     // TODO: surface a form-level summary when validation fails.
-    const isValid = !this.nodes.some((node) => this.nodeHasErrors(node));
+    const isValid = !this.children.some((node) => this.nodeHasErrors(node));
 
     if (isValid) {
       this.submitAttempted = false;
@@ -154,7 +219,24 @@ export class FormStore implements IFormStore {
 
   @computed
   get response(): QuestionnaireResponse {
-    const items = this.nodes.flatMap((node) => node.responseItems);
+    const items = this.children.flatMap((node) => node.responseItems);
+    const response: QuestionnaireResponse = {
+      resourceType: "QuestionnaireResponse",
+      status: "in-progress",
+      questionnaire:
+        this.questionnaire.url || `Questionnaire/${this.questionnaire.id}`,
+    };
+
+    if (items.length > 0) {
+      response.item = items;
+    }
+
+    return response;
+  }
+
+  @computed
+  get expressionResponse(): QuestionnaireResponse {
+    const items = this.children.flatMap((node) => node.expressionItems);
     const response: QuestionnaireResponse = {
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
@@ -172,7 +254,7 @@ export class FormStore implements IFormStore {
   @action
   reset() {
     this.submitAttempted = false;
-    this.nodes.forEach((node) => this.clearNodeDirty(node));
+    this.children.forEach((node) => this.clearNodeDirty(node));
   }
 
   private nodeHasErrors(node: INodeStore): boolean {
@@ -195,6 +277,10 @@ export class FormStore implements IFormStore {
     }
 
     return node.answers.flatMap((answer) => answer.children);
+  }
+
+  private recordExpressionIssue(issue: OperationOutcomeIssue) {
+    this.expressionIssues.push(issue);
   }
 
   private clearNodeDirty(node: INodeStore) {

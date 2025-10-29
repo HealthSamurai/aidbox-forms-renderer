@@ -44,3 +44,4 @@
 * prefer undefined over null to encode absence of value
 * when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
 * prefer small isolated tests with dedicated test data
+* prefer having functions over class methods if `this` is not used

@@ -1,95 +1,51 @@
 import "./answer-list.css";
-import React, { ReactNode } from "react";
-import { Observer, observer } from "mobx-react-lite";
+import { ReactElement, useCallback } from "react";
+import { observer } from "mobx-react-lite";
 import type {
-  AnswerableQuestionType,
-  AnswerValueFor,
-  IAnswerInstance,
+  AnswerType,
+  AnswerValueType,
   IQuestionStore,
 } from "../../stores/types.ts";
-import { ItemsList } from "./item-list.tsx";
-import {
-  getItemDescribedBy,
-  getItemLabelId,
-  sanitizeForId,
-} from "../../utils.ts";
+import { Button } from "../controls/button.tsx";
+import { Answer, RowRenderProps } from "./answer.tsx";
 
-export type RowRenderProps<TValue> = {
-  value: TValue | null;
-  setValue: (v: TValue | null) => void;
-  index: number;
-  inputId: string;
-  labelId: string;
-  describedById: string | undefined;
-  answer: IAnswerInstance<TValue>;
-};
-
-export type AnswerListProps<T extends AnswerableQuestionType> = {
+export type AnswerListProps<T extends AnswerType> = {
   item: IQuestionStore<T>;
-  renderRow: (p: RowRenderProps<AnswerValueFor<T>>) => ReactNode;
+  renderRow: (p: RowRenderProps<AnswerValueType<T>>) => ReactElement;
 };
 
-export const AnswerList = observer(function AnswerList<
-  T extends AnswerableQuestionType,
->({ item, renderRow }: AnswerListProps<T>) {
-  const baseId = React.useId();
-  const labelId = getItemLabelId(item);
-  const describedById = getItemDescribedBy(item);
-
+export const AnswerList = observer(function AnswerList<T extends AnswerType>({
+  item,
+  renderRow,
+}: AnswerListProps<T>) {
   const answers = item.repeats ? item.answers : item.answers.slice(0, 1);
+  const addAnswer = useCallback(() => item.addAnswer(), [item]);
 
   return (
-    <div className="af-answer-list">
-      {answers.map((answer, i) => {
-        return (
-          <div className="af-answer" key={answer.key}>
-            <Observer>
-              {() => (
-                <>
-                  {renderRow({
-                    value: answer.value,
-                    setValue: (v) => item.setAnswer(i, v),
-                    index: i,
-                    inputId: `${sanitizeForId(answer.path)}-${baseId}`,
-                    labelId,
-                    answer,
-                    describedById,
-                  })}
-                </>
-              )}
-            </Observer>
-            {item.repeats && (
-              <div className="af-answer-toolbar">
-                <button
-                  type="button"
-                  className="af-answer-remove"
-                  onClick={() => item.removeAnswer(i)}
-                  disabled={!item.canRemove}
-                >
-                  Remove
-                </button>
-              </div>
-            )}
-            {!!answer.children?.length && (
-              <div className="af-answer-children">
-                <ItemsList items={answer.children} />
-              </div>
-            )}
-          </div>
-        );
-      })}
+    <>
+      <div className="af-answer-list">
+        {answers.map((answer, i) => (
+          <Answer
+            key={answer.key}
+            index={i}
+            item={item}
+            answer={answer}
+            renderRow={renderRow}
+          />
+        ))}
+      </div>
       {item.repeats && (
         <div className="af-answer-list-toolbar">
-          <button
+          <Button
             type="button"
-            className="af-answer-add"
-            onClick={() => item.addAnswer()}
+            variant="success"
+            onClick={addAnswer}
             disabled={!item.canAdd}
           >
             Add another
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+    </>
   );
 });

@@ -1,0 +1,82 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-enable-when",
+  "status": "active",
+  "title": "Expression-based Enablement",
+  "description": "Highlights sdc-questionnaire-enableWhenExpression for complex gating logic.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Answer the screening questions. Follow-up advice appears based on a composite expression."
+    },
+    {
+      "linkId": "screen",
+      "type": "group",
+      "text": "Screening",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "exposureRisk",
+            "expression": "%context.item.where(linkId='travel').answer.valueBoolean.where($this = true).exists() or %context.item.where(linkId='contact').answer.valueBoolean.where($this = true).exists()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "symptomatic",
+            "expression": "%context.item.where(linkId='symptoms').answer.valueBoolean.where($this = true).exists()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "symptoms",
+          "type": "boolean",
+          "text": "Are you experiencing new symptoms?"
+        },
+        {
+          "linkId": "travel",
+          "type": "boolean",
+          "text": "Have you travelled internationally in the past 14 days?"
+        },
+        {
+          "linkId": "contact",
+          "type": "boolean",
+          "text": "Have you been in close contact with a confirmed case?"
+        },
+        {
+          "linkId": "testing-advice",
+          "type": "display",
+          "text": "Recommend PCR testing within 24 hours.",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "%symptomatic and %exposureRisk"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "monitor-advice",
+          "type": "display",
+          "text": "Continue to monitor for symptoms. Testing not required right now.",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "(%symptomatic or %exposureRisk) and (%symptomatic and %exposureRisk).not()"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

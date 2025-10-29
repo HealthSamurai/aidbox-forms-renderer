@@ -1,0 +1,22 @@
+.af-answer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: start;
+}
+
+.af-answer + .af-answer {
+  margin-top: 0.75rem;
+}
+
+.af-answer-children {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.af-answer-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 0.5rem;
+}
