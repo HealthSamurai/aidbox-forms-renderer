@@ -2,7 +2,7 @@ import {
   IExpressionSlot,
   IScope,
   INodeStore,
-  EvaluationEnvironment,
+  ExpressionEnvironment,
 } from "./types.ts";
 import { makeObservable, observable, ObservableMap } from "mobx";
 
@@ -35,15 +35,15 @@ export class Scope implements IScope {
       : undefined;
   }
 
-  mergeEnvironment(extra: EvaluationEnvironment): EvaluationEnvironment {
+  mergeEnvironment(extra: ExpressionEnvironment): ExpressionEnvironment {
     // Proxy lets expressions read scoped variables as top-level properties while falling back to the provided extras.
-    return new Proxy<EvaluationEnvironment>(extra, {
-      get: (extra: EvaluationEnvironment, property: string) => {
+    return new Proxy<ExpressionEnvironment>(extra, {
+      get: (extra: ExpressionEnvironment, property: string) => {
         return Object.prototype.hasOwnProperty.call(extra, property)
           ? extra[property]
           : this.lookupExpression(property)?.value; // todo: exclude self name
       },
-      has: (extra: EvaluationEnvironment, property: string) => {
+      has: (extra: ExpressionEnvironment, property: string) => {
         return (
           Object.prototype.hasOwnProperty.call(extra, property) ||
           !!this.lookupExpression(property) // todo: exclude self name

@@ -33,4 +33,40 @@ describe("min/max value expressions", () => {
     score.setAnswer(0, 15);
     expect(score.issues).toHaveLength(0);
   });
+
+  it("records issues when multiple min-value expressions are declared", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "score",
+          type: "integer",
+          extension: [
+            makeMinValueExpression(undefined, "5"),
+            makeMinValueExpression(undefined, "15"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const score = form.scope.lookupNode("score");
+    if (!score || !isQuestion(score)) {
+      throw new Error("Expected question store");
+    }
+
+    expect(
+      score.issues.some((issue) =>
+        issue.diagnostics?.includes(
+          "Only one min-value extension is supported per item.",
+        ),
+      ),
+    ).toBe(true);
+
+    score.setAnswer(0, 4);
+    expect(
+      score.issues.some((issue) => issue.diagnostics?.includes("5")),
+    ).toBe(true);
+  });
 });

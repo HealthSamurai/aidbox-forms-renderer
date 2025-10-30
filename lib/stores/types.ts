@@ -12,6 +12,7 @@ import type {
   Reference,
 } from "fhir/r5";
 import type { EvaluationCoordinator } from "./evaluation-coordinator.ts";
+import { ExpressionRegistry } from "./expression-registry.ts";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts (ExpressionSlot.setCycleDetected)
@@ -38,11 +39,11 @@ export interface IExpressionSlot {
   toString(): string;
 }
 
-export type EvaluationEnvironment = Record<string, unknown> &
+export type ExpressionEnvironment = Record<string, unknown> &
   Record<"context", unknown>;
 
-export interface IEvaluationEnvironmentProvider {
-  evaluationEnvironment: EvaluationEnvironment;
+export interface IExpressionEnvironmentProvider {
+  expressionEnvironment: ExpressionEnvironment;
 }
 
 export interface IScope {
@@ -53,7 +54,7 @@ export interface IScope {
   lookupExpression(name: string): IExpressionSlot | undefined;
   listExpressions(): IterableIterator<[string, IExpressionSlot]>;
   getParentScope(): IScope | undefined;
-  mergeEnvironment(initial: EvaluationEnvironment): EvaluationEnvironment;
+  mergeEnvironment(initial: ExpressionEnvironment): ExpressionEnvironment;
 }
 
 export type AnswerType = Exclude<
@@ -103,6 +104,7 @@ export interface IBaseNodeStore {
   readonly calculatedExpression: Expression | undefined;
   readonly initialExpression: Expression | undefined;
   readonly expressionItems: QuestionnaireResponseItem[];
+  readonly expressionRegistry: ExpressionRegistry;
 
   /** Runtime state */
   readonly isEnabled: boolean;
@@ -177,8 +179,6 @@ export interface IQuestionStore<TType extends AnswerType = AnswerType>
   /** Unified answers: non-repeating → 0/1, repeating → 0..n */
   answers: Array<IAnswerInstance<AnswerValueType<TType>>>;
 
-  readonly hasChildren: boolean;
-
   /** Guards (respect min/max occurs & repeats) */
   readonly canAdd: boolean;
   readonly canRemove: boolean;
@@ -197,7 +197,8 @@ export interface IFormStore {
   response: QuestionnaireResponse | undefined;
   children: Array<INodeStore>;
   readonly expressionResponse: QuestionnaireResponse;
-  readonly recalcCoordinator: EvaluationCoordinator;
+  readonly coordinator: EvaluationCoordinator;
+  readonly expressionRegistry: ExpressionRegistry;
   readonly scope: IScope;
 
   readonly isSubmitAttempted: boolean;

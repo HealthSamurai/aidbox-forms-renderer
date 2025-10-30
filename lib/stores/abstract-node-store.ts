@@ -1,15 +1,12 @@
 import {
-  ExpressionSlotKind,
+  ExpressionEnvironment,
   IBaseNodeStore,
-  IExpressionSlot,
+  IExpressionEnvironmentProvider,
   IFormStore,
-  IScope,
   INodeStore,
-  IEvaluationEnvironmentProvider,
-  EvaluationEnvironment,
+  IScope,
 } from "./types.ts";
 import {
-  Expression,
   OperationOutcomeIssue,
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
@@ -22,13 +19,11 @@ import {
   EXT,
   findExtension,
   isQuestion,
-  makeIssue,
 } from "../utils.ts";
-import { ExpressionSlot } from "./expression-slot.ts";
-import { DuplicateExpressionNameError } from "./scope.ts";
+import { ExpressionRegistry } from "./expression-registry.ts";
 
 export abstract class AbstractNodeStore
-  implements IBaseNodeStore, IEvaluationEnvironmentProvider
+  implements IBaseNodeStore, IExpressionEnvironmentProvider
 {
   readonly template: QuestionnaireItem;
   readonly form: IFormStore;
@@ -39,15 +34,7 @@ export abstract class AbstractNodeStore
   @observable
   private dirty = false;
 
-  protected readonly expressionSlots: IExpressionSlot[] = [];
-
-  @observable.shallow
-  private readonly expressionIssues = observable.array<OperationOutcomeIssue>(
-    [],
-    { deep: false, name: "AbstractNodeStore.expressionIssues" },
-  );
-
-  protected enableWhenSlot: IExpressionSlot | undefined;
+  readonly expressionRegistry: ExpressionRegistry;
 
   constructor(
     form: IFormStore,
@@ -64,11 +51,21 @@ export abstract class AbstractNodeStore
     this.scope = parentScope.extend(false);
     this.key = `${parentKey}_/_${template.linkId}`;
 
-    this.initializeExpressionInfrastructure();
+    const extensions = [
+      ...(this.template.extension ?? []),
+      ...(this.template.modifierExtension ?? []),
+    ];
+
+    this.expressionRegistry = new ExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      this,
+      extensions,
+    );
   }
 
   @computed
-  get evaluationEnvironment(): EvaluationEnvironment {
+  get expressionEnvironment(): ExpressionEnvironment {
     return this.scope.mergeEnvironment({
       questionnaire: this.form.questionnaire,
       qitem: this.template,
@@ -165,8 +162,8 @@ export abstract class AbstractNodeStore
       return false;
     }
 
-    if (this.enableWhenSlot) {
-      return booleanify(this.enableWhenSlot.value);
+    if (this.expressionRegistry.enableWhen) {
+      return booleanify(this.expressionRegistry.enableWhen.value);
     }
 
     const enableWhen = this.template.enableWhen;
@@ -189,16 +186,11 @@ export abstract class AbstractNodeStore
 
   @computed
   get issues(): OperationOutcomeIssue[] {
-    if (!this.isEnabled) {
-      return [];
-    }
-
-    const validationIssues = this.shouldValidate ? this.computeIssues() : [];
-    const expressionIssues = this.expressionSlots
-      .map((slot) => slot.error)
-      .filter((issue): issue is OperationOutcomeIssue => issue !== undefined);
-
-    return [...this.expressionIssues, ...expressionIssues, ...validationIssues];
+    return !this.isEnabled
+      ? []
+      : this.expressionRegistry.issues.concat(
+          this.shouldValidate ? this.computeIssues() : [],
+        );
   }
 
   markDirty() {
@@ -235,57 +227,6 @@ export abstract class AbstractNodeStore
   abstract get responseItems(): QuestionnaireResponseItem[];
 
   abstract get expressionItems(): QuestionnaireResponseItem[];
-
-  protected createExpressionSlot(
-    expression: Expression,
-    kind: ExpressionSlotKind,
-  ): IExpressionSlot {
-    const slot: IExpressionSlot = new ExpressionSlot(
-      this.form.recalcCoordinator,
-      this,
-      kind,
-      expression,
-    );
-
-    this.expressionSlots.push(slot);
-
-    try {
-      this.scope.registerExpression(slot);
-    } catch (e) {
-      if (e instanceof DuplicateExpressionNameError)
-        this.recordExpressionIssue(makeIssue("invalid", e.message));
-      else throw e;
-    }
-    return slot;
-  }
-
-  private initializeExpressionInfrastructure() {
-    this.template.extension
-      ?.filter((ext) => ext.url === EXT.SDC_VARIABLE)
-      .map((ext) => ext.valueExpression)
-      .filter(
-        (expression): expression is Expression => expression !== undefined,
-      )
-      .forEach((expression) =>
-        this.createExpressionSlot(expression, "variable"),
-      );
-
-    const enableExpression = findExtension(
-      this.template,
-      EXT.SDC_ENABLE_WHEN_EXPR,
-    )?.valueExpression;
-
-    if (enableExpression) {
-      this.enableWhenSlot = this.createExpressionSlot(
-        enableExpression,
-        "enable-when",
-      );
-    }
-  }
-
-  private recordExpressionIssue(issue: OperationOutcomeIssue) {
-    this.expressionIssues.push(issue);
-  }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {
     const target = this.scope.lookupNode(condition.question);

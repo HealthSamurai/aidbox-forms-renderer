@@ -1,10 +1,9 @@
 import {
-  IExpressionSlot,
+  ExpressionEnvironment,
+  IExpressionEnvironmentProvider,
   IFormStore,
-  IScope,
   INodeStore,
-  IEvaluationEnvironmentProvider,
-  EvaluationEnvironment,
+  IScope,
 } from "./types.ts";
 import {
   action,
@@ -14,7 +13,6 @@ import {
   runInAction,
 } from "mobx";
 import {
-  Expression,
   OperationOutcomeIssue,
   Questionnaire,
   QuestionnaireItem,
@@ -26,11 +24,10 @@ import { NonRepeatingGroupStore } from "./non-repeating-group-store.ts";
 import { DisplayStore } from "./display-store.ts";
 import { RepeatingGroupStore } from "./repeating-group-store.ts";
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
-import { ExpressionSlot } from "./expression-slot.ts";
-import { EXT, makeIssue } from "../utils.ts";
-import { DuplicateExpressionNameError, Scope } from "./scope.ts";
+import { Scope } from "./scope.ts";
+import { ExpressionRegistry } from "./expression-registry.ts";
 
-export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
+export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
   questionnaire: Questionnaire;
   private readonly initialResponse: QuestionnaireResponse | undefined;
 
@@ -42,18 +39,11 @@ export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
 
   readonly scope = new Scope(true);
 
-  private readonly expressionSlots: IExpressionSlot[] = [];
-
-  @observable.shallow
-  private readonly expressionIssues = observable.array<OperationOutcomeIssue>(
-    [],
-    { deep: false, name: "FormStore.expressionIssues" },
-  );
-
   @observable
   private submitAttempted = false;
 
-  readonly recalcCoordinator = new EvaluationCoordinator();
+  readonly coordinator = new EvaluationCoordinator();
+  readonly expressionRegistry: ExpressionRegistry;
 
   constructor(questionnaire: Questionnaire, response?: QuestionnaireResponse) {
     makeObservable(this);
@@ -61,9 +51,17 @@ export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
     this.questionnaire = questionnaire;
     this.initialResponse = response;
 
-    runInAction(() => {
-      this.initializeExpressionInfrastructure();
+    this.expressionRegistry = new ExpressionRegistry(
+      this.coordinator,
+      this.scope,
+      this,
+      [
+        ...(questionnaire.extension ?? []),
+        ...(questionnaire.modifierExtension ?? []),
+      ],
+    );
 
+    runInAction(() => {
       if (questionnaire.item) {
         this.children.replace(
           questionnaire.item!.map((item) =>
@@ -83,42 +81,11 @@ export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
   }
 
   @computed
-  get evaluationEnvironment(): EvaluationEnvironment {
+  get expressionEnvironment(): ExpressionEnvironment {
     return this.scope.mergeEnvironment({
       questionnaire: this.questionnaire,
       context: this.expressionResponse,
     });
-  }
-
-  private initializeExpressionInfrastructure() {
-    this.questionnaire.extension
-      ?.filter((extension) => extension.url === EXT.SDC_VARIABLE)
-      .map((extension) => extension.valueExpression)
-      .filter(
-        (expression): expression is Expression => expression !== undefined,
-      )
-      .forEach((expression) => this.createExpressionSlot(expression));
-  }
-
-  private createExpressionSlot(expression: Expression): IExpressionSlot {
-    const slot: IExpressionSlot = new ExpressionSlot(
-      this.recalcCoordinator,
-      this,
-      "variable",
-      expression,
-    );
-
-    this.expressionSlots.push(slot);
-
-    try {
-      this.scope.registerExpression(slot);
-    } catch (e) {
-      if (e instanceof DuplicateExpressionNameError) {
-        this.recordExpressionIssue(makeIssue("invalid", e.message));
-      } else throw e;
-    }
-
-    return slot;
   }
 
   @action
@@ -201,7 +168,7 @@ export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
 
   @computed
   get issues(): OperationOutcomeIssue[] {
-    return [...this.expressionIssues];
+    return [...this.expressionRegistry.issues];
   }
 
   @action
@@ -277,10 +244,6 @@ export class FormStore implements IFormStore, IEvaluationEnvironmentProvider {
     }
 
     return node.answers.flatMap((answer) => answer.children);
-  }
-
-  private recordExpressionIssue(issue: OperationOutcomeIssue) {
-    this.expressionIssues.push(issue);
   }
 
   private clearNodeDirty(node: INodeStore) {

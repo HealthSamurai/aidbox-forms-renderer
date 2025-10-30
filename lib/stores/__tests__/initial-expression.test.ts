@@ -161,4 +161,37 @@ describe("initialExpression", () => {
     );
     expect(target.answers[0]?.value).toBeNull();
   });
+
+  it("records issues when multiple initial expressions are declared", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "target",
+          type: "string",
+          extension: [
+            makeInitialExpression(undefined, "'first'"),
+            makeInitialExpression(undefined, "'second'"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const target = form.scope.lookupNode("target");
+
+    if (!target || !isQuestion(target)) {
+      throw new Error("Expected target question");
+    }
+
+    expect(
+      target.issues.some((issue) =>
+        issue.diagnostics?.includes(
+          "Only one initial extension is supported per item.",
+        ),
+      ),
+    ).toBe(true);
+    expect(target.answers[0]?.value).toBe("first");
+  });
 });

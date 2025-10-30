@@ -2,7 +2,7 @@ import { Expression, OperationOutcomeIssue } from "fhir/r5";
 import { action, computed, makeObservable, observable } from "mobx";
 import {
   ExpressionSlotKind,
-  IEvaluationEnvironmentProvider,
+  IExpressionEnvironmentProvider,
   IExpressionSlot,
 } from "./types.ts";
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
@@ -21,7 +21,7 @@ export class ExpressionSlot implements IExpressionSlot {
 
   private readonly coordinator: EvaluationCoordinator;
   private readonly expression: Expression;
-  private readonly environmentProvider: IEvaluationEnvironmentProvider;
+  private readonly environmentProvider: IExpressionEnvironmentProvider;
 
   @observable.ref
   private _cycle: string[] | undefined;
@@ -31,7 +31,7 @@ export class ExpressionSlot implements IExpressionSlot {
 
   constructor(
     coordinator: EvaluationCoordinator,
-    environmentProvider: IEvaluationEnvironmentProvider,
+    environmentProvider: IExpressionEnvironmentProvider,
     kind: ExpressionSlotKind,
     expression: Expression,
   ) {
@@ -81,9 +81,9 @@ export class ExpressionSlot implements IExpressionSlot {
         }
 
         const result = fhirpath.evaluate(
-          this.environmentProvider.evaluationEnvironment.context,
+          this.environmentProvider.expressionEnvironment.context,
           expression,
-          this.environmentProvider.evaluationEnvironment,
+          this.environmentProvider.expressionEnvironment,
           r5 as Model,
         );
 

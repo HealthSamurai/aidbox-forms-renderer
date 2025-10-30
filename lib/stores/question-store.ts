@@ -3,7 +3,6 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  IExpressionSlot,
   IFormStore,
   INodeStore,
   IQuestionStore,
@@ -22,8 +21,6 @@ import { AnswerInstance } from "./answer-instance.ts";
 
 import {
   answerHasContent,
-  EXT,
-  findExtension,
   getDateBounds,
   getDateTimeBounds,
   getDecimalBounds,
@@ -50,11 +47,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @observable
   private userOverridden = false;
 
-  private initialSlot: IExpressionSlot | undefined;
-  private calculatedSlot: IExpressionSlot | undefined;
-  private minValueSlot: IExpressionSlot | undefined;
-  private maxValueSlot: IExpressionSlot | undefined;
-
   constructor(
     form: IFormStore,
     template: QuestionnaireItem,
@@ -74,18 +66,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     this.ensureBaselineAnswers();
-    this.initializeQuestionExpressions();
     this.detectInitialOverride();
     this.setupExpressionReactions();
   }
 
   override get type() {
     return super.type as T;
-  }
-
-  @computed
-  get hasChildren() {
-    return (this.template.item?.length ?? 0) > 0;
   }
 
   private maxAllowed(): number {
@@ -149,57 +135,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
   }
 
-  private initializeQuestionExpressions() {
-    const initialExpression = findExtension(
-      this.template,
-      EXT.SDC_INITIAL_EXPR,
-    )?.valueExpression;
-
-    if (initialExpression) {
-      this.initialSlot = this.createExpressionSlot(
-        initialExpression,
-        "initial",
-      );
-    }
-
-    const calculatedExpression = findExtension(
-      this.template,
-      EXT.SDC_CALCULATED_EXPR,
-    )?.valueExpression;
-
-    if (calculatedExpression) {
-      this.calculatedSlot = this.createExpressionSlot(
-        calculatedExpression,
-        "calculated",
-      );
-    }
-
-    const minExpression = findExtension(
-      this.template,
-      EXT.SDC_MIN_VALUE_EXPR,
-    )?.valueExpression;
-
-    if (minExpression) {
-      this.minValueSlot = this.createExpressionSlot(minExpression, "min-value");
-    }
-
-    const maxExpression = findExtension(
-      this.template,
-      EXT.SDC_MAX_VALUE_EXPR,
-    )?.valueExpression;
-
-    if (maxExpression) {
-      this.maxValueSlot = this.createExpressionSlot(maxExpression, "max-value");
-    }
-  }
-
   @computed
   private get hasContent() {
     return this.answers.some(answerHasContent);
   }
 
   private detectInitialOverride() {
-    if (!this.calculatedSlot || this.readOnly) {
+    if (!this.expressionRegistry.calculated || this.readOnly) {
       return;
     }
 
@@ -208,7 +150,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const calculated = this.normalizeExpressionValues(
-      this.calculatedSlot.value,
+      this.expressionRegistry.calculated.value,
     );
     if (calculated.length === 0 || !this.answersMatch(calculated)) {
       this.markUserOverridden();
@@ -216,10 +158,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private setupExpressionReactions() {
-    const { initialSlot, calculatedSlot } = this;
-    if (initialSlot) {
+    const { initial, calculated } = this.expressionRegistry;
+    if (initial) {
       reaction(
-        () => [this.isEnabled, initialSlot.value, this.hasContent],
+        () => [this.isEnabled, initial.value, this.hasContent],
         this.applyInitialValue,
         {
           name: `${this.key}:apply-initial-value-reaction`,
@@ -229,9 +171,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       );
     }
 
-    if (calculatedSlot) {
+    if (calculated) {
       reaction(
-        () => [this.isEnabled, this.userOverridden, calculatedSlot.value],
+        () => [this.isEnabled, this.userOverridden, calculated.value],
         this.applyCalculatedValue,
         {
           name: `${this.key}:apply-calculated-value-reaction`,
@@ -244,8 +186,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action.bound
   private applyInitialValue() {
-    const { initialSlot } = this;
-    if (!initialSlot) return;
+    const { initial } = this.expressionRegistry;
+    if (!initial) return;
 
     if (!this.isEnabled || this.initialApplied) {
       return;
@@ -256,11 +198,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       return;
     }
 
-    if (initialSlot.value === undefined) {
+    if (initial.value === undefined) {
       return;
     }
 
-    const values = this.normalizeExpressionValues(initialSlot.value);
+    const values = this.normalizeExpressionValues(initial.value);
     if (values.length === 0) {
       return;
     }
@@ -283,20 +225,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action.bound
   private applyCalculatedValue() {
-    const { calculatedSlot } = this;
-    if (!calculatedSlot) return;
+    const { calculated } = this.expressionRegistry;
+    if (!calculated) return;
 
     if (!this.isEnabled || this.userOverridden) {
       return;
     }
 
-    if (calculatedSlot.value === undefined) {
+    if (calculated.value === undefined) {
       return;
     }
 
-    // trackWrite bumps the slot’s pass count and only resets it if we report stability.
-    this.form.recalcCoordinator.trackWrite(calculatedSlot, () => {
-      const values = this.normalizeExpressionValues(calculatedSlot.value);
+    // trackWrite bumps the expressions’s pass count and only resets it if we report stability.
+    this.form.coordinator.trackWrite(calculated, () => {
+      const values = this.normalizeExpressionValues(calculated.value);
       if (values.length === 0 || this.answersMatch(values)) return true;
 
       if (this.repeats) {
@@ -539,11 +481,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "integer": {
         const bounds = getIntegerBounds(this.template);
         const min = this.resolveNumberBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveNumberBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateNumericValue(answer.value, index, min, max);
@@ -551,11 +493,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "decimal": {
         const bounds = getDecimalBounds(this.template);
         const min = this.resolveNumberBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveNumberBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateNumericValue(answer.value, index, min, max);
@@ -563,11 +505,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "date": {
         const bounds = getDateBounds(this.template);
         const min = this.resolveStringBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -575,11 +517,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "dateTime": {
         const bounds = getDateTimeBounds(this.template);
         const min = this.resolveStringBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -587,11 +529,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "time": {
         const bounds = getTimeBounds(this.template);
         const min = this.resolveStringBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -599,11 +541,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "quantity": {
         const bounds = getQuantityBounds(this.template);
         const min = this.resolveQuantityBound(
-          this.minValueSlot?.value,
+          this.expressionRegistry.minValue?.value,
           bounds.min,
         );
         const max = this.resolveQuantityBound(
-          this.maxValueSlot?.value,
+          this.expressionRegistry.maxValue?.value,
           bounds.max,
         );
         return this.validateQuantityValue(answer.value, index, min, max);

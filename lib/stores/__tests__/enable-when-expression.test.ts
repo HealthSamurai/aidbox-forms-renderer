@@ -8,7 +8,6 @@ import {
   makeEnableExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import type { IExpressionSlot } from "../types.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {
@@ -145,8 +144,7 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = (controlled as unknown as { enableWhenSlot?: IExpressionSlot })
-      .enableWhenSlot;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -176,8 +174,7 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = (controlled as unknown as { enableWhenSlot?: IExpressionSlot })
-      .enableWhenSlot;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -207,13 +204,89 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = (controlled as unknown as { enableWhenSlot?: IExpressionSlot })
-      .enableWhenSlot;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
     expect(slot?.error?.diagnostics).toContain(
       "because it calls an unsupported function",
     );
+  });
+
+  it("records issues when multiple enableWhen expressions are declared", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "controlled",
+          type: "string",
+          extension: [
+            makeEnableExpression(undefined, "true"),
+            makeEnableExpression(undefined, "false"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const controlled = form.scope.lookupNode("controlled");
+
+    if (!controlled || !isQuestion(controlled)) {
+      throw new Error("Expected question store");
+    }
+
+    expect(
+      controlled.issues.some((issue) =>
+        issue.diagnostics?.includes(
+          "Only one enable-when extension is supported per item.",
+        ),
+      ),
+    ).toBe(true);
+    expect(controlled.isEnabled).toBe(true);
+  });
+
+  it("honors enableWhen expressions defined via modifierExtension", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "group",
+          type: "group",
+          extension: [
+            makeVariable(
+              "controlFlag",
+              "%context.item.where(linkId='control').answer.valueBoolean.last()",
+            ),
+          ],
+          item: [
+            {
+              linkId: "control",
+              type: "boolean",
+            },
+            {
+              linkId: "dependent",
+              type: "boolean",
+              modifierExtension: [
+                makeEnableExpression(undefined, "%controlFlag"),
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const control = form.scope.lookupNode("control");
+    const dependent = form.scope.lookupNode("dependent");
+
+    if (!isQuestion(control) || !isQuestion(dependent)) {
+      throw new Error("Expected question stores");
+    }
+
+    expect(dependent.isEnabled).toBe(false);
+    control.setAnswer(0, true);
+    expect(dependent.isEnabled).toBe(true);
   });
 });
