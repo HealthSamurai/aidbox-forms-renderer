@@ -1,125 +1,58 @@
+import { action, computed, makeObservable, observable } from "mobx";
 import {
-  IFormStore,
-  IScope,
-  INodeStore,
-  IRepeatingGroupInstance,
-  IRepeatingGroupStore,
+  ICoreNode,
+  IRepeatingGroupNode,
+  IRepeatingGroupWrapper,
 } from "./types.ts";
-import { action, computed, observable } from "mobx";
-import {
-  OperationOutcomeIssue,
-  QuestionnaireItem,
-  QuestionnaireResponseItem,
-} from "fhir/r5";
-
+import type { QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractNodeStore } from "./abstract-node-store.ts";
-import { RepeatingGroupInstance } from "./repeating-group-instance.ts";
-import { instanceHasResponses, makeIssue } from "../utils.ts";
 
 export class RepeatingGroupStore
   extends AbstractNodeStore
-  implements IRepeatingGroupStore
+  implements IRepeatingGroupNode
 {
-  constructor(
-    form: IFormStore,
-    template: QuestionnaireItem,
-    parentStore: INodeStore | null,
-    parentScope: IScope,
-    parentKey: string,
-    responseItems: QuestionnaireResponseItem[] | undefined,
-  ) {
-    super(form, template, parentStore, parentScope, parentKey);
+  readonly index: number;
 
-    responseItems?.forEach((responseItem) => this.pushInstance(responseItem));
-    this.ensureMinOccurs();
-  }
-
-  override get type() {
-    return super.type as "group";
-  }
-
-  override get repeats() {
-    return true as const;
-  }
+  private readonly group: IRepeatingGroupWrapper;
 
   @observable.shallow
-  readonly instances = observable.array<IRepeatingGroupInstance>([], {
+  readonly nodes = observable.array<ICoreNode>([], {
     deep: false,
-    name: "RepeatingGroupStore.instances",
+    name: "RepeatingGroupStore.nodes",
   });
 
-  @computed
-  get canAdd() {
-    return this.maxOccurs == null || this.instances.length < this.maxOccurs;
-  }
+  constructor(
+    group: IRepeatingGroupWrapper,
+    index: number,
+    responseItem?: QuestionnaireResponseItem,
+  ) {
+    super(group.form, group.template, group, group.scope, group.key);
+    makeObservable(this);
 
-  @computed
-  get canRemove() {
-    return this.instances.length > this.minOccurs;
-  }
+    this.group = group;
+    this.index = index;
 
-  @action
-  addInstance() {
-    if (this.canAdd) {
-      this.pushInstance();
-      this.markDirty();
-    }
-  }
+    this._scope = group.scope.extend(true);
+    this._key = `${group.key}_/_${index}`;
 
-  @action
-  removeInstance(index: number) {
-    if (this.canRemove) {
-      this.instances.splice(index, 1);
-      this.markDirty();
-    }
-  }
+    const extensions = [
+      ...(group.template.extension ?? []),
+      ...(group.template.modifierExtension ?? []),
+    ];
+    this.initializeExpressionRegistry(this, extensions);
 
-  @action
-  private pushInstance(responseItem?: QuestionnaireResponseItem) {
-    const instance = new RepeatingGroupInstance(
-      this,
-      this.scope,
-      this.instances.length,
-      responseItem,
-    );
-    this.instances.push(instance);
-  }
-
-  @action
-  private ensureMinOccurs() {
-    while (this.instances.length < this.minOccurs && this.canAdd) {
-      this.pushInstance();
-    }
-  }
-
-  protected override computeIssues(): OperationOutcomeIssue[] {
-    if (this.readOnly) {
-      return [];
-    }
-
-    const occurs = this.instances.filter(instanceHasResponses).length;
-
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (this.minOccurs > 0 && occurs < this.minOccurs) {
-      issues.push(
-        makeIssue(
-          "required",
-          `At least ${this.minOccurs} occurrence(s) required.`,
+    const children =
+      this.template.item?.map((item) =>
+        this.form.createNodeStore(
+          item,
+          this,
+          this.scope,
+          this.key,
+          responseItem?.item?.filter(({ linkId }) => linkId === item.linkId),
         ),
-      );
-    }
+      ) ?? [];
 
-    if (this.maxOccurs != null && occurs > this.maxOccurs) {
-      issues.push(
-        makeIssue(
-          "structure",
-          `No more than ${this.maxOccurs} occurrence(s) permitted.`,
-        ),
-      );
-    }
-
-    return issues;
+    this.nodes.replace(children);
   }
 
   @computed
@@ -128,22 +61,66 @@ export class RepeatingGroupStore
       return [];
     }
 
-    return this.instances
-      .map((instance) => instance.responseItem)
-      .filter((item): item is QuestionnaireResponseItem => item !== null);
+    const childItems = this.nodes.flatMap((child) => child.responseItems);
+    if (childItems.length === 0) {
+      return [];
+    }
+
+    return [
+      {
+        linkId: this.group.linkId,
+        item: childItems,
+        text: this.group.text,
+      },
+    ];
   }
 
   @computed
   override get expressionItems(): QuestionnaireResponseItem[] {
-    if (this.instances.length === 0) {
-      return [
-        {
-          linkId: this.linkId,
-          text: this.text,
-        },
-      ];
+    const childItems = this.nodes.flatMap((child) => child.expressionItems);
+
+    const item: QuestionnaireResponseItem = {
+      linkId: this.group.linkId,
+      text: this.group.text,
+    };
+
+    if (childItems.length > 0) {
+      item.item = childItems;
     }
 
-    return this.instances.map((instance) => instance.expressionItem);
+    return [item];
   }
+
+  @computed
+  get responseItem(): QuestionnaireResponseItem | null {
+    return this.responseItems.at(0) ?? null;
+  }
+
+  @computed
+  get expressionItem(): QuestionnaireResponseItem {
+    return (
+      this.expressionItems.at(0) ?? {
+        linkId: this.group.linkId,
+        text: this.group.text,
+      }
+    );
+  }
+
+  @computed
+  get expressionIssues() {
+    return this.expressionRegistry?.issues ?? [];
+  }
+
+  @action.bound
+  remove(): void {
+    if (this.group.canRemove) {
+      this.group.removeInstance(this.index);
+    }
+  }
+}
+
+export function isRepeatingGroupNode(
+  it: ICoreNode | undefined,
+): it is IRepeatingGroupNode {
+  return it instanceof RepeatingGroupStore;
 }

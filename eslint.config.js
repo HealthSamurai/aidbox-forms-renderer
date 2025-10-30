@@ -20,6 +20,7 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
+      // "@typescript-eslint/no-unnecessary-condition": "error",
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": [
         "warn",

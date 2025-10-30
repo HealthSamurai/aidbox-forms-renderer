@@ -1,8 +1,9 @@
 import {
   ExpressionEnvironment,
+  ICoreNode,
   IExpressionEnvironmentProvider,
-  IFormStore,
-  INodeStore,
+  IForm,
+  INode,
   IScope,
 } from "./types.ts";
 import {
@@ -19,20 +20,26 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from "fhir/r5";
-import { QuestionStore } from "./question-store.ts";
-import { NonRepeatingGroupStore } from "./non-repeating-group-store.ts";
+import { isQuestionNode, QuestionStore } from "./question-store.ts";
+import {
+  isNonRepeatingGroupNode,
+  NonRepeatingGroupStore,
+} from "./non-repeating-group-store.ts";
 import { DisplayStore } from "./display-store.ts";
-import { RepeatingGroupStore } from "./repeating-group-store.ts";
+import {
+  isRepeatingGroupWrapper,
+  RepeatingGroupWrapper,
+} from "./repeating-group-wrapper.ts";
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { Scope } from "./scope.ts";
 import { ExpressionRegistry } from "./expression-registry.ts";
 
-export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
+export class FormStore implements IForm, IExpressionEnvironmentProvider {
   questionnaire: Questionnaire;
   private readonly initialResponse: QuestionnaireResponse | undefined;
 
   @observable.shallow
-  readonly children = observable.array<INodeStore>([], {
+  readonly nodes = observable.array<ICoreNode>([], {
     deep: false,
     name: "FormStore.children",
   });
@@ -63,8 +70,8 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
 
     runInAction(() => {
       if (questionnaire.item) {
-        this.children.replace(
-          questionnaire.item!.map((item) =>
+        this.nodes.replace(
+          questionnaire.item.map((item) =>
             this.createNodeStore(
               item,
               null,
@@ -91,11 +98,11 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
   @action
   createNodeStore(
     item: QuestionnaireItem,
-    parentStore: INodeStore | null,
+    parentStore: INode | null,
     scope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
-  ): INodeStore {
+  ): ICoreNode {
     switch (item.type) {
       case "display": {
         const store = new DisplayStore(
@@ -110,7 +117,7 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
       }
       case "group":
         if (item.repeats) {
-          const store = new RepeatingGroupStore(
+          const store = new RepeatingGroupWrapper(
             this,
             item,
             parentStore,
@@ -175,7 +182,7 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
   validateAll() {
     this.submitAttempted = true;
     // TODO: surface a form-level summary when validation fails.
-    const isValid = !this.children.some((node) => this.nodeHasErrors(node));
+    const isValid = !this.nodes.some((node) => this.nodeHasErrors(node));
 
     if (isValid) {
       this.submitAttempted = false;
@@ -186,7 +193,7 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
 
   @computed
   get response(): QuestionnaireResponse {
-    const items = this.children.flatMap((node) => node.responseItems);
+    const items = this.nodes.flatMap((node) => node.responseItems);
     const response: QuestionnaireResponse = {
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
@@ -203,7 +210,7 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
 
   @computed
   get expressionResponse(): QuestionnaireResponse {
-    const items = this.children.flatMap((node) => node.expressionItems);
+    const items = this.nodes.flatMap((node) => node.expressionItems);
     const response: QuestionnaireResponse = {
       resourceType: "QuestionnaireResponse",
       status: "in-progress",
@@ -221,10 +228,10 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
   @action
   reset() {
     this.submitAttempted = false;
-    this.children.forEach((node) => this.clearNodeDirty(node));
+    this.nodes.forEach((node) => this.clearNodeDirty(node));
   }
 
-  private nodeHasErrors(node: INodeStore): boolean {
+  private nodeHasErrors(node: ICoreNode): boolean {
     if (node.hasErrors) {
       return true;
     }
@@ -232,21 +239,20 @@ export class FormStore implements IFormStore, IExpressionEnvironmentProvider {
     return this.getChildNodes(node).some((child) => this.nodeHasErrors(child));
   }
 
-  private getChildNodes(node: INodeStore): INodeStore[] {
-    if (node.type === "group") {
-      return node.repeats
-        ? node.instances.flatMap((instance) => instance.children)
-        : node.children;
+  private getChildNodes(node: ICoreNode): ICoreNode[] {
+    if (isRepeatingGroupWrapper(node)) {
+      return node.nodes.flatMap((instance) => instance.nodes);
     }
-
-    if (node.type === "display") {
-      return [];
+    if (isNonRepeatingGroupNode(node)) {
+      return node.nodes;
     }
-
-    return node.answers.flatMap((answer) => answer.children);
+    if (isQuestionNode(node)) {
+      return node.answers.flatMap((answer) => answer.nodes);
+    }
+    return [];
   }
 
-  private clearNodeDirty(node: INodeStore) {
+  private clearNodeDirty(node: ICoreNode) {
     node.clearDirty();
     this.getChildNodes(node).forEach((child) => this.clearNodeDirty(child));
   }

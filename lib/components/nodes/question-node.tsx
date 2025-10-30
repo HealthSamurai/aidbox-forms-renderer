@@ -2,7 +2,7 @@ import "./question-node.css";
 import { observer } from "mobx-react-lite";
 import { ItemHeader } from "../common/item-header.tsx";
 import { ItemErrors } from "../common/item-errors.tsx";
-import { IQuestionStore } from "../../stores/types.ts";
+import { IQuestionNode } from "../../stores/types.ts";
 
 import { StringNode } from "../questions/nodes/string-node.tsx";
 import { TextNode } from "../questions/nodes/text-node.tsx";
@@ -19,37 +19,37 @@ import { ReferenceNode } from "../questions/nodes/reference-node.tsx";
 export const QuestionNode = observer(function QuestionNode({
   item,
 }: {
-  item: IQuestionStore;
+  item: IQuestionNode;
 }) {
   switch (item.type) {
     case "string":
-      return <StringNode item={item as IQuestionStore<"string">} />;
+      return <StringNode item={item as IQuestionNode<"string">} />;
     case "text":
-      return <TextNode item={item as IQuestionStore<"text">} />;
+      return <TextNode item={item as IQuestionNode<"text">} />;
     case "integer":
-      return <IntegerNode item={item as IQuestionStore<"integer">} />;
+      return <IntegerNode item={item as IQuestionNode<"integer">} />;
     case "decimal":
-      return <DecimalNode item={item as IQuestionStore<"decimal">} />;
+      return <DecimalNode item={item as IQuestionNode<"decimal">} />;
     case "date":
     case "dateTime":
     case "time":
       return (
         <DateLikeNode
-          item={item as IQuestionStore<"date" | "dateTime" | "time">}
+          item={item as IQuestionNode<"date" | "dateTime" | "time">}
         />
       );
     case "quantity":
-      return <QuantityNode item={item as IQuestionStore<"quantity">} />;
+      return <QuantityNode item={item as IQuestionNode<"quantity">} />;
     case "boolean":
-      return <BooleanNode item={item as IQuestionStore<"boolean">} />;
+      return <BooleanNode item={item as IQuestionNode<"boolean">} />;
     case "url":
-      return <UrlNode item={item as IQuestionStore<"url">} />;
+      return <UrlNode item={item as IQuestionNode<"url">} />;
     case "coding":
-      return <CodingNode item={item as IQuestionStore<"coding">} />;
+      return <CodingNode item={item as IQuestionNode<"coding">} />;
     case "attachment":
-      return <AttachmentNode item={item as IQuestionStore<"attachment">} />;
+      return <AttachmentNode item={item as IQuestionNode<"attachment">} />;
     case "reference":
-      return <ReferenceNode item={item as IQuestionStore<"reference">} />;
+      return <ReferenceNode item={item as IQuestionNode<"reference">} />;
     default:
       return (
         <div className="af-item af-unsupported" data-linkid={item.linkId}>

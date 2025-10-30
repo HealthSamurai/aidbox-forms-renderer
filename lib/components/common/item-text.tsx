@@ -1,9 +1,9 @@
 import { createElement } from "react";
-import { INodeStore } from "../../stores/types.ts";
+import { ICoreNode } from "../../stores/types.ts";
 import { observer } from "mobx-react-lite";
 
 interface ItemTextProps {
-  item: INodeStore;
+  item: ICoreNode;
   as?: "label" | "span" | "legend";
   id?: string;
   className?: string;

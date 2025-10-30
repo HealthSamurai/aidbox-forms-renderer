@@ -1,11 +1,11 @@
 import "./item-header.css";
 import { ItemText } from "./item-text.tsx";
-import { INodeStore } from "../../stores/types.ts";
+import { INode } from "../../stores/types.ts";
 import { observer } from "mobx-react-lite";
 import { getItemHelpId, getItemLabelId } from "../../utils.ts";
 
 interface ItemHeaderProps {
-  item: INodeStore;
+  item: INode;
   htmlFor?: string;
   className?: string;
 }

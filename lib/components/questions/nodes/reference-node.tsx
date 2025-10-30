@@ -3,7 +3,7 @@ import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { TextInput } from "../../controls/text-input.tsx";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import type { Reference } from "fhir/r5";
 
 function pruneReference(value: Reference): Reference | null {
@@ -19,7 +19,7 @@ function pruneReference(value: Reference): Reference | null {
 export const ReferenceNode = observer(function ReferenceNode({
   item,
 }: {
-  item: IQuestionStore<"reference">;
+  item: IQuestionNode<"reference">;
 }) {
   return (
     <div className="af-item" data-linkid={item.linkId}>

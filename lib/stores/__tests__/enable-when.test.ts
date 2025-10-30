@@ -9,8 +9,9 @@ import type {
 } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isGroup, isQuestion } from "../../utils.ts";
-import type { AnswerType, IQuestionStore } from "../types.ts";
+import type { AnswerType, IQuestionNode } from "../types.ts";
+import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 type EnableWhenAnswer =
   | boolean
@@ -69,7 +70,8 @@ function makeCondition(
       throw new Error("enableWhen does not support attachment answers");
     default: {
       const exhaustiveCheck: never = type;
-      throw new Error(`Unhandled type: ${exhaustiveCheck}`);
+      void exhaustiveCheck;
+      throw new Error("Unhandled type");
     }
   }
 
@@ -104,7 +106,7 @@ function createForm(
   const control = form.scope.lookupNode("control");
   const dependent = form.scope.lookupNode("dependent");
 
-  if (!control || !isQuestion(control)) {
+  if (!control || !isQuestionNode(control)) {
     throw new Error("Control item is not a question");
   }
   if (!dependent) {
@@ -115,7 +117,7 @@ function createForm(
 }
 
 function setQuestionAnswer(
-  question: IQuestionStore,
+  question: IQuestionNode,
   index: number,
   value: EnableWhenAnswer,
 ) {
@@ -463,13 +465,13 @@ describe("enableWhen", () => {
       const control = form.scope.lookupNode("control");
       const dependent = form.scope.lookupNode("dependent");
 
-      expect(control && isQuestion(control)).toBe(true);
-      expect(dependent && isQuestion(dependent)).toBe(true);
+      expect(control && isQuestionNode(control)).toBe(true);
+      expect(dependent && isQuestionNode(dependent)).toBe(true);
       if (
         !control ||
         !dependent ||
-        !isQuestion(control) ||
-        !isQuestion(dependent)
+        !isQuestionNode(control) ||
+        !isQuestionNode(dependent)
       )
         return;
 
@@ -518,21 +520,21 @@ describe("enableWhen", () => {
       const control = form.scope.lookupNode("control");
       const dependent = form.scope.lookupNode("dependent");
 
-      expect(control && isQuestion(control)).toBe(true);
-      expect(dependent && isQuestion(dependent)).toBe(true);
+      expect(control && isQuestionNode(control)).toBe(true);
+      expect(dependent && isQuestionNode(dependent)).toBe(true);
       if (
         !control ||
         !dependent ||
-        !isQuestion(control) ||
-        !isQuestion(dependent)
+        !isQuestionNode(control) ||
+        !isQuestionNode(dependent)
       )
         return;
 
       expect(dependent.isEnabled).toBe(false);
 
-      const child = control.answers.at(0)?.children.at(0);
-      expect(child && isQuestion(child)).toBe(true);
-      if (!child || !isQuestion(child)) return;
+      const child = control.answers.at(0)?.nodes.at(0);
+      expect(child && isQuestionNode(child)).toBe(true);
+      if (!child || !isQuestionNode(child)) return;
 
       child.setAnswer(0, "child value");
       expect(dependent.isEnabled).toBe(false);
@@ -570,15 +572,15 @@ describe("enableWhen", () => {
       const score = form.scope.lookupNode("score");
       const dependent = form.scope.lookupNode("dependent-any");
 
-      expect(flag && isQuestion(flag)).toBe(true);
-      expect(score && isQuestion(score)).toBe(true);
+      expect(flag && isQuestionNode(flag)).toBe(true);
+      expect(score && isQuestionNode(score)).toBe(true);
       expect(dependent).toBeDefined();
       if (
         !flag ||
         !score ||
         !dependent ||
-        !isQuestion(flag) ||
-        !isQuestion(score)
+        !isQuestionNode(flag) ||
+        !isQuestionNode(score)
       )
         return;
 
@@ -627,16 +629,16 @@ describe("enableWhen", () => {
       const count = form.scope.lookupNode("count");
       const dependent = form.scope.lookupNode("dependent-all");
 
-      expect(text && isQuestion(text)).toBe(true);
-      expect(count && isQuestion(count)).toBe(true);
-      expect(dependent && isQuestion(dependent)).toBe(true);
+      expect(text && isQuestionNode(text)).toBe(true);
+      expect(count && isQuestionNode(count)).toBe(true);
+      expect(dependent && isQuestionNode(dependent)).toBe(true);
       if (
         !text ||
         !count ||
         !dependent ||
-        !isQuestion(text) ||
-        !isQuestion(count) ||
-        !isQuestion(dependent)
+        !isQuestionNode(text) ||
+        !isQuestionNode(count) ||
+        !isQuestionNode(dependent)
       )
         return;
 
@@ -683,16 +685,16 @@ describe("enableWhen", () => {
       const group = form.scope.lookupNode("group");
       const child = form.scope.lookupNode("child");
 
-      expect(toggle && isQuestion(toggle)).toBe(true);
-      expect(group && isGroup(group)).toBe(true);
-      expect(child && isQuestion(child)).toBe(true);
+      expect(toggle && isQuestionNode(toggle)).toBe(true);
+      expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+      expect(child && isQuestionNode(child)).toBe(true);
       if (
         !toggle ||
         !group ||
         !child ||
-        !isQuestion(toggle) ||
-        !isGroup(group) ||
-        !isQuestion(child)
+        !isQuestionNode(toggle) ||
+        !isNonRepeatingGroupNode(group) ||
+        !isQuestionNode(child)
       )
         return;
 
@@ -729,9 +731,9 @@ describe("enableWhen", () => {
       const text = form.scope.lookupNode("text");
       const dependent = form.scope.lookupNode("dependent-neq");
 
-      expect(text && isQuestion(text)).toBe(true);
+      expect(text && isQuestionNode(text)).toBe(true);
       expect(dependent).toBeDefined();
-      if (!text || !dependent || !isQuestion(text)) return;
+      if (!text || !dependent || !isQuestionNode(text)) return;
 
       expect(dependent.isEnabled).toBe(false);
 

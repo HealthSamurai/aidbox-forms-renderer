@@ -12,7 +12,7 @@ import type {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  IQuestionStore,
+  IQuestionNode,
 } from "../../stores/types.ts";
 
 export type RowRenderProps<TValue> = {
@@ -26,7 +26,7 @@ export type RowRenderProps<TValue> = {
 };
 
 export type AnswerProps<T extends AnswerType> = {
-  item: IQuestionStore<T>;
+  item: IQuestionNode<T>;
   renderRow: (p: RowRenderProps<AnswerValueType<T>>) => ReactElement;
   answer: IAnswerInstance<AnswerValueType<T>>;
   index: number;
@@ -66,9 +66,9 @@ export const Answer = observer(function Answer<T extends AnswerType>({
           </Button>
         </div>
       )}
-      {!!answer.children?.length && (
+      {!!answer.nodes?.length && (
         <div className="af-answer-children">
-          <ItemsList items={answer.children} />
+          <ItemsList items={answer.nodes} />
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { NumberInput } from "../../controls/number-input.tsx";
@@ -8,7 +8,7 @@ import { ItemErrors } from "../../common/item-errors.tsx";
 export const IntegerNode = observer(function IntegerNode({
   item,
 }: {
-  item: IQuestionStore<"integer">;
+  item: IQuestionNode<"integer">;
 }) {
   return (
     <div className="af-item" data-linkid={item.linkId}>

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import type { Coding } from "fhir/r5";
 
 function codingKey(coding: Coding) {
@@ -15,7 +15,7 @@ function codingKey(coding: Coding) {
 export const CodingNode = observer(function CodingNode({
   item,
 }: {
-  item: IQuestionStore<"coding">;
+  item: IQuestionNode<"coding">;
 }) {
   const options = React.useMemo(
     () =>

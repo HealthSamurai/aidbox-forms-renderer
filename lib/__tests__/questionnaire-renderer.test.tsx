@@ -8,7 +8,7 @@
 import { describe, expect, it } from "vitest";
 
 describe("Renderer", () => {
-  it("updates QuestionnaireResponse when a user answers a question", async () => {
+  it("updates QuestionnaireResponse when a user answers a question", () => {
     // const questionnaire: Questionnaire = {
     //   resourceType: "Questionnaire",
     //   id: "test",

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isQuestion } from "../../utils.ts";
 import { makeMinValueExpression } from "./expression-fixtures.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 describe("min/max value expressions", () => {
   it("enforces a calculated minimum", () => {
@@ -21,7 +21,7 @@ describe("min/max value expressions", () => {
 
     const form = new FormStore(questionnaire);
     const score = form.scope.lookupNode("score");
-    if (!score || !isQuestion(score)) {
+    if (!score || !isQuestionNode(score)) {
       throw new Error("Expected question store");
     }
 
@@ -52,7 +52,7 @@ describe("min/max value expressions", () => {
 
     const form = new FormStore(questionnaire);
     const score = form.scope.lookupNode("score");
-    if (!score || !isQuestion(score)) {
+    if (!score || !isQuestionNode(score)) {
       throw new Error("Expected question store");
     }
 
@@ -65,8 +65,8 @@ describe("min/max value expressions", () => {
     ).toBe(true);
 
     score.setAnswer(0, 4);
-    expect(
-      score.issues.some((issue) => issue.diagnostics?.includes("5")),
-    ).toBe(true);
+    expect(score.issues.some((issue) => issue.diagnostics?.includes("5"))).toBe(
+      true,
+    );
   });
 });

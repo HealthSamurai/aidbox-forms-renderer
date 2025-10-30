@@ -22,9 +22,7 @@ type ApplyQuestionnaireButtonProps = {
   onClick: () => void;
 };
 
-function ApplyQuestionnaireButton({
-  onClick,
-}: ApplyQuestionnaireButtonProps) {
+function ApplyQuestionnaireButton({ onClick }: ApplyQuestionnaireButtonProps) {
   return (
     <button
       type="button"
@@ -45,10 +43,9 @@ function DensePanel({
   minSize,
   minWidthClass,
 }: DensePanelProps) {
-  const actionSlot =
-    headerAction ?? (
-      <span className="block h-6 w-6 flex-shrink-0" aria-hidden="true" />
-    );
+  const actionSlot = headerAction ?? (
+    <span className="block h-6 w-6 flex-shrink-0" aria-hidden="true" />
+  );
 
   return (
     <Panel
@@ -188,9 +185,7 @@ export function App() {
           minWidthClass="min-w-[16rem]"
           headerAction={
             hasPendingChanges ? (
-              <ApplyQuestionnaireButton
-                onClick={handleApplyQuestionnaire}
-              />
+              <ApplyQuestionnaireButton onClick={handleApplyQuestionnaire} />
             ) : undefined
           }
         >

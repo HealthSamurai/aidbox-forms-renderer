@@ -2,13 +2,9 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  IDisplayStore,
-  IGroupStore,
-  INodeStore,
-  INonRepeatingGroupStore,
-  IQuestionStore,
-  IRepeatingGroupInstance,
-  IRepeatingGroupStore,
+  INode,
+  IQuestionNode,
+  IRepeatingGroupNode,
   OperationOutcomeIssueCode,
 } from "./stores/types.ts";
 import type {
@@ -27,42 +23,16 @@ export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export function getItemLabelId(item: INodeStore): string {
+export function getItemLabelId(item: INode): string {
   return sanitizeForId(`af-${item.key}-label`);
 }
 
-export function getItemHelpId(item: INodeStore): string {
+export function getItemHelpId(item: INode): string {
   return sanitizeForId(`af-${item.key}-help`);
 }
 
-export function getItemErrorId(item: INodeStore): string {
+export function getItemErrorId(item: INode): string {
   return sanitizeForId(`af-${item.key}-errors`);
-}
-
-export function isDisplay(it: INodeStore | undefined): it is IDisplayStore {
-  return it?.type === "display";
-}
-
-export function isGroup(it: INodeStore | undefined): it is IGroupStore {
-  return it?.type === "group";
-}
-
-export function isRepeatingGroup(
-  it: INodeStore | undefined,
-): it is IRepeatingGroupStore {
-  return it?.type === "group" && it.repeats;
-}
-
-export function isNonRepeatingGroup(
-  it: INodeStore | undefined,
-): it is INonRepeatingGroupStore {
-  return it?.type === "group" && !it.repeats;
-}
-
-export function isQuestion<TType extends AnswerType = AnswerType>(
-  it: INodeStore | undefined,
-): it is IQuestionStore<TType> {
-  return it?.type !== "group" && it?.type !== "display";
 }
 
 // prettier-ignore
@@ -150,7 +120,7 @@ export function omit<T extends object, K extends keyof T>(
   source: T,
   keys: ReadonlyArray<K>,
 ): Omit<T, K> {
-  const result = { ...source } as T;
+  const result = { ...source };
   for (const key of keys) {
     delete result[key];
   }
@@ -200,10 +170,8 @@ export function pruneAttachment(value: Attachment): Attachment | null {
   return Object.keys(next).length > 0 ? next : null;
 }
 
-export function instanceHasResponses(
-  instance: IRepeatingGroupInstance,
-): boolean {
-  return instance.children.some((child) => child.responseItems.length > 0);
+export function instanceHasResponses(instance: IRepeatingGroupNode): boolean {
+  return instance.nodes.some((child) => child.responseItems.length > 0);
 }
 
 export function makeIssue(
@@ -237,7 +205,7 @@ export function answerHasOwnValue(answer: IAnswerInstance<unknown>): boolean {
 export function answerHasContent<T extends AnswerType>(
   answer: IAnswerInstance<AnswerValueType<T>>,
 ): boolean {
-  if (answer.children.some((child) => child.responseItems.length > 0)) {
+  if (answer.nodes.some((child) => child.responseItems.length > 0)) {
     return true;
   }
 
@@ -245,7 +213,7 @@ export function answerHasContent<T extends AnswerType>(
 }
 
 export function getItemDescribedBy<T extends AnswerType>(
-  item: IQuestionStore<T>,
+  item: IQuestionNode<T>,
 ) {
   const describedByPieces = [
     item.help ? getItemHelpId(item) : undefined,
@@ -469,7 +437,7 @@ export function compareNumbers(
 
 export function evaluateEnableWhenCondition(
   condition: QuestionnaireItemEnableWhen,
-  question: IQuestionStore,
+  question: IQuestionNode,
 ): boolean {
   const answers = question.answers.filter(answerHasOwnValue);
   const operator = condition.operator;

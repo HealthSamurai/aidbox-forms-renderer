@@ -3,7 +3,7 @@
 * rendered questionnaire response item is node (one of the node stores implementing `INodeStore`)
 * questionnaire item is template for node (`QuestionnaireItem` backing each store)
 * nodes can have child nodes (`children` or `instances` on the store)
-* node can be either a display, a group, or a question (`DisplayStore`, `NonRepeatingGroupStore`/`RepeatingGroupStore`, `QuestionStore`)
+* node can be either a display, a group, or a question (`DisplayStore`, `NonRepeatingGroupStore`/`RepeatingGroupUmbrella`, `QuestionStore`)
 * display node cannot have child nodes
 * question node is answerable node
 * display node and group node are not answerable nodes

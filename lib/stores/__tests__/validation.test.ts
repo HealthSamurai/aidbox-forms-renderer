@@ -2,11 +2,9 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import {
-  isNonRepeatingGroup,
-  isQuestion,
-  isRepeatingGroup,
-} from "../../utils.ts";
+import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -75,8 +73,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("first-name");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     expect(question.hasErrors).toBe(false);
     expect(question.issues).toHaveLength(0);
@@ -109,8 +107,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("notes");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, "Too long");
     const longIssues = question.issues ?? [];
@@ -141,8 +139,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("age");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, -1);
     const minIssues = question.issues ?? [];
@@ -184,10 +182,15 @@ describe("validation", () => {
     const form = new FormStore(questionnaire);
     const birth = form.scope.lookupNode("birth");
     const checkIn = form.scope.lookupNode("check-in");
-    expect(birth && checkIn && isQuestion(birth) && isQuestion(checkIn)).toBe(
-      true,
-    );
-    if (!birth || !checkIn || !isQuestion(birth) || !isQuestion(checkIn))
+    expect(
+      birth && checkIn && isQuestionNode(birth) && isQuestionNode(checkIn),
+    ).toBe(true);
+    if (
+      !birth ||
+      !checkIn ||
+      !isQuestionNode(birth) ||
+      !isQuestionNode(checkIn)
+    )
       return;
 
     birth.setAnswer(0, "1999-12-31");
@@ -228,8 +231,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("weight");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, { value: 5, unit: "kg" });
     expect(question.issues.at(0)?.diagnostics).toMatch(
@@ -270,21 +273,21 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
-    expect(group && isRepeatingGroup(group)).toBe(true);
-    if (!group || !isRepeatingGroup(group)) return;
+    expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+    if (!group || !isRepeatingGroupWrapper(group)) return;
 
     // Submit with empty answers
     expect(form.validateAll()).toBe(false);
     expect(group.issues).toHaveLength(1);
     expect(group.issues[0]?.diagnostics).toMatch(/occurrence/i);
 
-    const firstInstance = group.instances.at(0);
+    const firstInstance = group.nodes.at(0);
     expect(firstInstance).toBeDefined();
     if (!firstInstance) return;
 
-    const question = firstInstance.children.at(0);
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    const question = firstInstance.nodes.at(0);
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, "Diabetes");
     expect(group.issues).toHaveLength(0);
@@ -308,8 +311,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("symptom");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     expect(form.validateAll()).toBe(false);
     expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
@@ -348,8 +351,8 @@ describe("validation", () => {
     const form = new FormStore(questionnaire);
     expect(form.validateAll()).toBe(true);
     const question = form.scope.lookupNode("readonly-question");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
     expect(question.hasErrors).toBe(false);
   });
 
@@ -376,15 +379,15 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("lifestyle");
-    expect(group && isNonRepeatingGroup(group)).toBe(true);
-    if (!group || !isNonRepeatingGroup(group)) return;
+    expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+    if (!group || !isNonRepeatingGroupNode(group)) return;
 
     expect(form.validateAll()).toBe(false);
     expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);
 
-    const child = group.children.at(0);
-    expect(child && isQuestion(child)).toBe(true);
-    if (!child || !isQuestion(child)) return;
+    const child = group.nodes.at(0);
+    expect(child && isQuestionNode(child)).toBe(true);
+    if (!child || !isQuestionNode(child)) return;
     child.setAnswer(0, "Runs daily");
 
     expect(form.validateAll()).toBe(true);
@@ -407,8 +410,8 @@ describe("validation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("email");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     expect(form.validateAll()).toBe(false);
     expect(form.isSubmitAttempted).toBe(true);

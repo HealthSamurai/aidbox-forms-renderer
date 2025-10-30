@@ -1,55 +1,36 @@
 import "./repeating-group-node.css";
-import React from "react";
-import { Observer, observer } from "mobx-react-lite";
-import { IRepeatingGroupStore } from "../../stores/types.ts";
-import { ItemText } from "../common/item-text.tsx";
-import { ItemErrors } from "../common/item-errors.tsx";
+import { observer } from "mobx-react-lite";
+import type { IRepeatingGroupNode } from "../../stores/types.ts";
+import { ItemsList } from "../common/item-list.tsx";
 import { Button } from "../controls/button.tsx";
-import { RepeatingGroupInstance } from "./repeating-group-instance.tsx";
+
+export type RepeatingGroupNodeProps = {
+  instance: IRepeatingGroupNode;
+  canRemove: boolean;
+};
 
 export const RepeatingGroupNode = observer(function RepeatingGroupNode({
-  item,
-}: {
-  item: IRepeatingGroupStore;
-}) {
-  const handleAddClick = React.useCallback(() => {
-    if (!item.canAdd) {
-      return;
-    }
-    item.addInstance();
-  }, [item]);
-
+  instance,
+  canRemove,
+}: RepeatingGroupNodeProps) {
   return (
-    <fieldset className="af-group" data-linkid={item.linkId}>
-      {item.template.text && <ItemText as="legend" item={item} />}
-
-      <div className="af-group-instance-list">
-        <Observer>
-          {() => (
-            <>
-              {item.instances.map((instance) => (
-                <RepeatingGroupInstance
-                  key={instance.key}
-                  instance={instance}
-                  canRemove={item.canRemove}
-                />
-              ))}
-            </>
-          )}
-        </Observer>
+    <section className="af-group-instance">
+      <div className="af-group-instance-children">
+        <ItemsList items={instance.nodes} />
       </div>
-      <ItemErrors item={item} />
-
-      <div className="af-group-instance-list-toolbar">
-        <Button
-          type="button"
-          variant="success"
-          onClick={handleAddClick}
-          disabled={!item.canAdd}
-        >
-          Add section
-        </Button>
-      </div>
-    </fieldset>
+      {canRemove ? (
+        <div className="af-group-instance-toolbar">
+          <Button
+            type="button"
+            variant="danger"
+            size="sm"
+            onClick={() => instance.remove()}
+            disabled={!canRemove}
+          >
+            Remove section
+          </Button>
+        </div>
+      ) : null}
+    </section>
   );
 });

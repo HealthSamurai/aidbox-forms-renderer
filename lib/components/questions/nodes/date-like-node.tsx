@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import { DateInput } from "../../controls/date-input.tsx";
 import { DateTimeInput } from "../../controls/date-time-input.tsx";
 import { TimeInput } from "../../controls/time-input.tsx";
@@ -10,7 +10,7 @@ import { ItemErrors } from "../../common/item-errors.tsx";
 export const DateLikeNode = observer(function DateLikeNode({
   item,
 }: {
-  item: IQuestionStore<"date" | "dateTime" | "time">;
+  item: IQuestionNode<"date" | "dateTime" | "time">;
 }) {
   const Control =
     item.type === "date"

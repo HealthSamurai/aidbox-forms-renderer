@@ -1,7 +1,7 @@
 import "./form.css";
 import { observer } from "mobx-react-lite";
 import { autorun } from "mobx";
-import { IFormStore } from "../stores/types.ts";
+import { IForm } from "../stores/types.ts";
 import { ItemsList } from "./common/item-list.tsx";
 import { FormEvent, useEffect } from "react";
 import { Button } from "./controls/button.tsx";
@@ -12,7 +12,7 @@ export const Form = observer(function Form({
   onSubmit,
   onChange,
 }: {
-  store: IFormStore;
+  store: IForm;
   onSubmit?: ((response: QuestionnaireResponse) => void) | undefined;
   onChange?: ((response: QuestionnaireResponse) => void) | undefined;
 }) {
@@ -70,8 +70,8 @@ export const Form = observer(function Form({
         </ul>
       ) : null}
       <div className="af-items">
-        {store.children.length > 0 ? (
-          <ItemsList items={store.children} />
+        {store.nodes.length > 0 ? (
+          <ItemsList items={store.nodes} />
         ) : (
           <p className="af-empty">No items to display.</p>
         )}

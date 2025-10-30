@@ -4,8 +4,8 @@ import type {
   AnswerValueType,
   IAnswerInstance,
   IScope,
-  INodeStore,
-  IQuestionStore,
+  ICoreNode,
+  IQuestionNode,
 } from "./types.ts";
 import type {
   QuestionnaireResponseItem,
@@ -18,19 +18,19 @@ export class AnswerInstance<TType extends AnswerType>
   readonly key: string;
   readonly scope: IScope;
 
-  private readonly question: IQuestionStore<TType>;
+  private readonly question: IQuestionNode<TType>;
 
   @observable.ref
   value: AnswerValueType<TType> | null = null;
 
   @observable.shallow
-  readonly children = observable.array<INodeStore>([], {
+  readonly nodes = observable.array<ICoreNode>([], {
     deep: false,
-    name: "AnswerInstance.children",
+    name: "AnswerInstance.nodes",
   });
 
   constructor(
-    question: IQuestionStore<TType>,
+    question: IQuestionNode<TType>,
     scope: IScope,
     index: number,
     initial: AnswerValueType<TType> | null = null,
@@ -53,14 +53,14 @@ export class AnswerInstance<TType extends AnswerType>
         ),
       ) ?? [];
 
-    this.children.replace(children);
+    this.nodes.replace(children);
     this.value = initial;
   }
 
   @computed
   get responseAnswer(): QuestionnaireResponseItemAnswer | null {
     const fragment = this.buildValueFragment();
-    const childItems = this.children.flatMap((child) => child.responseItems);
+    const childItems = this.nodes.flatMap((child) => child.responseItems);
     const hasValue = Object.keys(fragment).length > 0;
 
     if (!hasValue && childItems.length === 0) {
@@ -78,7 +78,7 @@ export class AnswerInstance<TType extends AnswerType>
   get expressionAnswer(): QuestionnaireResponseItemAnswer | undefined {
     const fragment = this.buildValueFragment();
     const hasValue = Object.keys(fragment).length > 0;
-    const childItems = this.children.flatMap((child) => child.expressionItems);
+    const childItems = this.nodes.flatMap((child) => child.expressionItems);
 
     if (!hasValue && childItems.length === 0) {
       return undefined;

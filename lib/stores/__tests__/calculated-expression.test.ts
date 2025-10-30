@@ -3,11 +3,11 @@ import { runInAction } from "mobx";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isQuestion } from "../../utils.ts";
 import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 const bmiQuestionnaire: Questionnaire = {
   resourceType: "Questionnaire",
@@ -58,9 +58,9 @@ describe("calculatedExpression", () => {
     const bmiStore = form.scope.lookupNode("bmi");
 
     if (
-      !isQuestion(heightStore) ||
-      !isQuestion(weightStore) ||
-      !isQuestion(bmiStore)
+      !isQuestionNode(heightStore) ||
+      !isQuestionNode(weightStore) ||
+      !isQuestionNode(bmiStore)
     ) {
       throw new Error("Expected questions");
     }
@@ -101,9 +101,9 @@ describe("calculatedExpression", () => {
     const bmiStore = form.scope.lookupNode("bmi");
 
     if (
-      !isQuestion(heightStore) ||
-      !isQuestion(weightStore) ||
-      !isQuestion(bmiStore)
+      !isQuestionNode(heightStore) ||
+      !isQuestionNode(weightStore) ||
+      !isQuestionNode(bmiStore)
     ) {
       throw new Error("Expected questions");
     }
@@ -158,7 +158,7 @@ describe("calculatedExpression", () => {
     const aStore = form.scope.lookupNode("a");
     const bStore = form.scope.lookupNode("b");
 
-    if (!isQuestion(aStore) || !isQuestion(bStore)) {
+    if (!isQuestionNode(aStore) || !isQuestionNode(bStore)) {
       throw new Error("Expected question stores");
     }
 
@@ -191,7 +191,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const multiStore = form.scope.lookupNode("multi");
 
-    if (!isQuestion(multiStore)) {
+    if (!isQuestionNode(multiStore)) {
       throw new Error("Expected question store");
     }
 
@@ -248,15 +248,15 @@ describe("calculatedExpression", () => {
     const base = form.scope.lookupNode("base");
     const derived = form.scope.lookupNode("derived");
 
-    if (!isQuestion(base) || !isQuestion(derived)) {
+    if (!isQuestionNode(base) || !isQuestionNode(derived)) {
       throw new Error("Expected question stores");
     }
 
-    const mirror = derived.answers[0]?.children.find(
+    const mirror = derived.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestion(mirror)) {
+    if (!mirror || !isQuestionNode(mirror)) {
       throw new Error("Expected mirror descendant question");
     }
 
@@ -284,7 +284,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const resultStore = form.scope.lookupNode("result");
 
-    if (!isQuestion(resultStore)) {
+    if (!isQuestionNode(resultStore)) {
       throw new Error("Expected result question store");
     }
 
@@ -319,7 +319,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const resultStore = form.scope.lookupNode("result");
 
-    if (!isQuestion(resultStore)) {
+    if (!isQuestionNode(resultStore)) {
       throw new Error("Expected result question store");
     }
 
@@ -399,9 +399,9 @@ describe("calculatedExpression", () => {
     const bmiStore = form.scope.lookupNode("bmi");
 
     if (
-      !isQuestion(heightStore) ||
-      !isQuestion(weightStore) ||
-      !isQuestion(bmiStore)
+      !isQuestionNode(heightStore) ||
+      !isQuestionNode(weightStore) ||
+      !isQuestionNode(bmiStore)
     ) {
       throw new Error("Expected questions");
     }
@@ -437,7 +437,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const resultStore = form.scope.lookupNode("result");
 
-    if (!isQuestion(resultStore)) {
+    if (!isQuestionNode(resultStore)) {
       throw new Error("Expected result question store");
     }
 

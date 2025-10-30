@@ -8,11 +8,9 @@ import type {
 } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import {
-  isNonRepeatingGroup,
-  isQuestion,
-  isRepeatingGroup,
-} from "../../utils.ts";
+import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 describe("response generation", () => {
   it("falls back to a local Questionnaire reference when canonical URL is absent", () => {
@@ -31,8 +29,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("nickname");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, "Oli");
 
@@ -72,8 +70,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const flag = form.scope.lookupNode("internal-flag");
-    expect(flag && isQuestion(flag)).toBe(true);
-    if (!flag || !isQuestion(flag)) {
+    expect(flag && isQuestionNode(flag)).toBe(true);
+    if (!flag || !isQuestionNode(flag)) {
       return;
     }
 
@@ -122,10 +120,15 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const toggle = form.scope.lookupNode("toggle");
     const extra = form.scope.lookupNode("extra");
-    expect(toggle && extra && isQuestion(toggle) && isQuestion(extra)).toBe(
-      true,
-    );
-    if (!toggle || !extra || !isQuestion(toggle) || !isQuestion(extra)) {
+    expect(
+      toggle && extra && isQuestionNode(toggle) && isQuestionNode(extra),
+    ).toBe(true);
+    if (
+      !toggle ||
+      !extra ||
+      !isQuestionNode(toggle) ||
+      !isQuestionNode(extra)
+    ) {
       return;
     }
 
@@ -139,9 +142,9 @@ describe("response generation", () => {
     toggle.setAnswer(0, false);
 
     expect(extra.isEnabled).toBe(false);
-    expect(
-      form.response?.item?.some((item) => item.linkId === "extra"),
-    ).toBe(false);
+    expect(form.response?.item?.some((item) => item.linkId === "extra")).toBe(
+      false,
+    );
   });
 
   it("omits QuestionnaireResponse.item when no answerable content is populated", () => {
@@ -160,8 +163,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("notes");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -186,8 +189,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("first-name");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, "Alice");
 
@@ -226,8 +229,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("ack");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, true);
 
@@ -264,11 +267,11 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("demographics");
-    expect(group && isNonRepeatingGroup(group)).toBe(true);
-    if (!group || !isNonRepeatingGroup(group)) return;
-    const question = group.children.at(0);
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+    if (!group || !isNonRepeatingGroupNode(group)) return;
+    const question = group.nodes.at(0);
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, true);
 
@@ -309,8 +312,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("allergies");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     question.addAnswer("Peanuts");
     question.addAnswer("Dust");
@@ -354,8 +357,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
-    expect(group && isRepeatingGroup(group)).toBe(true);
-    if (!group || !isRepeatingGroup(group)) return;
+    expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+    if (!group || !isRepeatingGroupWrapper(group)) return;
 
     group.addInstance();
 
@@ -390,26 +393,27 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
-    expect(group && isRepeatingGroup(group)).toBe(true);
-    if (!group || !isRepeatingGroup(group)) return;
+    expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+    if (!group || !isRepeatingGroupWrapper(group)) return;
 
     group.addInstance();
     group.addInstance();
 
-    const firstInstance = group.instances.at(0);
-    const secondInstance = group.instances.at(1);
+    const firstInstance = group.nodes.at(0);
+    const secondInstance = group.nodes.at(1);
     if (!firstInstance || !secondInstance) {
       expect(firstInstance).toBeDefined();
       expect(secondInstance).toBeDefined();
       return;
     }
 
-    const firstQuestion = firstInstance.children.at(0);
-    const secondQuestion = secondInstance.children.at(0);
-    expect(firstQuestion && isQuestion(firstQuestion)).toBe(true);
-    expect(secondQuestion && isQuestion(secondQuestion)).toBe(true);
+    const firstQuestion = firstInstance.nodes.at(0);
+    const secondQuestion = secondInstance.nodes.at(0);
+    expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
+    expect(secondQuestion && isQuestionNode(secondQuestion)).toBe(true);
     if (!firstQuestion || !secondQuestion) return;
-    if (!isQuestion(firstQuestion) || !isQuestion(secondQuestion)) return;
+    if (!isQuestionNode(firstQuestion) || !isQuestionNode(secondQuestion))
+      return;
 
     firstQuestion.setAnswer(0, "Asthma");
     secondQuestion.setAnswer(0, "Diabetes");
@@ -468,16 +472,16 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("follow-up");
-    expect(question && isQuestion(question)).toBe(true);
-    if (!question || !isQuestion(question)) return;
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
 
     const answer = question.answers.at(0);
     expect(answer).toBeDefined();
     if (!answer) return;
 
-    const child = answer.children.find((child) => child.linkId === "detail");
-    expect(child && isQuestion(child)).toBe(true);
-    if (!child || !isQuestion(child)) return;
+    const child = answer.nodes.find((child) => child.linkId === "detail");
+    expect(child && isQuestionNode(child)).toBe(true);
+    if (!child || !isQuestionNode(child)) return;
 
     child.setAnswer(0, "Allergies reviewed and no issues noted.");
 
@@ -653,8 +657,8 @@ describe("response generation", () => {
 
         const form = new FormStore(questionnaire);
         const question = form.scope.lookupNode("answer");
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
 
         question.setAnswer(0, value as never);
 

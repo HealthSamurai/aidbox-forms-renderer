@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isQuestion } from "../../utils.ts";
 import {
   makeCalculatedExpression,
   makeInitialExpression,
 } from "./expression-fixtures.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 describe("initialExpression", () => {
   it("runs once when the item first becomes enabled", () => {
@@ -39,7 +39,7 @@ describe("initialExpression", () => {
     const gate = form.scope.lookupNode("gate");
     const name = form.scope.lookupNode("name");
 
-    if (!gate || !name || !isQuestion(gate) || !isQuestion(name)) {
+    if (!gate || !name || !isQuestionNode(gate) || !isQuestionNode(name)) {
       throw new Error("Expected question stores");
     }
 
@@ -85,15 +85,15 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const answer = form.scope.lookupNode("answer");
 
-    if (!isQuestion(answer)) {
+    if (!isQuestionNode(answer)) {
       throw new Error("Expected question store");
     }
 
-    const mirror = answer.answers[0]?.children.find(
+    const mirror = answer.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestion(mirror)) {
+    if (!mirror || !isQuestionNode(mirror)) {
       throw new Error("Expected mirror descendant question");
     }
 
@@ -116,7 +116,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const target = form.scope.lookupNode("target");
 
-    if (!target || !isQuestion(target)) {
+    if (!target || !isQuestionNode(target)) {
       throw new Error("Expected question store");
     }
 
@@ -147,7 +147,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const target = form.scope.lookupNode("target");
 
-    if (!target || !isQuestion(target)) {
+    if (!target || !isQuestionNode(target)) {
       throw new Error("Expected question store");
     }
 
@@ -181,7 +181,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const target = form.scope.lookupNode("target");
 
-    if (!target || !isQuestion(target)) {
+    if (!target || !isQuestionNode(target)) {
       throw new Error("Expected target question");
     }
 

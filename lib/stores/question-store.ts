@@ -3,9 +3,10 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  IFormStore,
-  INodeStore,
-  IQuestionStore,
+  ICoreNode,
+  IForm,
+  INode,
+  IQuestionNode,
   IScope,
 } from "./types.ts";
 import {
@@ -34,7 +35,7 @@ import {
 
 export class QuestionStore<T extends AnswerType = AnswerType>
   extends AbstractNodeStore
-  implements IQuestionStore<T>
+  implements IQuestionNode<T>
 {
   @observable.shallow
   readonly answers = observable.array<IAnswerInstance<AnswerValueType<T>>>([], {
@@ -48,9 +49,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private userOverridden = false;
 
   constructor(
-    form: IFormStore,
+    form: IForm,
     template: QuestionnaireItem,
-    parentStore: INodeStore | null,
+    parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
@@ -70,8 +71,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.setupExpressionReactions();
   }
 
-  override get type() {
-    return super.type as T;
+  @computed
+  get type() {
+    return this.template.type as T;
+  }
+
+  @computed
+  get repeats() {
+    return !!this.template.repeats;
   }
 
   private maxAllowed(): number {
@@ -122,15 +129,15 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @action
-  private ensureBaselineAnswers() {
+  private ensureBaselineAnswers(force = false) {
     if (this.repeats) {
-      while (this.answers.length < this.minOccurs && this.canAdd) {
+      while (this.answers.length < this.minOccurs && (force || this.canAdd)) {
         this.pushAnswer(null);
       }
       return;
     }
 
-    if (this.answers.length === 0 && this.canAdd) {
+    if (this.answers.length === 0 && (force || this.canAdd)) {
       this.pushAnswer(null);
     }
   }
@@ -141,7 +148,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private detectInitialOverride() {
-    if (!this.expressionRegistry.calculated || this.readOnly) {
+    const registry = this.expressionRegistry;
+    if (!registry?.calculated || this.readOnly) {
       return;
     }
 
@@ -150,7 +158,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const calculated = this.normalizeExpressionValues(
-      this.expressionRegistry.calculated.value,
+      registry.calculated.value,
     );
     if (calculated.length === 0 || !this.answersMatch(calculated)) {
       this.markUserOverridden();
@@ -158,11 +166,16 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private setupExpressionReactions() {
-    const { initial, calculated } = this.expressionRegistry;
+    const registry = this.expressionRegistry;
+    if (!registry) {
+      return;
+    }
+
+    const { initial, calculated } = registry;
     if (initial) {
       reaction(
         () => [this.isEnabled, initial.value, this.hasContent],
-        this.applyInitialValue,
+        () => this.applyInitialValue(),
         {
           name: `${this.key}:apply-initial-value-reaction`,
           equals: comparer.structural,
@@ -174,7 +187,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (calculated) {
       reaction(
         () => [this.isEnabled, this.userOverridden, calculated.value],
-        this.applyCalculatedValue,
+        () => this.applyCalculatedValue(),
         {
           name: `${this.key}:apply-calculated-value-reaction`,
           equals: comparer.structural,
@@ -184,9 +197,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
   }
 
-  @action.bound
+  @action
   private applyInitialValue() {
-    const { initial } = this.expressionRegistry;
+    const initial = this.expressionRegistry?.initial;
     if (!initial) return;
 
     if (!this.isEnabled || this.initialApplied) {
@@ -214,7 +227,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       });
     } else {
       const coerced = values[0] ?? null;
-      this.ensureBaselineAnswers();
+      this.ensureBaselineAnswers(true);
       const answer = this.answers[0];
       if (answer) {
         answer.value = coerced;
@@ -223,9 +236,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.initialApplied = true;
   }
 
-  @action.bound
+  @action
   private applyCalculatedValue() {
-    const { calculated } = this.expressionRegistry;
+    const calculated = this.expressionRegistry?.calculated;
     if (!calculated) return;
 
     if (!this.isEnabled || this.userOverridden) {
@@ -244,10 +257,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       if (this.repeats) {
         this.syncRepeatingAnswers(values);
       } else {
-        this.ensureBaselineAnswers();
+        this.ensureBaselineAnswers(true);
         const answer = this.answers[0];
         if (answer) {
-          answer.value = values[0];
+          answer.value = values[0] ?? null;
         }
       }
       return false;
@@ -366,8 +379,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     fallback: number | undefined,
   ): number | undefined {
     if (Array.isArray(candidate)) {
-      for (let index = candidate.length - 1; index >= 0; index -= 1) {
-        const parsed = this.parseNumber(candidate[index]);
+      const entries: unknown[] = candidate;
+      for (let index = entries.length - 1; index >= 0; index -= 1) {
+        const parsed = this.parseNumber(entries[index]);
         if (parsed != null) {
           return parsed;
         }
@@ -384,8 +398,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     fallback: string | undefined,
   ): string | undefined {
     if (Array.isArray(candidate)) {
-      for (let index = candidate.length - 1; index >= 0; index -= 1) {
-        const value = candidate[index];
+      const entries: unknown[] = candidate;
+      for (let index = entries.length - 1; index >= 0; index -= 1) {
+        const value = entries[index];
         if (typeof value === "string") {
           return value;
         }
@@ -404,8 +419,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     fallback: Quantity | undefined,
   ): Quantity | undefined {
     if (Array.isArray(candidate)) {
-      for (let index = candidate.length - 1; index >= 0; index -= 1) {
-        const value = candidate[index];
+      const entries: unknown[] = candidate;
+      for (let index = entries.length - 1; index >= 0; index -= 1) {
+        const value = entries[index];
         if (value && typeof value === "object" && isQuantity(value)) {
           return value;
         }
@@ -481,11 +497,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "integer": {
         const bounds = getIntegerBounds(this.template);
         const min = this.resolveNumberBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveNumberBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateNumericValue(answer.value, index, min, max);
@@ -493,11 +509,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "decimal": {
         const bounds = getDecimalBounds(this.template);
         const min = this.resolveNumberBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveNumberBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateNumericValue(answer.value, index, min, max);
@@ -505,11 +521,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "date": {
         const bounds = getDateBounds(this.template);
         const min = this.resolveStringBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -517,11 +533,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "dateTime": {
         const bounds = getDateTimeBounds(this.template);
         const min = this.resolveStringBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -529,11 +545,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "time": {
         const bounds = getTimeBounds(this.template);
         const min = this.resolveStringBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveStringBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateComparableValue(answer.value, index, min, max);
@@ -541,11 +557,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "quantity": {
         const bounds = getQuantityBounds(this.template);
         const min = this.resolveQuantityBound(
-          this.expressionRegistry.minValue?.value,
+          this.expressionRegistry?.minValue?.value,
           bounds.min,
         );
         const max = this.resolveQuantityBound(
-          this.expressionRegistry.maxValue?.value,
+          this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
         return this.validateQuantityValue(answer.value, index, min, max);
@@ -741,4 +757,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     return [item];
   }
+}
+
+// todo: consider TType in runtime
+export function isQuestionNode<TType extends AnswerType = AnswerType>(
+  it: ICoreNode | undefined,
+): it is IQuestionNode<TType> {
+  return it instanceof QuestionStore;
 }

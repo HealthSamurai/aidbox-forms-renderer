@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { isQuestion } from "../../utils.ts";
 import {
   makeCalculatedExpression,
   makeEnableExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {
@@ -48,8 +48,8 @@ describe("enableWhenExpression", () => {
     if (
       !control ||
       !dependent ||
-      !isQuestion(control) ||
-      !isQuestion(dependent)
+      !isQuestionNode(control) ||
+      !isQuestionNode(dependent)
     ) {
       throw new Error("Expected question stores");
     }
@@ -107,15 +107,15 @@ describe("enableWhenExpression", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (!isQuestion(control) || !isQuestion(dependent)) {
+    if (!isQuestionNode(control) || !isQuestionNode(dependent)) {
       throw new Error("Expected question stores");
     }
 
-    const mirror = dependent.answers[0]?.children.find(
+    const mirror = dependent.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestion(mirror)) {
+    if (!mirror || !isQuestionNode(mirror)) {
       throw new Error("Expected descendant mirror question");
     }
 
@@ -139,12 +139,12 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestion(controlled)) {
+    if (!controlled || !isQuestionNode(controlled)) {
       throw new Error("Expected question store");
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry.enableWhen;
+    const slot = controlled.expressionRegistry?.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -169,12 +169,12 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestion(controlled)) {
+    if (!controlled || !isQuestionNode(controlled)) {
       throw new Error("Expected question store");
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry.enableWhen;
+    const slot = controlled.expressionRegistry?.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -199,12 +199,12 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestion(controlled)) {
+    if (!controlled || !isQuestionNode(controlled)) {
       throw new Error("Expected question store");
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry.enableWhen;
+    const slot = controlled.expressionRegistry?.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -232,7 +232,7 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestion(controlled)) {
+    if (!controlled || !isQuestionNode(controlled)) {
       throw new Error("Expected question store");
     }
 
@@ -281,7 +281,7 @@ describe("enableWhenExpression", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (!isQuestion(control) || !isQuestion(dependent)) {
+    if (!isQuestionNode(control) || !isQuestionNode(dependent)) {
       throw new Error("Expected question stores");
     }
 

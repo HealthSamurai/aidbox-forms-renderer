@@ -8,12 +8,10 @@ import type {
 } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import {
-  isDisplay,
-  isNonRepeatingGroup,
-  isQuestion,
-  isRepeatingGroup,
-} from "../../utils.ts";
+import { isDisplayNode } from "../display-store.ts";
+import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
+import { isQuestionNode } from "../question-store.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -52,7 +50,7 @@ describe("initialization", () => {
 
     it("creates node stores for each top-level item", () => {
       const form = createStore();
-      expect(form.children).toHaveLength(3);
+      expect(form.nodes).toHaveLength(3);
     });
 
     it("indexes linkIds for top-level and nested items", () => {
@@ -83,7 +81,7 @@ describe("initialization", () => {
       const introStore = form.scope.lookupNode("intro");
       expect(introStore).toBeDefined();
       if (!introStore) throw new Error("intro node is missing");
-      expect(isDisplay(introStore)).toBe(true);
+      expect(isDisplayNode(introStore)).toBe(true);
     });
 
     it("preserves the path key for the display store", () => {
@@ -148,27 +146,27 @@ describe("initialization", () => {
 
     it("creates a group store with child nodes", () => {
       const singleGroupStore = getGroupStore();
-      expect(isNonRepeatingGroup(singleGroupStore)).toBe(true);
-      if (!isNonRepeatingGroup(singleGroupStore)) return;
-      expect(singleGroupStore.children).toHaveLength(2);
+      expect(isNonRepeatingGroupNode(singleGroupStore)).toBe(true);
+      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      expect(singleGroupStore.nodes).toHaveLength(2);
     });
 
     it("hydrates question answers within the group", () => {
       const singleGroupStore = getGroupStore();
-      if (!isNonRepeatingGroup(singleGroupStore)) return;
-      const groupQuestion = singleGroupStore.children.at(0);
+      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      const groupQuestion = singleGroupStore.nodes.at(0);
       expect(groupQuestion?.key).toBe("_/_single-group_/_group-question");
-      expect(groupQuestion && isQuestion(groupQuestion)).toBe(true);
-      if (!groupQuestion || !isQuestion(groupQuestion)) return;
+      expect(groupQuestion && isQuestionNode(groupQuestion)).toBe(true);
+      if (!groupQuestion || !isQuestionNode(groupQuestion)) return;
       expect(groupQuestion.answers).toHaveLength(1);
       expect(groupQuestion.answers.at(0)?.value).toBe("Inside group");
     });
 
     it("retains display child content inside the group", () => {
       const singleGroupStore = getGroupStore();
-      if (!isNonRepeatingGroup(singleGroupStore)) return;
-      const groupNote = singleGroupStore.children.at(1);
-      expect(groupNote && isDisplay(groupNote)).toBe(true);
+      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      const groupNote = singleGroupStore.nodes.at(1);
+      expect(groupNote && isDisplayNode(groupNote)).toBe(true);
       expect(groupNote?.key).toBe("_/_single-group_/_group-note");
     });
 
@@ -204,20 +202,19 @@ describe("initialization", () => {
       it("still materializes child nodes from the template", () => {
         const form = createMissingGroupStore();
         const group = form.scope.lookupNode("single-group");
-        expect(group && isNonRepeatingGroup(group)).toBe(true);
-        if (!group || !isNonRepeatingGroup(group)) return;
-        expect(group.children.map((child) => child.linkId)).toEqual([
-          "required-question",
-        ]);
+        expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+        if (!group || !isNonRepeatingGroupNode(group)) return;
+        const childIds = group.nodes.map((child) => child.linkId);
+        expect(childIds).toEqual(["required-question"]);
       });
 
       it("seeds required questions with empty answers", () => {
         const form = createMissingGroupStore();
         const group = form.scope.lookupNode("single-group");
-        if (!group || !isNonRepeatingGroup(group)) return;
-        const question = group.children.at(0);
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        if (!group || !isNonRepeatingGroupNode(group)) return;
+        const question = group.nodes.at(0);
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         expect(question.answers).toHaveLength(1);
         expect(question.answers.at(0)?.value).toBeNull();
       });
@@ -283,39 +280,39 @@ describe("initialization", () => {
 
     it("creates one instance per response item", () => {
       const repeatingGroupStore = getGroupStore();
-      expect(isRepeatingGroup(repeatingGroupStore)).toBe(true);
-      if (!isRepeatingGroup(repeatingGroupStore)) return;
-      expect(repeatingGroupStore.instances).toHaveLength(2);
-      expect(repeatingGroupStore.instances.at(0)?.children).toHaveLength(1);
-      expect(repeatingGroupStore.instances.at(1)?.children).toHaveLength(1);
+      expect(isRepeatingGroupWrapper(repeatingGroupStore)).toBe(true);
+      if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
+      expect(repeatingGroupStore.nodes).toHaveLength(2);
+      expect(repeatingGroupStore.nodes.at(0)?.nodes).toHaveLength(1);
+      expect(repeatingGroupStore.nodes.at(1)?.nodes).toHaveLength(1);
     });
 
     it("respects add/remove guards based on cardinality", () => {
       const repeatingGroupStore = getGroupStore();
-      if (!isRepeatingGroup(repeatingGroupStore)) return;
+      if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
       expect(repeatingGroupStore.canAdd).toBe(true);
       expect(repeatingGroupStore.canRemove).toBe(true);
     });
 
     it("hydrates repeating child question answers", () => {
       const repeatingGroupStore = getGroupStore();
-      if (!isRepeatingGroup(repeatingGroupStore)) return;
-      const [firstInstance, secondInstance] = repeatingGroupStore.instances;
-      const firstRepeat = firstInstance?.children.at(0);
-      const secondRepeat = secondInstance?.children.at(0);
-      expect(firstRepeat && isQuestion(firstRepeat)).toBe(true);
-      expect(secondRepeat && isQuestion(secondRepeat)).toBe(true);
+      if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
+      const [firstInstance, secondInstance] = repeatingGroupStore.nodes;
+      const firstRepeat = firstInstance?.nodes.at(0);
+      const secondRepeat = secondInstance?.nodes.at(0);
+      expect(firstRepeat && isQuestionNode(firstRepeat)).toBe(true);
+      expect(secondRepeat && isQuestionNode(secondRepeat)).toBe(true);
       if (!firstRepeat || !secondRepeat) return;
-      if (!isQuestion(firstRepeat) || !isQuestion(secondRepeat)) return;
+      if (!isQuestionNode(firstRepeat) || !isQuestionNode(secondRepeat)) return;
       expect(firstRepeat.answers.at(0)?.value).toBe("2024-01-01");
       expect(secondRepeat.answers.at(0)?.value).toBe("2024-02-01");
     });
 
     it("assigns unique path keys per instance child", () => {
       const repeatingGroupStore = getGroupStore();
-      if (!isRepeatingGroup(repeatingGroupStore)) return;
-      const childPaths = repeatingGroupStore.instances
-        .map((instance) => instance.children.at(0)?.key)
+      if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
+      const childPaths = repeatingGroupStore.nodes
+        .map((instance) => instance.nodes.at(0)?.key)
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
       childPaths.forEach((path) => {
@@ -328,13 +325,13 @@ describe("initialization", () => {
       const form = createStore();
       expect(form.scope.lookupNode("repeat-question")).toBeUndefined();
       const group = form.scope.lookupNode("repeating-group");
-      expect(group && isRepeatingGroup(group)).toBe(true);
-      if (!group || !isRepeatingGroup(group)) return;
-      const [firstInstance, secondInstance] = group.instances;
+      expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+      if (!group || !isRepeatingGroupWrapper(group)) return;
+      const [firstInstance, secondInstance] = group.nodes;
       const firstChild = firstInstance?.scope.lookupNode("repeat-question");
       const secondChild = secondInstance?.scope.lookupNode("repeat-question");
-      expect(firstChild && isQuestion(firstChild)).toBe(true);
-      expect(secondChild && isQuestion(secondChild)).toBe(true);
+      expect(firstChild && isQuestionNode(firstChild)).toBe(true);
+      expect(secondChild && isQuestionNode(secondChild)).toBe(true);
       if (!firstChild || !secondChild) return;
       expect(firstChild.key).not.toBe(secondChild.key);
     });
@@ -380,15 +377,15 @@ describe("initialization", () => {
 
       it("seeds the minimum number of empty instances", () => {
         const group = getEmptyRepeatingGroup();
-        expect(isRepeatingGroup(group)).toBe(true);
-        if (!isRepeatingGroup(group)) return;
-        expect(group.instances).toHaveLength(2);
+        expect(isRepeatingGroupWrapper(group)).toBe(true);
+        if (!isRepeatingGroupWrapper(group)) return;
+        expect(group.nodes).toHaveLength(2);
         expect(
-          group.instances.every((instance) => instance.children.length === 1),
+          group.nodes.every((instance) => instance.nodes.length === 1),
         ).toBe(true);
-        const firstQuestion = group.instances.at(0)?.children.at(0);
-        expect(firstQuestion && isQuestion(firstQuestion)).toBe(true);
-        if (firstQuestion && isQuestion(firstQuestion)) {
+        const firstQuestion = group.nodes.at(0)?.nodes.at(0);
+        expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
+        if (firstQuestion && isQuestionNode(firstQuestion)) {
           expect(firstQuestion.answers).toHaveLength(1);
           expect(firstQuestion.answers.at(0)?.value).toBeNull();
         }
@@ -396,13 +393,13 @@ describe("initialization", () => {
 
       it("disallows removing below the minimum", () => {
         const group = getEmptyRepeatingGroup();
-        if (!isRepeatingGroup(group)) return;
+        if (!isRepeatingGroupWrapper(group)) return;
         expect(group.canRemove).toBe(false);
       });
 
       it("still allows adding until reaching maxOccurs", () => {
         const group = getEmptyRepeatingGroup();
-        if (!isRepeatingGroup(group)) return;
+        if (!isRepeatingGroupWrapper(group)) return;
         expect(group.canAdd).toBe(true);
       });
     });
@@ -461,16 +458,16 @@ describe("initialization", () => {
       it("prevents adding new instances when maxOccurs reached", () => {
         const form = createMaxGroupStore();
         const group = form.scope.lookupNode("repeating-group");
-        expect(group && isRepeatingGroup(group)).toBe(true);
-        if (!group || !isRepeatingGroup(group)) return;
-        expect(group.instances).toHaveLength(2);
+        expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+        if (!group || !isRepeatingGroupWrapper(group)) return;
+        expect(group.nodes).toHaveLength(2);
         expect(group.canAdd).toBe(false);
       });
 
       it("allows removing because above the minimum", () => {
         const form = createMaxGroupStore();
         const group = form.scope.lookupNode("repeating-group");
-        if (!group || !isRepeatingGroup(group)) return;
+        if (!group || !isRepeatingGroupWrapper(group)) return;
         expect(group.canRemove).toBe(true);
       });
     });
@@ -512,12 +509,12 @@ describe("initialization", () => {
 
     it("creates a question store for the questionnaire item", () => {
       const singleQuestionStore = getQuestionStore();
-      expect(isQuestion(singleQuestionStore)).toBe(true);
+      expect(isQuestionNode(singleQuestionStore)).toBe(true);
     });
 
     it("hydrates a single answer from the response", () => {
       const singleQuestionStore = getQuestionStore();
-      if (!isQuestion(singleQuestionStore)) return;
+      if (!isQuestionNode(singleQuestionStore)) return;
       expect(singleQuestionStore.answers).toHaveLength(1);
       expect(singleQuestionStore.answers.at(0)?.value).toBe(true);
     });
@@ -548,8 +545,8 @@ describe("initialization", () => {
       it("ensures a placeholder answer exists", () => {
         const form = createMissingAnswerStore();
         const question = form.scope.lookupNode("single-question");
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         expect(question.answers).toHaveLength(1);
         expect(question.answers.at(0)?.value).toBeNull();
       });
@@ -557,7 +554,7 @@ describe("initialization", () => {
       it("prevents removal when at minimum occurrences", () => {
         const form = createMissingAnswerStore();
         const question = form.scope.lookupNode("single-question");
-        if (!question || !isQuestion(question)) return;
+        if (!question || !isQuestionNode(question)) return;
         expect(question.canRemove).toBe(false);
       });
     });
@@ -646,7 +643,7 @@ describe("initialization", () => {
             {
               linkId,
               text: "Target",
-              type: type!,
+              type,
             },
           ],
         };
@@ -665,8 +662,8 @@ describe("initialization", () => {
 
         const form = new FormStore(questionnaire, response);
         const question = form.scope.lookupNode(linkId);
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         expect(question.answers).toHaveLength(1);
         expect(question.answers.at(0)?.value).toEqual(expected);
       });
@@ -711,14 +708,14 @@ describe("initialization", () => {
 
     it("creates a repeating question store", () => {
       const repeatingQuestionStore = getQuestionStore();
-      expect(isQuestion(repeatingQuestionStore)).toBe(true);
-      if (!isQuestion(repeatingQuestionStore)) return;
+      expect(isQuestionNode(repeatingQuestionStore)).toBe(true);
+      if (!isQuestionNode(repeatingQuestionStore)) return;
       expect(repeatingQuestionStore.repeats).toBe(true);
     });
 
     it("hydrates all response answers", () => {
       const repeatingQuestionStore = getQuestionStore();
-      if (!isQuestion(repeatingQuestionStore)) return;
+      if (!isQuestionNode(repeatingQuestionStore)) return;
       expect(repeatingQuestionStore.answers.map((a) => a.value)).toEqual([
         1, 42,
       ]);
@@ -726,7 +723,7 @@ describe("initialization", () => {
 
     it("allows additional answers within cardinality bounds", () => {
       const repeatingQuestionStore = getQuestionStore();
-      if (!isQuestion(repeatingQuestionStore)) return;
+      if (!isQuestionNode(repeatingQuestionStore)) return;
       expect(repeatingQuestionStore.canAdd).toBe(true);
       expect(repeatingQuestionStore.canRemove).toBe(true);
     });
@@ -785,15 +782,16 @@ describe("initialization", () => {
         const form = createNestedStore();
         expect(form.scope.lookupNode("follow-up")).toBeUndefined();
         const question = form.scope.lookupNode("repeating-question");
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         const [firstAnswer, secondAnswer] = question.answers;
         const scopedFirst = firstAnswer.scope.lookupNode("follow-up");
         const scopedSecond = secondAnswer.scope.lookupNode("follow-up");
-        expect(scopedFirst && isQuestion(scopedFirst)).toBe(true);
-        expect(scopedSecond && isQuestion(scopedSecond)).toBe(true);
+        expect(scopedFirst && isQuestionNode(scopedFirst)).toBe(true);
+        expect(scopedSecond && isQuestionNode(scopedSecond)).toBe(true);
         if (!scopedFirst || !scopedSecond) return;
-        if (!isQuestion(scopedFirst) || !isQuestion(scopedSecond)) return;
+        if (!isQuestionNode(scopedFirst) || !isQuestionNode(scopedSecond))
+          return;
         expect(scopedFirst.key).toMatch(
           /^_\/_repeating-question_\/_\d+_\/_follow-up$/,
         );
@@ -829,8 +827,8 @@ describe("initialization", () => {
       it("seeds empty answers to meet minOccurs", () => {
         const form = createMissingAnswersStore();
         const question = form.scope.lookupNode("repeating-question");
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         expect(question.answers).toHaveLength(2);
         expect(question.answers.every((answer) => answer.value === null)).toBe(
           true,
@@ -840,14 +838,14 @@ describe("initialization", () => {
       it("disallows removal until above the minimum", () => {
         const form = createMissingAnswersStore();
         const question = form.scope.lookupNode("repeating-question");
-        if (!question || !isQuestion(question)) return;
+        if (!question || !isQuestionNode(question)) return;
         expect(question.canRemove).toBe(false);
       });
 
       it("permits adding more answers while below maxOccurs", () => {
         const form = createMissingAnswersStore();
         const question = form.scope.lookupNode("repeating-question");
-        if (!question || !isQuestion(question)) return;
+        if (!question || !isQuestionNode(question)) return;
         expect(question.canAdd).toBe(true);
       });
     });
@@ -885,8 +883,8 @@ describe("initialization", () => {
       it("prevents adding new answers beyond maxOccurs", () => {
         const form = createAtMaxStore();
         const question = form.scope.lookupNode("repeating-question");
-        expect(question && isQuestion(question)).toBe(true);
-        if (!question || !isQuestion(question)) return;
+        expect(question && isQuestionNode(question)).toBe(true);
+        if (!question || !isQuestionNode(question)) return;
         expect(question.answers).toHaveLength(2);
         expect(question.canAdd).toBe(false);
       });
@@ -894,7 +892,7 @@ describe("initialization", () => {
       it("still permits removing when above minOccurs", () => {
         const form = createAtMaxStore();
         const question = form.scope.lookupNode("repeating-question");
-        if (!question || !isQuestion(question)) return;
+        if (!question || !isQuestionNode(question)) return;
         expect(question.canRemove).toBe(true);
       });
     });
@@ -953,27 +951,27 @@ describe("initialization", () => {
 
     it("creates parent question answers with nested children arrays", () => {
       const parentQuestionStore = getParentStore();
-      expect(isQuestion(parentQuestionStore)).toBe(true);
-      if (!isQuestion(parentQuestionStore)) return;
+      expect(isQuestionNode(parentQuestionStore)).toBe(true);
+      if (!isQuestionNode(parentQuestionStore)) return;
       expect(parentQuestionStore.answers).toHaveLength(1);
       const answer = parentQuestionStore.answers.at(0);
       expect(answer?.value).toBe("Top level answer");
-      expect(answer?.children).toBeDefined();
+      expect(answer?.nodes).toBeDefined();
     });
 
     it("assigns child stores with composed path keys", () => {
       const parentQuestionStore = getParentStore();
-      if (!isQuestion(parentQuestionStore)) return;
-      const childStore = parentQuestionStore.answers.at(0)?.children?.at(0);
+      if (!isQuestionNode(parentQuestionStore)) return;
+      const childStore = parentQuestionStore.answers.at(0)?.nodes?.at(0);
       expect(childStore?.key).toBe("_/_parent-question_/_child-follow-up");
     });
 
     it("hydrates nested child answers", () => {
       const parentQuestionStore = getParentStore();
-      if (!isQuestion(parentQuestionStore)) return;
-      const childStore = parentQuestionStore.answers.at(0)?.children?.at(0);
-      expect(childStore && isQuestion(childStore)).toBe(true);
-      if (!childStore || !isQuestion(childStore)) return;
+      if (!isQuestionNode(parentQuestionStore)) return;
+      const childStore = parentQuestionStore.answers.at(0)?.nodes?.at(0);
+      expect(childStore && isQuestionNode(childStore)).toBe(true);
+      if (!childStore || !isQuestionNode(childStore)) return;
       expect(childStore.answers.at(0)?.value).toBe(false);
     });
 
@@ -1010,12 +1008,12 @@ describe("initialization", () => {
       it("creates a placeholder answer with nested children", () => {
         const form = createNoParentAnswerStore();
         const parent = form.scope.lookupNode("parent-question");
-        expect(parent && isQuestion(parent)).toBe(true);
-        if (!parent || !isQuestion(parent)) return;
+        expect(parent && isQuestionNode(parent)).toBe(true);
+        if (!parent || !isQuestionNode(parent)) return;
         expect(parent.answers).toHaveLength(1);
-        const childStore = parent.answers.at(0)?.children?.at(0);
-        expect(childStore && isQuestion(childStore)).toBe(true);
-        if (!childStore || !isQuestion(childStore)) return;
+        const childStore = parent.answers.at(0)?.nodes?.at(0);
+        expect(childStore && isQuestionNode(childStore)).toBe(true);
+        if (!childStore || !isQuestionNode(childStore)) return;
         expect(childStore.answers).toHaveLength(1);
         expect(childStore.answers.at(0)?.value).toBeNull();
       });
@@ -1082,12 +1080,12 @@ describe("initialization", () => {
       it("creates node stores for each nested level", () => {
         const form = createDeepStore();
         const parent = form.scope.lookupNode("parent-question");
-        expect(parent && isQuestion(parent)).toBe(true);
-        if (!parent || !isQuestion(parent)) return;
-        const group = parent.answers.at(0)?.children?.at(0);
-        expect(group && isNonRepeatingGroup(group)).toBe(true);
-        if (!group || !isNonRepeatingGroup(group)) return;
-        const grandchild = group.children.at(0);
+        expect(parent && isQuestionNode(parent)).toBe(true);
+        if (!parent || !isQuestionNode(parent)) return;
+        const group = parent.answers.at(0)?.nodes?.at(0);
+        expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+        if (!group || !isNonRepeatingGroupNode(group)) return;
+        const grandchild = group.nodes.at(0);
         expect(grandchild?.key).toBe(
           "_/_parent-question_/_child-group_/_grandchild-question",
         );
@@ -1096,12 +1094,12 @@ describe("initialization", () => {
       it("hydrates the grandchild answer value", () => {
         const form = createDeepStore();
         const parent = form.scope.lookupNode("parent-question");
-        if (!parent || !isQuestion(parent)) return;
-        const group = parent.answers.at(0)?.children?.at(0);
-        if (!group || !isNonRepeatingGroup(group)) return;
-        const grandchild = group.children.at(0);
-        expect(grandchild && isQuestion(grandchild)).toBe(true);
-        if (!grandchild || !isQuestion(grandchild)) return;
+        if (!parent || !isQuestionNode(parent)) return;
+        const group = parent.answers.at(0)?.nodes?.at(0);
+        if (!group || !isNonRepeatingGroupNode(group)) return;
+        const grandchild = group.nodes.at(0);
+        expect(grandchild && isQuestionNode(grandchild)).toBe(true);
+        if (!grandchild || !isQuestionNode(grandchild)) return;
         expect(grandchild.answers.at(0)?.value).toBe(true);
       });
     });

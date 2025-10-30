@@ -1,8 +1,9 @@
 import {
-  IFormStore,
+  ICoreNode,
+  IForm,
+  INode,
+  INonRepeatingGroupNode,
   IScope,
-  INodeStore,
-  INonRepeatingGroupStore,
 } from "./types.ts";
 import { computed, observable } from "mobx";
 import {
@@ -16,25 +17,25 @@ import { makeIssue } from "../utils.ts";
 
 export class NonRepeatingGroupStore
   extends AbstractNodeStore
-  implements INonRepeatingGroupStore
+  implements INonRepeatingGroupNode
 {
   @observable.shallow
-  children = observable.array<INodeStore>([], {
+  nodes = observable.array<ICoreNode>([], {
     deep: false,
     name: "NonRepeatingGroupStore.children",
   });
 
   constructor(
-    form: IFormStore,
+    form: IForm,
     template: QuestionnaireItem,
-    parentStore: INodeStore | null,
+    parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
 
-    this.children.replace(
+    this.nodes.replace(
       this.template.item?.map((item) =>
         this.form.createNodeStore(
           item,
@@ -49,19 +50,9 @@ export class NonRepeatingGroupStore
     );
   }
 
-  override get type() {
-    return super.type as "group";
-  }
-
-  override get repeats() {
-    return false as const;
-  }
-
   protected override computeIssues(): OperationOutcomeIssue[] {
     if (!this.readOnly && this.minOccurs > 0) {
-      const occur = this.children.some(
-        (child) => child.responseItems.length > 0,
-      );
+      const occur = this.nodes.some((child) => child.responseItems.length > 0);
 
       if (!occur) {
         return [
@@ -77,12 +68,12 @@ export class NonRepeatingGroupStore
   }
 
   @computed
-  override get responseItems() {
+  override get responseItems(): QuestionnaireResponseItem[] {
     if (!this.isEnabled) {
       return [];
     }
 
-    const childItems = this.children.flatMap((child) => child.responseItems);
+    const childItems = this.nodes.flatMap((child) => child.responseItems);
 
     if (childItems.length === 0) {
       return [];
@@ -99,7 +90,7 @@ export class NonRepeatingGroupStore
 
   @computed
   override get expressionItems(): QuestionnaireResponseItem[] {
-    const childItems = this.children.flatMap((child) => child.expressionItems);
+    const childItems = this.nodes.flatMap((child) => child.expressionItems);
     const item: QuestionnaireResponseItem = {
       linkId: this.linkId,
       text: this.text,
@@ -111,4 +102,10 @@ export class NonRepeatingGroupStore
 
     return [item];
   }
+}
+
+export function isNonRepeatingGroupNode(
+  it: ICoreNode | undefined,
+): it is INonRepeatingGroupNode {
+  return it instanceof NonRepeatingGroupStore;
 }

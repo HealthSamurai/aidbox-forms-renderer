@@ -4,13 +4,13 @@ import { observer } from "mobx-react-lite";
 import type {
   AnswerType,
   AnswerValueType,
-  IQuestionStore,
+  IQuestionNode,
 } from "../../stores/types.ts";
 import { Button } from "../controls/button.tsx";
 import { Answer, RowRenderProps } from "./answer.tsx";
 
 export type AnswerListProps<T extends AnswerType> = {
-  item: IQuestionStore<T>;
+  item: IQuestionNode<T>;
   renderRow: (p: RowRenderProps<AnswerValueType<T>>) => ReactElement;
 };
 

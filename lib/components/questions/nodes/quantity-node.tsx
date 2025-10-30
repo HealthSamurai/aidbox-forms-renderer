@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { NumberInput } from "../../controls/number-input.tsx";
@@ -9,7 +9,7 @@ import { ItemErrors } from "../../common/item-errors.tsx";
 export const QuantityNode = observer(function QuantityNode({
   item,
 }: {
-  item: IQuestionStore<"quantity">;
+  item: IQuestionNode<"quantity">;
 }) {
   return (
     <div className="af-item af-item-quantity" data-linkid={item.linkId}>

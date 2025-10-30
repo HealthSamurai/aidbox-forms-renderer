@@ -1,10 +1,19 @@
 import "./item-errors.css";
 import { observer } from "mobx-react-lite";
-import { INodeStore } from "../../stores/types.ts";
+import {
+  IDisplayNode,
+  INonRepeatingGroupNode,
+  IQuestionNode,
+  IRepeatingGroupNode,
+} from "../../stores/types.ts";
 import { getItemErrorId } from "../../utils.ts";
 
 interface ItemErrorsProps {
-  item: INodeStore;
+  item:
+    | IQuestionNode
+    | IRepeatingGroupNode
+    | INonRepeatingGroupNode
+    | IDisplayNode;
 }
 
 export const ItemErrors = observer(function ItemErrors({

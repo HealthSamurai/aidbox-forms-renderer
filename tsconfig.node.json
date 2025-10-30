@@ -21,6 +21,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
+    "postcss.config.ts",
     "vite.config.ts"
   ]
 }

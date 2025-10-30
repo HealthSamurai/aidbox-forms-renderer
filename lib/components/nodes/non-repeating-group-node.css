@@ -1,16 +1,11 @@
 .af-group {
-  border: 1px solid #cbd5f5;
+  border: 1px solid var(--af-border-color, #d1d5db);
   border-radius: 0.5rem;
   padding: 1rem;
-}
-
-.af-group > legend {
-  padding: 0 0.25rem;
-  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .af-group-children {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
 }

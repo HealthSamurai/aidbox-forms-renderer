@@ -1,67 +1,76 @@
+import { computed, observable, runInAction } from "mobx";
 import {
   ExpressionEnvironment,
-  IBaseNodeStore,
+  IBaseNode,
   IExpressionEnvironmentProvider,
-  IFormStore,
-  INodeStore,
+  IForm,
+  INode,
   IScope,
 } from "./types.ts";
 import {
+  Extension,
   OperationOutcomeIssue,
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
-  QuestionnaireResponseItem,
 } from "fhir/r5";
-import { computed, makeObservable, observable, runInAction } from "mobx";
+import { CoreAbstractNode } from "./core-abstract-node.ts";
+import { ExpressionRegistry } from "./expression-registry.ts";
 import {
   booleanify,
   evaluateEnableWhenCondition,
   EXT,
   findExtension,
-  isQuestion,
 } from "../utils.ts";
-import { ExpressionRegistry } from "./expression-registry.ts";
+import { isQuestionNode } from "./question-store.ts";
 
 export abstract class AbstractNodeStore
-  implements IBaseNodeStore, IExpressionEnvironmentProvider
+  extends CoreAbstractNode
+  implements IBaseNode, IExpressionEnvironmentProvider
 {
-  readonly template: QuestionnaireItem;
-  readonly form: IFormStore;
-  readonly parentStore: INodeStore | null;
-  readonly key: string;
-  readonly scope: IScope;
+  protected _scope: IScope;
+  protected _key: string;
+  protected _expressionRegistry: ExpressionRegistry | undefined;
 
   @observable
   private dirty = false;
 
-  readonly expressionRegistry: ExpressionRegistry;
-
   constructor(
-    form: IFormStore,
+    form: IForm,
     template: QuestionnaireItem,
-    parentStore: INodeStore | null,
+    parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
   ) {
-    makeObservable(this);
+    super(form, template, parentStore);
 
-    this.form = form;
-    this.template = template;
-    this.parentStore = parentStore;
-    this.scope = parentScope.extend(false);
-    this.key = `${parentKey}_/_${template.linkId}`;
+    this._scope = this.createScope(parentScope);
+    this._key = this.createKey(parentKey);
 
-    const extensions = [
-      ...(this.template.extension ?? []),
-      ...(this.template.modifierExtension ?? []),
-    ];
+    this.initializeExpressionRegistry(this, [
+      ...(template.extension ?? []),
+      ...(template.modifierExtension ?? []),
+    ]);
+  }
 
-    this.expressionRegistry = new ExpressionRegistry(
-      this.form.coordinator,
-      this.scope,
-      this,
-      extensions,
-    );
+  protected createScope(baseScope: IScope): IScope {
+    return baseScope.extend(false);
+  }
+
+  protected createKey(baseKey: string): string {
+    const link = this.template.linkId ?? "<missing>";
+    return `${baseKey}_/_${link}`;
+  }
+
+  get scope(): IScope {
+    return this._scope;
+  }
+
+  get key(): string {
+    return this._key;
+  }
+
+  get expressionRegistry(): ExpressionRegistry | undefined {
+    return this._expressionRegistry;
   }
 
   @computed
@@ -69,58 +78,10 @@ export abstract class AbstractNodeStore
     return this.scope.mergeEnvironment({
       questionnaire: this.form.questionnaire,
       qitem: this.template,
-      // todo: fix it for repeating group node
       context: this.expressionItems.at(0),
     });
   }
 
-  @computed
-  get isDirty() {
-    return this.dirty;
-  }
-
-  @computed
-  get linkId() {
-    return this.template.linkId!;
-  }
-
-  @computed
-  get type() {
-    return this.template.type!;
-  }
-
-  @computed
-  get text() {
-    return this.template.text;
-  }
-
-  @computed
-  get prefix() {
-    return this.template.prefix;
-  }
-
-  @computed
-  get required() {
-    return !!this.template.required;
-  }
-
-  @computed
-  get readOnly() {
-    return !!this.template.readOnly;
-  }
-
-  @computed
-  get repeats() {
-    return !!this.template.repeats;
-  }
-
-  @computed
-  get help() {
-    // todo: support help from extensions
-    return undefined;
-  }
-
-  // Extensions
   @computed
   get hidden() {
     return findExtension(this.template, EXT.HIDDEN)?.valueBoolean === true;
@@ -140,30 +101,14 @@ export abstract class AbstractNodeStore
   }
 
   @computed
-  get enableWhenExpression() {
-    return findExtension(this.template, EXT.SDC_ENABLE_WHEN_EXPR)
-      ?.valueExpression;
-  }
-
-  @computed
-  get calculatedExpression() {
-    return findExtension(this.template, EXT.SDC_CALCULATED_EXPR)
-      ?.valueExpression;
-  }
-
-  @computed
-  get initialExpression() {
-    return findExtension(this.template, EXT.SDC_INITIAL_EXPR)?.valueExpression;
-  }
-
-  @computed
   get isEnabled() {
     if (this.parentStore && !this.parentStore.isEnabled) {
       return false;
     }
 
-    if (this.expressionRegistry.enableWhen) {
-      return booleanify(this.expressionRegistry.enableWhen.value);
+    const enableWhenSlot = this.expressionRegistry?.enableWhen;
+    if (enableWhenSlot) {
+      return booleanify(enableWhenSlot.value);
     }
 
     const enableWhen = this.template.enableWhen;
@@ -186,29 +131,33 @@ export abstract class AbstractNodeStore
 
   @computed
   get issues(): OperationOutcomeIssue[] {
-    return !this.isEnabled
-      ? []
-      : this.expressionRegistry.issues.concat(
-          this.shouldValidate ? this.computeIssues() : [],
-        );
+    if (!this.isEnabled) {
+      return [];
+    }
+
+    const registryIssues = this.expressionRegistry?.issues ?? [];
+
+    return registryIssues.concat(
+      this.shouldValidate ? this.computeIssues() : [],
+    );
+  }
+
+  @computed
+  get isDirty() {
+    return this.dirty;
   }
 
   markDirty() {
     if (!this.dirty) {
-      // Intentionally wrap the mutation in runInAction instead of decorating the whole
-      // method as @action. Callers may invoke markDirty() outside an action, and we only
-      // want the local state flip inside MobX’s transaction while allowing the recursive
-      // parent propagation to remain lightweight.
       runInAction(() => {
         this.dirty = true;
       });
-      this.parentStore?.markDirty();
+      this.parentStore?.markDirty?.();
     }
   }
 
   clearDirty() {
     if (this.dirty) {
-      // Intentionally wrap the mutation in runInAction - see markDirty() for rationale.
       runInAction(() => {
         this.dirty = false;
       });
@@ -216,7 +165,6 @@ export abstract class AbstractNodeStore
   }
 
   protected get shouldValidate() {
-    // TODO: respect enableWhen/calculated expressions to suppress validation when item is disabled.
     return this.form.isSubmitAttempted || this.isDirty;
   }
 
@@ -224,13 +172,26 @@ export abstract class AbstractNodeStore
     return [];
   }
 
-  abstract get responseItems(): QuestionnaireResponseItem[];
+  protected initializeExpressionRegistry(
+    provider: IExpressionEnvironmentProvider,
+    extensions: Extension[] | undefined,
+  ) {
+    if (!extensions || extensions.length === 0) {
+      this._expressionRegistry = undefined;
+      return;
+    }
 
-  abstract get expressionItems(): QuestionnaireResponseItem[];
+    this._expressionRegistry = new ExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      provider,
+      extensions,
+    );
+  }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {
     const target = this.scope.lookupNode(condition.question);
-    return isQuestion(target)
+    return isQuestionNode(target)
       ? evaluateEnableWhenCondition(condition, target)
       : false;
   }

@@ -5,7 +5,7 @@ import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { TextInput } from "../../controls/text-input.tsx";
 import { Button } from "../../controls/button.tsx";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 import type { Attachment } from "fhir/r5";
 import {
   omit,
@@ -16,7 +16,7 @@ import {
 export const AttachmentNode = observer(function AttachmentNode({
   item,
 }: {
-  item: IQuestionStore<"attachment">;
+  item: IQuestionNode<"attachment">;
 }) {
   return (
     <div className="af-item af-item-attachment" data-linkid={item.linkId}>
@@ -79,7 +79,9 @@ export const AttachmentNode = observer(function AttachmentNode({
               <input
                 id={`${inputId}-file`}
                 type="file"
-                onChange={handleFileChange}
+                onChange={(event) => {
+                  void handleFileChange(event);
+                }}
                 disabled={item.readOnly}
                 aria-labelledby={labelId}
                 aria-describedby={describedById}

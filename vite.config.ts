@@ -8,7 +8,7 @@ import pkg from "./package.json";
 import crypto from "node:crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const peerDependencies = Object.keys(pkg.peerDependencies || {});
+const peerDependencies = Object.keys(pkg.peerDependencies);
 const externalDeps = new Set([...peerDependencies, "react", "react-dom"]);
 const subpathMatchers = [...externalDeps]
   .filter((dep) => !dep.includes("/"))

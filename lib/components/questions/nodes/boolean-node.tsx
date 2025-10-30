@@ -3,7 +3,7 @@ import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { RadioGroup } from "../../controls/radio-group.tsx";
-import { IQuestionStore } from "../../../stores/types.ts";
+import { IQuestionNode } from "../../../stores/types.ts";
 
 const booleanOptions = [
   { value: true, label: "Yes" },
@@ -13,7 +13,7 @@ const booleanOptions = [
 export const BooleanNode = observer(function BooleanNode({
   item,
 }: {
-  item: IQuestionStore<"boolean">;
+  item: IQuestionNode<"boolean">;
 }) {
   return (
     <div className="af-item af-item-boolean" data-linkid={item.linkId}>
