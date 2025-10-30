@@ -124,9 +124,9 @@ export function App() {
 
   const sampleOptions = useMemo(
     () =>
-      demoSamples.map((sample) => ({
+      demoSamples.map((sample, index) => ({
         id: sample.id,
-        label: sample.label,
+        label: `${index + 1}. ${sample.label}`,
       })),
     [],
   );

@@ -31,7 +31,7 @@ export class NonRepeatingGroupStore
     parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
-    responseItems: QuestionnaireResponseItem[] | undefined,
+    responseItem: QuestionnaireResponseItem | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
 
@@ -42,9 +42,7 @@ export class NonRepeatingGroupStore
           this,
           this.scope,
           this.key,
-          responseItems
-            ?.at(0)
-            ?.item?.filter(({ linkId }) => linkId === item.linkId),
+          responseItem?.item,
         ),
       ) || [],
     );

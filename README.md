@@ -41,24 +41,24 @@ Each milestone lists the core features and extensions required to reach full com
 Focus: Establish baseline FHIR Questionnaire support and base rendering logic.
 
 * [ ] **Core Questionnaire Resource**
-    * [ ] Support `Questionnaire.item` elements (text, type, linkId, required, repeats)
-    * [ ] Implement display of `prefix`, `text`, `item.type`
+    * [x] Support `Questionnaire.item` elements (text, type, linkId, required, repeats)
+    * [x] Implement display of `prefix`, `text`, `item.type`
     * [ ] Apply constraints: `minLength`, `maxLength`, `minValue`, `maxValue`, `maxOccurs`
-    * [ ] Enable `readOnly`, `initial`, and `defaultValue` behavior
-    * [ ] Support FHIR `enableWhen` conditions and nested groups
+    * [x] Enable `readOnly`, `initial` behavior
+    * [x] Support FHIR `enableWhen` conditions and nested groups
     * [ ] Render `item.control` and `item.control.displayCategory` extensions (basic)
-* [ ] **Questionnaire Navigation & Layout**
-    * [ ] Implement group hierarchy rendering
+* [ ] **Questionnaire Navigation & Layout*_*_
+    * [x] Implement group hierarchy rendering
     * [ ] Respect `hidden` and `displayCategory` controls
     * [ ] Add label localization and prefix rendering
 * [ ] **Input Controls**
-    * [ ] Map FHIR types → UI components (`string`, `boolean`, `integer`, `choice`, `date`, `quantity`, etc.)
+    * [x] Map FHIR types → UI components (`string`, `boolean`, `integer`, `choice`, `date`, `quantity`, etc.)
     * [ ] Render choice options (`answerOption`, `answerValueSet`)
     * [ ] Support open-choice types
 * [ ] **Basic Validation**
-    * [ ] Validate required questions
-    * [ ] Validate numeric and string bounds
-    * [ ] Validate answer cardinality (`repeats`, `maxOccurs`)
+    * [x] Validate required questions
+    * [x] Validate numeric and string bounds
+    * [x] Validate answer cardinality (`repeats`, `maxOccurs`)
 
 ## ⚙️ **November 2025 — Advanced Form Rendering & Behavior**
 
@@ -69,8 +69,8 @@ Focus: Interactive logic, calculations, adaptive elements, and modular assembly.
     * [ ] Handle `appearance` extension rendering hints
     * [ ] Support `rendering-style`, `rendering-xhtml`, and `markdown` items
 * [ ] **Form Behavior & Calculation**
-    * [ ] Implement calculated expressions via `calculatedExpression`
-    * [ ] Dynamic enablement: `enableWhenExpression`
+    * [x] Implement calculated expressions via `calculatedExpression`
+    * [x] Dynamic enablement: `enableWhenExpression`
     * [ ] Validation expressions: `constraint`, `constraintExpression`
     * [ ] Item visibility & computed display expressions
     * [ ] Value propagation (`derivedFrom`, `answerExpression`)
@@ -81,8 +81,8 @@ Focus: Interactive logic, calculations, adaptive elements, and modular assembly.
     * [ ] Support inclusion of external subforms and library dependencies
 * [ ] **User Interaction Layer**
     * [ ] Autosave progress to `QuestionnaireResponse`
-    * [ ] Support for resuming saved sessions
-    * [ ] Dynamic updates to visible fields based on answers
+    * [x] Support for resuming saved sessions
+    * [x] Dynamic updates to visible fields based on answers
 
 ## 🧩 **December 2025 — Data Population & Extraction**
 
@@ -90,7 +90,7 @@ Focus: Form prefill, structured output mapping, and integration services.
 
 * [ ] **Form Population**
     * [ ] Implement population via:
-        * [ ] `initialExpression`
+        * [x] `initialExpression`
         * [ ] `itemPopulationContext`
         * [ ] `candidateExpression`
     * [ ] Support FHIR `$populate` operation (StructureMap-based)
@@ -100,7 +100,7 @@ Focus: Form prefill, structured output mapping, and integration services.
     * [ ] Map responses → resources using `structureMap`
     * [ ] Handle `extract` extensions: `sdc-questionnaire-extract`, `itemExtractionContext`
 * [ ] **Export and Serialization**
-    * [ ] Generate valid `QuestionnaireResponse`
+    * [x] Generate valid `QuestionnaireResponse`
     * [ ] Support export in JSON and XML
     * [ ] Validate `QuestionnaireResponse` against source `Questionnaire`
 * [ ] **Polish & QA**

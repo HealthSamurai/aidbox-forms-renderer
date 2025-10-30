@@ -33,6 +33,13 @@ import {
   makeIssue,
 } from "../utils.ts";
 
+type AnswerLifecycle =
+  | "pristine"
+  | "template"
+  | "response"
+  | "expression"
+  | "manual";
+
 export class QuestionStore<T extends AnswerType = AnswerType>
   extends AbstractNodeStore
   implements IQuestionNode<T>
@@ -43,10 +50,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     name: "QuestionStore.answers",
   });
 
-  private initialApplied = false;
-
   @observable
-  private userOverridden = false;
+  private lifecycle: AnswerLifecycle = "pristine";
 
   constructor(
     form: IForm,
@@ -54,18 +59,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
-    responseItems: QuestionnaireResponseItem[] | undefined,
+    responseItem: QuestionnaireResponseItem | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
 
-    const first = responseItems?.at(0);
-
-    if (first?.answer) {
-      first.answer.forEach((answer) => {
-        this.pushAnswer(getValue(answer, this.type) ?? null, answer.item);
-      });
+    if (!this.applyResponseValues(responseItem?.answer)) {
+      this.applyTemplateInitialValues();
     }
-
     this.ensureBaselineAnswers();
     this.detectInitialOverride();
     this.setupExpressionReactions();
@@ -149,7 +149,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private detectInitialOverride() {
     const registry = this.expressionRegistry;
-    if (!registry?.calculated || this.readOnly) {
+    if (
+      !registry?.calculated ||
+      this.readOnly ||
+      this.lifecycle !== "response"
+    ) {
       return;
     }
 
@@ -174,8 +178,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const { initial, calculated } = registry;
     if (initial) {
       reaction(
-        () => [this.isEnabled, initial.value, this.hasContent],
-        () => this.applyInitialValue(),
+        () => [this.isEnabled, initial.value, this.hasContent, this.lifecycle],
+        (_arg: unknown, _prev: unknown, reaction) => {
+          if (this.applyInitialExpressionValue()) reaction.dispose();
+        },
         {
           name: `${this.key}:apply-initial-value-reaction`,
           equals: comparer.structural,
@@ -186,8 +192,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     if (calculated) {
       reaction(
-        () => [this.isEnabled, this.userOverridden, calculated.value],
-        () => this.applyCalculatedValue(),
+        () => [this.isEnabled, this.lifecycle, calculated.value],
+        () => this.applyCalculatedExpressionValue(),
         {
           name: `${this.key}:apply-calculated-value-reaction`,
           equals: comparer.structural,
@@ -198,27 +204,64 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @action
-  private applyInitialValue() {
-    const initial = this.expressionRegistry?.initial;
-    if (!initial) return;
-
-    if (!this.isEnabled || this.initialApplied) {
+  private applyTemplateInitialValues() {
+    const entries = this.template.initial;
+    if (!entries || entries.length === 0 || this.answers.length > 0) {
       return;
     }
 
-    if (this.hasContent) {
-      this.initialApplied = true;
-      return;
-    }
+    const values = entries
+      .map((entry) => getValue(entry, this.type))
+      .filter(
+        (value): value is AnswerValueType<T> =>
+          value !== undefined && value !== null,
+      );
 
-    if (initial.value === undefined) {
-      return;
-    }
-
-    const values = this.normalizeExpressionValues(initial.value);
     if (values.length === 0) {
       return;
     }
+
+    let seeded = false;
+
+    if (this.repeats) {
+      const cappedLength = Math.min(values.length, this.maxAllowed());
+      for (let index = 0; index < cappedLength; index += 1) {
+        const value = values[index];
+        this.pushAnswer(
+          value && typeof value === "object" ? structuredClone(value) : value,
+        );
+        seeded = true;
+      }
+    } else {
+      this.ensureBaselineAnswers(true);
+      const answer = this.answers[0];
+      if (!answer) {
+        return;
+      }
+      const initialValue = values[0];
+      answer.value =
+        initialValue && typeof initialValue === "object"
+          ? structuredClone(initialValue)
+          : initialValue;
+      seeded = true;
+    }
+
+    if (seeded) {
+      this.lifecycle = "template";
+    }
+  }
+
+  @action
+  private applyInitialExpressionValue() {
+    const initial = this.expressionRegistry?.initial;
+    if (!initial || !this.isEnabled) return false;
+
+    const seededContent = this.lifecycle === "template";
+    if (this.hasContent && !seededContent) return true;
+    if (initial.value === undefined) return false;
+
+    const values = this.normalizeExpressionValues(initial.value);
+    if (values.length === 0) return false;
 
     if (this.repeats) {
       this.answers.clear();
@@ -233,15 +276,32 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         answer.value = coerced;
       }
     }
-    this.initialApplied = true;
+    this.lifecycle = "expression";
+    return true;
   }
 
   @action
-  private applyCalculatedValue() {
+  private applyResponseValues(
+    answers: QuestionnaireResponseItemAnswer[] | undefined,
+  ): boolean {
+    if (!answers || answers.length === 0) {
+      return false;
+    }
+
+    answers.forEach((answer) => {
+      this.pushAnswer(getValue(answer, this.type) ?? null, answer.item);
+    });
+
+    this.lifecycle = "response";
+    return true;
+  }
+
+  @action
+  private applyCalculatedExpressionValue() {
     const calculated = this.expressionRegistry?.calculated;
     if (!calculated) return;
 
-    if (!this.isEnabled || this.userOverridden) {
+    if (!this.isEnabled || this.lifecycle === "manual") {
       return;
     }
 
@@ -263,6 +323,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           answer.value = values[0] ?? null;
         }
       }
+      this.lifecycle = "expression";
       return false;
     });
   }
@@ -369,8 +430,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private markUserOverridden() {
-    if (!this.userOverridden) {
-      this.userOverridden = true;
+    if (this.lifecycle !== "manual") {
+      this.lifecycle = "manual";
     }
   }
 

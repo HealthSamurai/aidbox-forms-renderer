@@ -12,6 +12,7 @@ import { isDisplayNode } from "../display-store.ts";
 import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
 import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
 import { isQuestionNode } from "../question-store.ts";
+import { makeInitialExpression } from "./expression-fixtures.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -1102,6 +1103,215 @@ describe("initialization", () => {
         if (!grandchild || !isQuestionNode(grandchild)) return;
         expect(grandchild.answers.at(0)?.value).toBe(true);
       });
+    });
+  });
+
+  describe("template initial values", () => {
+    it("seeds non-repeating questions from questionnaire initial values", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "greeting",
+            text: "Greeting",
+            type: "string",
+            initial: [{ valueString: "Hello" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const node = form.scope.lookupNode("greeting");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers).toHaveLength(1);
+      expect(node.answers[0]?.value).toBe("Hello");
+    });
+
+    it("materializes multiple initial values for repeating questions", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "symptom",
+            text: "Symptoms",
+            type: "string",
+            repeats: true,
+            initial: [{ valueString: "Cough" }, { valueString: "Fever" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const node = form.scope.lookupNode("symptom");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers.map((answer) => answer.value)).toEqual([
+        "Cough",
+        "Fever",
+      ]);
+    });
+
+    it("preserves response answers over questionnaire initial values", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "nickname",
+            text: "Nickname",
+            type: "string",
+            initial: [{ valueString: "Buddy" }],
+          },
+        ],
+      };
+
+      const response: QuestionnaireResponse = {
+        resourceType: "QuestionnaireResponse",
+        questionnaire: "#questionnaire",
+        status: "completed",
+        item: [
+          {
+            linkId: "nickname",
+            answer: [{ valueString: "Captain" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire, response);
+      const node = form.scope.lookupNode("nickname");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers).toHaveLength(1);
+      expect(node.answers[0]?.value).toBe("Captain");
+    });
+
+    it("pads answers to minOccurs when template initials underfill", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "symptom",
+            text: "Symptoms",
+            type: "string",
+            repeats: true,
+            extension: [minOccurs(3)],
+            initial: [{ valueString: "Cough" }, { valueString: "Fever" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const node = form.scope.lookupNode("symptom");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers.map((answer) => answer.value)).toEqual([
+        "Cough",
+        "Fever",
+        null,
+      ]);
+      expect(node.canRemove).toBe(false);
+    });
+
+    it("respects maxOccurs when template overflows repeated answers", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "meds",
+            text: "Medications",
+            type: "string",
+            repeats: true,
+            extension: [maxOccurs(2)],
+            initial: [
+              { valueString: "Aspirin" },
+              { valueString: "Ibuprofen" },
+              { valueString: "Naproxen" },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const node = form.scope.lookupNode("meds");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers.map((answer) => answer.value)).toEqual([
+        "Aspirin",
+        "Ibuprofen",
+      ]);
+      expect(node.canAdd).toBe(false);
+    });
+
+    it("allows initialExpression to override template defaults", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "favorite",
+            text: "Favorite color",
+            type: "string",
+            initial: [{ valueString: "Template" }],
+            extension: [makeInitialExpression(undefined, "'Expression'")],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const node = form.scope.lookupNode("favorite");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers.at(0)?.value).toBe("Expression");
+    });
+  });
+
+  describe("read-only questions", () => {
+    it("prefers response answers while remaining immutable", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "readonly",
+            text: "Readonly field",
+            type: "string",
+            readOnly: true,
+            initial: [{ valueString: "Template" }],
+          },
+        ],
+      };
+
+      const response: QuestionnaireResponse = {
+        resourceType: "QuestionnaireResponse",
+        questionnaire: "#questionnaire",
+        status: "completed",
+        item: [
+          {
+            linkId: "readonly",
+            answer: [{ valueString: "Server value" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire, response);
+      const node = form.scope.lookupNode("readonly");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+
+      expect(node.answers.at(0)?.value).toBe("Server value");
+      expect(node.canAdd).toBe(false);
+      expect(node.canRemove).toBe(false);
     });
   });
 });

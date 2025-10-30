@@ -1,0 +1,95 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "static-initials",
+  "status": "active",
+  "title": "Static Initial Values",
+  "description": "Shows how questionnaire.item.initial seeds single and repeating answers, including read-only fields and minOccurs padding.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Static initial values come from the questionnaire item. Edit the nickname, add an extra care-team member, and notice the read-only review date stays locked."
+    },
+    {
+      "linkId": "profile",
+      "type": "group",
+      "text": "Patient profile",
+      "item": [
+        {
+          "linkId": "nickname",
+          "type": "string",
+          "text": "Preferred nickname",
+          "initial": [
+            {
+              "valueString": "Buddy"
+            }
+          ]
+        },
+        {
+          "linkId": "review-date",
+          "type": "date",
+          "text": "Last reviewed",
+          "readOnly": true,
+          "initial": [
+            {
+              "valueDate": "2025-10-30"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "care-team",
+      "type": "group",
+      "text": "Care team contacts",
+      "item": [
+        {
+          "linkId": "team-member",
+          "type": "string",
+          "text": "Team member name",
+          "repeats": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 3
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+              "valueInteger": 4
+            }
+          ],
+          "initial": [
+            {
+              "valueString": "Primary Physician — Dr. Sloan"
+            },
+            {
+              "valueString": "Nurse Navigator — Casey Lee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "vitals",
+      "type": "group",
+      "text": "Baseline vitals",
+      "item": [
+        {
+          "linkId": "baseline-weight",
+          "type": "quantity",
+          "text": "Weight",
+          "initial": [
+            {
+              "valueQuantity": {
+                "value": 72.5,
+                "unit": "kg",
+                "system": "http://unitsofmeasure.org",
+                "code": "kg"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

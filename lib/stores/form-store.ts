@@ -77,9 +77,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
               null,
               this.scope,
               "",
-              this.initialResponse?.item?.filter(
-                ({ linkId }) => linkId === item.linkId,
-              ),
+              this.initialResponse?.item,
             ),
           ),
         );
@@ -123,7 +121,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             parentStore,
             scope,
             parentKey,
-            responseItems,
+            responseItems?.filter(({ linkId }) => linkId === item.linkId),
           );
           scope.registerNode(store);
           return store;
@@ -134,7 +132,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             parentStore,
             scope,
             parentKey,
-            responseItems,
+            responseItems?.find(({ linkId }) => linkId === item.linkId),
           );
           scope.registerNode(store);
           return store;
@@ -160,7 +158,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           parentStore,
           scope,
           parentKey,
-          responseItems,
+          responseItems?.find(({ linkId }) => linkId === item.linkId),
         );
         scope.registerNode(store);
         return store;

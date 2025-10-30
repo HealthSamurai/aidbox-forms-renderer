@@ -204,6 +204,30 @@ describe("calculatedExpression", () => {
     ]);
   });
 
+  it("overwrites template initial values when calculated expressions run", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "result",
+          type: "decimal",
+          initial: [{ valueDecimal: 5 }],
+          extension: [makeCalculatedExpression(undefined, "10")],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const node = form.scope.lookupNode("result");
+
+    if (!node || !isQuestionNode(node)) {
+      throw new Error("Expected result question");
+    }
+
+    expect(node.answers[0]?.value).toBe(10);
+  });
+
   it("allows named calculated expressions to be reused", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
