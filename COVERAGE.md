@@ -1,0 +1,691 @@
+# SDC Feature Catalog
+
+Source: [Structured Data Capture v4.0.0 Artifact List](https://build.fhir.org/ig/HL7/sdc/artifacts.html).
+
+This catalog captures the questionnaire-centric capabilities defined by the HL7 SDC implementation guide so renderer evaluations can reference a consistent feature baseline. The lists group artifacts roughly by the way a renderer would surface or integrate them.
+
+## Abstract Profiles
+
+- [`sdc-questionnairecommon`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnairecommon.html) — Defines common elements for all SDC Questionnaires (regular or adaptive).
+    - parent: [Questionnaire](https://hl7.org/fhir/StructureDefinition/Questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:terminologyServer` → [preferredTerminologyServer](https://hl7.org/fhir/StructureDefinition/preferredTerminologyServer)
+        - [ ] `Questionnaire.extension:versionAlgorithm` → [extension-Questionnaire.versionAlgorithm%5Bx%5D](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.versionAlgorithm%5Bx%5D)
+        - [ ] `Questionnaire.extension:copyrightLabel` → [extension-Questionnaire.copyrightLabel](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.copyrightLabel)
+        - [x] `Questionnaire.item.extension:hidden` → [questionnaire-hidden](https://hl7.org/fhir/StructureDefinition/questionnaire-hidden)
+        - [ ] `Questionnaire.item.extension:terminologyServer` → [preferredTerminologyServer](https://hl7.org/fhir/StructureDefinition/preferredTerminologyServer)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=cnl-0,sdc-2,sdc-3)
+        - [ ] `Questionnaire.url` (constraints=cnl-1)
+        - [ ] `Questionnaire.version` (mustSupport)
+        - [x] `Questionnaire.title` (mustSupport)
+        - [ ] `Questionnaire.status` (mustSupport)
+        - [ ] `Questionnaire.subjectType` (mustSupport)
+        - [x] `Questionnaire.item` (constraints=sdc-1,que-1a,que-1b,que-1c,que-14)
+        - [x] `Questionnaire.item.linkId` (constraints=que-15; mustSupport)
+        - [x] `Questionnaire.item.prefix` (mustSupport)
+        - [x] `Questionnaire.item.type` (mustSupport)
+        - [x] `Questionnaire.item.required` (mustSupport)
+        - [x] `Questionnaire.item.repeats` (mustSupport)
+        - [x] `Questionnaire.item.readOnly` (mustSupport)
+        - [ ] `Questionnaire.item.answerValueSet` (type=canonical)
+        - [ ] `Questionnaire.item.answerOption` (mustSupport)
+        - [ ] `Questionnaire.item.answerOption.value[x]` (mustSupport)
+        - [ ] `Questionnaire.item.initial` (mustSupport)
+        - [ ] `Questionnaire.item.initial.value[x]` (mustSupport)
+        - [x] `Questionnaire.item.item` (mustSupport)
+
+- [`sdc-questionnaireresponsecommon`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaireresponsecommon.html) — Defines common elements for all SDC Questionnaire Responses (regular or adaptive).
+    - parent: [QuestionnaireResponse](https://hl7.org/fhir/StructureDefinition/QuestionnaireResponse)
+    - slices:
+        - [ ] `QuestionnaireResponse.extension:adheresTo` → [workflow-adheresTo](https://hl7.org/fhir/StructureDefinition/workflow-adheresTo)
+        - [ ] `QuestionnaireResponse.extension:triggeredBy` → [workflow-triggeredBy](https://hl7.org/fhir/StructureDefinition/workflow-triggeredBy)
+        - [ ] `QuestionnaireResponse.extension:signature` → [questionnaireresponse-signature](https://hl7.org/fhir/StructureDefinition/questionnaireresponse-signature)
+        - [ ] `QuestionnaireResponse.extension:completionMode` → [questionnaireresponse-completionMode](https://hl7.org/fhir/StructureDefinition/questionnaireresponse-completionMode)
+        - [ ] `QuestionnaireResponse.extension:source` → [extension-QuestionnaireResponse.source](https://hl7.org/fhir/5.0/StructureDefinition/extension-QuestionnaireResponse.source)
+        - [ ] `QuestionnaireResponse.item.extension:itemMedia` → [sdc-questionnaire-itemMedia](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemMedia)
+        - [ ] `QuestionnaireResponse.item.extension:ItemSignature` → [questionnaireresponse-signature](https://hl7.org/fhir/StructureDefinition/questionnaireresponse-signature)
+        - [ ] `QuestionnaireResponse.item.answer.extension:itemAnswerMedia` → [sdc-questionnaire-itemAnswerMedia](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemAnswerMedia)
+        - [ ] `QuestionnaireResponse.item.answer.extension:itemWeight` → [itemWeight](https://hl7.org/fhir/StructureDefinition/itemWeight)
+    - constraints:
+        - [ ] `QuestionnaireResponse` (constraints=sdcqr-1,sdcqr-2,sdcqr-3)
+        - [ ] `QuestionnaireResponse.extension:adheresTo.value[x]` (type=Reference; type=canonical; type=uri)
+        - [ ] `QuestionnaireResponse.extension:triggeredBy.value[x]` (type=Reference; type=canonical; type=uri)
+        - [ ] `QuestionnaireResponse.extension:source.value[x]` (type=Reference)
+        - [ ] `QuestionnaireResponse.identifier` (mustSupport)
+        - [ ] `QuestionnaireResponse.questionnaire` (min=1; mustSupport)
+        - [ ] `QuestionnaireResponse.status` (mustSupport)
+        - [ ] `QuestionnaireResponse.subject` (mustSupport)
+        - [ ] `QuestionnaireResponse.authored` (min=1; mustSupport)
+        - [ ] `QuestionnaireResponse.author` (mustSupport)
+        - [ ] `QuestionnaireResponse.item` (constraints=qrs-2; mustSupport)
+        - [ ] `QuestionnaireResponse.item.linkId` (mustSupport)
+        - [ ] `QuestionnaireResponse.item.text` (mustSupport)
+        - [ ] `QuestionnaireResponse.item.answer` (mustSupport)
+        - [ ] `QuestionnaireResponse.item.answer.value[x]` (mustSupport)
+        - [ ] `QuestionnaireResponse.item.answer.item` (mustSupport)
+        - [ ] `QuestionnaireResponse.item.item` (mustSupport)
+
+## Resource Profiles
+
+- [`sdc-questionnaire-adapt`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-adapt.html) — Defines the metadata that should be present when embedding a adaptive Questionnaire as part of a QuestionnaireResponse
+    - parent: [sdc-questionnairecommon](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnairecommon)
+    - slices:
+        - [ ] `Questionnaire.extension:questionnaireAdaptive` → [sdc-questionnaire-questionnaireAdaptive](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-questionnaireAdaptive)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=sdc-adapt-1)
+        - [ ] `Questionnaire.url` (max=0)
+        - [ ] `Questionnaire.version` (max=0)
+        - [ ] `Questionnaire.derivedFrom` (min=1; max=1; mustSupport)
+        - [ ] `Questionnaire.item` (mustSupport)
+        - [ ] `Questionnaire.item.text` (min=1)
+
+- [`sdc-questionnaire-adapt-srch`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-adapt-srch.html) — Describes the elements that should be exposed in a response to a search for adaptive questionnaires.
+    - parent: [sdc-questionnaire-search](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-search)
+    - slices:
+        - [ ] `Questionnaire.extension:questionnaireAdaptive` → [sdc-questionnaire-questionnaireAdaptive](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-questionnaireAdaptive)
+        - [ ] `Questionnaire.extension:submissionEndpoint` → [sdc-questionnaire-endpoint](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-endpoint)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=sdc-adaptive-1)
+        - [ ] `Questionnaire.item` (max=0)
+
+- [`sdc-questionnaireresponse-adapt`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaireresponse-adapt.html) — Defines how the questionnaire response resource is used to reflect form data within the Structured Data Capture standard.
+    - parent: [sdc-questionnaireresponsecommon](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaireresponsecommon)
+    - constraints:
+        - [ ] `QuestionnaireResponse.contained` (min=1; mustSupport)
+        - [ ] `QuestionnaireResponse.questionnaire` (type=canonical)
+
+- [`sdc-questionnaire-behave`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-behave.html) — Defines additional capabilities for controlling data entry and calculating values within the questionnaire.
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:entryMode` → [sdc-questionnaire-entryMode](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-entryMode)
+        - [ ] `Questionnaire.extension:submissionEndpoint` → [sdc-questionnaire-endpoint](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-endpoint)
+        - [ ] `Questionnaire.extension:signatureRequired` → [questionnaire-signatureRequired](https://hl7.org/fhir/StructureDefinition/questionnaire-signatureRequired)
+        - [ ] `Questionnaire.extension:constraint` → [targetConstraint](https://hl7.org/fhir/StructureDefinition/targetConstraint)
+        - [ ] `Questionnaire.extension:library` → [cqf-library](https://hl7.org/fhir/StructureDefinition/cqf-library)
+        - [ ] `Questionnaire.extension:launchContext` → [sdc-questionnaire-launchContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext)
+        - [x] `Questionnaire.extension:variable` → [variable](https://hl7.org/fhir/StructureDefinition/variable)
+        - [ ] `Questionnaire.extension:assembleDefinitionRoot` → [sdc-questionnaire-assembleDefinitionRoot](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembleDefinitionRoot)
+        - [ ] `Questionnaire.modifierExtension:rendering-criticalExtension` → [sdc-rendering-criticalExtension](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-rendering-criticalExtension)
+        - [ ] `Questionnaire.item.extension:disabledDisplay` → [extension-Questionnaire.item.disabledDisplay](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.item.disabledDisplay)
+        - [ ] `Questionnaire.item.extension:answerExpression` → [sdc-questionnaire-answerExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression)
+        - [ ] `Questionnaire.item.extension:usageMode` → [questionnaire-usageMode](https://hl7.org/fhir/StructureDefinition/questionnaire-usageMode)
+        - [ ] `Questionnaire.item.extension:itemSignatureRequired` → [questionnaire-signatureRequired](https://hl7.org/fhir/StructureDefinition/questionnaire-signatureRequired)
+        - [x] `Questionnaire.item.extension:itemMinOccurs` → [questionnaire-minOccurs](https://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs)
+        - [ ] `Questionnaire.item.extension:itemMinOccurs.value[x].extension:itemMinOccursExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [x] `Questionnaire.item.extension:itemMaxOccurs` → [questionnaire-maxOccurs](https://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs)
+        - [ ] `Questionnaire.item.extension:itemMaxOccurs.value[x].extension:itemMaxOccursExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.extension:minLength` → [minLength](https://hl7.org/fhir/StructureDefinition/minLength)
+        - [ ] `Questionnaire.item.extension:regex` → [regex](https://hl7.org/fhir/StructureDefinition/regex)
+        - [x] `Questionnaire.item.extension:minValue` → [minValue](https://hl7.org/fhir/StructureDefinition/minValue)
+        - [ ] `Questionnaire.item.extension:minValue.value[x].extension:minValueCalculated` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [x] `Questionnaire.item.extension:maxValue` → [maxValue](https://hl7.org/fhir/StructureDefinition/maxValue)
+        - [ ] `Questionnaire.item.extension:maxValue.value[x].extension:maxValueCalculated` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.extension:minQuantity` → [sdc-questionnaire-minQuantity](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minQuantity)
+        - [ ] `Questionnaire.item.extension:minQuantity.value[x].extension:minQuantityCalculated` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.extension:maxQuantity` → [sdc-questionnaire-maxQuantity](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxQuantity)
+        - [ ] `Questionnaire.item.extension:maxQuantity.value[x].extension:maxQuantityCalculated` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.extension:maxDecimalPlaces` → [maxDecimalPlaces](https://hl7.org/fhir/StructureDefinition/maxDecimalPlaces)
+        - [ ] `Questionnaire.item.extension:mimeType` → [mimeType](https://hl7.org/fhir/StructureDefinition/mimeType)
+        - [ ] `Questionnaire.item.extension:maxSize` → [maxSize](https://hl7.org/fhir/StructureDefinition/maxSize)
+        - [ ] `Questionnaire.item.extension:answerOptionsToggleExpression` → [sdc-questionnaire-answerOptionsToggleExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerOptionsToggleExpression)
+        - [ ] `Questionnaire.item.extension:unitOption` → [questionnaire-unitOption](https://hl7.org/fhir/StructureDefinition/questionnaire-unitOption)
+        - [ ] `Questionnaire.item.extension:unitValueSet` → [questionnaire-unitValueSet](https://hl7.org/fhir/StructureDefinition/questionnaire-unitValueSet)
+        - [ ] `Questionnaire.item.extension:unitOpen` → [sdc-questionnaire-unitOpen](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-unitOpen)
+        - [ ] `Questionnaire.item.extension:unitSupplementalSystem` → [sdc-questionnaire-unitSupplementalSystem](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-unitSupplementalSystem)
+        - [ ] `Questionnaire.item.extension:allowedResource` → [questionnaire-referenceResource](https://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource)
+        - [ ] `Questionnaire.item.extension:allowedProfile` → [questionnaire-referenceProfile](https://hl7.org/fhir/StructureDefinition/questionnaire-referenceProfile)
+        - [ ] `Questionnaire.item.extension:candidateExpression` → [sdc-questionnaire-candidateExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-candidateExpression)
+        - [ ] `Questionnaire.item.extension:lookupQuestionnaire` → [sdc-questionnaire-lookupQuestionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-lookupQuestionnaire)
+        - [ ] `Questionnaire.item.extension:itemConstraint` → [targetConstraint](https://hl7.org/fhir/StructureDefinition/targetConstraint)
+        - [x] `Questionnaire.item.extension:initialExpression` → [sdc-questionnaire-initialExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression)
+        - [x] `Questionnaire.item.extension:calculatedExpression` → [sdc-questionnaire-calculatedExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression)
+        - [x] `Questionnaire.item.extension:enableWhenExpression` → [sdc-questionnaire-enableWhenExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression)
+        - [ ] `Questionnaire.item.extension:keyboardType` → [sdc-questionnaire-keyboard](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-keyboard)
+        - [x] `Questionnaire.item.extension:variable` → [variable](https://hl7.org/fhir/StructureDefinition/variable)
+        - [ ] `Questionnaire.item.extension:assembleDefinitionRoot` → [sdc-questionnaire-assembleDefinitionRoot](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembleDefinitionRoot)
+        - [ ] `Questionnaire.item.required.value.extension:requiredExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.repeats.value.extension:repeatsExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.readOnly.value.extension:readOnlyExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.answerValueSet.value.extension:answerValueSetExpression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.answerOption.extension:optionExclusive` → [questionnaire-optionExclusive](https://hl7.org/fhir/StructureDefinition/questionnaire-optionExclusive)
+        - [ ] `Questionnaire.item.answerOption.extension:itemWeight` → [itemWeight](https://hl7.org/fhir/StructureDefinition/itemWeight)
+    - constraints:
+        - [ ] `Questionnaire.item` (constraints=sdc-behave-2,sdc-behave-1,sdc-behave-3)
+        - [x] `Questionnaire.item.enableWhen` (mustSupport)
+        - [x] `Questionnaire.item.enableWhen.question` (mustSupport)
+        - [x] `Questionnaire.item.enableWhen.operator` (mustSupport)
+        - [x] `Questionnaire.item.enableWhen.answer[x]` (mustSupport)
+        - [x] `Questionnaire.item.enableBehavior` (mustSupport)
+
+- [`sdc-questionnaire-render`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-render.html) — Defines additional capabilities for controlling the rendering of the questionnaire.
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.modifierExtension:rendering-criticalExtension` → [sdc-rendering-criticalExtension](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-rendering-criticalExtension)
+        - [ ] `Questionnaire.title.extension:title-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `Questionnaire.title.extension:title-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `Questionnaire.title.extension:title-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `Questionnaire.item.extension:itemOptionalDisplay` → extension
+        - [ ] `Questionnaire.item.extension:itemMedia` → [sdc-questionnaire-itemMedia](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemMedia)
+        - [ ] `Questionnaire.item.extension:itemShortText` → [sdc-questionnaire-shortText](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-shortText)
+        - [ ] `Questionnaire.item.extension:openLabel` → [sdc-questionnaire-openLabel](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-openLabel)
+        - [ ] `Questionnaire.item.extension:itemControl` → [questionnaire-itemControl](https://hl7.org/fhir/StructureDefinition/questionnaire-itemControl)
+        - [ ] `Questionnaire.item.extension:choiceOrientation` → [questionnaire-choiceOrientation](https://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation)
+        - [ ] `Questionnaire.item.extension:displayCategory` → [questionnaire-displayCategory](https://hl7.org/fhir/StructureDefinition/questionnaire-displayCategory)
+        - [ ] `Questionnaire.item.extension:supportHyperlink` → [questionnaire-supportHyperlink](https://hl7.org/fhir/StructureDefinition/questionnaire-supportHyperlink)
+        - [ ] `Questionnaire.item.extension:choiceColumn` → [sdc-questionnaire-choiceColumn](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn)
+        - [ ] `Questionnaire.item.extension:width` → [sdc-questionnaire-width](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-width)
+        - [ ] `Questionnaire.item.extension:sliderStepValue` → [questionnaire-sliderStepValue](https://hl7.org/fhir/StructureDefinition/questionnaire-sliderStepValue)
+        - [ ] `Questionnaire.item.extension:entryFormat` → [entryFormat](https://hl7.org/fhir/StructureDefinition/entryFormat)
+        - [ ] `Questionnaire.item.extension:collapsible` → [sdc-questionnaire-collapsible](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-collapsible)
+        - [ ] `Questionnaire.item.extension:columnCount` → [sdc-questionnaire-columnCount](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-columnCount)
+        - [ ] `Questionnaire.item.extension:keyboardType` → [sdc-questionnaire-keyboard](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-keyboard)
+        - [ ] `Questionnaire.item.prefix.extension:itemLabel-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `Questionnaire.item.prefix.extension:itemLabel-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `Questionnaire.item.prefix.extension:itemLabel-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `Questionnaire.item.text.extension:groupText-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `Questionnaire.item.text.extension:groupText-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `Questionnaire.item.text.extension:groupText-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `Questionnaire.item.extension:styleSensitive` → [rendering-styleSensitive](https://hl7.org/fhir/StructureDefinition/rendering-styleSensitive)
+        - [ ] `Questionnaire.item.text.extension:expression` → [cqf-expression](https://hl7.org/fhir/StructureDefinition/cqf-expression)
+        - [ ] `Questionnaire.item.answerOption.extension:itemAnswerMedia` → [sdc-questionnaire-itemAnswerMedia](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemAnswerMedia)
+        - [ ] `Questionnaire.item.answerOption.extension:optionPrefix` → [questionnaire-optionPrefix](https://hl7.org/fhir/StructureDefinition/questionnaire-optionPrefix)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueCoding.display.extension:optionDisplay-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueCoding.display.extension:optionDisplay-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueCoding.display.extension:optionDisplay-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueString.extension:optionString-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueString.extension:optionString-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueString.extension:optionString-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=sdc-rend-2)
+        - [ ] `Questionnaire.item` (constraints=sdc-rend-1)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueCoding` (type=Coding)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueString` (min=0; max=1; type=string)
+
+- [`sdc-questionnaire-extr-defn`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-extr-defn.html) — Defines elements that allow conversion of a QuestionnaireResponse to a FHIR resource or Bundle of FHIR resources using the Definition-based extraction mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:definitionExtract` → [sdc-questionnaire-definitionExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-definitionExtract)
+        - [ ] `Questionnaire.extension:definitionExtractValue` → [sdc-questionnaire-definitionExtractValue](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-definitionExtractValue)
+        - [ ] `Questionnaire.extension:extractAllocateId` → [sdc-questionnaire-extractAllocateId](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId)
+        - [ ] `Questionnaire.extension:library` → [cqf-library](https://hl7.org/fhir/StructureDefinition/cqf-library)
+        - [ ] `Questionnaire.item.extension:definitionExtract` → [sdc-questionnaire-definitionExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-definitionExtract)
+        - [ ] `Questionnaire.item.extension:definitionExtractValue` → [sdc-questionnaire-definitionExtractValue](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-definitionExtractValue)
+        - [ ] `Questionnaire.item.extension:itemExtractionContext` → [sdc-questionnaire-itemExtractionContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemExtractionContext) *(deprecated; prefer sdc-questionnaire-definitionExtract)*
+        - [ ] `Questionnaire.item.extension:extractAllocateId` → [sdc-questionnaire-extractAllocateId](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+    - constraints:
+        - [ ] `Questionnaire.item.definition` (mustSupport)
+
+- [`sdc-questionnaire-extr-obsn`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-extr-obsn.html) — Defines elements that allow conversion of a QuestionnaireResponse to an Observation resource or Bundle of Observation resources using the Observation-based extraction mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:observationExtract` → [sdc-questionnaire-observationExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationExtract)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+        - [ ] `Questionnaire.item.extension:observationExtract` → [sdc-questionnaire-observationExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationExtract)
+        - [ ] `Questionnaire.item.extension:observationExtractCategory` → [sdc-questionnaire-observation-extract-category](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observation-extract-category)
+        - [ ] `Questionnaire.item.extension:isSubject` → [sdc-questionnaire-isSubject](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-isSubject)
+        - [ ] `Questionnaire.item.extension:observationExtractEntry` → [sdc-questionnaire-observationExtractEntry](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationExtractEntry)
+        - [ ] `Questionnaire.item.code.extension:observationExtract` → [sdc-questionnaire-observationExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationExtract)
+    - constraints:
+        - [ ] `Questionnaire.item` (constraints=sdc-obsn-1)
+        - [ ] `Questionnaire.item.code` (mustSupport)
+
+- [`sdc-questionnaire-extr-smap`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-extr-smap.html) — Defines elements that allow conversion of a QuestionnaireResponse to a FHIR resource or Bundle of FHIR resources using the StructureMap-based extraction mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:targetStructureMap` → [sdc-questionnaire-targetStructureMap](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-targetStructureMap)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+        - [ ] `Questionnaire.item.extension:itemHidden` → [questionnaire-hidden](https://hl7.org/fhir/StructureDefinition/questionnaire-hidden)
+
+- [`sdc-questionnaire-extr-template`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-extr-template.html) — Defines elements that allow conversion of a QuestionnaireResponse to a FHIR resource or Bundle of FHIR resources using the Template-based extraction mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:templateExtract` → [sdc-questionnaire-templateExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract)
+        - [ ] `Questionnaire.extension:templateExtractBundle` → [sdc-questionnaire-templateExtractBundle](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractBundle)
+        - [ ] `Questionnaire.extension:extractContext` → [sdc-questionnaire-templateExtractContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext)
+        - [ ] `Questionnaire.extension:templateExtractValue` → [sdc-questionnaire-templateExtractValue](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue)
+        - [ ] `Questionnaire.extension:extractAllocateId` → [sdc-questionnaire-extractAllocateId](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId)
+        - [ ] `Questionnaire.item.extension:templateExtract` → [sdc-questionnaire-templateExtract](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract)
+        - [ ] `Questionnaire.item.extension:extractContext` → [sdc-questionnaire-templateExtractContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext)
+        - [ ] `Questionnaire.item.extension:templateExtractValue` → [sdc-questionnaire-templateExtractValue](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue)
+        - [ ] `Questionnaire.item.extension:extractAllocateId` → [sdc-questionnaire-extractAllocateId](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=tev-1)
+        - [ ] `Questionnaire.contained` (min=1; mustSupport)
+
+- [`parameters-questionnaire-next-question-in`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-next-question-in.html) — Profile used to validate the parameters that are the input of the 'next question' adaptive questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:questionnaire-response` (min=1; max=1)
+        - [ ] `Parameters.parameter:questionnaire-response.name` (fixedString=questionnaire-response)
+        - [ ] `Parameters.parameter:questionnaire-response.value[x]` (max=0)
+        - [ ] `Parameters.parameter:questionnaire-response.resource` (type=QuestionnaireResponse(sdc-questionnaireresponse-adapt))
+        - [ ] `Parameters.parameter:questionnaire-response.part` (max=0)
+
+- [`parameters-questionnaire-next-question-out`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-next-question-out.html) — Profile used to validate the parameters that are the output of the 'next question' adaptive questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:return` (min=1; max=1)
+        - [ ] `Parameters.parameter:return.name` (fixedString=return)
+        - [ ] `Parameters.parameter:return.value[x]` (max=0)
+        - [ ] `Parameters.parameter:return.resource` (type=QuestionnaireResponse(sdc-questionnaireresponse-adapt))
+        - [ ] `Parameters.parameter:return.part` (max=0)
+
+- [`sdc-questionnaire-pop-exp`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-pop-exp.html) — Defines elements that support auto-population and pre-population of questionnaires using the Expression-based population mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:library` → [cqf-library](https://hl7.org/fhir/StructureDefinition/cqf-library)
+        - [ ] `Questionnaire.extension:launchContext` → [sdc-questionnaire-launchContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext)
+        - [ ] `Questionnaire.extension:itemPopulationContext` → [sdc-questionnaire-itemPopulationContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemPopulationContext)
+        - [ ] `Questionnaire.extension:variable` → [variable](https://hl7.org/fhir/StructureDefinition/variable)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+        - [ ] `Questionnaire.item.extension:itemPopulationContext` → [sdc-questionnaire-itemPopulationContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemPopulationContext)
+        - [ ] `Questionnaire.item.extension:itemVariable` → [variable](https://hl7.org/fhir/StructureDefinition/variable)
+        - [ ] `Questionnaire.item.extension:initialExpression` → [sdc-questionnaire-initialExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression)
+        - [ ] `Questionnaire.item.extension:candidateExpression` → [sdc-questionnaire-candidateExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-candidateExpression)
+        - [ ] `Questionnaire.item.extension:contextExpression` → [sdc-questionnaire-contextExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-contextExpression)
+        - [ ] `Questionnaire.item.extension:itemHidden` → [questionnaire-hidden](https://hl7.org/fhir/StructureDefinition/questionnaire-hidden)
+        - [ ] `Questionnaire.item.extension:choiceColumn` → [sdc-questionnaire-choiceColumn](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn)
+        - [ ] `Questionnaire.item.extension:isSubject` → [sdc-questionnaire-isSubject](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-isSubject)
+    - constraints:
+        - [ ] `Questionnaire.item` (constraints=sdc-pop-1)
+
+- [`sdc-questionnaire-pop-obsn`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-pop-obsn.html) — Defines elements that support auto-population and pre-population of questionnaires using the Observation-based population mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:observationLinkPeriod` → [sdc-questionnaire-observationLinkPeriod](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationLinkPeriod)
+        - [ ] `Questionnaire.item.extension:observationLinkPeriod` → [sdc-questionnaire-observationLinkPeriod](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-observationLinkPeriod)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+        - [ ] `Questionnaire.item.extension:isSubject` → [sdc-questionnaire-isSubject](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-isSubject)
+    - constraints:
+        - [ ] `Questionnaire` (constraints=sdc-pop-2)
+        - [ ] `Questionnaire.item.code` (mustSupport)
+
+- [`sdc-questionnaire-pop-smap`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-pop-smap.html) — Defines elements that support auto-population and pre-population of questionnaires using the StructureMap-based population mechanism
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:launchContext` → [sdc-questionnaire-launchContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext)
+        - [ ] `Questionnaire.extension:sourceQueries` → [sdc-questionnaire-sourceQueries](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-sourceQueries)
+        - [ ] `Questionnaire.extension:sourceStructureMap` → [sdc-questionnaire-sourceStructureMap](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-sourceStructureMap)
+        - [ ] `Questionnaire.item.extension:unit` → [questionnaire-unit](https://hl7.org/fhir/StructureDefinition/questionnaire-unit)
+        - [ ] `Questionnaire.item.extension:itemHidden` → [questionnaire-hidden](https://hl7.org/fhir/StructureDefinition/questionnaire-hidden)
+        - [ ] `Questionnaire.item.extension:isSubject` → [sdc-questionnaire-isSubject](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-isSubject)
+
+- [`parameters-questionnaire-populate-in`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-populate-in.html) — Profile used to validate the parameters that are the input of the $populate questionnaire operations
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters` (constraints=sdc-pop1)
+        - [ ] `Parameters.parameter:identifier` (min=0; max=1)
+        - [ ] `Parameters.parameter:identifier.name` (fixedString=identifier)
+        - [ ] `Parameters.parameter:identifier.value[x]` (min=1; type=Identifier)
+        - [ ] `Parameters.parameter:identifier.resource` (max=0)
+        - [ ] `Parameters.parameter:identifier.part` (max=0)
+        - [ ] `Parameters.parameter:questionnaire` (min=0; max=1)
+        - [ ] `Parameters.parameter:questionnaire.name` (fixedString=questionnaire)
+        - [ ] `Parameters.parameter:questionnaire.value[x]` (type=uri|Reference)
+        - [ ] `Parameters.parameter:questionnaire.resource` (type=Questionnaire)
+        - [ ] `Parameters.parameter:questionnaire.part` (max=0)
+        - [ ] `Parameters.parameter:subject` (min=0; max=1)
+        - [ ] `Parameters.parameter:subject.name` (fixedString=subject)
+        - [ ] `Parameters.parameter:subject.value[x]` (min=1; type=Reference)
+        - [ ] `Parameters.parameter:subject.resource` (max=0)
+        - [ ] `Parameters.parameter:subject.part` (max=0)
+        - [ ] `Parameters.parameter:context` (min=0; max=*)
+        - [ ] `Parameters.parameter:context.name` (fixedString=context)
+        - [ ] `Parameters.parameter:context.value[x]` (max=0)
+        - [ ] `Parameters.parameter:context.resource` (max=0)
+        - [ ] `Parameters.parameter:context.part` (min=2)
+        - [ ] `Parameters.parameter:context.part:name` (min=1; max=1; type=BackboneElement)
+        - [ ] `Parameters.parameter:context.part:name.name` (fixedString=name)
+        - [ ] `Parameters.parameter:context.part:name.value[x]` (min=1; type=string)
+        - [ ] `Parameters.parameter:context.part:name.resource` (max=0)
+        - [ ] `Parameters.parameter:context.part:name.part` (max=0)
+        - [ ] `Parameters.parameter:context.part:content` (min=0; max=*; type=BackboneElement)
+        - [ ] `Parameters.parameter:context.part:content.name` (fixedString=content)
+        - [ ] `Parameters.parameter:context.part:content.value[x]` (type=Reference)
+        - [ ] `Parameters.parameter:context.part:content.part` (max=0)
+        - [ ] `Parameters.parameter:dataEndpoint` (min=0; max=1)
+        - [ ] `Parameters.parameter:dataEndpoint.name` (fixedString=dataEndpoint)
+        - [ ] `Parameters.parameter:dataEndpoint.value[x]` (type=uri|Reference)
+        - [ ] `Parameters.parameter:dataEndpoint.resource` (type=Endpoint)
+        - [ ] `Parameters.parameter:dataEndpoint.part` (max=0)
+        - [ ] `Parameters.parameter:data` (min=0; max=1)
+        - [ ] `Parameters.parameter:data.name` (fixedString=data)
+        - [ ] `Parameters.parameter:data.value[x]` (max=0)
+        - [ ] `Parameters.parameter:data.resource` (min=1; type=Bundle)
+        - [ ] `Parameters.parameter:data.part` (max=0)
+        - [ ] `Parameters.parameter:local` (min=0; max=1)
+        - [ ] `Parameters.parameter:local.name` (fixedString=local)
+        - [ ] `Parameters.parameter:local.value[x]` (min=1; type=boolean)
+        - [ ] `Parameters.parameter:local.resource` (max=0)
+        - [ ] `Parameters.parameter:local.part` (max=0)
+
+- [`parameters-questionnaire-populate-out`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-populate-out.html) — Profile used to validate the parameters that are the output of the $populate questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:response` (min=1; max=1)
+        - [ ] `Parameters.parameter:response.name` (fixedString=response)
+        - [ ] `Parameters.parameter:response.value[x]` (max=0)
+        - [ ] `Parameters.parameter:response.resource` (min=1; type=QuestionnaireResponse(sdc-questionnaireresponse))
+        - [ ] `Parameters.parameter:response.part` (max=0)
+        - [ ] `Parameters.parameter:issues` (min=0; max=1)
+        - [ ] `Parameters.parameter:issues.name` (fixedString=issues)
+        - [ ] `Parameters.parameter:issues.value[x]` (max=0)
+        - [ ] `Parameters.parameter:issues.resource` (min=1; type=OperationOutcome)
+        - [ ] `Parameters.parameter:issues.part` (max=0)
+
+- [`parameters-questionnaire-populate-html-out`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-populate-html-out.html) — Profile used to validate the parameters that are the output of the $populate-link questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:form` (min=1; max=1)
+        - [ ] `Parameters.parameter:form.name` (fixedString=form)
+        - [ ] `Parameters.parameter:form.value[x]` (max=0)
+        - [ ] `Parameters.parameter:form.resource` (min=1; type=Binary)
+        - [ ] `Parameters.parameter:form.part` (max=0)
+        - [ ] `Parameters.parameter:issues` (min=0; max=1)
+        - [ ] `Parameters.parameter:issues.name` (fixedString=issues)
+        - [ ] `Parameters.parameter:issues.value[x]` (max=0)
+        - [ ] `Parameters.parameter:issues.resource` (min=1; type=OperationOutcome)
+        - [ ] `Parameters.parameter:issues.part` (max=0)
+
+- [`parameters-questionnaire-populate-link-out`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-populate-link-out.html) — Profile used to validate the parameters that are the output of the $populate-link questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:link` (min=1; max=1)
+        - [ ] `Parameters.parameter:link.name` (fixedString=link)
+        - [ ] `Parameters.parameter:link.value[x]` (min=1; type=uri)
+        - [ ] `Parameters.parameter:link.resource` (max=0)
+        - [ ] `Parameters.parameter:link.part` (max=0)
+        - [ ] `Parameters.parameter:issues` (min=0; max=1)
+        - [ ] `Parameters.parameter:issues.name` (fixedString=issues)
+        - [ ] `Parameters.parameter:issues.value[x]` (max=0)
+        - [ ] `Parameters.parameter:issues.resource` (min=1; type=OperationOutcome)
+        - [ ] `Parameters.parameter:issues.part` (max=0)
+
+- [`sdc-servicerequest`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-servicerequest.html) — Defines how ServiceRequest is used to ask for a Questionnaire to be completed
+    - parent: [ServiceRequest](https://hl7.org/fhir/StructureDefinition/ServiceRequest)
+    - slices:
+        - [ ] `ServiceRequest.extension:questionnaire` → [sdc-servicerequest-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-servicerequest-questionnaire)
+    - constraints:
+        - [ ] `ServiceRequest.status` (mustSupport)
+        - [ ] `ServiceRequest.intent` (mustSupport)
+        - [ ] `ServiceRequest.doNotPerform` (fixedBoolean=False)
+        - [ ] `ServiceRequest.code` (min=1; mustSupport; patternCodeableConcept={'coding': [{'system': 'http://hl7.org/fhir/uv/sdc/CodeSystem/temp', 'code': 'complete-questionnaire'}]})
+        - [ ] `ServiceRequest.subject` (mustSupport)
+        - [ ] `ServiceRequest.occurrence[x]` (mustSupport)
+        - [ ] `ServiceRequest.requester` (min=1; mustSupport)
+        - [ ] `ServiceRequest.performer` (max=1; mustSupport)
+        - [ ] `ServiceRequest.reasonCode` (mustSupport)
+
+- [`parameters-questionnaire-assemble-in`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-assemble-in.html) — Profile used to validate the parameters that are the input of the 'assemble' questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:questionnaire` (min=1; max=1)
+        - [ ] `Parameters.parameter:questionnaire.name` (fixedString=questionnaire)
+        - [ ] `Parameters.parameter:questionnaire.value[x]` (type=uri|Reference)
+        - [ ] `Parameters.parameter:questionnaire.resource` (type=Questionnaire(sdc-questionnaire-modular))
+        - [ ] `Parameters.parameter:questionnaire.part` (max=0)
+
+- [`parameters-questionnaire-assemble-out`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-assemble-out.html) — Profile used to validate the parameters that are the output of the 'assemble' questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:return` (min=1; max=1)
+        - [ ] `Parameters.parameter:return.name` (fixedString=return)
+        - [ ] `Parameters.parameter:return.value[x]` (max=0)
+        - [ ] `Parameters.parameter:return.resource` (type=Questionnaire(sdc-questionnaire))
+        - [ ] `Parameters.parameter:return.part` (max=0)
+        - [ ] `Parameters.parameter:outcome` (min=0; max=1)
+        - [ ] `Parameters.parameter:outcome.name` (fixedString=outcome)
+        - [ ] `Parameters.parameter:outcome.value[x]` (max=0)
+        - [ ] `Parameters.parameter:outcome.resource` (type=OperationOutcome)
+        - [ ] `Parameters.parameter:outcome.part` (max=0)
+
+- [`parameters-questionnaireresponse-extract-in`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaireresponse-extract-in.html) — Profile used to validate the parameters that are the input of the 'extract' questionnaire response operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter:questionnaire-response` (min=0; max=1)
+        - [ ] `Parameters.parameter:questionnaire-response.name` (fixedString=questionnaire-response)
+        - [ ] `Parameters.parameter:questionnaire-response.value[x]` (max=0)
+        - [ ] `Parameters.parameter:questionnaire-response.resource` (type=QuestionnaireResponse(sdc-questionnaireresponse))
+        - [ ] `Parameters.parameter:questionnaire-response.part` (max=0)
+        - [ ] `Parameters.parameter:questionnaire` (min=0; max=1)
+        - [ ] `Parameters.parameter:questionnaire.name` (fixedString=questionnaire)
+        - [ ] `Parameters.parameter:questionnaire.value[x]` (max=0)
+        - [ ] `Parameters.parameter:questionnaire.resource` (type=Questionnaire(sdc-questionnaire-extr-obsn,sdc-questionnaire-extr-defn,sdc-questionnaire-extr-template,sdc-questionnaire-extr-smap))
+        - [ ] `Parameters.parameter:questionnaire.part` (max=0)
+
+- [`parameters-questionnaire-process-response-in`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-parameters-questionnaire-process-response-in.html) — Profile used to validate the parameters that are the input of the 'process response' questionnaire operation
+    - parent: [Parameters](https://hl7.org/fhir/StructureDefinition/Parameters)
+    - constraints:
+        - [ ] `Parameters.parameter` (min=1)
+        - [ ] `Parameters.parameter:in` (min=1; max=1)
+        - [ ] `Parameters.parameter:in.name` (fixedString=in)
+        - [ ] `Parameters.parameter:in.value[x]` (max=0)
+        - [ ] `Parameters.parameter:in.resource` (type=QuestionnaireResponse(sdc-questionnaireresponse))
+        - [ ] `Parameters.parameter:in.part` (max=0)
+
+- [`sdc-questionnaire`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire.html) — Sets minimum expectations for questionnaire support for SDC-conformant systems for 'standard' (non-adaptive) Questionnaires, regardless of which SDC capabilities they're making use of.
+    - parent: [sdc-questionnairecommon](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnairecommon)
+    - slices:
+        - [ ] `Questionnaire.extension:designNote` → [designNote](https://hl7.org/fhir/StructureDefinition/designNote)
+        - [ ] `Questionnaire.extension:performerType` → [sdc-questionnaire-performerType](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-performerType)
+        - [ ] `Questionnaire.extension:assemble-expectation` → [sdc-questionnaire-assemble-expectation](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assemble-expectation)
+        - [ ] `Questionnaire.item.extension:designNote` → [designNote](https://hl7.org/fhir/StructureDefinition/designNote)
+        - [ ] `Questionnaire.item.extension:itemOptionalDisplay` → [sdc-questionnaire-optionalDisplay](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-optionalDisplay)
+        - [ ] `Questionnaire.item.answerOption.extension:ordinalValue` → [ordinalValue](https://hl7.org/fhir/StructureDefinition/ordinalValue)
+    - constraints:
+        - [ ] `Questionnaire.url` (min=1; mustSupport)
+        - [ ] `Questionnaire.item` (mustSupport)
+        - [ ] `Questionnaire.item.answerValueSet` (mustSupport)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueCoding` (min=0; max=1; type=Coding; constraints=sdc-base-1,sdc-base-2)
+        - [ ] `Questionnaire.item.answerOption.value[x]:valueReference` (min=0; max=1; type=Reference; constraints=sdc-base-4)
+
+- [`sdc-codesystem`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-codesystem.html) — Defines how CodeSystem is used to reflect code lists found in data element defintions and form definitions.
+    - parent: [CodeSystem](https://hl7.org/fhir/StructureDefinition/CodeSystem)
+    - slices:
+        - [ ] `CodeSystem.extension:versionAlgorithm` → [extension-Questionnaire.versionAlgorithm%5Bx%5D](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.versionAlgorithm%5Bx%5D)
+        - [ ] `CodeSystem.modifierExtension:rendering-criticalExtension` → [sdc-rendering-criticalExtension](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-rendering-criticalExtension)
+        - [ ] `CodeSystem.concept.display.extension:conceptDisplayLabel-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `CodeSystem.concept.display.extension:conceptDisplayLabel-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `CodeSystem.concept.display.extension:conceptDisplayLabel-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `CodeSystem.concept.designation.value.extension:conceptDisplayLabel-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `CodeSystem.concept.designation.value.extension:conceptDisplayLabel-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `CodeSystem.concept.designation.value.extension:conceptDisplayLabel-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+    - constraints:
+        - [ ] `CodeSystem` (constraints=sdc-2,sdc-3)
+        - [ ] `CodeSystem.url` (mustSupport)
+        - [ ] `CodeSystem.version` (mustSupport)
+        - [ ] `CodeSystem.status` (mustSupport)
+        - [ ] `CodeSystem.experimental` (mustSupport)
+        - [ ] `CodeSystem.date` (mustSupport)
+        - [ ] `CodeSystem.description` (mustSupport)
+        - [ ] `CodeSystem.caseSensitive` (min=1; mustSupport)
+        - [ ] `CodeSystem.compositional` (max=0)
+        - [ ] `CodeSystem.versionNeeded` (max=0)
+        - [ ] `CodeSystem.content` (mustSupport)
+        - [ ] `CodeSystem.property` (mustSupport)
+        - [ ] `CodeSystem.property.code` (mustSupport)
+        - [ ] `CodeSystem.property.uri` (mustSupport)
+        - [ ] `CodeSystem.property.type` (mustSupport)
+        - [ ] `CodeSystem.concept` (mustSupport)
+        - [ ] `CodeSystem.concept.code` (mustSupport)
+        - [ ] `CodeSystem.concept.display` (mustSupport)
+        - [ ] `CodeSystem.concept.definition` (mustSupport)
+        - [ ] `CodeSystem.concept.property` (mustSupport)
+        - [ ] `CodeSystem.concept.property.code` (mustSupport)
+        - [ ] `CodeSystem.concept.property.value[x]` (mustSupport)
+        - [ ] `CodeSystem.concept.concept` (mustSupport)
+
+- [`sdc-library`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-library.html) — Defines how a Library is used as a logic computable library.
+    - parent: [cqllibrary](https://hl7.org/fhir/StructureDefinition/cqllibrary)
+    - slices:
+        - [ ] `Library.extension:versionAlgorithm` → [extension-Questionnaire.versionAlgorithm%5Bx%5D](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.versionAlgorithm%5Bx%5D)
+    - constraints:
+        - [ ] `Library` (constraints=sdc-2,sdc-3)
+        - [ ] `Library.url` (min=1; mustSupport)
+        - [ ] `Library.version` (mustSupport)
+        - [ ] `Library.name` (min=1; mustSupport)
+        - [ ] `Library.subject[x]` (mustSupport)
+        - [ ] `Library.relatedArtifact` (mustSupport)
+        - [ ] `Library.relatedArtifact.display` (min=1; mustSupport)
+        - [ ] `Library.relatedArtifact.url` (min=1; mustSupport)
+        - [ ] `Library.content` (mustSupport)
+        - [ ] `Library.content:cqlContent` (min=0; max=1; mustSupport)
+        - [ ] `Library.content:cqlContent.contentType` (min=1; mustSupport; patternCode=text/cql)
+        - [ ] `Library.content:cqlContent.data` (min=1; mustSupport)
+        - [ ] `Library.content:fhirpathContent` (min=0; max=1; mustSupport)
+        - [ ] `Library.content:fhirpathContent.contentType` (min=1; mustSupport; patternCode=text/fhirpath)
+        - [ ] `Library.content:fhirpathContent.data` (min=1; mustSupport)
+        - [ ] `Library.content:queryContent` (min=0; max=1; mustSupport)
+        - [ ] `Library.content:queryContent.contentType` (min=1; mustSupport; patternCode=application/x-fhir-query)
+        - [ ] `Library.content:queryContent.data` (min=1; mustSupport)
+
+- [`sdc-questionnaire-modular`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-modular.html) — Indicates expectations for questionnaires that draw their item content (not just codes) from other resources
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - slices:
+        - [ ] `Questionnaire.extension:assemble-expectation` → extension
+        - [ ] `Questionnaire.extension:assembleContext` → [sdc-questionnaire-assembleContext](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembleContext)
+        - [ ] `Questionnaire.item.extension:subQuestionnaire` → [sdc-questionnaire-subQuestionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-subQuestionnaire)
+
+- [`sdc-questionnaire-modular-library`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-modular-library.html) — Indicates expectations for questionnaires that serve as 'question libraries' for other Questionnaires
+    - parent: [sdc-questionnaire](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire)
+    - constraints:
+        - [ ] `Questionnaire.useContext` (min=1)
+        - [ ] `Questionnaire.useContext:library` (min=1; max=1; type=UsageContext(sdc-usagecontext-questionnaire-library))
+
+- [`sdc-questionnaireresponse`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaireresponse.html) — Defines how the questionnaire response resource is used to reflect form data within SDC for 'standard' (i.e. non-adaptive) forms.
+    - parent: [sdc-questionnaireresponsecommon](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaireresponsecommon)
+    - slices:
+        - [ ] `QuestionnaireResponse.questionnaire.extension:questionnaireDisplay` → [display](https://hl7.org/fhir/StructureDefinition/display)
+    - constraints:
+        - [ ] `QuestionnaireResponse.questionnaire` (type=canonical)
+
+- [`sdc-valueset`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-valueset.html) — Defines how ValueSet is used to reflect code lists found in data element defintions and form definitions to be used within the Structured Data Capture standard.
+    - parent: [ValueSet](https://hl7.org/fhir/StructureDefinition/ValueSet)
+    - slices:
+        - [ ] `ValueSet.extension:versionAlgorithm` → [extension-Questionnaire.versionAlgorithm%5Bx%5D](https://hl7.org/fhir/5.0/StructureDefinition/extension-Questionnaire.versionAlgorithm%5Bx%5D)
+        - [ ] `ValueSet.modifierExtension:rendering-criticalExtension` → [sdc-rendering-criticalExtension](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-rendering-criticalExtension)
+        - [ ] `ValueSet.compose.include.concept.extension:conceptLabel` → [valueset-label](https://hl7.org/fhir/StructureDefinition/valueset-label)
+        - [ ] `ValueSet.compose.include.concept.extension:conceptLabel.value[x].extension:code-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.compose.include.concept.extension:conceptLabel.value[x].extension:code-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.compose.include.concept.extension:conceptLabel.value[x].extension:code-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `ValueSet.compose.include.concept.extension:conceptConceptOrder` → [valueset-conceptOrder](https://hl7.org/fhir/StructureDefinition/valueset-conceptOrder)
+        - [ ] `ValueSet.compose.include.concept.display.extension:codeDisplay-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.compose.include.concept.display.extension:codeDisplay-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.compose.include.concept.display.extension:codeDisplay-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `ValueSet.compose.include.concept.designation.extension:designation-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.compose.include.concept.designation.extension:designation-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.compose.include.concept.designation.extension:designation-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `ValueSet.expansion.extension:expansionProperty` → [extension-ValueSet.expansion.property](https://hl7.org/fhir/5.0/StructureDefinition/extension-ValueSet.expansion.property)
+        - [ ] `ValueSet.expansion.contains.extension:expansionLabel` → [valueset-label](https://hl7.org/fhir/StructureDefinition/valueset-label)
+        - [ ] `ValueSet.expansion.contains.extension:expansionLabel.value[x].extension:expansion-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.expansion.contains.extension:expansionLabel.value[x].extension:expansion-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.expansion.contains.extension:expansionLabel.value[x].extension:expansion-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `ValueSet.expansion.contains.extension:conceptConceptOrder` → [valueset-conceptOrder](https://hl7.org/fhir/StructureDefinition/valueset-conceptOrder)
+        - [ ] `ValueSet.expansion.contains.extension:containsProperty` → [extension-ValueSet.expansion.contains.property](https://hl7.org/fhir/5.0/StructureDefinition/extension-ValueSet.expansion.contains.property)
+        - [ ] `ValueSet.expansion.contains.display.extension:expansionDisplay-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.expansion.contains.display.extension:title-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.expansion.contains.display.extension:expansionDisplay-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+        - [ ] `ValueSet.expansion.contains.designation.extension:expansionDesignation-renderingStyle` → [rendering-style](https://hl7.org/fhir/StructureDefinition/rendering-style)
+        - [ ] `ValueSet.expansion.contains.designation.extension:expansionDesignation-markdown` → [rendering-markdown](https://hl7.org/fhir/StructureDefinition/rendering-markdown)
+        - [ ] `ValueSet.expansion.contains.designation.extension:expansionDesignation-xhtml` → [rendering-xhtml](https://hl7.org/fhir/StructureDefinition/rendering-xhtml)
+    - constraints:
+        - [ ] `ValueSet` (constraints=sdc-2,sdc-3)
+        - [ ] `ValueSet.url` (mustSupport)
+        - [ ] `ValueSet.version` (mustSupport)
+        - [ ] `ValueSet.status` (mustSupport)
+        - [ ] `ValueSet.experimental` (mustSupport)
+        - [ ] `ValueSet.date` (mustSupport)
+        - [ ] `ValueSet.description` (mustSupport)
+        - [ ] `ValueSet.immutable` (min=1; mustSupport)
+        - [ ] `ValueSet.compose` (mustSupport)
+        - [ ] `ValueSet.compose.lockedDate` (mustSupport)
+        - [ ] `ValueSet.compose.inactive` (mustSupport)
+        - [ ] `ValueSet.compose.include` (mustSupport)
+        - [ ] `ValueSet.compose.include.system` (mustSupport)
+        - [ ] `ValueSet.compose.include.version` (mustSupport)
+        - [ ] `ValueSet.compose.include.concept` (mustSupport)
+        - [ ] `ValueSet.compose.include.concept.code` (mustSupport)
+        - [ ] `ValueSet.compose.include.concept.display` (mustSupport)
+        - [ ] `ValueSet.compose.include.filter` (mustSupport)
+        - [ ] `ValueSet.compose.include.filter.property` (mustSupport)
+        - [ ] `ValueSet.compose.include.filter.op` (mustSupport)
+        - [ ] `ValueSet.compose.include.filter.value` (mustSupport)
+        - [ ] `ValueSet.compose.include.valueSet` (mustSupport)
+        - [ ] `ValueSet.compose.exclude` (mustSupport)
+        - [ ] `ValueSet.expansion` (mustSupport)
+        - [ ] `ValueSet.expansion.identifier` (mustSupport)
+        - [ ] `ValueSet.expansion.timestamp` (mustSupport)
+        - [ ] `ValueSet.expansion.contains` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.system` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.abstract` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.version` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.code` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.display` (mustSupport)
+        - [ ] `ValueSet.expansion.contains.designation` (type=BackboneElement)
+        - [ ] `ValueSet.expansion.contains.contains` (mustSupport)
+
+- [`sdc-questionnaire-search`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-questionnaire-search.html) — Describes the elements that should be exposed in a response to a search for questionnaires.
+    - parent: [sdc-questionnairecommon](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnairecommon)
+    - slices:
+        - [ ] `Questionnaire.extension:assembledFrom` → [sdc-questionnaire-assembledFrom](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom)
+    - constraints:
+        - [ ] `Questionnaire.identifier` (mustSupport)
+        - [ ] `Questionnaire.title` (min=1)
+        - [ ] `Questionnaire.experimental` (mustSupport)
+        - [ ] `Questionnaire.date` (min=1; mustSupport)
+        - [ ] `Questionnaire.publisher` (mustSupport)
+        - [ ] `Questionnaire.description` (mustSupport)
+        - [ ] `Questionnaire.useContext` (mustSupport; type=UsageContext(sdc-usagecontext))
+        - [ ] `Questionnaire.jurisdiction` (max=1)
+        - [ ] `Questionnaire.purpose` (mustSupport)
+        - [ ] `Questionnaire.copyright` (mustSupport)
+        - [ ] `Questionnaire.code` (max=1; mustSupport)
+
+- [`sdc-task`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-task.html) — Defines how Task is used to ask for a Questionnaire to be completed
+    - parent: [Task](https://hl7.org/fhir/StructureDefinition/Task)
+    - constraints:
+        - [ ] `Task` (constraints=sdc-t1)
+        - [ ] `Task.status` (mustSupport)
+        - [ ] `Task.intent` (mustSupport)
+        - [ ] `Task.code` (min=1; mustSupport; binding=required:task-code)
+        - [ ] `Task.focus` (mustSupport; type=Reference; conditions=sdc-t1)
+        - [ ] `Task.for` (mustSupport)
+        - [ ] `Task.authoredOn` (min=1; mustSupport)
+        - [ ] `Task.requester` (min=1; mustSupport)
+        - [ ] `Task.owner` (mustSupport)
+        - [ ] `Task.reasonCode` (mustSupport)
+        - [ ] `Task.input` (mustSupport)
+        - [ ] `Task.input:questionnaire` (min=0; max=1; mustSupport; conditions=sdc-t1)
+        - [ ] `Task.input:questionnaire.type` (mustSupport; patternCodeableConcept={'coding': [{'system': 'http://hl7.org/fhir/uv/sdc/CodeSystem/temp', 'code': 'questionnaire'}]})
+        - [ ] `Task.input:questionnaire.value[x]` (mustSupport; type=canonical)
+        - [ ] `Task.input:responseEndpoint` (min=0; max=*; mustSupport)
+        - [ ] `Task.input:responseEndpoint.type` (mustSupport; patternCodeableConcept={'coding': [{'system': 'http://hl7.org/fhir/uv/sdc/CodeSystem/temp', 'code': 'response-endpoint'}]})
+        - [ ] `Task.input:responseEndpoint.value[x]` (mustSupport; type=url)
+        - [ ] `Task.output` (mustSupport)
+        - [ ] `Task.output:response` (min=0; max=1; mustSupport)
+        - [ ] `Task.output:response.type` (mustSupport; patternCodeableConcept={'coding': [{'system': 'http://hl7.org/fhir/uv/sdc/CodeSystem/temp', 'code': 'questionnaire-response'}]})
+        - [ ] `Task.output:response.value[x]` (mustSupport; type=Reference)
+
+## Data Type Profiles
+
+- [`sdc-usagecontext`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-usagecontext.html) — Constraints on the codes and values of UsageContext to help ensure consistent usage in SDC Questionnaires
+- [`sdc-usagecontext-questionnaire-library`](https://build.fhir.org/ig/HL7/sdc/StructureDefinition-sdc-usagecontext-questionnaire-library.html) — Indicates that a Questionnaire is intended to be used as a library of reusable items (e.g., questions, groups, displays) during modular form assembly.
+
+## Operation Definitions
+
+- [`Questionnaire-next-question`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-next-question.html) — Returns the next question or set of questions for an adaptive questionnaire
+- [`Questionnaire-assemble`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-assemble.html) — The $assemble operation takes a modular questionnaire (one that references sub-questionnaires and/or relies on definition elements to contain the content for item definitions) and produces the equivalent fully-inline Questionnaire. Full details on the process can be found here.
+- [`Questionnaire-populatehtml`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-populatehtml.html) — Generates an HTML representation of the Questionnaire as a form, possibly partially populated with data
+- [`Questionnaire-populate`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-populate.html) — Generates a QuestionnaireResponse from a Questionnaire, possibly with data partially populated
+- [`Questionnaire-populatelink`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-populatelink.html) — Generates a link to an HTML page that can be used to complete the Questionnaire, possibly partially populated with data
+- [`Questionnaire-process-response`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-Questionnaire-process-response.html) — Allows submission of a QuestionnaireRespone for 'processing' by the target server
+- [`QuestionnaireResponse-extract`](https://build.fhir.org/ig/HL7/sdc/OperationDefinition-QuestionnaireResponse-extract.html) — Converts a QuestionnaireResponse to a clinical or administrative resource or a Transaction Bundle of them

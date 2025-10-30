@@ -30,7 +30,7 @@ export function IntakeForm() {
 
 Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle), `npm test`, `npm run lint`.
 
-
+See [COVERAGE.md](COVERAGE.md) for the detailed SDC feature checklist.
 
 # Development Roadmap (Q4 2025)
 
