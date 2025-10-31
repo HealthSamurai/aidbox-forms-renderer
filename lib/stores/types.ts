@@ -145,6 +145,7 @@ export interface IAnswerInstance<TValue> {
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | undefined;
   readonly scope: IScope;
+  readonly issues: Array<OperationOutcomeIssue>;
 }
 
 export interface IQuestionNode<TType extends AnswerType = AnswerType>
@@ -157,9 +158,12 @@ export interface IQuestionNode<TType extends AnswerType = AnswerType>
   readonly canAdd: boolean;
   readonly canRemove: boolean;
 
+  readonly answerIssues: OperationOutcomeIssue[][];
+
   addAnswer(initial?: AnswerValueType<TType> | null): void;
   removeAnswer(index: number): void;
   setAnswer(index: number, value: AnswerValueType<TType> | null): void;
+  getIssuesForAnswer(answer: IAnswerInstance<AnswerValueType<TType>>): Array<OperationOutcomeIssue>;
 }
 
 export type INode =

@@ -8,6 +8,7 @@ import type {
   IQuestionNode,
 } from "./types.ts";
 import type {
+  OperationOutcomeIssue,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
@@ -55,6 +56,11 @@ export class AnswerInstance<TType extends AnswerType>
 
     this.nodes.replace(children);
     this.value = initial;
+  }
+
+  @computed
+  get issues(): Array<OperationOutcomeIssue> {
+    return this.question.getIssuesForAnswer(this);
   }
 
   @computed

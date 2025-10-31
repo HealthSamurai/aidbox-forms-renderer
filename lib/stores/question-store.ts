@@ -511,6 +511,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.answers.push(answer);
   }
 
+  override get hasErrors(): boolean { 
+    return this.issues.length > 0 || this.answerIssues.some((issues) => issues.length > 0);
+  }
+
   protected override computeIssues(): OperationOutcomeIssue[] {
     if (this.readOnly) {
       return [];
@@ -538,23 +542,42 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         ),
       );
     }
-
-    populatedAnswers.forEach((answer, index) => {
-      issues.push(...this.validateAnswerValue(answer, index));
-    });
-
+    
     return issues;
+  }
+
+  @computed
+  get answerIssues(): OperationOutcomeIssue[][] {
+    const issues: OperationOutcomeIssue[][] = [];
+    this.answers.forEach((answer) => {
+      const answerIssues = this.validateAnswerValue(answer);
+      issues.push(answerIssues);
+    });
+    return issues;
+  }
+
+  getIssuesForAnswer(
+    answer: IAnswerInstance<AnswerValueType<T>>,
+  ): OperationOutcomeIssue[] {
+    if (this.readOnly) {
+      return [];
+    }
+    const index = this.answers.indexOf(answer);
+    if(index < 0 || index >= this.answers.length) {
+      return [];
+    }
+
+    return this.answerIssues[index] || []
   }
 
   private validateAnswerValue(
     answer: IAnswerInstance<AnswerValueType<T>>,
-    index: number,
   ): OperationOutcomeIssue[] {
     // TODO: enforce terminology bindings (answerOption/answerValueSet, open-choice) and attachment/reference specifics.
     switch (this.type) {
       case "string":
       case "text":
-        return this.validateStringValue(answer.value, index);
+        return this.validateStringValue(answer.value);
       case "integer": {
         const bounds = getIntegerBounds(this.template);
         const min = this.resolveNumberBound(
@@ -565,7 +588,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateNumericValue(answer.value, index, min, max);
+        return this.validateNumericValue(answer.value, min, max);
       }
       case "decimal": {
         const bounds = getDecimalBounds(this.template);
@@ -577,7 +600,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateNumericValue(answer.value, index, min, max);
+        return this.validateNumericValue(answer.value, min, max);
       }
       case "date": {
         const bounds = getDateBounds(this.template);
@@ -589,7 +612,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateComparableValue(answer.value, index, min, max);
+        return this.validateComparableValue(answer.value, min, max);
       }
       case "dateTime": {
         const bounds = getDateTimeBounds(this.template);
@@ -601,7 +624,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateComparableValue(answer.value, index, min, max);
+        return this.validateComparableValue(answer.value, min, max);
       }
       case "time": {
         const bounds = getTimeBounds(this.template);
@@ -613,7 +636,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateComparableValue(answer.value, index, min, max);
+        return this.validateComparableValue(answer.value, min, max);
       }
       case "quantity": {
         const bounds = getQuantityBounds(this.template);
@@ -625,7 +648,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           this.expressionRegistry?.maxValue?.value,
           bounds.max,
         );
-        return this.validateQuantityValue(answer.value, index, min, max);
+        return this.validateQuantityValue(answer.value, min, max);
       }
       case "boolean":
         return [];
@@ -647,7 +670,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private validateStringValue(
     value: AnswerValueType<T> | null,
-    index: number,
   ): OperationOutcomeIssue[] {
     if (typeof value !== "string") {
       return [];
@@ -666,7 +688,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} exceeds the maximum length of ${this.template.maxLength}.`,
+          `Answer exceeds the maximum length of ${this.template.maxLength}.`,
         ),
       );
     }
@@ -676,7 +698,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private validateNumericValue(
     value: AnswerValueType<T> | null,
-    index: number,
     min?: number,
     max?: number,
   ): OperationOutcomeIssue[] {
@@ -690,7 +711,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must be greater than or equal to ${min}.`,
+          `Answer must be greater than or equal to ${min}.`,
         ),
       );
     }
@@ -699,7 +720,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must be less than or equal to ${max}.`,
+          `Answer must be less than or equal to ${max}.`,
         ),
       );
     }
@@ -709,7 +730,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private validateComparableValue(
     value: AnswerValueType<T> | null,
-    index: number,
     min?: string,
     max?: string,
   ): OperationOutcomeIssue[] {
@@ -723,7 +743,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must not be earlier than ${min}.`,
+          `Answer must not be earlier than ${min}.`,
         ),
       );
     }
@@ -732,7 +752,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must not be later than ${max}.`,
+          `Answer must not be later than ${max}.`,
         ),
       );
     }
@@ -742,7 +762,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private validateQuantityValue(
     value: AnswerValueType<T> | null,
-    index: number,
     min: Quantity | undefined,
     max: Quantity | undefined,
   ): OperationOutcomeIssue[] {
@@ -756,7 +775,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must be greater than or equal to ${min.value}.`,
+          `Answer must be greater than or equal to ${min.value}.`,
         ),
       );
     }
@@ -765,7 +784,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       issues.push(
         makeIssue(
           "invalid",
-          `Answer #${index + 1} must be less than or equal to ${max.value}.`,
+          `Answer must be less than or equal to ${max.value}.`,
         ),
       );
     }

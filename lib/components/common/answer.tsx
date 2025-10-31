@@ -3,6 +3,7 @@ import { useCallback, ReactElement } from "react";
 import { observer } from "mobx-react-lite";
 import { ItemsList } from "./item-list.tsx";
 import { Button } from "../controls/button.tsx";
+import { AnswerErrors } from "./answer-errors.tsx";
 import {
   getItemDescribedBy,
   getItemLabelId,
@@ -66,6 +67,7 @@ export const Answer = observer(function Answer<T extends AnswerType>({
           </Button>
         </div>
       )}
+      <AnswerErrors answer={answer} />
       {!!answer.nodes?.length && (
         <div className="af-answer-children">
           <ItemsList items={answer.nodes} />

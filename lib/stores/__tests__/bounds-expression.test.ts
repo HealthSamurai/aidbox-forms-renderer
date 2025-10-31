@@ -27,11 +27,11 @@ describe("min/max value expressions", () => {
 
     score.setAnswer(0, 5);
     expect(
-      score.issues.some((issue) => issue.diagnostics?.includes("10")),
+      score.answerIssues.flat().some((issue) => issue.diagnostics?.includes("10")),
     ).toBe(true);
 
     score.setAnswer(0, 15);
-    expect(score.issues).toHaveLength(0);
+    expect(score.answerIssues.some((issues) => issues.length > 0)).toBe(false);
   });
 
   it("records issues when multiple min-value expressions are declared", () => {
@@ -65,7 +65,7 @@ describe("min/max value expressions", () => {
     ).toBe(true);
 
     score.setAnswer(0, 4);
-    expect(score.issues.some((issue) => issue.diagnostics?.includes("5"))).toBe(
+    expect(score.answerIssues.flat().some((issue) => issue.diagnostics?.includes("5"))).toBe(
       true,
     );
   });

@@ -21,7 +21,7 @@ export const AttachmentNode = observer(function AttachmentNode({
   return (
     <div className="af-item af-item-attachment" data-linkid={item.linkId}>
       <ItemHeader item={item} />
-      <AnswerList
+        <AnswerList
         item={item}
         renderRow={({ value, setValue, inputId, labelId, describedById }) => {
           const attachment = value ?? {};

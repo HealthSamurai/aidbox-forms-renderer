@@ -111,13 +111,16 @@ describe("validation", () => {
     if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, "Too long");
-    const longIssues = question.issues ?? [];
+    const longIssues = question.answerIssues.at(0) ?? [];
     expect(longIssues).toHaveLength(1);
     expect(longIssues[0]?.diagnostics).toMatch(/maximum length/i);
 
     question.setAnswer(0, "   ");
-    expect(question.hasErrors).toBe(false);
-    expect(question.issues).toHaveLength(0);
+    const blankIssues = question.answerIssues.at(0) ?? [];
+    expect(blankIssues).toHaveLength(1);
+    expect(blankIssues[0]?.diagnostics).toMatch(/may not be blank/i);
+    expect(question.hasErrors).toBe(true);
+    
 
     question.setAnswer(0, "short");
     expect(question.hasErrors).toBe(false);
@@ -143,12 +146,12 @@ describe("validation", () => {
     if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, -1);
-    const minIssues = question.issues ?? [];
+    const minIssues = question.answerIssues.at(0) ?? [];
     expect(minIssues).toHaveLength(1);
     expect(minIssues[0]?.diagnostics).toMatch(/greater than or equal to/i);
 
     question.setAnswer(0, 130);
-    const maxIssues = question.issues ?? [];
+    const maxIssues = question.answerIssues.at(0) ?? [];
     expect(maxIssues).toHaveLength(1);
     expect(maxIssues[0]?.diagnostics).toMatch(/less than or equal to/i);
 
@@ -194,19 +197,19 @@ describe("validation", () => {
       return;
 
     birth.setAnswer(0, "1999-12-31");
-    expect(birth.issues.at(0)?.diagnostics).toMatch(/not be earlier/i);
+    expect(birth.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(/not be earlier/i);
 
     birth.setAnswer(0, "2021-01-01");
-    expect(birth.issues.at(0)?.diagnostics).toMatch(/not be later/i);
+    expect(birth.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(/not be later/i);
 
     birth.setAnswer(0, "2010-05-05");
     expect(birth.hasErrors).toBe(false);
 
     checkIn.setAnswer(0, "2023-12-31T23:59:59Z");
-    expect(checkIn.issues.at(0)?.diagnostics).toMatch(/not be earlier/i);
+    expect(checkIn.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(/not be earlier/i);
 
     checkIn.setAnswer(0, "2025-01-01T00:00:00Z");
-    expect(checkIn.issues.at(0)?.diagnostics).toMatch(/not be later/i);
+    expect(checkIn.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(/not be later/i);
 
     checkIn.setAnswer(0, "2024-06-01T12:00:00Z");
     expect(checkIn.hasErrors).toBe(false);
@@ -235,12 +238,12 @@ describe("validation", () => {
     if (!question || !isQuestionNode(question)) return;
 
     question.setAnswer(0, { value: 5, unit: "kg" });
-    expect(question.issues.at(0)?.diagnostics).toMatch(
+    expect(question.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(
       /greater than or equal to/i,
     );
-
+    
     question.setAnswer(0, { value: 250, unit: "kg" });
-    expect(question.issues.at(0)?.diagnostics).toMatch(
+    expect(question.answerIssues.at(0)?.at(0)?.diagnostics).toMatch(
       /less than or equal to/i,
     );
 

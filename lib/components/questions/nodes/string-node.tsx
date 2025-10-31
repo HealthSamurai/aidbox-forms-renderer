@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { ItemHeader } from "../../common/item-header.tsx";
-import { ItemErrors } from "../../common/item-errors.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { TextInput } from "../../controls/text-input.tsx";
 import { IQuestionNode } from "../../../stores/types.ts";
+import { ItemErrors } from "../../common/item-errors.tsx";
 
 export const StringNode = observer(function StringNode({
   item,
