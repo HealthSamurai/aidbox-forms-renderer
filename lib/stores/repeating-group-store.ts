@@ -92,21 +92,6 @@ export class RepeatingGroupStore
   }
 
   @computed
-  get responseItem(): QuestionnaireResponseItem | null {
-    return this.responseItems.at(0) ?? null;
-  }
-
-  @computed
-  get expressionItem(): QuestionnaireResponseItem {
-    return (
-      this.expressionItems.at(0) ?? {
-        linkId: this.group.linkId,
-        text: this.group.text,
-      }
-    );
-  }
-
-  @computed
   get expressionIssues() {
     return this.expressionRegistry?.issues ?? [];
   }

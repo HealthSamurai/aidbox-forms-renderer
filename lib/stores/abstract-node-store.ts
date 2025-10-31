@@ -186,7 +186,7 @@ export abstract class AbstractNodeStore
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {
     const target = this.scope.lookupNode(condition.question);
     return isQuestionNode(target)
-      ? evaluateEnableWhenCondition(condition, target)
+      ? evaluateEnableWhenCondition(this, condition, target)
       : false;
   }
 }

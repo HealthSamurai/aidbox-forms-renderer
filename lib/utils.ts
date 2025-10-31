@@ -2,6 +2,7 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
+  ICoreNode,
   INode,
   IQuestionNode,
   IRepeatingGroupNode,
@@ -435,14 +436,33 @@ export function compareNumbers(
     : actual - expected;
 }
 
+export function isAncestorOf(
+  ancestor: ICoreNode,
+  candidate: ICoreNode,
+): boolean {
+  let parent = candidate.parentStore;
+  while (parent) {
+    if (parent === ancestor) return true;
+    parent = parent.parentStore;
+  }
+  return false;
+}
+
 export function evaluateEnableWhenCondition(
+  self: ICoreNode,
   condition: QuestionnaireItemEnableWhen,
   question: IQuestionNode,
 ): boolean {
-  const sourceAnswers = question.isEnabled
-    ? question.answers
-    : ([] as typeof question.answers);
-  const answers = sourceAnswers.filter(answerHasOwnValue);
+  if (
+    isAncestorOf(self, question) || // ff the question is a *descendant*, we must treat it as not valued (otherwise that would recurse).
+    !question.isEnabled // if the dependency exists but is currently disabled, also treat as not valued.
+  ) {
+    return condition.operator === "exists"
+      ? condition.answerBoolean === false // When nothing is valued, only "exists = false" is true.
+      : false; // All other operators cannot match without any answers
+  }
+
+  const answers = question.answers.filter(answerHasOwnValue);
   const operator = condition.operator;
 
   switch (operator) {

@@ -75,13 +75,13 @@ export class AnswerInstance<TType extends AnswerType>
   }
 
   @computed
-  get expressionAnswer(): QuestionnaireResponseItemAnswer | undefined {
+  get expressionAnswer(): QuestionnaireResponseItemAnswer | null {
     const fragment = this.buildValueFragment();
     const hasValue = Object.keys(fragment).length > 0;
     const childItems = this.nodes.flatMap((child) => child.expressionItems);
 
     if (!hasValue && childItems.length === 0) {
-      return undefined;
+      return null;
     }
 
     const answer: QuestionnaireResponseItemAnswer = { ...fragment };

@@ -8,6 +8,8 @@ import {
   makeVariable,
 } from "./expression-fixtures.ts";
 import { isQuestionNode } from "../question-store.ts";
+import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { isRepeatingGroupNode } from "../repeating-group-store.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {
@@ -288,5 +290,55 @@ describe("enableWhenExpression", () => {
     expect(dependent.isEnabled).toBe(false);
     control.setAnswer(0, true);
     expect(dependent.isEnabled).toBe(true);
+  });
+
+  it("treats ancestor->descendant enableWhen expression as unsatisfiable (no answers)", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      id: "cyclic-expression",
+      status: "active",
+      item: [
+        {
+          linkId: "repeating-group",
+          type: "group",
+          repeats: true,
+          extension: [
+            makeEnableExpression(undefined, "%controlFlag"),
+            makeVariable(
+              "controlFlag",
+              "%context.item.where(linkId='control').answer.valueBoolean.last()",
+            ),
+          ],
+          item: [{ linkId: "control", type: "boolean" }],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const wrapper = form.scope.lookupNode("repeating-group");
+
+    expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
+    if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
+
+    wrapper.addInstance();
+    expect(wrapper.nodes.length).toBe(1);
+
+    const instance = wrapper.nodes.at(0);
+    expect(instance && isRepeatingGroupNode(instance)).toBe(true);
+    if (!instance || !isRepeatingGroupNode(instance)) return;
+
+    expect(instance.isEnabled).toBe(false);
+    expect(instance.hidden).toBe(true);
+    expect(instance.responseItems).toHaveLength(0);
+
+    const control = instance.nodes.find((node) => node.linkId === "control");
+    expect(control && isQuestionNode(control)).toBe(true);
+    if (!control || !isQuestionNode(control)) return;
+
+    expect(control.isEnabled).toBe(false);
+    expect(control.hidden).toBe(true);
+    expect(control.responseItems).toHaveLength(0);
+
+    expect(form.response.item ?? []).toHaveLength(0);
   });
 });

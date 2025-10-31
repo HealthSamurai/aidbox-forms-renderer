@@ -810,8 +810,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const answers = this.answers
       .map((answer) => answer.expressionAnswer)
       .filter(
-        (answer): answer is QuestionnaireResponseItemAnswer =>
-          answer !== undefined,
+        (answer): answer is QuestionnaireResponseItemAnswer => answer != null,
       );
 
     const item: QuestionnaireResponseItem = {

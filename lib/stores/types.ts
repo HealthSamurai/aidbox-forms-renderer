@@ -143,7 +143,7 @@ export interface IAnswerInstance<TValue> {
   value: TValue | null;
   readonly nodes: Array<ICoreNode>;
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
-  readonly expressionAnswer: QuestionnaireResponseItemAnswer | undefined;
+  readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
   readonly scope: IScope;
 }
 

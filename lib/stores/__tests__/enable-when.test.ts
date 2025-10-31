@@ -12,6 +12,8 @@ import { FormStore } from "../form-store.ts";
 import type { AnswerType, IQuestionNode } from "../types.ts";
 import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
 import { isQuestionNode } from "../question-store.ts";
+import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { isRepeatingGroupNode } from "../repeating-group-store.ts";
 
 type EnableWhenAnswer =
   | boolean
@@ -467,7 +469,12 @@ describe("enableWhen", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (!control || !dependent || !isQuestionNode(control) || !isQuestionNode(dependent)) {
+    if (
+      !control ||
+      !dependent ||
+      !isQuestionNode(control) ||
+      !isQuestionNode(dependent)
+    ) {
       throw new Error("Expected question stores");
     }
 
@@ -943,6 +950,54 @@ describe("enableWhen", () => {
 
       text.setAnswer(0, "hide-me");
       expect(dependent.isEnabled).toBe(false);
+    });
+  });
+
+  describe("cyclic dependencies", () => {
+    it("treats descendant nodes' enableWhen as unsatisfiable (no answers)", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        id: "cyclic",
+        status: "active",
+        item: [
+          {
+            linkId: "repeating-group",
+            type: "group",
+            repeats: true,
+            enableWhen: [
+              { question: "control", operator: "=", answerBoolean: true },
+            ],
+            item: [{ linkId: "control", type: "boolean" }],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const wrapper = form.scope.lookupNode("repeating-group");
+
+      expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
+      if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
+
+      wrapper.addInstance();
+      expect(wrapper.nodes.length).toBe(1);
+
+      const instance = wrapper.nodes.at(0);
+      expect(instance && isRepeatingGroupNode(instance)).toBe(true);
+      if (!instance || !isRepeatingGroupNode(instance)) return;
+
+      expect(instance.isEnabled).toBe(false);
+      expect(instance.hidden).toBe(true);
+      expect(instance.responseItems).toHaveLength(0);
+
+      const control = instance.nodes.find((node) => node.linkId === "control");
+      expect(control && isQuestionNode(control)).toBe(true);
+      if (!control || !isQuestionNode(control)) return;
+
+      expect(control.isEnabled).toBe(false);
+      expect(control.hidden).toBe(true);
+      expect(control.responseItems).toHaveLength(0);
+
+      expect(form.response.item ?? []).toHaveLength(0);
     });
   });
 });
