@@ -5,6 +5,7 @@ import {
   IForm,
   INode,
   IScope,
+  SnapshotKind,
 } from "./types.ts";
 import {
   action,
@@ -189,38 +190,14 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     return isValid;
   }
 
-  @computed
+  @computed.struct
   get response(): QuestionnaireResponse {
-    const items = this.nodes.flatMap((node) => node.responseItems);
-    const response: QuestionnaireResponse = {
-      resourceType: "QuestionnaireResponse",
-      status: "in-progress",
-      questionnaire:
-        this.questionnaire.url || `Questionnaire/${this.questionnaire.id}`,
-    };
-
-    if (items.length > 0) {
-      response.item = items;
-    }
-
-    return response;
+    return this.buildResponseSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   get expressionResponse(): QuestionnaireResponse {
-    const items = this.nodes.flatMap((node) => node.expressionItems);
-    const response: QuestionnaireResponse = {
-      resourceType: "QuestionnaireResponse",
-      status: "in-progress",
-      questionnaire:
-        this.questionnaire.url || `Questionnaire/${this.questionnaire.id}`,
-    };
-
-    if (items.length > 0) {
-      response.item = items;
-    }
-
-    return response;
+    return this.buildResponseSnapshot("expression");
   }
 
   @action
@@ -253,5 +230,27 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private clearNodeDirty(node: ICoreNode) {
     node.clearDirty();
     this.getChildNodes(node).forEach((child) => this.clearNodeDirty(child));
+  }
+
+  private buildResponseSnapshot(
+    kind: SnapshotKind,
+  ): QuestionnaireResponse {
+    const items =
+      kind === "response"
+        ? this.nodes.flatMap((node) => node.responseItems)
+        : this.nodes.flatMap((node) => node.expressionItems);
+
+    const response: QuestionnaireResponse = {
+      resourceType: "QuestionnaireResponse",
+      status: "in-progress",
+      questionnaire:
+        this.questionnaire.url || `Questionnaire/${this.questionnaire.id}`,
+    };
+
+    if (items.length > 0) {
+      response.item = items;
+    }
+
+    return response;
   }
 }

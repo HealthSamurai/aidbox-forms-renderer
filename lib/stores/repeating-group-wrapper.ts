@@ -6,6 +6,7 @@ import {
   IRepeatingGroupNode,
   IRepeatingGroupWrapper,
   IScope,
+  SnapshotKind,
 } from "./types.ts";
 import {
   OperationOutcomeIssue,
@@ -121,13 +122,21 @@ export class RepeatingGroupWrapper
     }
   }
 
-  @computed
+  @computed.struct
   get responseItems(): QuestionnaireResponseItem[] {
-    return this.nodes.flatMap((instance) => instance.responseItems);
+    return this.buildItemSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   get expressionItems(): QuestionnaireResponseItem[] {
+    return this.buildItemSnapshot("expression");
+  }
+
+  private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    if (kind === "response") {
+      return this.nodes.flatMap((instance) => instance.responseItems);
+    }
+
     if (this.nodes.length === 0) {
       return [{ linkId: this.linkId, text: this.text }];
     }

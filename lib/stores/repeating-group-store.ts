@@ -3,6 +3,7 @@ import {
   ICoreNode,
   IRepeatingGroupNode,
   IRepeatingGroupWrapper,
+  SnapshotKind,
 } from "./types.ts";
 import type { QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractNodeStore } from "./abstract-node-store.ts";
@@ -55,29 +56,24 @@ export class RepeatingGroupStore
     this.nodes.replace(children);
   }
 
-  @computed
+  @computed.struct
   override get responseItems(): QuestionnaireResponseItem[] {
-    if (!this.isEnabled) {
-      return [];
-    }
-
-    const childItems = this.nodes.flatMap((child) => child.responseItems);
-    if (childItems.length === 0) {
-      return [];
-    }
-
-    return [
-      {
-        linkId: this.group.linkId,
-        item: childItems,
-        text: this.group.text,
-      },
-    ];
+    return this.buildItemSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   override get expressionItems(): QuestionnaireResponseItem[] {
-    const childItems = this.nodes.flatMap((child) => child.expressionItems);
+    return this.buildItemSnapshot("expression");
+  }
+
+  private buildItemSnapshot(mode: SnapshotKind): QuestionnaireResponseItem[] {
+    const childItems = this.collectChildItems(mode);
+
+    if (mode === "response") {
+      if (!this.isEnabled || childItems.length === 0) {
+        return [];
+      }
+    }
 
     const item: QuestionnaireResponseItem = {
       linkId: this.group.linkId,
@@ -89,6 +85,12 @@ export class RepeatingGroupStore
     }
 
     return [item];
+  }
+
+  private collectChildItems(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    return this.nodes.flatMap((child) =>
+      kind === "response" ? child.responseItems : child.expressionItems,
+    );
   }
 
   @computed

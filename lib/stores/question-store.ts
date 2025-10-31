@@ -15,6 +15,7 @@ import {
   INode,
   IQuestionNode,
   IScope,
+  SnapshotKind,
 } from "./types.ts";
 import {
   OperationOutcomeIssue,
@@ -780,38 +781,24 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     return issues;
   }
 
-  @computed
+  @computed.struct
   override get responseItems(): QuestionnaireResponseItem[] {
-    if (!this.isEnabled) {
-      return [];
-    }
-
-    const answers = this.answers
-      .map((answer) => answer.responseAnswer)
-      .filter(
-        (answer): answer is QuestionnaireResponseItemAnswer => answer !== null,
-      );
-
-    if (answers.length === 0) {
-      return [];
-    }
-
-    const item: QuestionnaireResponseItem = {
-      linkId: this.linkId,
-      text: this.text,
-      answer: answers,
-    };
-
-    return [item];
+    return this.buildItemSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   override get expressionItems(): QuestionnaireResponseItem[] {
-    const answers = this.answers
-      .map((answer) => answer.expressionAnswer)
-      .filter(
-        (answer): answer is QuestionnaireResponseItemAnswer => answer != null,
-      );
+    return this.buildItemSnapshot("expression");
+  }
+
+  private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    const answers = this.collectAnswers(kind);
+
+    if (kind === "response") {
+      if (!this.isEnabled || answers.length === 0) {
+        return [];
+      }
+    }
 
     const item: QuestionnaireResponseItem = {
       linkId: this.linkId,
@@ -823,6 +810,18 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     return [item];
+  }
+
+  private collectAnswers(
+    kind: SnapshotKind,
+  ): QuestionnaireResponseItemAnswer[] {
+    return this.answers
+      .map((answer) =>
+        kind === "response" ? answer.responseAnswer : answer.expressionAnswer,
+      )
+      .filter(
+        (answer): answer is QuestionnaireResponseItemAnswer => answer != null,
+      );
   }
 }
 

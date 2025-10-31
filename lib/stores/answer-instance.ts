@@ -6,6 +6,7 @@ import type {
   IScope,
   ICoreNode,
   IQuestionNode,
+  SnapshotKind,
 } from "./types.ts";
 import type {
   QuestionnaireResponseItem,
@@ -57,28 +58,25 @@ export class AnswerInstance<TType extends AnswerType>
     this.value = initial;
   }
 
-  @computed
+  @computed.struct
   get responseAnswer(): QuestionnaireResponseItemAnswer | null {
-    const fragment = this.buildValueFragment();
-    const childItems = this.nodes.flatMap((child) => child.responseItems);
-    const hasValue = Object.keys(fragment).length > 0;
-
-    if (!hasValue && childItems.length === 0) {
-      return null;
-    }
-
-    const answer: QuestionnaireResponseItemAnswer = { ...fragment };
-    if (childItems.length > 0) {
-      answer.item = childItems;
-    }
-    return answer;
+    return this.buildAnswerSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   get expressionAnswer(): QuestionnaireResponseItemAnswer | null {
+    return this.buildAnswerSnapshot("expression");
+  }
+
+  private buildAnswerSnapshot(
+    kind: SnapshotKind,
+  ): QuestionnaireResponseItemAnswer | null {
     const fragment = this.buildValueFragment();
     const hasValue = Object.keys(fragment).length > 0;
-    const childItems = this.nodes.flatMap((child) => child.expressionItems);
+    const childItems =
+      kind === "response"
+        ? this.nodes.flatMap((child) => child.responseItems)
+        : this.nodes.flatMap((child) => child.expressionItems);
 
     if (!hasValue && childItems.length === 0) {
       return null;
@@ -88,6 +86,7 @@ export class AnswerInstance<TType extends AnswerType>
     if (childItems.length > 0) {
       answer.item = childItems;
     }
+
     return answer;
   }
 

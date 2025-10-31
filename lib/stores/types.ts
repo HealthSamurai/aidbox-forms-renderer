@@ -78,6 +78,8 @@ export type AnswerValueType<T extends AnswerType> =
   T extends "quantity"   ? Quantity :
                            never;
 
+export type SnapshotKind = "response" | "expression";
+
 export interface ICoreNode {
   readonly template: QuestionnaireItem;
 
@@ -99,8 +101,11 @@ export interface ICoreNode {
   markDirty(): void;
   clearDirty(): void;
 
+  // Represents only enabled, populated response items so
+  // hidden/disabled nodes never leak into the saved QuestionnaireResponse.
   readonly responseItems: QuestionnaireResponseItem[];
-  // todo: remove it
+  // Preserves full structural context (including disabled shells) so
+  // FHIRPath expressions always evaluate against a predictable tree.
   readonly expressionItems: QuestionnaireResponseItem[];
   readonly issues: Array<OperationOutcomeIssue>;
 }

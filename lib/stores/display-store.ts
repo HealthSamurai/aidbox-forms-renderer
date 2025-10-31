@@ -1,4 +1,11 @@
-import { ICoreNode, IDisplayNode, IForm, INode, IScope } from "./types.ts";
+import {
+  ICoreNode,
+  IDisplayNode,
+  IForm,
+  INode,
+  IScope,
+  SnapshotKind,
+} from "./types.ts";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractNodeStore } from "./abstract-node-store.ts";
 import { computed } from "mobx";
@@ -14,28 +21,27 @@ export class DisplayStore extends AbstractNodeStore implements IDisplayNode {
     super(form, template, parentStore, parentScope, parentKey);
   }
 
-  @computed
+  @computed.struct
   override get responseItems(): QuestionnaireResponseItem[] {
-    if (!this.isEnabled) {
+    return this.buildItemSnapshot("response");
+  }
+
+  @computed.struct
+  override get expressionItems(): QuestionnaireResponseItem[] {
+    return this.buildItemSnapshot("expression");
+  }
+
+  private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    if (kind === "response" && !this.isEnabled) {
       return [];
     }
 
-    const item: QuestionnaireResponseItem = {
-      linkId: this.linkId,
-      text: this.text,
-    };
-
-    return [item];
-  }
-
-  @computed
-  override get expressionItems(): QuestionnaireResponseItem[] {
-    const item: QuestionnaireResponseItem = {
-      linkId: this.linkId,
-      text: this.text,
-    };
-
-    return [item];
+    return [
+      {
+        linkId: this.linkId,
+        text: this.text,
+      },
+    ];
   }
 }
 

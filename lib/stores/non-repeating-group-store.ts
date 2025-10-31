@@ -4,6 +4,7 @@ import {
   INode,
   INonRepeatingGroupNode,
   IScope,
+  SnapshotKind,
 } from "./types.ts";
 import { computed, observable } from "mobx";
 import {
@@ -65,30 +66,25 @@ export class NonRepeatingGroupStore
     return [];
   }
 
-  @computed
+  @computed.struct
   override get responseItems(): QuestionnaireResponseItem[] {
-    if (!this.isEnabled) {
-      return [];
-    }
-
-    const childItems = this.nodes.flatMap((child) => child.responseItems);
-
-    if (childItems.length === 0) {
-      return [];
-    }
-
-    const item: QuestionnaireResponseItem = {
-      linkId: this.linkId,
-      text: this.text,
-      item: childItems,
-    };
-
-    return [item];
+    return this.buildItemSnapshot("response");
   }
 
-  @computed
+  @computed.struct
   override get expressionItems(): QuestionnaireResponseItem[] {
-    const childItems = this.nodes.flatMap((child) => child.expressionItems);
+    return this.buildItemSnapshot("expression");
+  }
+
+  private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    const childItems = this.collectChildItems(kind);
+
+    if (kind === "response") {
+      if (!this.isEnabled || childItems.length === 0) {
+        return [];
+      }
+    }
+
     const item: QuestionnaireResponseItem = {
       linkId: this.linkId,
       text: this.text,
@@ -99,6 +95,12 @@ export class NonRepeatingGroupStore
     }
 
     return [item];
+  }
+
+  private collectChildItems(kind: SnapshotKind): QuestionnaireResponseItem[] {
+    return this.nodes.flatMap((child) =>
+      kind === "response" ? child.responseItems : child.expressionItems,
+    );
   }
 }
 
