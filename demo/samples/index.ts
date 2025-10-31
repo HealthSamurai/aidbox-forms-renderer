@@ -11,6 +11,7 @@ import expressionInitial from "./expression-initial.json" assert { type: "json" 
 import expressionCalculated from "./expression-calculated.json" assert { type: "json" };
 import expressionEnableWhen from "./expression-enable-when.json" assert { type: "json" };
 import expressionDynamicBounds from "./expression-dynamic-bounds.json" assert { type: "json" };
+import validationConstraints from "./validation-constraints.json" assert { type: "json" };
 
 type DemoSample = {
   readonly id: string;
@@ -74,4 +75,9 @@ export const demoSamples: readonly DemoSample[] = [
     label: "Dynamic min/max expressions",
     questionnaire: expressionDynamicBounds as Questionnaire,
   },
+  {
+    id: "validation-constraints",
+    label: "Validation constraints",
+    questionnaire: validationConstraints as Questionnaire,
+  }
 ] as const;

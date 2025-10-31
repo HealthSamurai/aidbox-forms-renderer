@@ -1,0 +1,389 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "validation-constraints",
+  "status": "active",
+  "title": "Validation Constraints Demo",
+  "description": "Demonstrates all available validation constraints including required fields, length limits, numeric boundaries, date/time ranges, quantity limits, attachment constraints, and repeating item occurrences.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "This form demonstrates all validation constraints available in the Aidbox Forms Renderer. Submit the form to see validation errors, then fill in valid values to see validation pass."
+    },
+    {
+      "linkId": "section-required",
+      "type": "group",
+      "text": "Required Fields",
+      "item": [
+        {
+          "linkId": "required-string",
+          "type": "string",
+          "text": "Name (required)",
+          "required": true
+        },
+        {
+          "linkId": "optional-string",
+          "type": "string",
+          "text": "Nickname (optional)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "linkId": "section-text-constraints",
+      "type": "group",
+      "text": "Text Length Constraints",
+      "item": [
+        {
+          "linkId": "short-text",
+          "type": "string",
+          "text": "Short code (max 5 characters)",
+          "maxLength": 5
+        },
+        {
+          "linkId": "bio",
+          "type": "text",
+          "text": "Bio (max 200 characters)",
+          "maxLength": 200
+        }
+      ]
+    },
+    {
+      "linkId": "section-numeric",
+      "type": "group",
+      "text": "Numeric Boundaries",
+      "item": [
+        {
+          "linkId": "age",
+          "type": "integer",
+          "text": "Age (0-120)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 0
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 120
+            }
+          ]
+        },
+        {
+          "linkId": "temperature",
+          "type": "decimal",
+          "text": "Body temperature in °C (35.0-42.0)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDecimal": 35.0
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDecimal": 42.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-date-time",
+      "type": "group",
+      "text": "Date and DateTime Boundaries",
+      "item": [
+        {
+          "linkId": "birth-date",
+          "type": "date",
+          "text": "Date of birth (between 1900-01-01 and 2025-12-31)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDate": "1900-01-01"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDate": "2025-12-31"
+            }
+          ]
+        },
+        {
+          "linkId": "appointment",
+          "type": "dateTime",
+          "text": "Appointment time (within 2025)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDateTime": "2025-01-01T00:00:00Z"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDateTime": "2025-12-31T23:59:59Z"
+            }
+          ]
+        },
+        {
+          "linkId": "office-hours",
+          "type": "time",
+          "text": "Preferred time (between 09:00 and 17:00)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueTime": "09:00:00"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueTime": "17:00:00"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-quantity",
+      "type": "group",
+      "text": "Quantity Constraints",
+      "item": [
+        {
+          "linkId": "weight",
+          "type": "quantity",
+          "text": "Weight (10-300 kg)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueQuantity": {
+                "value": 10,
+                "unit": "kg"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueQuantity": {
+                "value": 300,
+                "unit": "kg"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "height",
+          "type": "quantity",
+          "text": "Height (50-250 cm)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueQuantity": {
+                "value": 50,
+                "unit": "cm"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueQuantity": {
+                "value": 250,
+                "unit": "cm"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-attachment",
+      "type": "group",
+      "text": "Attachment Constraints",
+      "item": [
+        {
+          "linkId": "profile-photo",
+          "type": "attachment",
+          "text": "Profile photo (max 2 MB, PNG or JPEG only)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxSize",
+              "valueDecimal": 2097152
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "image/png"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "image/jpeg"
+            }
+          ]
+        },
+        {
+          "linkId": "document",
+          "type": "attachment",
+          "text": "Supporting document (max 5 MB, PDF or Word)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxSize",
+              "valueDecimal": 5242880
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "application/pdf"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "application/msword"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+          ]
+        },
+        {
+          "linkId": "media-file",
+          "type": "attachment",
+          "text": "Media file (any image or video, max 10 MB)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxSize",
+              "valueDecimal": 10485760
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "image/*"
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/mimeType",
+              "valueCode": "video/*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-repeating-question",
+      "type": "group",
+      "text": "Repeating Question Constraints",
+      "item": [
+        {
+          "linkId": "symptoms",
+          "type": "string",
+          "text": "Symptoms (provide 2-5 symptoms)",
+          "repeats": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 2
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+              "valueInteger": 5
+            }
+          ]
+        },
+        {
+          "linkId": "medications",
+          "type": "string",
+          "text": "Current medications (at least 1 required)",
+          "repeats": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-repeating-group",
+      "type": "group",
+      "text": "Repeating Group Constraints",
+      "item": [
+        {
+          "linkId": "emergency-contacts",
+          "type": "group",
+          "text": "Emergency contact (provide 1-3 contacts)",
+          "repeats": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 1
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+              "valueInteger": 3
+            }
+          ],
+          "item": [
+            {
+              "linkId": "contact-name",
+              "type": "string",
+              "text": "Contact name",
+              "required": true
+            },
+            {
+              "linkId": "contact-phone",
+              "type": "string",
+              "text": "Phone number",
+              "required": true
+            },
+            {
+              "linkId": "contact-relationship",
+              "type": "string",
+              "text": "Relationship"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-non-repeating-group",
+      "type": "group",
+      "text": "Non-Repeating Group with minOccurs",
+      "item": [
+        {
+          "linkId": "insurance-info",
+          "type": "group",
+          "text": "Insurance information (at least one field required)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 1
+            }
+          ],
+          "item": [
+            {
+              "linkId": "insurance-provider",
+              "type": "string",
+              "text": "Insurance provider"
+            },
+            {
+              "linkId": "insurance-policy-number",
+              "type": "string",
+              "text": "Policy number"
+            },
+            {
+              "linkId": "insurance-group-number",
+              "type": "string",
+              "text": "Group number"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-readonly",
+      "type": "group",
+      "text": "Read-Only Fields (Validation Ignored)",
+      "item": [
+        {
+          "linkId": "readonly-field",
+          "type": "string",
+          "text": "System-generated ID (read-only, validation skipped even if required)",
+          "required": true,
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "linkId": "summary",
+      "type": "display",
+      "text": "Click submit to validate all fields. Validation errors will appear next to invalid fields. All constraints must be satisfied for successful submission."
+    }
+  ]
+}
