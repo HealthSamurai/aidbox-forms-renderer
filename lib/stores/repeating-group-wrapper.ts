@@ -1,4 +1,4 @@
-import { action, computed, observable } from "mobx";
+import { action, computed, observable, override } from "mobx";
 import {
   ICoreNode,
   IForm,
@@ -27,7 +27,6 @@ export class RepeatingGroupWrapper
 {
   readonly scope: IScope;
   readonly key: string;
-  readonly isEnabled = true;
 
   @observable.shallow
   readonly nodes = observable.array<IRepeatingGroupNode>([], {
@@ -62,17 +61,33 @@ export class RepeatingGroupWrapper
 
   @computed
   get maxOccurs() {
-    return findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger;
+    return (
+      findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger ??
+      Number.POSITIVE_INFINITY
+    );
   }
 
   @computed
   get canAdd() {
-    return this.maxOccurs == null || this.nodes.length < this.maxOccurs;
+    return !this.readOnly && this.nodes.length < this.maxOccurs;
   }
 
   @computed
   get canRemove() {
-    return this.nodes.length > this.minOccurs;
+    return !this.readOnly && this.nodes.length > this.minOccurs;
+  }
+
+  @override
+  override get hidden() {
+    if (super.hidden) {
+      return true;
+    }
+
+    return !this.nodes.some((instance) => !instance.hidden);
+  }
+
+  get isEnabled(): boolean {
+    return this.parentStore?.isEnabled ?? true;
   }
 
   @action

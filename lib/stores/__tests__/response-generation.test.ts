@@ -141,7 +141,7 @@ describe("response generation", () => {
 
     toggle.setAnswer(0, false);
 
-    expect(extra.isEnabled).toBe(false);
+    expect(extra.hidden).toBe(true);
     expect(form.response?.item?.some((item) => item.linkId === "extra")).toBe(
       false,
     );

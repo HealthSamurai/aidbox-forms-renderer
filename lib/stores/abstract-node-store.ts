@@ -13,7 +13,6 @@ import {
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
 } from "fhir/r5";
-import { CoreAbstractNode } from "./core-abstract-node.ts";
 import { ExpressionRegistry } from "./expression-registry.ts";
 import {
   booleanify,
@@ -22,6 +21,7 @@ import {
   findExtension,
 } from "../utils.ts";
 import { isQuestionNode } from "./question-store.ts";
+import { CoreAbstractNode } from "./core-abstract-node.ts";
 
 export abstract class AbstractNodeStore
   extends CoreAbstractNode
@@ -83,11 +83,6 @@ export abstract class AbstractNodeStore
   }
 
   @computed
-  get hidden() {
-    return findExtension(this.template, EXT.HIDDEN)?.valueBoolean === true;
-  }
-
-  @computed
   get minOccurs() {
     return (
       findExtension(this.template, EXT.MIN_OCCURS)?.valueInteger ??
@@ -111,13 +106,12 @@ export abstract class AbstractNodeStore
       return booleanify(enableWhenSlot.value);
     }
 
-    const enableWhen = this.template.enableWhen;
-    if (!enableWhen || enableWhen.length === 0) {
+    if (!this.template.enableWhen || this.template.enableWhen.length === 0) {
       return true;
     }
 
     const behavior = this.template.enableBehavior ?? "any";
-    const results = enableWhen.map((condition) =>
+    const results = this.template.enableWhen.map((condition) =>
       this.evaluateEnableWhen(condition),
     );
 

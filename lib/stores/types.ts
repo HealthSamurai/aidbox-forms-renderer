@@ -92,6 +92,7 @@ export interface ICoreNode {
   readonly help: string | undefined;
   readonly required: boolean;
   readonly readOnly: boolean;
+  readonly hidden: boolean;
   readonly isEnabled: boolean;
 
   readonly hasErrors: boolean;
@@ -99,16 +100,15 @@ export interface ICoreNode {
   clearDirty(): void;
 
   readonly responseItems: QuestionnaireResponseItem[];
+  // todo: remove it
   readonly expressionItems: QuestionnaireResponseItem[];
   readonly issues: Array<OperationOutcomeIssue>;
 }
 
 export interface IBaseNode extends ICoreNode {
   readonly readOnly: boolean;
-  readonly hidden: boolean; // questionnaire-hidden
   readonly minOccurs: number; // minOccurs || (required ? 1 : 0)
   readonly maxOccurs: number | undefined; // maxOccurs
-  readonly isEnabled: boolean;
   readonly expressionRegistry: ExpressionRegistry | undefined;
 
   readonly isDirty: boolean;
@@ -184,7 +184,7 @@ export interface IForm {
 
   createNodeStore(
     item: QuestionnaireItem,
-    parentStore: ICoreNode | null,
+    parentStore: INode | null,
     parentScope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,

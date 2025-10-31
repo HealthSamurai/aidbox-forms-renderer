@@ -439,6 +439,207 @@ describe("enableWhen", () => {
     });
   });
 
+  it("ignores required validation when dependent item is disabled", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "control",
+          type: "boolean",
+        },
+        {
+          linkId: "dependent",
+          type: "string",
+          required: true,
+          enableWhen: [
+            {
+              question: "control",
+              operator: "=",
+              answerBoolean: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const control = form.scope.lookupNode("control");
+    const dependent = form.scope.lookupNode("dependent");
+
+    if (!control || !dependent || !isQuestionNode(control) || !isQuestionNode(dependent)) {
+      throw new Error("Expected question stores");
+    }
+
+    expect(dependent.isEnabled).toBe(false);
+    expect(form.validateAll()).toBe(true);
+    expect(dependent.issues).toHaveLength(0);
+
+    control.setAnswer(0, true);
+    expect(dependent.isEnabled).toBe(true);
+    expect(form.validateAll()).toBe(false);
+    const diagnostics = dependent.issues.at(0)?.diagnostics ?? "";
+    expect(diagnostics).toMatch(/required/i);
+  });
+
+  describe("disabledDisplay", () => {
+    it("treats disabled items as hidden when disabledDisplay is hidden", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "control",
+            type: "boolean",
+            text: "Control",
+          },
+          {
+            linkId: "dependent",
+            type: "string",
+            text: "Dependent",
+            enableWhen: [
+              {
+                question: "control",
+                operator: "=",
+                answerBoolean: true,
+              },
+            ],
+            disabledDisplay: "hidden",
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const control = form.scope.lookupNode("control");
+      const dependent = form.scope.lookupNode("dependent");
+
+      if (!control || !isQuestionNode(control)) {
+        throw new Error("Control item is not a question");
+      }
+      if (!dependent || !isQuestionNode(dependent)) {
+        throw new Error("Dependent item is not a question");
+      }
+
+      expect(dependent.isEnabled).toBe(false);
+      expect(dependent.hidden).toBe(true);
+
+      setQuestionAnswer(control, 0, true);
+
+      expect(dependent.isEnabled).toBe(true);
+      expect(dependent.hidden).toBe(false);
+    });
+
+    it("does not hide disabled items when disabledDisplay is protected", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "control",
+            type: "boolean",
+            text: "Control",
+          },
+          {
+            linkId: "dependent",
+            type: "string",
+            text: "Dependent",
+            enableWhen: [
+              {
+                question: "control",
+                operator: "=",
+                answerBoolean: true,
+              },
+            ],
+            disabledDisplay: "protected",
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const control = form.scope.lookupNode("control");
+      const dependent = form.scope.lookupNode("dependent");
+
+      if (!control || !isQuestionNode(control)) {
+        throw new Error("Control item is not a question");
+      }
+      if (!dependent || !isQuestionNode(dependent)) {
+        throw new Error("Dependent item is not a question");
+      }
+
+      expect(dependent.isEnabled).toBe(false);
+      expect(dependent.hidden).toBe(false);
+
+      setQuestionAnswer(control, 0, true);
+
+      expect(dependent.isEnabled).toBe(true);
+      expect(dependent.hidden).toBe(false);
+    });
+  });
+
+  it("treats disabled dependencies as having no answers", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "gate",
+          type: "boolean",
+        },
+        {
+          linkId: "control",
+          type: "integer",
+          enableWhen: [
+            {
+              question: "gate",
+              operator: "=",
+              answerBoolean: true,
+            },
+          ],
+        },
+        {
+          linkId: "dependent",
+          type: "string",
+          enableWhen: [
+            {
+              question: "control",
+              operator: "=",
+              answerInteger: 5,
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const gate = form.scope.lookupNode("gate");
+    const control = form.scope.lookupNode("control");
+    const dependent = form.scope.lookupNode("dependent");
+
+    if (
+      !gate ||
+      !control ||
+      !dependent ||
+      !isQuestionNode(gate) ||
+      !isQuestionNode(control) ||
+      !isQuestionNode(dependent)
+    ) {
+      throw new Error("Expected question stores");
+    }
+
+    expect(control.isEnabled).toBe(false);
+    expect(dependent.isEnabled).toBe(false);
+
+    gate.setAnswer(0, true);
+    expect(control.isEnabled).toBe(true);
+
+    control.setAnswer(0, 5);
+    expect(dependent.isEnabled).toBe(true);
+
+    gate.setAnswer(0, false);
+    expect(control.isEnabled).toBe(false);
+    expect(dependent.isEnabled).toBe(false);
+  });
+
   describe("form workflows", () => {
     it("enables a dependent item when equality condition is met", () => {
       const questionnaire: Questionnaire = {

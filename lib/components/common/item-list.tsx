@@ -10,7 +10,7 @@ export const ItemsList = observer(function ItemsList({
   return (
     <>
       {items
-        .filter((it) => it.isEnabled)
+        .filter((it) => !it.hidden)
         .map((it) => (
           <ItemNode key={it.key} item={it} />
         ))}

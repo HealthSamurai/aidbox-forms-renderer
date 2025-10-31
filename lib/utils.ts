@@ -439,7 +439,10 @@ export function evaluateEnableWhenCondition(
   condition: QuestionnaireItemEnableWhen,
   question: IQuestionNode,
 ): boolean {
-  const answers = question.answers.filter(answerHasOwnValue);
+  const sourceAnswers = question.isEnabled
+    ? question.answers
+    : ([] as typeof question.answers);
+  const answers = sourceAnswers.filter(answerHasOwnValue);
   const operator = condition.operator;
 
   switch (operator) {

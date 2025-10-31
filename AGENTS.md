@@ -37,6 +37,7 @@
 * repeating group instances seed from matching response items
 * repeating groups enforce min/max occurs limits on their instances
 * question nodes enforce min/max occurs limits on their answers
+* readonly and hidden both consider the items enablement under the hood so isEnabled must not be used in ui components
 
 ### Coding guidelines
 * do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores

@@ -5,6 +5,7 @@ import {
   QuestionnaireItem,
   type QuestionnaireResponseItem,
 } from "fhir/r5";
+import { EXT, findExtension } from "../utils.ts";
 
 export abstract class CoreAbstractNode implements ICoreNode {
   readonly form: IForm;
@@ -55,7 +56,30 @@ export abstract class CoreAbstractNode implements ICoreNode {
 
   @computed
   get readOnly() {
-    return !!this.template.readOnly;
+    // Group-level readOnly cascades; individual questions only affect themselves.
+    const parent = this.parentStore;
+    if (parent && parent.template.type === "group" && parent.readOnly) {
+      return true;
+    }
+
+    return (
+      !!this.template.readOnly ||
+      (!this.isEnabled && this.template.disabledDisplay === "protected")
+    );
+  }
+
+  @computed
+  get hidden() {
+    // Explicit questionnaire-hidden wins; otherwise disabled items vanish unless protected.
+    if (findExtension(this.template, EXT.HIDDEN)?.valueBoolean === true) {
+      return true;
+    }
+
+    if (!this.isEnabled) {
+      return this.template.disabledDisplay !== "protected";
+    }
+
+    return false;
   }
 
   abstract get scope(): IScope;

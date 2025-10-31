@@ -13,6 +13,7 @@ import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
 import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
 import { isQuestionNode } from "../question-store.ts";
 import { makeInitialExpression } from "./expression-fixtures.ts";
+import { isRepeatingGroupNode } from "../repeating-group-store.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -223,6 +224,71 @@ describe("initialization", () => {
   });
 
   describe("repeating groups", () => {
+    it("stays enabled even when its instances are disabled", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "toggle",
+            type: "boolean",
+          },
+          {
+            linkId: "repeating-group",
+            type: "group",
+            repeats: true,
+            enableWhen: [
+              {
+                question: "toggle",
+                operator: "=",
+                answerBoolean: true,
+              },
+            ],
+            item: [
+              {
+                linkId: "question",
+                type: "string",
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const wrapper = form.scope.lookupNode("repeating-group");
+      const toggle = form.scope.lookupNode("toggle");
+
+      if (
+        !wrapper ||
+        !isRepeatingGroupWrapper(wrapper) ||
+        !toggle ||
+        !isQuestionNode(toggle)
+      ) {
+        throw new Error("Expected wrapper and toggle question");
+      }
+
+      wrapper.addInstance();
+      const instance = wrapper.nodes.at(0);
+      expect(instance).toBeDefined();
+
+      if (!instance || !isRepeatingGroupNode(instance)) {
+        throw new Error("Expecting instance to be a repeating group node");
+      }
+
+      expect(wrapper.isEnabled).toBe(true);
+      expect(instance.isEnabled).toBe(false);
+
+      toggle.setAnswer(0, true);
+
+      expect(wrapper.isEnabled).toBe(true);
+      expect(instance.isEnabled).toBe(true);
+
+      toggle.setAnswer(0, false);
+
+      expect(wrapper.isEnabled).toBe(true);
+      expect(instance.isEnabled).toBe(false);
+    });
+
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",

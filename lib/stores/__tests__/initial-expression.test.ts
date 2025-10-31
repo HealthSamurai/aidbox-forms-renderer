@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Questionnaire } from "fhir/r5";
+import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
 import {
@@ -193,5 +193,98 @@ describe("initialExpression", () => {
       ),
     ).toBe(true);
     expect(target.answers[0]?.value).toBe("first");
+  });
+
+  describe("readOnly propagation", () => {
+    it("cascades group readOnly to descendants", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "group",
+            type: "group",
+            readOnly: true,
+            item: [
+              {
+                linkId: "child",
+                type: "string",
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const group = form.scope.lookupNode("group");
+      const child = form.scope.lookupNode("child");
+
+      if (!group || !child || !isQuestionNode(child)) {
+        throw new Error("Expected group and child question stores");
+      }
+
+      expect(group.readOnly).toBe(true);
+      expect(child.readOnly).toBe(true);
+    });
+
+    it("does not cascade question readOnly to nested items", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "parent",
+            type: "string",
+            readOnly: true,
+            item: [
+              {
+                linkId: "detail",
+                type: "string",
+              },
+            ],
+          },
+        ],
+      };
+
+      const response: QuestionnaireResponse = {
+        resourceType: "QuestionnaireResponse",
+        status: "completed",
+        questionnaire: "Questionnaire/readonly",
+        item: [
+          {
+            linkId: "parent",
+            answer: [
+              {
+                valueString: "value",
+                item: [
+                  {
+                    linkId: "detail",
+                    answer: [{ valueString: "child" }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire, response);
+      const parent = form.scope.lookupNode("parent");
+
+      if (!parent || !isQuestionNode(parent)) {
+        throw new Error("Expected parent question store");
+      }
+
+      const detail = parent.answers[0]?.nodes.find(
+        (child) => child.linkId === "detail",
+      );
+
+      if (!detail || !isQuestionNode(detail)) {
+        throw new Error("Expected nested detail question");
+      }
+
+      expect(parent.readOnly).toBe(true);
+      expect(detail.readOnly).toBe(false);
+    });
   });
 });

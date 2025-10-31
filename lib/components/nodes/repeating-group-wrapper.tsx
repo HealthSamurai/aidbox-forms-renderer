@@ -27,13 +27,17 @@ export const RepeatingGroupWrapper = observer(function RepeatingGroupWrapper({
         <Observer>
           {() => (
             <>
-              {item.nodes.map((instance: IRepeatingGroupNode) => (
-                <RepeatingGroupNode
-                  key={instance.key}
-                  instance={instance}
-                  canRemove={item.canRemove}
-                />
-              ))}
+              {item.nodes
+                .filter(
+                  (instance: IRepeatingGroupNode) => !instance.hidden,
+                )
+                .map((instance: IRepeatingGroupNode) => (
+                  <RepeatingGroupNode
+                    key={instance.key}
+                    instance={instance}
+                    canRemove={item.canRemove}
+                  />
+                ))}
             </>
           )}
         </Observer>

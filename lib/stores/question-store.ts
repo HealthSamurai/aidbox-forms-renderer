@@ -1,4 +1,11 @@
-import { action, comparer, computed, observable, reaction } from "mobx";
+import {
+  action,
+  comparer,
+  computed,
+  observable,
+  override,
+  reaction,
+} from "mobx";
 import {
   AnswerType,
   AnswerValueType,
@@ -81,14 +88,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     return !!this.template.repeats;
   }
 
-  private maxAllowed(): number {
-    return this.repeats ? (this.maxOccurs ?? Number.POSITIVE_INFINITY) : 1;
-    // Note: minOccurs is enforced by canRemove / seeding, not here.
+  @override
+  override get maxOccurs(): number {
+    return this.repeats ? (super.maxOccurs ?? Number.POSITIVE_INFINITY) : 1;
   }
 
   @computed
   get canAdd() {
-    return !this.readOnly && this.answers.length < this.maxAllowed();
+    return !this.readOnly && this.answers.length < this.maxOccurs;
   }
 
   @computed
@@ -224,7 +231,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     let seeded = false;
 
     if (this.repeats) {
-      const cappedLength = Math.min(values.length, this.maxAllowed());
+      const cappedLength = Math.min(values.length, this.maxOccurs);
       for (let index = 0; index < cappedLength; index += 1) {
         const value = values[index];
         this.pushAnswer(
@@ -530,7 +537,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       );
     }
 
-    if (this.maxOccurs != null && populatedAnswers.length > this.maxOccurs) {
+    if (populatedAnswers.length > this.maxOccurs) {
       issues.push(
         makeIssue(
           "structure",
