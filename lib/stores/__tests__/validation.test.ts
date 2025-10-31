@@ -56,6 +56,16 @@ const maxValueQuantity = (value: { value: number; unit?: string }) => ({
   valueQuantity: value,
 });
 
+const maxSize = (value: number) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/maxSize",
+  valueDecimal: value,
+});
+
+const mimeType = (value: string) => ({
+  url: "http://hl7.org/fhir/StructureDefinition/mimeType",
+  valueCode: value,
+});
+
 describe("validation", () => {
   it("defers validation until submit for untouched required questions", () => {
     const questionnaire: Questionnaire = {
@@ -422,6 +432,254 @@ describe("validation", () => {
     question.setAnswer(0, "user@example.com");
     expect(form.validateAll()).toBe(true);
     expect(form.isSubmitAttempted).toBe(false);
+    expect(question.hasErrors).toBe(false);
+  });
+
+  it("validates attachment max size", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "document",
+          text: "Document",
+          type: "attachment",
+          extension: [maxSize(2097152)], // 2 MB in bytes
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("document");
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
+
+    // File larger than 2 MB (3 MB = 3 * 1024 * 1024 bytes)
+    question.setAnswer(0, {
+      contentType: "application/pdf",
+      size: "3145728", // 3 MB in bytes
+      title: "large-file.pdf",
+    });
+    const largeIssues = question.answerIssues.at(0) ?? [];
+    expect(largeIssues).toHaveLength(1);
+    expect(largeIssues[0]?.diagnostics).toMatch(/exceeds the maximum allowed size/i);
+    expect(largeIssues[0]?.diagnostics).toMatch(/2097152 bytes/);
+
+    // File within limit (1 MB)
+    question.setAnswer(0, {
+      contentType: "application/pdf",
+      size: "1048576", // 1 MB in bytes
+      title: "small-file.pdf",
+    });
+    expect(question.hasErrors).toBe(false);
+  });
+
+  it("validates attachment MIME type", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "image",
+          text: "Image",
+          type: "attachment",
+          extension: [
+            mimeType("image/png"),
+            mimeType("image/jpeg"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("image");
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
+
+    // Invalid MIME type
+    question.setAnswer(0, {
+      contentType: "application/pdf",
+      size: "1024",
+      title: "document.pdf",
+    });
+    const invalidIssues = question.answerIssues.at(0) ?? [];
+    expect(invalidIssues).toHaveLength(1);
+    expect(invalidIssues[0]?.diagnostics).toMatch(/not allowed/i);
+    expect(invalidIssues[0]?.diagnostics).toMatch(/image\/png, image\/jpeg/);
+
+    // Valid MIME type (PNG)
+    question.setAnswer(0, {
+      contentType: "image/png",
+      size: "1024",
+      title: "photo.png",
+    });
+    expect(question.hasErrors).toBe(false);
+
+    // Valid MIME type (JPEG)
+    question.setAnswer(0, {
+      contentType: "image/jpeg",
+      size: "1024",
+      title: "photo.jpg",
+    });
+    expect(question.hasErrors).toBe(false);
+  });
+
+  it("validates attachment with wildcard MIME type", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "media",
+          text: "Media",
+          type: "attachment",
+          extension: [
+            mimeType("image/*"),
+            mimeType("video/*"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("media");
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
+
+    // Invalid MIME type (not image or video)
+    question.setAnswer(0, {
+      contentType: "application/pdf",
+      size: "1024",
+      title: "document.pdf",
+    });
+    const invalidIssues = question.answerIssues.at(0) ?? [];
+    expect(invalidIssues).toHaveLength(1);
+    expect(invalidIssues[0]?.diagnostics).toMatch(/not allowed/i);
+
+    // Valid image types
+    question.setAnswer(0, {
+      contentType: "image/png",
+      size: "1024",
+      title: "photo.png",
+    });
+    expect(question.hasErrors).toBe(false);
+
+    question.setAnswer(0, {
+      contentType: "image/gif",
+      size: "1024",
+      title: "animation.gif",
+    });
+    expect(question.hasErrors).toBe(false);
+
+    // Valid video types
+    question.setAnswer(0, {
+      contentType: "video/mp4",
+      size: "1024",
+      title: "clip.mp4",
+    });
+    expect(question.hasErrors).toBe(false);
+
+    question.setAnswer(0, {
+      contentType: "video/webm",
+      size: "1024",
+      title: "clip.webm",
+    });
+    expect(question.hasErrors).toBe(false);
+  });
+
+  it("validates attachment with both size and MIME type constraints", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "profile-photo",
+          text: "Profile Photo",
+          type: "attachment",
+          extension: [
+            maxSize(5242880), // 5 MB in bytes
+            mimeType("image/png"),
+            mimeType("image/jpeg"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("profile-photo");
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
+
+    // Valid size, invalid MIME type
+    question.setAnswer(0, {
+      contentType: "image/gif",
+      size: "1048576", // 1 MB
+      title: "avatar.gif",
+    });
+    let issues = question.answerIssues.at(0) ?? [];
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.diagnostics).toMatch(/not allowed/i);
+
+    // Invalid size, valid MIME type
+    question.setAnswer(0, {
+      contentType: "image/png",
+      size: "6291456", // 6 MB
+      title: "large-photo.png",
+    });
+    issues = question.answerIssues.at(0) ?? [];
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.diagnostics).toMatch(/exceeds the maximum allowed size/i);
+
+    // Both invalid
+    question.setAnswer(0, {
+      contentType: "application/pdf",
+      size: "10485760", // 10 MB
+      title: "huge-document.pdf",
+    });
+    issues = question.answerIssues.at(0) ?? [];
+    expect(issues).toHaveLength(2);
+    expect(issues.some((i) => i.diagnostics?.match(/exceeds the maximum allowed size/i))).toBe(true);
+    expect(issues.some((i) => i.diagnostics?.match(/not allowed/i))).toBe(true);
+
+    // Both valid
+    question.setAnswer(0, {
+      contentType: "image/jpeg",
+      size: "2097152", // 2 MB
+      title: "photo.jpg",
+    });
+    expect(question.hasErrors).toBe(false);
+  });
+
+  it("allows attachments without size or contentType when no constraints", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "any-file",
+          text: "Any File",
+          type: "attachment",
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const question = form.scope.lookupNode("any-file");
+    expect(question && isQuestionNode(question)).toBe(true);
+    if (!question || !isQuestionNode(question)) return;
+
+    // Attachment with no size or contentType
+    question.setAnswer(0, {
+      url: "https://example.com/file.pdf",
+      title: "External File",
+    });
+    expect(question.hasErrors).toBe(false);
+
+    // Attachment with size but no contentType
+    question.setAnswer(0, {
+      size: "1024",
+      title: "file.dat",
+    });
     expect(question.hasErrors).toBe(false);
   });
 });

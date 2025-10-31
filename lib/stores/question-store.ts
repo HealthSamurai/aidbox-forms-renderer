@@ -9,7 +9,8 @@ import {
   IQuestionNode,
   IScope,
 } from "./types.ts";
-import {
+import type {
+  Attachment,
   OperationOutcomeIssue,
   Quantity,
   QuestionnaireItem,
@@ -22,6 +23,7 @@ import { AnswerInstance } from "./answer-instance.ts";
 
 import {
   answerHasContent,
+  getAttachmentConstraints,
   getDateBounds,
   getDateTimeBounds,
   getDecimalBounds,
@@ -511,7 +513,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.answers.push(answer);
   }
 
-  override get hasErrors(): boolean { 
+  override get hasErrors(): boolean {
     return this.issues.length > 0 || this.answerIssues.some((issues) => issues.length > 0);
   }
 
@@ -542,7 +544,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         ),
       );
     }
-    
+
     return issues;
   }
 
@@ -658,8 +660,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "coding":
         return [];
       case "attachment":
-        // TODO: enforce attachment size/content-type constraints.
-        return [];
+        return this.validateAttachmentValue(answer.value);
       case "reference":
         // TODO: enforce target profile validation for references.
         return [];
@@ -788,6 +789,58 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         ),
       );
     }
+
+    return issues;
+  }
+
+  private validateAttachmentValue(
+    value: AnswerValueType<T> | null,
+  ): OperationOutcomeIssue[] {
+    const attachment = value as Attachment | null;
+    if (!attachment || typeof attachment !== "object") {
+      return [];
+    }
+
+    const issues: OperationOutcomeIssue[] = [];
+    const constraints = getAttachmentConstraints(this.template);
+
+    const sizeInBytes = this.parseNumber(attachment.size);
+    
+    if (constraints.maxSize != null && sizeInBytes != null) {
+      const maxSizeBytes = constraints.maxSize;
+      if (sizeInBytes > maxSizeBytes) {
+        issues.push(
+          makeIssue(
+            "invalid",
+            `Attachment size exceeds the maximum allowed size of ${constraints.maxSize} bytes.`,
+          ),
+        );
+      }
+    }
+
+    // Validate MIME type
+    if (constraints.mimeTypes && attachment.contentType) {
+      const isAllowed = constraints.mimeTypes.some((allowed) => {
+        // Support wildcards like "image/*"
+        if (allowed.endsWith("/*")) {
+          const prefix = allowed.slice(0, -2);
+          return attachment.contentType?.startsWith(prefix + "/");
+        }
+        return attachment.contentType === allowed;
+      });
+
+      if (!isAllowed) {
+        const allowedList = constraints.mimeTypes.join(", ");
+        issues.push(
+          makeIssue(
+            "invalid",
+            `Attachment type "${attachment.contentType}" is not allowed. Allowed types: ${allowedList}.`,
+          ),
+        );
+      }
+    }
+
+
 
     return issues;
   }

@@ -41,6 +41,11 @@ export const EXT = {
   MAX_OCCURS:           "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
   MIN_VALUE:            "http://hl7.org/fhir/StructureDefinition/minValue",
   MAX_VALUE:            "http://hl7.org/fhir/StructureDefinition/maxValue",
+  MIN_QUANTITY:         "http://hl7.org/fhir/StructureDefinition/minQuantity",
+  MAX_QUANTITY:         "http://hl7.org/fhir/StructureDefinition/maxQuantity",
+  MAX_DECIMAL_PLACES:   "http://hl7.org/fhir/StructureDefinition/maxDecimalPlaces",
+  MAX_SIZE:             "http://hl7.org/fhir/StructureDefinition/maxSize",
+  MIME_TYPE:            "http://hl7.org/fhir/StructureDefinition/mimeType",
   HIDDEN:               "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
   SDC_ENABLE_WHEN_EXPR: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
   SDC_CALCULATED_EXPR:  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
@@ -108,11 +113,30 @@ export function getTimeBounds(item: QuestionnaireItem) {
 }
 
 export function getQuantityBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueQuantity;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueQuantity;
+  const min = findExtension(item, EXT.MIN_QUANTITY)?.valueQuantity || findExtension(item, EXT.MIN_VALUE)?.valueQuantity;
+  const max = findExtension(item, EXT.MAX_QUANTITY)?.valueQuantity || findExtension(item, EXT.MAX_VALUE)?.valueQuantity;
   return {
     min: isQuantity(min) ? min : undefined,
     max: isQuantity(max) ? max : undefined,
+  };
+}
+
+export function getAttachmentConstraints(item: QuestionnaireItem) {
+  const maxSizeExt = findExtension(item, EXT.MAX_SIZE);
+  const maxSize = typeof maxSizeExt?.valueDecimal === "number"
+    ? maxSizeExt.valueDecimal
+    : undefined;
+
+  const mimeTypes: string[] = [];
+  item.extension?.forEach((ext) => {
+    if (ext.url === EXT.MIME_TYPE && typeof ext.valueCode === "string") {
+      mimeTypes.push(ext.valueCode);
+    }
+  });
+
+  return {
+    maxSize,
+    mimeTypes: mimeTypes.length > 0 ? mimeTypes : undefined,
   };
 }
 
@@ -146,6 +170,7 @@ export async function prepareAttachmentFromFile(
     ...existing,
     data: base64 ?? undefined,
     title: existing.title ?? file.name,
+    size: file.size > 0 ? `${file.size}` : undefined,
   };
 
   const contentType = file.type || existing.contentType;
