@@ -46,3 +46,4 @@
 * when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
 * prefer small isolated tests with dedicated test data
 * prefer having functions over class methods if `this` is not used
+* exactOptionalPropertyTypes is enabled so when defining types prefer union with undefined over optional properties

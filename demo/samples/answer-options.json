@@ -1,0 +1,119 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "answer-options",
+  "status": "active",
+  "title": "Answer Options Showcase",
+  "description": "Demonstrates rendering of answerOption for multiple question types.",
+  "item": [
+    {
+      "linkId": "coding-question",
+      "type": "coding",
+      "text": "Preferred contact method",
+      "answerOption": [
+        { "valueCoding": { "system": "http://terminology.hl7.org/CodeSystem/contact-point-system", "code": "phone", "display": "Phone" } },
+        { "valueCoding": { "system": "http://terminology.hl7.org/CodeSystem/contact-point-system", "code": "email", "display": "Email" } },
+        { "valueCoding": { "system": "http://terminology.hl7.org/CodeSystem/contact-point-system", "code": "sms", "display": "SMS" } }
+      ]
+    },
+    {
+      "linkId": "boolean-question",
+      "type": "boolean",
+      "text": "Receive promotional messages?",
+      "answerOption": [
+        { "valueBoolean": true },
+        { "valueBoolean": false }
+      ]
+    },
+    {
+      "linkId": "string-question",
+      "type": "string",
+      "text": "Favorite color",
+      "answerOption": [
+        { "valueString": "Red" },
+        { "valueString": "Green" },
+        { "valueString": "Blue" }
+      ]
+    },
+    {
+      "linkId": "decimal-question",
+      "type": "decimal",
+      "text": "Hours of sleep on a typical night",
+      "answerOption": [
+        { "valueDecimal": 6.0 },
+        { "valueDecimal": 7.5 },
+        { "valueDecimal": 8.0 }
+      ]
+    },
+    {
+      "linkId": "integer-question",
+      "type": "integer",
+      "text": "Number of cups of coffee per day",
+      "answerOption": [
+        { "valueInteger": 0 },
+        { "valueInteger": 1 },
+        { "valueInteger": 2 },
+        { "valueInteger": 3 }
+      ]
+    },
+    {
+      "linkId": "date-question",
+      "type": "date",
+      "text": "Preferred appointment day",
+      "answerOption": [
+        { "valueDate": "2025-11-03" },
+        { "valueDate": "2025-11-04" },
+        { "valueDate": "2025-11-05" }
+      ]
+    },
+    {
+      "linkId": "datetime-question",
+      "type": "dateTime",
+      "text": "Preferred appointment time",
+      "answerOption": [
+        { "valueDateTime": "2025-11-03T09:00:00-05:00" },
+        { "valueDateTime": "2025-11-03T13:00:00-05:00" },
+        { "valueDateTime": "2025-11-03T16:30:00-05:00" }
+      ]
+    },
+    {
+      "linkId": "time-question",
+      "type": "time",
+      "text": "Best contact window",
+      "answerOption": [
+        { "valueTime": "08:00:00" },
+        { "valueTime": "12:00:00" },
+        { "valueTime": "18:00:00" }
+      ]
+    },
+    {
+      "linkId": "quantity-question",
+      "type": "quantity",
+      "text": "Usual coffee size",
+      "answerOption": [
+        { "valueQuantity": { "value": 8, "unit": "oz", "system": "http://unitsofmeasure.org", "code": "[foz_us]" } },
+        { "valueQuantity": { "value": 12, "unit": "oz", "system": "http://unitsofmeasure.org", "code": "[foz_us]" } },
+        { "valueQuantity": { "value": 16, "unit": "oz", "system": "http://unitsofmeasure.org", "code": "[foz_us]" } }
+      ]
+    },
+    {
+      "linkId": "reference-question",
+      "type": "reference",
+      "text": "Primary care provider",
+      "answerOption": [
+        { "valueReference": { "reference": "Practitioner/alpha", "display": "Dr. Alice Carter" } },
+        { "valueReference": { "reference": "Practitioner/beta", "display": "Dr. Ben Lee" } },
+        { "valueReference": { "reference": "Practitioner/gamma", "display": "Dr. Grace Patel" } }
+      ]
+    },
+    {
+      "linkId": "url-question",
+      "type": "url",
+      "text": "Preferred telehealth platform",
+      "answerOption": [
+        { "valueUri": "https://zoom.us" },
+        { "valueUri": "https://teams.microsoft.com" },
+        { "valueUri": "https://meet.google.com" }
+      ]
+    }
+  ]
+}

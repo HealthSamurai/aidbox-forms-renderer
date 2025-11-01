@@ -15,12 +15,17 @@ import { UrlNode } from "../questions/nodes/url-node.tsx";
 import { CodingNode } from "../questions/nodes/coding-node.tsx";
 import { AttachmentNode } from "../questions/nodes/attachment-node.tsx";
 import { ReferenceNode } from "../questions/nodes/reference-node.tsx";
+import { AnswerOptionNode } from "../questions/nodes/answer-option-node.tsx";
 
 export const QuestionNode = observer(function QuestionNode({
   item,
 }: {
   item: IQuestionNode;
 }) {
+  if ((item.template.answerOption?.length ?? 0) > 0) {
+    return <AnswerOptionNode item={item} />;
+  }
+
   switch (item.type) {
     case "string":
       return <StringNode item={item as IQuestionNode<"string">} />;
