@@ -58,11 +58,41 @@ export function makeMinValueExpression(
   expression: string,
 ): Extension {
   return {
-    url: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
-    valueExpression: {
-      language: "text/fhirpath",
-      expression,
-      ...(name ? { name } : {}),
+    url: "http://hl7.org/fhir/StructureDefinition/minValue",
+    valueInteger: 0,
+    _valueInteger: {
+      extension: [
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+          valueExpression: {
+            language: "text/fhirpath",
+            expression,
+            ...(name ? { name } : {}),
+          },
+        },
+      ],
     },
-  };
+  } as Extension;
+}
+
+export function makeMaxValueExpression(
+  name: string | undefined,
+  expression: string,
+): Extension {
+  return {
+    url: "http://hl7.org/fhir/StructureDefinition/maxValue",
+    valueInteger: 0,
+    _valueInteger: {
+      extension: [
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+          valueExpression: {
+            language: "text/fhirpath",
+            expression,
+            ...(name ? { name } : {}),
+          },
+        },
+      ],
+    },
+  } as Extension;
 }

@@ -1,12 +1,21 @@
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import {
+  AnswerType,
   ExpressionSlotKind,
   IExpressionEnvironmentProvider,
   IExpressionSlot,
   IScope,
 } from "./types.ts";
-import { Expression, Extension, OperationOutcomeIssue } from "fhir/r5";
-import { EXT, makeIssue } from "../utils.ts";
+import type { Expression, Extension, OperationOutcomeIssue } from "fhir/r5";
+import {
+  extractCalculatedExpression,
+  extractEnableWhenExpression,
+  extractInitialExpression,
+  extractMaxValueExpression,
+  extractMinValueExpression,
+  extractVariableExpressions,
+  makeIssue,
+} from "../utils.ts";
 import { ExpressionSlot } from "./expression-slot.ts";
 import { DuplicateExpressionNameError } from "./scope.ts";
 import { computed, makeObservable, observable } from "mobx";
@@ -38,99 +47,48 @@ export class ExpressionRegistry {
     private scope: IScope,
     private environmentProvider: IExpressionEnvironmentProvider,
     extensions: Extension[] | undefined,
+    type: AnswerType | undefined,
   ) {
     makeObservable(this);
 
-    for (const extension of extensions || []) {
-      if (extension.valueExpression) {
-        switch (extension.url) {
-          case EXT.SDC_VARIABLE:
-            this.createSlot(extension.valueExpression, "variable");
-            break;
+    extractVariableExpressions(extensions).forEach((expression) => {
+      this.createSlot(expression, "variable");
+    });
 
-          case EXT.SDC_ENABLE_WHEN_EXPR:
-            this.enableWhen = this.ensureSingleSlot(
-              this.enableWhen,
-              extension,
-              "enable-when",
-            );
-            break;
+    this.enableWhen = this.createSlot(
+      extractEnableWhenExpression(extensions),
+      "enable-when",
+    );
 
-          case EXT.SDC_INITIAL_EXPR:
-            this.initial = this.ensureSingleSlot(
-              this.initial,
-              extension,
-              "initial",
-            );
-            break;
+    this.initial = this.createSlot(
+      extractInitialExpression(extensions),
+      "initial",
+    );
 
-          case EXT.SDC_CALCULATED_EXPR:
-            this.calculated = this.ensureSingleSlot(
-              this.calculated,
-              extension,
-              "calculated",
-            );
-            break;
+    this.calculated = this.createSlot(
+      extractCalculatedExpression(extensions),
+      "calculated",
+    );
 
-          case EXT.SDC_MIN_VALUE_EXPR:
-            this.minValue = this.ensureSingleSlot(
-              this.minValue,
-              extension,
-              "min-value",
-            );
-            break;
-
-          case EXT.SDC_MAX_VALUE_EXPR:
-            this.maxValue = this.ensureSingleSlot(
-              this.maxValue,
-              extension,
-              "max-value",
-            );
-            break;
-        }
-      }
-    }
-  }
-
-  private ensureSingleSlot(
-    current: IExpressionSlot | undefined,
-    extension: Extension,
-    kind: ExpressionSlotKind,
-  ): IExpressionSlot | undefined {
-    if (current) {
-      this.registrationIssues.push(
-        makeIssue(
-          "invalid",
-          `Only one ${this.describeKind(kind)} extension is supported per item.`,
-        ),
+    if (type) {
+      this.minValue = this.createSlot(
+        extractMinValueExpression(extensions, type),
+        "min-value",
       );
-      return current;
-    }
 
-    return this.createSlot(extension.valueExpression!, kind);
-  }
-
-  private describeKind(kind: ExpressionSlotKind) {
-    switch (kind) {
-      case "enable-when":
-        return "enable-when";
-      case "initial":
-        return "initial";
-      case "calculated":
-        return "calculated";
-      case "min-value":
-        return "min-value";
-      case "max-value":
-        return "max-value";
-      case "variable":
-        return "variable";
+      this.maxValue = this.createSlot(
+        extractMaxValueExpression(extensions, type),
+        "max-value",
+      );
     }
   }
 
   private createSlot(
-    expression: Expression,
+    expression: Expression | undefined,
     kind: ExpressionSlotKind,
-  ): IExpressionSlot {
+  ): IExpressionSlot | undefined {
+    if (!expression) return undefined;
+
     const slot: IExpressionSlot = new ExpressionSlot(
       this.coordinator,
       this.environmentProvider,

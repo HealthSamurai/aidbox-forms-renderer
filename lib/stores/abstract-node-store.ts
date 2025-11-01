@@ -1,5 +1,6 @@
 import { computed, observable, runInAction } from "mobx";
 import {
+  AnswerType,
   ExpressionEnvironment,
   IBaseNode,
   IExpressionEnvironmentProvider,
@@ -180,6 +181,7 @@ export abstract class AbstractNodeStore
       this.scope,
       provider,
       extensions,
+      this.template.type as AnswerType,
     );
   }
 

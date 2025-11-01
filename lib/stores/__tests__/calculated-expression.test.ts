@@ -442,36 +442,4 @@ describe("calculatedExpression", () => {
     expect(bmi.answers[0]?.value).toBeCloseTo(27.8, 1);
   });
 
-  it("records issues when multiple calculated expressions are declared", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "result",
-          type: "decimal",
-          extension: [
-            makeCalculatedExpression(undefined, "1"),
-            makeCalculatedExpression(undefined, "2"),
-          ],
-        },
-      ],
-    };
-
-    const form = new FormStore(questionnaire);
-    const resultStore = form.scope.lookupNode("result");
-
-    if (!isQuestionNode(resultStore)) {
-      throw new Error("Expected result question store");
-    }
-
-    expect(
-      resultStore.issues.some((issue) =>
-        issue.diagnostics?.includes(
-          "Only one calculated extension is supported per item.",
-        ),
-      ),
-    ).toBe(true);
-    expect(resultStore.answers[0]?.value).toBe(1);
-  });
 });

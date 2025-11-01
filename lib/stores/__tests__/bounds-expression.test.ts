@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form-store.ts";
-import { makeMinValueExpression } from "./expression-fixtures.ts";
+import {
+  makeMaxValueExpression,
+  makeMinValueExpression,
+} from "./expression-fixtures.ts";
 import { isQuestionNode } from "../question-store.ts";
 
 describe("min/max value expressions", () => {
@@ -34,7 +37,7 @@ describe("min/max value expressions", () => {
     expect(score.issues).toHaveLength(0);
   });
 
-  it("records issues when multiple min-value expressions are declared", () => {
+  it("enforces a calculated maximum", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -42,10 +45,7 @@ describe("min/max value expressions", () => {
         {
           linkId: "score",
           type: "integer",
-          extension: [
-            makeMinValueExpression(undefined, "5"),
-            makeMinValueExpression(undefined, "15"),
-          ],
+          extension: [makeMaxValueExpression(undefined, "15")],
         },
       ],
     };
@@ -56,17 +56,12 @@ describe("min/max value expressions", () => {
       throw new Error("Expected question store");
     }
 
+    score.setAnswer(0, 20);
     expect(
-      score.issues.some((issue) =>
-        issue.diagnostics?.includes(
-          "Only one min-value extension is supported per item.",
-        ),
-      ),
+      score.issues.some((issue) => issue.diagnostics?.includes("15")),
     ).toBe(true);
 
-    score.setAnswer(0, 4);
-    expect(score.issues.some((issue) => issue.diagnostics?.includes("5"))).toBe(
-      true,
-    );
+    score.setAnswer(0, 10);
+    expect(score.issues).toHaveLength(0);
   });
 });

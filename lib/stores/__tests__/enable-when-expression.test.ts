@@ -215,39 +215,6 @@ describe("enableWhenExpression", () => {
     );
   });
 
-  it("records issues when multiple enableWhen expressions are declared", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "controlled",
-          type: "string",
-          extension: [
-            makeEnableExpression(undefined, "true"),
-            makeEnableExpression(undefined, "false"),
-          ],
-        },
-      ],
-    };
-
-    const form = new FormStore(questionnaire);
-    const controlled = form.scope.lookupNode("controlled");
-
-    if (!controlled || !isQuestionNode(controlled)) {
-      throw new Error("Expected question store");
-    }
-
-    expect(
-      controlled.issues.some((issue) =>
-        issue.diagnostics?.includes(
-          "Only one enable-when extension is supported per item.",
-        ),
-      ),
-    ).toBe(true);
-    expect(controlled.isEnabled).toBe(true);
-  });
-
   it("honors enableWhen expressions defined via modifierExtension", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

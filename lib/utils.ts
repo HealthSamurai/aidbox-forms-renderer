@@ -12,6 +12,7 @@ import type {
   Attachment,
   Coding,
   Element,
+  Expression,
   Extension,
   OperationOutcomeIssue,
   Quantity,
@@ -51,8 +52,7 @@ export const EXT = {
   SDC_CALCULATED_EXPR:       "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INITIAL_EXPR:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
   SDC_VARIABLE:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
-  SDC_MIN_VALUE_EXPR:        "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
-  SDC_MAX_VALUE_EXPR:        "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
+  CQF_EXPRESSION:            "http://hl7.org/fhir/StructureDefinition/cqf-expression",
   CQF_CALCULATED_VALUE:      "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
 } as const;
 
@@ -353,7 +353,7 @@ export type PolyCarrierFor<Base extends string, T extends AnswerType> = {
 };
 
 // prettier-ignore
-const SUFFIX_BY_TYPE: { [K in AnswerType]: KeySuffixFor<K> } = {
+export const SUFFIX_BY_TYPE: { [K in AnswerType]: KeySuffixFor<K> } = {
   boolean:    "Boolean",
   decimal:    "Decimal",
   integer:    "Integer",
@@ -396,16 +396,16 @@ export const getAnswer = <T extends AnswerType>(
 ): AnswerValueType<T> | undefined => getPolymorphic(obj, "answer", type);
 
 type ValueKeyFor<T extends AnswerType> = PolyKeyFor<"value", T>;
-type ValueFragmentFor<T extends AnswerType> = PolyCarrierFor<"value", T>;
+type ValueCarrierFor<T extends AnswerType> = PolyCarrierFor<"value", T>;
 
 export function asAnswerFragment<T extends AnswerType>(
   type: T,
   value: AnswerValueType<T>,
-): ValueFragmentFor<T> {
+): ValueCarrierFor<T> {
   const key = `value${SUFFIX_BY_TYPE[type]}` as ValueKeyFor<T>;
   return {
     [key]: value,
-  } as ValueFragmentFor<T>;
+  } as ValueCarrierFor<T>;
 }
 
 export function isCoding(value: unknown): value is Coding {
@@ -1243,4 +1243,64 @@ export function areValuesEqual<T extends AnswerType>(
     case "time":
       return areTimeValuesEqual(a, b);
   }
+}
+
+export function extractVariableExpressions(
+  extensions: Extension[] | undefined,
+): Expression[] {
+  return (extensions || [])
+    .map(
+      (extension) =>
+        extension.url === EXT.SDC_VARIABLE && extension.valueExpression,
+    )
+    .filter(Boolean) as Expression[];
+}
+
+export function extractEnableWhenExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_ENABLE_WHEN_EXPR)
+    ?.valueExpression;
+}
+
+export function extractInitialExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_INITIAL_EXPR)
+    ?.valueExpression;
+}
+
+export function extractCalculatedExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_CALCULATED_EXPR)
+    ?.valueExpression;
+}
+
+export function extractMinValueExpression<T extends AnswerType>(
+  extensions: Extension[] | undefined,
+  type: T,
+): Expression | undefined {
+  const extension = extensions?.find(({ url }) => url === EXT.MIN_VALUE);
+  if (extension) {
+    const key = `_value${SUFFIX_BY_TYPE[type]}` as keyof Element;
+    return (extension[key] as Element | null)?.extension?.find(
+      ({ url }) => url === EXT.CQF_EXPRESSION,
+    )?.valueExpression;
+  }
+  return undefined;
+}
+
+export function extractMaxValueExpression<T extends AnswerType>(
+  extensions: Extension[] | undefined,
+  type: T,
+): Expression | undefined {
+  const extension = extensions?.find(({ url }) => url === EXT.MAX_VALUE);
+  if (extension) {
+    const key = `_value${SUFFIX_BY_TYPE[type]}` as keyof Element;
+    return (extension[key] as Element | null)?.extension?.find(
+      ({ url }) => url === EXT.CQF_EXPRESSION,
+    )?.valueExpression;
+  }
+  return undefined;
 }
