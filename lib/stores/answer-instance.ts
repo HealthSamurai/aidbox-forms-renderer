@@ -92,4 +92,10 @@ export class AnswerInstance<TType extends AnswerType>
 
     return answer;
   }
+
+  dispose(): void {
+    const children = this.nodes.slice();
+    this.nodes.clear();
+    children.forEach((child) => child.dispose());
+  }
 }

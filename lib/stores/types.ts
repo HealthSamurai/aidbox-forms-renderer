@@ -110,6 +110,7 @@ export interface ICoreNode {
   // FHIRPath expressions always evaluate against a predictable tree.
   readonly expressionItems: QuestionnaireResponseItem[];
   readonly issues: Array<OperationOutcomeIssue>;
+  dispose(): void;
 }
 
 export interface IBaseNode extends ICoreNode {
@@ -152,6 +153,7 @@ export interface IAnswerInstance<TValue> {
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
   readonly scope: IScope;
+  dispose(): void;
 }
 
 export interface IQuestionNode<TType extends AnswerType = AnswerType>
@@ -197,4 +199,5 @@ export interface IForm {
     responseItems: QuestionnaireResponseItem[] | undefined,
   ): ICoreNode;
   reset(): void;
+  dispose(): void;
 }

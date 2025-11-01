@@ -207,6 +207,14 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     this.nodes.forEach((node) => this.clearNodeDirty(node));
   }
 
+  dispose(): void {
+    const nodes = this.nodes.slice();
+    runInAction(() => {
+      this.nodes.clear();
+    });
+    nodes.forEach((node) => node.dispose());
+  }
+
   private nodeHasErrors(node: ICoreNode): boolean {
     if (node.hasErrors) {
       return true;
@@ -233,9 +241,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     this.getChildNodes(node).forEach((child) => this.clearNodeDirty(child));
   }
 
-  private buildResponseSnapshot(
-    kind: SnapshotKind,
-  ): QuestionnaireResponse {
+  private buildResponseSnapshot(kind: SnapshotKind): QuestionnaireResponse {
     const items =
       kind === "response"
         ? this.nodes.flatMap((node) => node.responseItems)

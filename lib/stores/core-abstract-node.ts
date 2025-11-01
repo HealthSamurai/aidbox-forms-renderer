@@ -127,4 +127,6 @@ export abstract class CoreAbstractNode implements ICoreNode {
   abstract get expressionItems(): QuestionnaireResponseItem[];
 
   abstract get issues(): Array<OperationOutcomeIssue>;
+
+  abstract dispose(): void;
 }

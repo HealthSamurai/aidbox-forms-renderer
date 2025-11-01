@@ -44,17 +44,15 @@ export class RepeatingGroupStore
     this.initializeExpressionRegistry(this, extensions);
 
     this.nodes.replace(
-      (this.template.item ?? [])
-        .filter(shouldCreateStore)
-        .map((item) =>
-          this.form.createNodeStore(
-            item,
-            this,
-            this.scope,
-            this.key,
-            responseItem?.item?.filter(({ linkId }) => linkId === item.linkId),
-          ),
+      (this.template.item ?? []).filter(shouldCreateStore).map((item) =>
+        this.form.createNodeStore(
+          item,
+          this,
+          this.scope,
+          this.key,
+          responseItem?.item?.filter(({ linkId }) => linkId === item.linkId),
         ),
+      ),
     );
   }
 
@@ -105,6 +103,12 @@ export class RepeatingGroupStore
     if (this.group.canRemove) {
       this.group.removeInstance(this.index);
     }
+  }
+
+  dispose(): void {
+    const children = this.nodes.slice();
+    this.nodes.clear();
+    children.forEach((child) => child.dispose());
   }
 }
 

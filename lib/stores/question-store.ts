@@ -5,7 +5,9 @@ import {
   observable,
   override,
   reaction,
+  runInAction,
 } from "mobx";
+import type { IReactionDisposer } from "mobx";
 import {
   AnswerType,
   AnswerValueType,
@@ -60,6 +62,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @observable
   private lifecycle: AnswerLifecycle = "pristine";
+
+  private readonly disposers: IReactionDisposer[] = [];
 
   constructor(
     form: IForm,
@@ -116,7 +120,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @action
   removeAnswer(index: number) {
     if (!this.canRemove) return;
-    this.answers.splice(index, 1);
+    const [removed] = this.answers.splice(index, 1);
+    removed?.dispose();
     this.ensureBaselineAnswers();
     this.markDirty();
     this.markUserOverridden();
@@ -177,6 +182,17 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
   }
 
+  private trackDisposer(disposer: IReactionDisposer) {
+    this.disposers.push(disposer);
+  }
+
+  private unregisterDisposer(disposer: IReactionDisposer) {
+    const index = this.disposers.indexOf(disposer);
+    if (index >= 0) {
+      this.disposers.splice(index, 1);
+    }
+  }
+
   private setupExpressionReactions() {
     const registry = this.expressionRegistry;
     if (!registry) {
@@ -185,10 +201,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     const { initial, calculated } = registry;
     if (initial) {
-      reaction(
+      const disposer = reaction(
         () => [this.isEnabled, initial.value, this.hasContent, this.lifecycle],
         (_arg: unknown, _prev: unknown, reaction) => {
-          if (this.applyInitialExpressionValue()) reaction.dispose();
+          if (this.applyInitialExpressionValue()) {
+            this.unregisterDisposer(disposer);
+            reaction.dispose();
+          }
         },
         {
           name: `${this.key}:apply-initial-value-reaction`,
@@ -196,10 +215,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           fireImmediately: true,
         },
       );
+      this.trackDisposer(disposer);
     }
 
     if (calculated) {
-      reaction(
+      const disposer = reaction(
         () => [this.isEnabled, this.lifecycle, calculated.value],
         () => this.applyCalculatedExpressionValue(),
         {
@@ -208,6 +228,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           fireImmediately: true,
         },
       );
+      this.trackDisposer(disposer);
     }
   }
 
@@ -272,7 +293,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (values.length === 0) return false;
 
     if (this.repeats) {
+      const existing = this.answers.slice();
       this.answers.clear();
+      existing.forEach((answer) => answer.dispose());
       values.forEach((entry) => {
         this.pushAnswer(entry);
       });
@@ -342,7 +365,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     while (this.answers.length > values.length && this.canRemove) {
-      this.answers.pop();
+      const removed = this.answers.pop();
+      removed?.dispose();
     }
 
     values.forEach((entry, index) => {
@@ -517,6 +541,17 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       responseItems,
     );
     this.answers.push(answer);
+  }
+
+  dispose(): void {
+    const disposers = this.disposers.splice(0);
+    disposers.forEach((dispose) => dispose());
+
+    const existingAnswers = this.answers.slice();
+    runInAction(() => {
+      this.answers.clear();
+    });
+    existingAnswers.forEach((answer) => answer.dispose());
   }
 
   protected override computeIssues(): OperationOutcomeIssue[] {

@@ -104,6 +104,12 @@ export class NonRepeatingGroupStore
       kind === "response" ? child.responseItems : child.expressionItems,
     );
   }
+
+  dispose(): void {
+    const children = this.nodes.slice();
+    this.nodes.clear();
+    children.forEach((child) => child.dispose());
+  }
 }
 
 export function isNonRepeatingGroupNode(

@@ -43,6 +43,8 @@ export class DisplayStore extends AbstractNodeStore implements IDisplayNode {
       },
     ];
   }
+
+  dispose(): void {}
 }
 
 export function isDisplayNode(it: ICoreNode | undefined): it is IDisplayNode {

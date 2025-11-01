@@ -101,7 +101,8 @@ export class RepeatingGroupWrapper
   @action
   removeInstance(index: number) {
     if (this.canRemove) {
-      this.nodes.splice(index, 1);
+      const [removed] = this.nodes.splice(index, 1);
+      removed?.dispose();
     }
   }
 
@@ -185,6 +186,12 @@ export class RepeatingGroupWrapper
   }
 
   override clearDirty(): void {}
+
+  dispose(): void {
+    const instances = this.nodes.slice();
+    this.nodes.clear();
+    instances.forEach((instance) => instance.dispose());
+  }
 }
 
 export function isRepeatingGroupWrapper(
