@@ -34,6 +34,7 @@ import {
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { Scope } from "./scope.ts";
 import { ExpressionRegistry } from "./expression-registry.ts";
+import { shouldCreateStore } from "../utils.ts";
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
   questionnaire: Questionnaire;
@@ -70,9 +71,10 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     );
 
     runInAction(() => {
-      if (questionnaire.item) {
-        this.nodes.replace(
-          questionnaire.item.map((item) =>
+      this.nodes.replace(
+        (questionnaire.item ?? [])
+          .filter(shouldCreateStore)
+          .map((item) =>
             this.createNodeStore(
               item,
               null,
@@ -81,8 +83,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
               this.initialResponse?.item,
             ),
           ),
-        );
-      }
+      );
     });
   }
 

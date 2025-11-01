@@ -24,6 +24,7 @@ export const DecimalNode = observer(function DecimalNode({
             onChange={setValue}
             disabled={item.readOnly}
             step="any"
+            unitLabel={item.unitDisplay}
           />
         )}
       />

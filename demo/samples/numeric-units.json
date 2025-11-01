@@ -1,0 +1,63 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "Numeric Units Showcase",
+  "description": "Highlights questionnaire-unit extension and unit display child items for integer and decimal questions.",
+  "item": [
+    {
+      "linkId": "weight",
+      "text": "Body weight",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "kg",
+            "display": "kg"
+          }
+        }
+      ],
+      "initial": [
+        {
+          "valueDecimal": 72.5
+        }
+      ]
+    },
+    {
+      "linkId": "tablet-count",
+      "text": "Number of tablets to take",
+      "type": "integer",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+          "valueCoding": {
+            "system": "http://example.org/medication-units",
+            "code": "tablet",
+            "display": "tablet"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "tablet-count-unit",
+          "text": "tablet",
+          "type": "display",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "unit"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

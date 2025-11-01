@@ -5,7 +5,7 @@ import {
   QuestionnaireItem,
   type QuestionnaireResponseItem,
 } from "fhir/r5";
-import { EXT, findExtension } from "../utils.ts";
+import { EXT, findExtension, getItemControl } from "../utils.ts";
 
 export abstract class CoreAbstractNode implements ICoreNode {
   readonly form: IForm;
@@ -45,8 +45,11 @@ export abstract class CoreAbstractNode implements ICoreNode {
 
   @computed
   get help() {
-    // TODO: support help from extensions
-    return undefined;
+    return (
+      this.template.item?.find(
+        (item) => item.type === "display" && getItemControl(item) === "help",
+      )?.text ?? undefined
+    );
   }
 
   @computed
@@ -80,6 +83,20 @@ export abstract class CoreAbstractNode implements ICoreNode {
     }
 
     return false;
+  }
+
+  @computed
+  get unitDisplay(): string | undefined {
+    if (this.template.type !== "integer" && this.template.type !== "decimal") {
+      return undefined;
+    }
+
+    return (
+      this.template.item?.find(
+        (item) => item.type === "display" && getItemControl(item) === "unit",
+      )?.text ??
+      findExtension(this.template, EXT.QUESTIONNAIRE_UNIT)?.valueCoding?.display
+    );
   }
 
   abstract get scope(): IScope;

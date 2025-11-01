@@ -95,6 +95,85 @@ describe("initialization", () => {
     });
   });
 
+  describe("support display children", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "lab-value",
+          text: "Lab value",
+          type: "integer",
+          item: [
+            {
+              linkId: "lab-value-unit",
+              text: "mg/dL",
+              type: "display",
+              extension: [
+                {
+                  url: "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                  valueCodeableConcept: {
+                    coding: [
+                      {
+                        system: "http://hl7.org/fhir/questionnaire-item-control",
+                        code: "unit",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          linkId: "visit-notes",
+          text: "Visit notes",
+          type: "string",
+          item: [
+            {
+              linkId: "visit-notes-help",
+              text: "Summarize key observations from the encounter.",
+              type: "display",
+              extension: [
+                {
+                  url: "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                  valueCodeableConcept: {
+                    coding: [
+                      {
+                        system: "http://hl7.org/fhir/questionnaire-item-control",
+                        code: "help",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+
+    it("applies unit support display without creating child nodes", () => {
+      const node = form.scope.lookupNode("lab-value");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+      expect(node.unitDisplay).toBe("mg/dL");
+      expect(node.answers.at(0)?.nodes).toHaveLength(0);
+    });
+
+    it("applies help support display without creating child nodes", () => {
+      const node = form.scope.lookupNode("visit-notes");
+      expect(node && isQuestionNode(node)).toBe(true);
+      if (!node || !isQuestionNode(node)) return;
+      expect(node.help).toBe(
+        "Summarize key observations from the encounter.",
+      );
+      expect(node.answers.at(0)?.nodes).toHaveLength(0);
+    });
+  });
+
   describe("non-repeating groups", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

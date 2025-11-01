@@ -95,6 +95,7 @@ export interface ICoreNode {
   readonly required: boolean;
   readonly readOnly: boolean;
   readonly hidden: boolean;
+  readonly unitDisplay: string | undefined;
   readonly isEnabled: boolean;
 
   readonly hasErrors: boolean;

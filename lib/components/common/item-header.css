@@ -1,3 +1,20 @@
+.af-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.af-item-header-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.af-item-header-main .af-item-label {
+  min-width: 0;
+}
+
 .af-item-label {
   font-weight: 500;
   display: inline-flex;

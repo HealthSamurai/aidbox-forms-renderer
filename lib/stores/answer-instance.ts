@@ -12,6 +12,7 @@ import type {
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
+import { shouldCreateStore } from "../utils.ts";
 
 export class AnswerInstance<TType extends AnswerType>
   implements IAnswerInstance<AnswerValueType<TType>>
@@ -44,15 +45,17 @@ export class AnswerInstance<TType extends AnswerType>
     this.question = question;
 
     const children =
-      question.template.item?.map((item) =>
-        question.form.createNodeStore(
-          item,
-          question,
-          this.scope,
-          this.key,
-          responseItems.filter(({ linkId }) => linkId === item.linkId),
-        ),
-      ) ?? [];
+      question.template.item
+        ?.filter(shouldCreateStore)
+        .map((item) =>
+          question.form.createNodeStore(
+            item,
+            question,
+            this.scope,
+            this.key,
+            responseItems.filter(({ linkId }) => linkId === item.linkId),
+          ),
+        ) ?? [];
 
     this.nodes.replace(children);
     this.value = initial;

@@ -21,11 +21,12 @@ export const IntegerNode = observer(function IntegerNode({
             ariaLabelledBy={labelId}
             ariaDescribedBy={describedById}
             value={value ?? null}
-            onChange={(value) =>
-              setValue(value != null ? Math.round(value) : null)
+            onChange={(next) =>
+              setValue(next != null ? Math.round(next) : null)
             }
             disabled={item.readOnly}
             step={1}
+            unitLabel={item.unitDisplay}
           />
         )}
       />

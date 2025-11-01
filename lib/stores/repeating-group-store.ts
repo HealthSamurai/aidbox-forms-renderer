@@ -7,6 +7,7 @@ import {
 } from "./types.ts";
 import type { QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractNodeStore } from "./abstract-node-store.ts";
+import { shouldCreateStore } from "../utils.ts";
 
 export class RepeatingGroupStore
   extends AbstractNodeStore
@@ -42,18 +43,19 @@ export class RepeatingGroupStore
     ];
     this.initializeExpressionRegistry(this, extensions);
 
-    const children =
-      this.template.item?.map((item) =>
-        this.form.createNodeStore(
-          item,
-          this,
-          this.scope,
-          this.key,
-          responseItem?.item?.filter(({ linkId }) => linkId === item.linkId),
+    this.nodes.replace(
+      (this.template.item ?? [])
+        .filter(shouldCreateStore)
+        .map((item) =>
+          this.form.createNodeStore(
+            item,
+            this,
+            this.scope,
+            this.key,
+            responseItem?.item?.filter(({ linkId }) => linkId === item.linkId),
+          ),
         ),
-      ) ?? [];
-
-    this.nodes.replace(children);
+    );
   }
 
   @computed.struct

@@ -3,6 +3,8 @@ import type { Questionnaire } from "fhir/r5";
 import textControls from "./text-controls.json" assert { type: "json" };
 import booleanGating from "./boolean-gating.json" assert { type: "json" };
 import numericThresholds from "./numeric-thresholds.json" assert { type: "json" };
+import numericUnits from "./numeric-units.json" assert { type: "json" };
+import itemControlHelp from "./item-control-help.json" assert { type: "json" };
 import repeatingQuestion from "./repeating-question.json" assert { type: "json" };
 import repeatingGroup from "./repeating-group.json" assert { type: "json" };
 import nestedFollowUps from "./nested-follow-ups.json" assert { type: "json" };
@@ -34,6 +36,16 @@ export const demoSamples: readonly DemoSample[] = [
     id: "numeric-thresholds",
     label: "Numeric comparisons",
     questionnaire: numericThresholds as Questionnaire,
+  },
+  {
+    id: "numeric-units",
+    label: "Numeric units",
+    questionnaire: numericUnits as Questionnaire,
+  },
+  {
+    id: "item-control-help",
+    label: "Help controls",
+    questionnaire: itemControlHelp as Questionnaire,
   },
   {
     id: "repeating-question",

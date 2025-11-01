@@ -1,3 +1,6 @@
+import { useId } from "react";
+import "./number-input.css";
+
 export function NumberInput({
   id,
   value,
@@ -7,6 +10,7 @@ export function NumberInput({
   step,
   ariaLabelledBy,
   ariaDescribedBy,
+  unitLabel,
 }: {
   id?: string | undefined;
   value: number | null;
@@ -16,11 +20,21 @@ export function NumberInput({
   step?: number | "any";
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
+  unitLabel?: string | undefined;
 }) {
-  return (
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const unitId = unitLabel ? `${inputId}-unit` : undefined;
+  const describedByValues = [ariaDescribedBy, unitId].filter(
+    Boolean,
+  ) as string[];
+  const describedBy =
+    describedByValues.length > 0 ? describedByValues.join(" ") : undefined;
+
+  const input = (
     <input
-      id={id}
-      className="af-input"
+      id={inputId}
+      className="af-input af-number-input-field"
       type="number"
       value={value ?? ""}
       onChange={(e) => {
@@ -31,7 +45,25 @@ export function NumberInput({
       placeholder={placeholder}
       step={step}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
+      aria-describedby={describedBy}
     />
+  );
+
+  const frameClasses = ["af-number-input-frame"];
+  if (!unitLabel) {
+    frameClasses.push("af-number-input-frame--solo");
+  }
+
+  return (
+    <div className="af-number-input" data-has-unit={unitLabel ? "true" : "false"}>
+      <div className={frameClasses.join(" ")}>
+        {input}
+        {unitLabel && (
+          <span id={unitId} className="af-number-unit">
+            {unitLabel}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

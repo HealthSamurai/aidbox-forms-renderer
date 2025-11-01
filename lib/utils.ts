@@ -44,6 +44,8 @@ export const EXT = {
   MIN_VALUE:            "http://hl7.org/fhir/StructureDefinition/minValue",
   MAX_VALUE:            "http://hl7.org/fhir/StructureDefinition/maxValue",
   HIDDEN:               "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+  ITEM_CONTROL:         "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+  QUESTIONNAIRE_UNIT:   "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
   SDC_ENABLE_WHEN_EXPR: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
   SDC_CALCULATED_EXPR:  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INITIAL_EXPR:     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
@@ -58,6 +60,75 @@ export function findExtension(
   url: string,
 ): Extension | undefined {
   return element.extension?.find((e) => e.url === url);
+}
+
+export const ITEM_CONTROL_CODES = [
+  "group",
+  "list",
+  "table",
+  "htable",
+  "gtable",
+  "atable",
+  "header",
+  "footer",
+  "text",
+  "inline",
+  "prompt",
+  "unit",
+  "lower",
+  "upper",
+  "flyover",
+  "help",
+  "question",
+  "autocomplete",
+  "drop-down",
+  "check-box",
+  "lookup",
+  "radio-button",
+  "slider",
+  "spinner",
+  "text-box",
+] as const;
+
+export type QuestionnaireItemControlCode = (typeof ITEM_CONTROL_CODES)[number];
+
+export const ITEM_CONTROL_SYSTEM =
+  "http://hl7.org/fhir/questionnaire-item-control";
+
+export function shouldCreateStore(item: QuestionnaireItem): boolean {
+  if (item.type !== "display") {
+    return true;
+  }
+
+  const control = getItemControl(item);
+  return control !== "help" && control !== "unit";
+}
+
+export function getItemControl(
+  item: QuestionnaireItem,
+  system: string = ITEM_CONTROL_SYSTEM,
+): QuestionnaireItemControlCode | undefined {
+  for (const extension of item.extension ?? []) {
+    if (extension.url !== EXT.ITEM_CONTROL) {
+      continue;
+    }
+
+    const coding =
+      extension.valueCoding ?? extension.valueCodeableConcept?.coding?.[0];
+    if (!coding) {
+      continue;
+    }
+
+    if (coding.system && coding.system !== system) {
+      continue;
+    }
+
+    if (coding.code) {
+      return coding.code as QuestionnaireItemControlCode;
+    }
+  }
+
+  return undefined;
 }
 
 export function isQuantity(value: unknown): value is Quantity {

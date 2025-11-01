@@ -1,0 +1,96 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "Help Control Showcase",
+  "description": "Demonstrates questionnaire items using help control children across different contexts.",
+  "item": [
+    {
+      "linkId": "patient-name",
+      "text": "Patient full name",
+      "type": "string",
+      "item": [
+        {
+          "linkId": "patient-name-help",
+          "text": "Enter the legal name as it appears on government-issued documents.",
+          "type": "display",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "help"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "preferred-name",
+      "text": "Preferred name",
+      "type": "string"
+    },
+    {
+      "linkId": "medications",
+      "text": "Current medications",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "medication-name",
+          "text": "Medication name",
+          "type": "string",
+          "item": [
+            {
+              "linkId": "medication-name-help",
+              "text": "Include generic or brand name as listed on the prescription label.",
+              "type": "display",
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                  "valueCodeableConcept": {
+                    "coding": [
+                      {
+                        "system": "http://hl7.org/fhir/questionnaire-item-control",
+                        "code": "help"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "linkId": "medication-dosage",
+          "text": "Dosage",
+          "type": "string",
+          "item": [
+            {
+              "linkId": "medication-dosage-help",
+              "text": "Specify strength and frequency (e.g., '5 mg twice daily').",
+              "type": "display",
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                  "valueCodeableConcept": {
+                    "coding": [
+                      {
+                        "system": "http://hl7.org/fhir/questionnaire-item-control",
+                        "code": "help"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

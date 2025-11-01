@@ -14,7 +14,7 @@ import {
 } from "fhir/r5";
 
 import { AbstractNodeStore } from "./abstract-node-store.ts";
-import { makeIssue } from "../utils.ts";
+import { makeIssue, shouldCreateStore } from "../utils.ts";
 
 export class NonRepeatingGroupStore
   extends AbstractNodeStore
@@ -37,15 +37,17 @@ export class NonRepeatingGroupStore
     super(form, template, parentStore, parentScope, parentKey);
 
     this.nodes.replace(
-      this.template.item?.map((item) =>
-        this.form.createNodeStore(
-          item,
-          this,
-          this.scope,
-          this.key,
-          responseItem?.item,
+      (this.template.item ?? [])
+        .filter(shouldCreateStore)
+        .map((item) =>
+          this.form.createNodeStore(
+            item,
+            this,
+            this.scope,
+            this.key,
+            responseItem?.item,
+          ),
         ),
-      ) || [],
     );
   }
 
