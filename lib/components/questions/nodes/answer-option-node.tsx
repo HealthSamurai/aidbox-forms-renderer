@@ -8,19 +8,33 @@ import { useAnswerOptions } from "../hooks/use-answer-options.ts";
 export const AnswerOptionNode = observer(function AnswerOptionNode<
   T extends AnswerType,
 >({ item }: { item: IQuestionNode<T> }) {
-  const { options, getKeyForValue, getValueForKey } = useAnswerOptions(item);
+  const { options, getKeyForValue, getValueForKey, getLegacyOptionForValue } =
+    useAnswerOptions(item);
   return (
     <div className="af-item" data-linkid={item.linkId}>
       <ItemHeader item={item} />
       {options.length > 0 ? (
         <AnswerList
           item={item}
-          renderRow={({ value, setValue, inputId, labelId, describedById }) => {
+          renderRow={({
+            value,
+            setValue,
+            inputId,
+            labelId,
+            describedById,
+            answer,
+          }) => {
+            const regularKey = getKeyForValue(value);
+            const legacyOption =
+              regularKey || value == null
+                ? null
+                : getLegacyOptionForValue(answer.key, value);
+            const selectValue = regularKey || legacyOption?.key || "";
             return (
               <select
                 id={inputId}
                 className="af-input"
-                value={getKeyForValue(value)}
+                value={selectValue}
                 onChange={(event) => {
                   const key = event.target.value;
                   const nextValue = key ? getValueForKey(key) : null;
@@ -31,6 +45,15 @@ export const AnswerOptionNode = observer(function AnswerOptionNode<
                 aria-describedby={describedById}
               >
                 <option value="">Select an option</option>
+                {legacyOption ? (
+                  <option
+                    key={legacyOption.key}
+                    value={legacyOption.key}
+                    disabled
+                  >
+                    {legacyOption.label}
+                  </option>
+                ) : null}
                 {options.map((entry) => (
                   <option key={entry.key} value={entry.key}>
                     {entry.label}

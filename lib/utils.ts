@@ -105,6 +105,25 @@ export function shouldCreateStore(item: QuestionnaireItem): boolean {
   return control !== "help" && control !== "unit";
 }
 
+export function isEmptyObject(value: unknown): boolean {
+  if (value == null || typeof value !== "object") {
+    return true;
+  }
+
+  return !Object.values(value as Record<string, unknown>).some((entry) => {
+    if (entry == null) {
+      return false;
+    }
+    if (Array.isArray(entry)) {
+      return entry.length > 0;
+    }
+    if (typeof entry === "object") {
+      return !isEmptyObject(entry);
+    }
+    return true;
+  });
+}
+
 export function getItemControl(
   item: QuestionnaireItem,
   system: string = ITEM_CONTROL_SYSTEM,
@@ -375,6 +394,19 @@ export const getAnswer = <T extends AnswerType>(
   obj: PolyCarrierFor<"answer", T> | null | undefined,
   type: T,
 ): AnswerValueType<T> | undefined => getPolymorphic(obj, "answer", type);
+
+type ValueKeyFor<T extends AnswerType> = PolyKeyFor<"value", T>;
+type ValueFragmentFor<T extends AnswerType> = PolyCarrierFor<"value", T>;
+
+export function asAnswerFragment<T extends AnswerType>(
+  type: T,
+  value: AnswerValueType<T>,
+): ValueFragmentFor<T> {
+  const key = `value${SUFFIX_BY_TYPE[type]}` as ValueKeyFor<T>;
+  return {
+    [key]: value,
+  } as ValueFragmentFor<T>;
+}
 
 export function isCoding(value: unknown): value is Coding {
   return (

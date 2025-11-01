@@ -97,7 +97,7 @@ describe("AnswerOptionNode", () => {
     });
   });
 
-  it("falls back to placeholder when answer does not match options", () => {
+  it("shows a disabled option for legacy answers until a new selection is made", async () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -129,7 +129,24 @@ describe("AnswerOptionNode", () => {
     render(<QuestionNode item={question} />);
 
     const combobox = screen.getByRole("combobox", { name: /ice cream/i });
-    expect(combobox).toHaveValue("");
+    const legacyOption = screen.getByRole("option", {
+      name: "Chocolate",
+      hidden: true,
+    }) as HTMLOptionElement;
+    expect(legacyOption.disabled).toBe(true);
+    expect(legacyOption.selected).toBe(true);
+    expect(combobox).toHaveValue(legacyOption.value);
     expect(question.answers.at(0)?.value).toBe("Chocolate");
+
+    const user = userEvent.setup();
+    await user.selectOptions(
+      combobox,
+      screen.getByRole("option", { name: "Vanilla" }),
+    );
+
+    expect(
+      screen.queryByRole("option", { name: "Chocolate", hidden: true }),
+    ).toBeNull();
+    expect(question.answers.at(0)?.value).toBe("Vanilla");
   });
 });

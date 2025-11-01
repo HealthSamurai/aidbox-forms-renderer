@@ -4,12 +4,23 @@ import type {
   AnswerValueType,
   IQuestionNode,
 } from "../../../stores/types.ts";
-import { getValue, stringifyValue, areValuesEqual, cloneValue } from "../../../utils.ts";
+import {
+  getValue,
+  stringifyValue,
+  areValuesEqual,
+  cloneValue,
+  asAnswerFragment,
+} from "../../../utils.ts";
 
 export type AnswerOptionEntry<T extends AnswerType> = {
   key: string;
   label: string;
   value: AnswerValueType<T>;
+};
+
+type LegacyOption = {
+  key: string;
+  label: string;
 };
 
 function computeOptions<T extends AnswerType>(
@@ -64,9 +75,35 @@ export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
     [valueByKey],
   );
 
+  const getLegacyOptionForValue = useCallback(
+    (answerKey: string, value: AnswerValueType<T> | null): LegacyOption | null => {
+      if (value == null) {
+        return null;
+      }
+
+      const option = asAnswerFragment(item.type, value);
+      const label = stringifyValue(
+        option,
+        item.type,
+        value,
+        "Legacy answer",
+      );
+      if (!label) {
+        return null;
+      }
+
+      return {
+        key: `${answerKey}::__legacy__`,
+        label,
+      };
+    },
+    [item.type],
+  );
+
   return {
     options,
     getKeyForValue,
     getValueForKey,
+    getLegacyOptionForValue,
   } as const;
 }
