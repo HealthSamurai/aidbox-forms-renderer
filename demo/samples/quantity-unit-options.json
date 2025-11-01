@@ -1,0 +1,92 @@
+{
+  "resourceType": "Questionnaire",
+  "status": "active",
+  "title": "Quantity Unit Options Showcase",
+  "description": "Starts with a quantity using enumerated units, followed by a free-form unit entry for contrast.",
+  "item": [
+    {
+      "linkId": "dose",
+      "text": "Dose administered (with multiple unit options)",
+      "type": "quantity",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "mg",
+            "display": "mg"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "g",
+            "display": "g"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "mcg",
+            "display": "mcg"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "temperature",
+      "text": "Patient temperature (with single unit option)",
+      "type": "quantity",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "Cel",
+            "display": "°C"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "free-form-volume",
+      "text": "Volume (without predefined units)",
+      "type": "quantity"
+    },
+    {
+      "linkId": "infusion-rate",
+      "text": "Infusion rate (with legacy unit as initial value)",
+      "type": "quantity",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "mL/h",
+            "display": "mL/hour"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "L/h",
+            "display": "L/hour"
+          }
+        }
+      ],
+      "initial": [
+        {
+          "valueQuantity": {
+            "value": 125,
+            "system": "http://unitsofmeasure.org",
+            "code": "mL/d",
+            "unit": "mL/day"
+          }
+        }
+      ]
+    }
+  ]
+}

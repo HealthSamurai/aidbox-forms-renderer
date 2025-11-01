@@ -2,9 +2,8 @@ import { observer } from "mobx-react-lite";
 import { IQuestionNode } from "../../../stores/types.ts";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
-import { NumberInput } from "../../controls/number-input.tsx";
-import { TextInput } from "../../controls/text-input.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
+import { QuantityInput } from "../../controls/quantity-input.tsx";
 
 export const QuantityNode = observer(function QuantityNode({
   item,
@@ -16,27 +15,16 @@ export const QuantityNode = observer(function QuantityNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, labelId, describedById }) => (
-          <div className="af-quantity-grid">
-            <NumberInput
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={describedById}
-              value={value?.value ?? null}
-              step="any"
-              onChange={(x) =>
-                setValue({ ...(value ?? {}), value: x ?? undefined })
-              }
-              disabled={item.readOnly}
-            />
-            <TextInput
-              ariaLabelledBy={labelId}
-              ariaDescribedBy={describedById}
-              value={value?.unit ?? ""}
-              onChange={(t) => setValue({ ...(value ?? {}), unit: t })}
-              disabled={item.readOnly}
-              placeholder="unit"
-            />
-          </div>
+        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
+          <QuantityInput
+            inputId={inputId}
+            value={value}
+            onChange={(next) => setValue(next)}
+            disabled={item.readOnly}
+            ariaLabelledBy={labelId}
+            ariaDescribedBy={describedById}
+            unitOptions={item.unitOptions}
+          />
         )}
       />
       <ItemErrors item={item} />

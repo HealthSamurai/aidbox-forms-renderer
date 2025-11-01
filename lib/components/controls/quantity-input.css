@@ -1,0 +1,19 @@
+.af-quantity-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.af-quantity-input__value,
+.af-quantity-input__unit {
+  flex: 1 1 0;
+}
+
+.af-quantity-input__value {
+  flex-grow: 2;
+  flex-basis: 0;
+}
+
+.af-quantity-input__unit {
+  flex-grow: 1;
+  flex-basis: 0;
+}

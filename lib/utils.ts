@@ -39,20 +39,21 @@ export function getItemErrorId(item: INode): string {
 
 // prettier-ignore
 export const EXT = {
-  MIN_OCCURS:           "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
-  MAX_OCCURS:           "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
-  MIN_VALUE:            "http://hl7.org/fhir/StructureDefinition/minValue",
-  MAX_VALUE:            "http://hl7.org/fhir/StructureDefinition/maxValue",
-  HIDDEN:               "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
-  ITEM_CONTROL:         "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-  QUESTIONNAIRE_UNIT:   "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
-  SDC_ENABLE_WHEN_EXPR: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
-  SDC_CALCULATED_EXPR:  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
-  SDC_INITIAL_EXPR:     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-  SDC_VARIABLE:         "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
-  SDC_MIN_VALUE_EXPR:   "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
-  SDC_MAX_VALUE_EXPR:   "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
-  CQF_CALCULATED_VALUE: "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
+  MIN_OCCURS:                "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+  MAX_OCCURS:                "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+  MIN_VALUE:                 "http://hl7.org/fhir/StructureDefinition/minValue",
+  MAX_VALUE:                 "http://hl7.org/fhir/StructureDefinition/maxValue",
+  HIDDEN:                    "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+  ITEM_CONTROL:              "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+  QUESTIONNAIRE_UNIT:        "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+  QUESTIONNAIRE_UNIT_OPTION: "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+  SDC_ENABLE_WHEN_EXPR:      "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+  SDC_CALCULATED_EXPR:       "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+  SDC_INITIAL_EXPR:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+  SDC_VARIABLE:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+  SDC_MIN_VALUE_EXPR:        "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
+  SDC_MAX_VALUE_EXPR:        "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
+  CQF_CALCULATED_VALUE:      "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
 } as const;
 
 export function findExtension(

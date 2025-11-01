@@ -1,9 +1,10 @@
 import { computed, makeObservable } from "mobx";
 import { ICoreNode, IForm, INode, IScope } from "./types.ts";
-import {
-  type OperationOutcomeIssue,
+import type {
+  Coding,
+  OperationOutcomeIssue,
   QuestionnaireItem,
-  type QuestionnaireResponseItem,
+  QuestionnaireResponseItem,
 } from "fhir/r5";
 import { EXT, findExtension, getItemControl } from "../utils.ts";
 
@@ -97,6 +98,16 @@ export abstract class CoreAbstractNode implements ICoreNode {
       )?.text ??
       findExtension(this.template, EXT.QUESTIONNAIRE_UNIT)?.valueCoding?.display
     );
+  }
+
+  @computed
+  get unitOptions(): readonly Coding[] {
+    return this.template.type !== "quantity"
+      ? []
+      : (this.template.extension ?? [])
+          .filter(({ url }) => url === EXT.QUESTIONNAIRE_UNIT_OPTION)
+          .map((extension) => extension.valueCoding)
+          .filter((coding): coding is Coding => coding != null);
   }
 
   abstract get scope(): IScope;
