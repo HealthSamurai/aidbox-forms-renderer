@@ -215,50 +215,6 @@ describe("enableWhenExpression", () => {
     );
   });
 
-  it("honors enableWhen expressions defined via modifierExtension", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "group",
-          type: "group",
-          extension: [
-            makeVariable(
-              "controlFlag",
-              "%context.item.where(linkId='control').answer.valueBoolean.last()",
-            ),
-          ],
-          item: [
-            {
-              linkId: "control",
-              type: "boolean",
-            },
-            {
-              linkId: "dependent",
-              type: "boolean",
-              modifierExtension: [
-                makeEnableExpression(undefined, "%controlFlag"),
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    const form = new FormStore(questionnaire);
-    const control = form.scope.lookupNode("control");
-    const dependent = form.scope.lookupNode("dependent");
-
-    if (!isQuestionNode(control) || !isQuestionNode(dependent)) {
-      throw new Error("Expected question stores");
-    }
-
-    expect(dependent.isEnabled).toBe(false);
-    control.setAnswer(0, true);
-    expect(dependent.isEnabled).toBe(true);
-  });
-
   it("treats ancestor->descendant enableWhen expression as unsatisfiable (no answers)", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

@@ -47,7 +47,7 @@ export class ExpressionRegistry {
     private scope: IScope,
     private environmentProvider: IExpressionEnvironmentProvider,
     extensions: Extension[] | undefined,
-    type: AnswerType | undefined,
+    type?: AnswerType | undefined,
   ) {
     makeObservable(this);
 

@@ -37,11 +37,7 @@ export class RepeatingGroupStore
     this._scope = group.scope.extend(true);
     this._key = `${group.key}_/_${index}`;
 
-    const extensions = [
-      ...(group.template.extension ?? []),
-      ...(group.template.modifierExtension ?? []),
-    ];
-    this.initializeExpressionRegistry(this, extensions);
+    this.initializeExpressionRegistry(this, group.template.extension);
 
     this.nodes.replace(
       (this.template.item ?? []).filter(shouldCreateStore).map((item) =>

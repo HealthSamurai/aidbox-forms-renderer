@@ -64,10 +64,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       this.coordinator,
       this.scope,
       this,
-      [
-        ...(questionnaire.extension ?? []),
-        ...(questionnaire.modifierExtension ?? []),
-      ],
+      questionnaire.extension,
     );
 
     runInAction(() => {

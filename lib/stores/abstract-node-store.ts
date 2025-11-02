@@ -47,10 +47,7 @@ export abstract class AbstractNodeStore
     this._scope = this.createScope(parentScope);
     this._key = this.createKey(parentKey);
 
-    this.initializeExpressionRegistry(this, [
-      ...(template.extension ?? []),
-      ...(template.modifierExtension ?? []),
-    ]);
+    this.initializeExpressionRegistry(this, template.extension);
   }
 
   protected createScope(baseScope: IScope): IScope {
@@ -171,18 +168,15 @@ export abstract class AbstractNodeStore
     provider: IExpressionEnvironmentProvider,
     extensions: Extension[] | undefined,
   ) {
-    if (!extensions || extensions.length === 0) {
-      this._expressionRegistry = undefined;
-      return;
+    if (extensions?.length) {
+      this._expressionRegistry = new ExpressionRegistry(
+        this.form.coordinator,
+        this.scope,
+        provider,
+        extensions,
+        this.template.type as AnswerType,
+      );
     }
-
-    this._expressionRegistry = new ExpressionRegistry(
-      this.form.coordinator,
-      this.scope,
-      provider,
-      extensions,
-      this.template.type as AnswerType,
-    );
   }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {
