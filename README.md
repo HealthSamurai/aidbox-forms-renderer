@@ -43,7 +43,7 @@ Focus: Establish baseline FHIR Questionnaire support and base rendering logic.
 * [ ] **Core Questionnaire Resource**
     * [x] Support `Questionnaire.item` elements (text, type, linkId, required, repeats)
     * [x] Implement display of `prefix`, `text`, `item.type`
-    * [ ] Apply constraints: `minLength`, `maxLength`, `minValue`, `maxValue`, `maxOccurs`
+    * [x] Apply constraints: `minLength`, `maxLength`, `minValue`, `maxValue`, `maxOccurs`
     * [x] Enable `readOnly`, `initial` behavior
     * [x] Support FHIR `enableWhen` conditions and nested groups
     * [ ] Render `item.control` and `item.control.displayCategory` extensions (basic)
@@ -53,9 +53,9 @@ Focus: Establish baseline FHIR Questionnaire support and base rendering logic.
     * [ ] Add label localization and prefix rendering
 * [ ] **Input Controls**
     * [x] Map FHIR types → UI components (`string`, `boolean`, `integer`, `choice`, `date`, `quantity`, etc.)
-    * [ ] Render choice options (`answerOption`, `answerValueSet`)
+    * [x] Render choice options (`answerOption`)
     * [ ] Support open-choice types
-* [ ] **Basic Validation**
+* [x] **Basic Validation**
     * [x] Validate required questions
     * [x] Validate numeric and string bounds
     * [x] Validate answer cardinality (`repeats`, `maxOccurs`)
@@ -68,12 +68,13 @@ Focus: Interactive logic, calculations, adaptive elements, and modular assembly.
     * [ ] Implement `sdc-questionnaire-itemControl` full support
     * [ ] Handle `appearance` extension rendering hints
     * [ ] Support `rendering-style`, `rendering-xhtml`, and `markdown` items
+    * [ ] Render choice options (`answerOption`)
 * [ ] **Form Behavior & Calculation**
     * [x] Implement calculated expressions via `calculatedExpression`
     * [x] Dynamic enablement: `enableWhenExpression`
-    * [ ] Validation expressions: `constraint`, `constraintExpression`
+    * [ ] Validation expressions: `targetConstraint`
     * [ ] Item visibility & computed display expressions
-    * [ ] Value propagation (`derivedFrom`, `answerExpression`)
+    * [ ] Value propagation (`answerExpression`)
 * [ ] **Adaptive & Modular Forms**
     * [ ] Implement `assemble-expectation` and sub-questionnaire resolution
     * [ ] Support adaptive `next-question` operations (`sdc-questionnaireresponse-adapt`)
