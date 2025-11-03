@@ -20,10 +20,13 @@
     "./style.css": "./dist/index.css"
   },
   "scripts": {
+    "prepare": "husky",
     "prepublishOnly": "npm run build",
     "dev": "vite",
     "build": "node node_modules/typescript/bin/tsc -b ./tsconfig.lib.json && node node_modules/vite/bin/vite.js build",
     "lint": "eslint .",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write .",
     "test": "vitest",
     "preview": "vite preview"
   },
@@ -47,7 +50,9 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "fhir": "^4.12.0",
     "globals": "^16.4.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.0.1",
+    "lint-staged": "^16.2.6",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "react": "^19.2.0",
@@ -72,5 +77,8 @@
   "dependencies": {
     "classnames": "^2.5.1",
     "nanoid": "^5.1.6"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,cts,mts,cjs,mjs,json,css,scss,md,mdx,html,yaml,yml}": "prettier --write"
   }
 }
