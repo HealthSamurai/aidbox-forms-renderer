@@ -2,18 +2,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 9999px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 100%;
   border: 1px solid #cbd5e0;
-  background: #edf2f7;
-  color: #2d3748;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0;
+  color: #687387;
+  font-size: 0.75rem;
   line-height: 1;
   anchor-name: --af-help-anchor;
   cursor: help;
+  margin-left: 0.25rem;
 }
 
 .af-help:hover {

@@ -20,3 +20,10 @@
   justify-content: flex-end;
   margin-left: 0.5rem;
 }
+
+.af-answer-errors {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0 0;
+  color: #c53030;
+  font-size: 0.875rem;
+}

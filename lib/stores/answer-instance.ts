@@ -13,6 +13,8 @@ import type {
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 import { asAnswerFragment, shouldCreateStore } from "../utils.ts";
+import type { OperationOutcomeIssue } from "fhir/r5";
+import { AnswerValidator } from "./answer-validator.ts";
 
 export class AnswerInstance<TType extends AnswerType>
   implements IAnswerInstance<AnswerValueType<TType>>
@@ -20,7 +22,8 @@ export class AnswerInstance<TType extends AnswerType>
   readonly key: string;
   readonly scope: IScope;
 
-  private readonly question: IQuestionNode<TType>;
+  readonly question: IQuestionNode<TType>;
+  private readonly validator: AnswerValidator<TType>;
 
   @observable.ref
   value: AnswerValueType<TType> | null = null;
@@ -57,6 +60,10 @@ export class AnswerInstance<TType extends AnswerType>
 
     this.nodes.replace(children);
     this.value = initial;
+    this.validator = new AnswerValidator(
+      this as IAnswerInstance<AnswerValueType<TType>>,
+      this.question as IQuestionNode<TType>,
+    );
   }
 
   @computed.struct
@@ -67,6 +74,11 @@ export class AnswerInstance<TType extends AnswerType>
   @computed.struct
   get expressionAnswer(): QuestionnaireResponseItemAnswer | null {
     return this.buildAnswerSnapshot("expression");
+  }
+
+  @computed
+  get issues(): OperationOutcomeIssue[] {
+    return this.validator.issues;
   }
 
   private buildAnswerSnapshot(

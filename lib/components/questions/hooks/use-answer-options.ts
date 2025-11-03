@@ -9,7 +9,6 @@ import {
   stringifyValue,
   areValuesEqual,
   cloneValue,
-  asAnswerFragment,
 } from "../../../utils.ts";
 
 export type AnswerOptionEntry<T extends AnswerType> = {
@@ -33,7 +32,7 @@ function computeOptions<T extends AnswerType>(
       return [];
     }
 
-    const label = stringifyValue(option, item.type, value, `Option ${index + 1}`);
+    const label = stringifyValue(item.type, value, `Option ${index + 1}`);
 
     return [
       {
@@ -81,13 +80,7 @@ export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
         return null;
       }
 
-      const option = asAnswerFragment(item.type, value);
-      const label = stringifyValue(
-        option,
-        item.type,
-        value,
-        "Legacy answer",
-      );
+      const label = stringifyValue(item.type, value, "Legacy answer");
       if (!label) {
         return null;
       }

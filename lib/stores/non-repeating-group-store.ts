@@ -7,14 +7,11 @@ import {
   SnapshotKind,
 } from "./types.ts";
 import { computed, observable } from "mobx";
-import {
-  OperationOutcomeIssue,
-  QuestionnaireItem,
-  QuestionnaireResponseItem,
-} from "fhir/r5";
+import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
 import { AbstractNodeStore } from "./abstract-node-store.ts";
-import { makeIssue, shouldCreateStore } from "../utils.ts";
+import { shouldCreateStore } from "../utils.ts";
+import { NonRepeatingGroupValidator } from "./non-repeating-group-validator.ts";
 
 export class NonRepeatingGroupStore
   extends AbstractNodeStore
@@ -49,23 +46,8 @@ export class NonRepeatingGroupStore
           ),
         ),
     );
-  }
 
-  protected override computeIssues(): OperationOutcomeIssue[] {
-    if (!this.readOnly && this.minOccurs > 0) {
-      const occur = this.nodes.some((child) => child.responseItems.length > 0);
-
-      if (!occur) {
-        return [
-          makeIssue(
-            "required",
-            "At least one answer is required in this group.",
-          ),
-        ];
-      }
-    }
-
-    return [];
+    this.validator = new NonRepeatingGroupValidator(this);
   }
 
   @computed.struct

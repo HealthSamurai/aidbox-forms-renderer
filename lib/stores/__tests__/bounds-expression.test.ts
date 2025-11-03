@@ -28,13 +28,16 @@ describe("min/max value expressions", () => {
       throw new Error("Expected question store");
     }
 
+    const answer = score.answers[0];
+    if (!answer) throw new Error("Expected answer instance");
+
     score.setAnswer(0, 5);
     expect(
-      score.issues.some((issue) => issue.diagnostics?.includes("10")),
+      answer.issues.some((issue) => issue.diagnostics?.includes("10")),
     ).toBe(true);
 
     score.setAnswer(0, 15);
-    expect(score.issues).toHaveLength(0);
+    expect(answer.issues).toHaveLength(0);
   });
 
   it("enforces a calculated maximum", () => {
@@ -56,12 +59,15 @@ describe("min/max value expressions", () => {
       throw new Error("Expected question store");
     }
 
+    const answer = score.answers[0];
+    if (!answer) throw new Error("Expected answer instance");
+
     score.setAnswer(0, 20);
     expect(
-      score.issues.some((issue) => issue.diagnostics?.includes("15")),
+      answer.issues.some((issue) => issue.diagnostics?.includes("15")),
     ).toBe(true);
 
     score.setAnswer(0, 10);
-    expect(score.issues).toHaveLength(0);
+    expect(answer.issues).toHaveLength(0);
   });
 });

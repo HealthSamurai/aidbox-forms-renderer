@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type {
-  Attachment,
-  Coding,
-  Quantity,
-  Reference,
-} from "fhir/r5";
+import type { Attachment, Coding, Element, Quantity, Reference } from "fhir/r5";
 
 import {
   areValuesEqual,
   cloneValue,
+  countDecimalPlaces,
+  estimateAttachmentSize,
+  extractExtensionValue,
   getValue,
   stringifyValue,
 } from "../utils.ts";
@@ -31,9 +29,9 @@ describe("getValue", () => {
   });
 
   it("returns dateTime answers", () => {
-    expect(getValue({ valueDateTime: "2024-01-01T10:00:00Z" }, "dateTime")).toBe(
-      "2024-01-01T10:00:00Z",
-    );
+    expect(
+      getValue({ valueDateTime: "2024-01-01T10:00:00Z" }, "dateTime"),
+    ).toBe("2024-01-01T10:00:00Z");
   });
 
   it("returns time answers", () => {
@@ -61,12 +59,16 @@ describe("getValue", () => {
 
   it("returns attachment answers", () => {
     const attachment: Attachment = { url: "https://example.org" };
-    expect(getValue({ valueAttachment: attachment }, "attachment")).toEqual(attachment);
+    expect(getValue({ valueAttachment: attachment }, "attachment")).toEqual(
+      attachment,
+    );
   });
 
   it("returns reference answers", () => {
     const reference: Reference = { reference: "Patient/1" };
-    expect(getValue({ valueReference: reference }, "reference")).toEqual(reference);
+    expect(getValue({ valueReference: reference }, "reference")).toEqual(
+      reference,
+    );
   });
 
   it("returns quantity answers", () => {
@@ -79,68 +81,98 @@ describe("getValue", () => {
   });
 });
 
+describe("countDecimalPlaces", () => {
+  it("counts decimals for standard numbers", () => {
+    expect(countDecimalPlaces(12.345)).toBe(3);
+  });
+
+  it("counts decimals for exponent notation", () => {
+    expect(countDecimalPlaces(1.23e-4)).toBe(6);
+  });
+
+  it("returns zero for non-finite numbers", () => {
+    expect(countDecimalPlaces(Number.POSITIVE_INFINITY)).toBe(0);
+  });
+});
+
+describe("estimateAttachmentSize", () => {
+  it("returns provided numeric size", () => {
+    const attachment = { size: 512 } as unknown as Attachment;
+    expect(estimateAttachmentSize(attachment)).toBe(512);
+  });
+
+  it("parses string size", () => {
+    const attachment: Attachment = { size: "1024" };
+    expect(estimateAttachmentSize(attachment)).toBe(1024);
+  });
+
+  it("estimates base64 payload size", () => {
+    const attachment: Attachment = { data: "TQ==" };
+    expect(estimateAttachmentSize(attachment)).toBe(1);
+  });
+
+  it("returns undefined when metadata is missing", () => {
+    const attachment: Attachment = {};
+    expect(estimateAttachmentSize(attachment)).toBeUndefined();
+  });
+});
+
+describe("extractExtension", () => {
+  it("returns the typed extension value when present", () => {
+    const element = {
+      extension: [{ url: "test", valueInteger: 7 }],
+    } as Element;
+    expect(extractExtensionValue(element, "test", "integer")).toBe(7);
+  });
+
+  it("returns undefined when extension is absent", () => {
+    const element = {
+      extension: [],
+    } as Element;
+    expect(extractExtensionValue(element, "missing", "string")).toBeUndefined();
+  });
+});
+
 describe("stringifyValue", () => {
   describe("coding", () => {
     it("prefers the coding display when present", () => {
-      expect(
-        stringifyValue(
-          { valueCoding: { code: "m", display: "Moderate" } },
-          "coding",
-          { code: "m", display: "Moderate" },
-          "fallback",
-        ),
-      ).toBe("Moderate");
+      expect(stringifyValue("coding", { code: "m", display: "Moderate" })).toBe(
+        "Moderate",
+      );
     });
 
     it("uses the coding display when only display is present", () => {
-      expect(
-        stringifyValue(
-          { valueCoding: { display: "Moderate" } },
-          "coding",
-          { display: "Moderate" },
-          "fallback",
-        ),
-      ).toBe("Moderate");
+      expect(stringifyValue("coding", { display: "Moderate" })).toBe(
+        "Moderate",
+      );
     });
 
     it("falls back to the coding code when display is missing", () => {
-      expect(
-        stringifyValue(
-          { valueCoding: { code: "m" } },
-          "coding",
-          { code: "m" },
-          "fallback",
-        ),
-      ).toBe("m");
+      expect(stringifyValue("coding", { code: "m" })).toBe("m");
     });
 
     it("returns fallback when coding has no labels", () => {
       expect(
-        stringifyValue(
-          {},
-          "coding",
-          { system: "sys" } as Coding,
-          "fallback",
-        ),
+        stringifyValue("coding", { system: "sys" } as Coding, "fallback"),
       ).toBe("fallback");
     });
   });
 
   describe("string", () => {
     it("returns the string value", () => {
-      expect(stringifyValue({}, "string", "hello", "fallback")).toBe("hello");
+      expect(stringifyValue("string", "hello")).toBe("hello");
     });
   });
 
   describe("text", () => {
     it("returns the text value", () => {
-      expect(stringifyValue({}, "text", "note", "fallback")).toBe("note");
+      expect(stringifyValue("text", "note")).toBe("note");
     });
   });
 
   describe("url", () => {
     it("returns the url value", () => {
-      expect(stringifyValue({}, "url", "https://example.org", "fallback")).toBe(
+      expect(stringifyValue("url", "https://example.org")).toBe(
         "https://example.org",
       );
     });
@@ -148,85 +180,78 @@ describe("stringifyValue", () => {
 
   describe("integer", () => {
     it("stringifies the integer value", () => {
-      expect(stringifyValue({}, "integer", 42, "fallback")).toBe("42");
+      expect(stringifyValue("integer", 42)).toBe("42");
     });
   });
 
   describe("decimal", () => {
     it("stringifies the decimal value", () => {
-      expect(stringifyValue({}, "decimal", 3.5, "fallback")).toBe("3.5");
+      expect(stringifyValue("decimal", 3.5)).toBe("3.5");
     });
   });
 
   describe("boolean", () => {
     it("returns Yes for true", () => {
-      expect(stringifyValue({}, "boolean", true, "fallback")).toBe("Yes");
+      expect(stringifyValue("boolean", true)).toBe("Yes");
     });
 
     it("returns No for false", () => {
-      expect(stringifyValue({}, "boolean", false, "fallback")).toBe("No");
+      expect(stringifyValue("boolean", false)).toBe("No");
     });
   });
 
   describe("quantity", () => {
     it("formats the quantity value", () => {
-      expect(stringifyValue({}, "quantity", { value: 55, unit: "kg" }, "fallback")).toBe(
+      expect(stringifyValue("quantity", { value: 55, unit: "kg" })).toBe(
         "55 kg",
       );
     });
 
     it("uses fallback when value is missing", () => {
-      expect(stringifyValue({}, "quantity", {}, "fallback")).toBe("fallback");
+      expect(stringifyValue("quantity", {}, "fallback")).toBe("fallback");
     });
 
     it("returns unit when only unit is provided", () => {
-      expect(stringifyValue({}, "quantity", { unit: "kg" }, "fallback")).toBe("kg");
+      expect(stringifyValue("quantity", { unit: "kg" })).toBe("kg");
     });
 
     it("returns value when only value is provided", () => {
-      expect(stringifyValue({}, "quantity", { value: 12 }, "fallback")).toBe("12");
+      expect(stringifyValue("quantity", { value: 12 })).toBe("12");
     });
   });
 
   describe("reference", () => {
     it("prefers the display value", () => {
       expect(
-        stringifyValue(
-          {},
-          "reference",
-          { reference: "Patient/1", display: "Alice" },
-          "fallback",
-        ),
+        stringifyValue("reference", {
+          reference: "Patient/1",
+          display: "Alice",
+        }),
       ).toBe("Alice");
     });
 
     it("returns the reference when display is absent", () => {
-      expect(
-        stringifyValue(
-          {},
-          "reference",
-          { reference: "Patient/2" },
-          "fallback",
-        ),
-      ).toBe("Patient/2");
+      expect(stringifyValue("reference", { reference: "Patient/2" })).toBe(
+        "Patient/2",
+      );
     });
   });
 
   describe("attachment", () => {
     it("prefers the title", () => {
-      expect(stringifyValue({}, "attachment", { title: "MRI" }, "fallback")).toBe("MRI");
+      expect(stringifyValue("attachment", { title: "MRI" })).toBe("MRI");
     });
 
     it("falls back to content type", () => {
-      expect(
-        stringifyValue({}, "attachment", { contentType: "image/png" }, "fallback"),
-      ).toBe("image/png attachment");
+      expect(stringifyValue("attachment", { contentType: "image/png" })).toBe(
+        "image/png attachment",
+      );
     });
 
     it("falls back to url when title and content type are absent", () => {
-      expect(
-        stringifyValue({}, "attachment", { url: "https://file" }, "fallback"),
-      ).toBe("https://file");
+      expect(stringifyValue("attachment", { url: "https://file" })).toBe(
+        "https://file",
+      );
     });
   });
 });
@@ -285,13 +310,21 @@ describe("areValuesEqual", () => {
   describe("dateTime", () => {
     it("returns true for equal dateTime values", () => {
       expect(
-        areValuesEqual("dateTime", "2024-01-01T00:00:00Z", "2024-01-01T00:00:00Z"),
+        areValuesEqual(
+          "dateTime",
+          "2024-01-01T00:00:00Z",
+          "2024-01-01T00:00:00Z",
+        ),
       ).toBe(true);
     });
 
     it("returns false for different dateTime values", () => {
       expect(
-        areValuesEqual("dateTime", "2024-01-01T00:00:00Z", "2024-02-01T00:00:00Z"),
+        areValuesEqual(
+          "dateTime",
+          "2024-01-01T00:00:00Z",
+          "2024-02-01T00:00:00Z",
+        ),
       ).toBe(false);
     });
 
@@ -321,10 +354,10 @@ describe("areValuesEqual", () => {
     });
   });
 
-describe("time", () => {
-  it("returns true for equal times", () => {
-    expect(areValuesEqual("time", "08:30:00", "08:30:00")).toBe(true);
-  });
+  describe("time", () => {
+    it("returns true for equal times", () => {
+      expect(areValuesEqual("time", "08:30:00", "08:30:00")).toBe(true);
+    });
 
     it("returns false for different times", () => {
       expect(areValuesEqual("time", "08:30:00", "09:30:00")).toBe(false);
@@ -351,7 +384,9 @@ describe("time", () => {
     it("returns true for display-only codings", () => {
       const codingDisplayOnlyA: Coding = { display: "View" };
       const codingDisplayOnlyB: Coding = { display: "View" };
-      expect(areValuesEqual("coding", codingDisplayOnlyA, codingDisplayOnlyB)).toBe(true);
+      expect(
+        areValuesEqual("coding", codingDisplayOnlyA, codingDisplayOnlyB),
+      ).toBe(true);
     });
 
     it("ignores differences in coding version", () => {
@@ -383,20 +418,32 @@ describe("time", () => {
 
   describe("reference", () => {
     it("returns true for equal references", () => {
-      const referenceA: Reference = { reference: "Patient/1", display: "Alice" };
-      const referenceB: Reference = { reference: "Patient/1", display: "Alice" };
+      const referenceA: Reference = {
+        reference: "Patient/1",
+        display: "Alice",
+      };
+      const referenceB: Reference = {
+        reference: "Patient/1",
+        display: "Alice",
+      };
       expect(areValuesEqual("reference", referenceA, referenceB)).toBe(true);
     });
 
     it("returns false for different references", () => {
-      const referenceA: Reference = { reference: "Patient/1", display: "Alice" };
+      const referenceA: Reference = {
+        reference: "Patient/1",
+        display: "Alice",
+      };
       const referenceC: Reference = { reference: "Patient/2" };
       expect(areValuesEqual("reference", referenceA, referenceC)).toBe(false);
     });
 
     it("detects differences in reference type", () => {
       const referenceA: Reference = { reference: "Patient/1", type: "Patient" };
-      const referenceB: Reference = { reference: "Patient/1", type: "Practitioner" };
+      const referenceB: Reference = {
+        reference: "Patient/1",
+        type: "Practitioner",
+      };
       expect(areValuesEqual("reference", referenceA, referenceB)).toBe(false);
     });
 
@@ -421,16 +468,19 @@ describe("time", () => {
     it("returns false for different attachments", () => {
       const attachmentA: Attachment = { url: "https://file" };
       const attachmentC: Attachment = { url: "https://other" };
-      expect(areValuesEqual("attachment", attachmentA, attachmentC)).toBe(false);
+      expect(areValuesEqual("attachment", attachmentA, attachmentC)).toBe(
+        false,
+      );
     });
 
     it("detects differences in attachment hash", () => {
       const attachmentA: Attachment = { url: "https://file", hash: "abc" };
       const attachmentB: Attachment = { url: "https://file", hash: "def" };
-      expect(areValuesEqual("attachment", attachmentA, attachmentB)).toBe(false);
+      expect(areValuesEqual("attachment", attachmentA, attachmentB)).toBe(
+        false,
+      );
     });
   });
-
 });
 
 describe("cloneValue", () => {
@@ -457,7 +507,7 @@ describe("cloneValue", () => {
 
 describe("date", () => {
   it("formats date values for display", () => {
-    const formatted = stringifyValue({}, "date", "2025-11-03", "fallback");
+    const formatted = stringifyValue("date", "2025-11-03", "fallback");
     expect(formatted).toContain("November 3, 2025");
   });
 });
@@ -465,7 +515,6 @@ describe("date", () => {
 describe("dateTime", () => {
   it("formats dateTime values in local style", () => {
     const formatted = stringifyValue(
-      {},
       "dateTime",
       "2025-11-03T10:00:00-05:00",
       "fallback",
@@ -476,7 +525,7 @@ describe("dateTime", () => {
 
 describe("time formatting", () => {
   it("formats time values using locale", () => {
-    const formatted = stringifyValue({}, "time", "13:30:00", "fallback");
+    const formatted = stringifyValue("time", "13:30:00", "fallback");
     expect(formatted).toMatch(/1:30/);
   });
 });

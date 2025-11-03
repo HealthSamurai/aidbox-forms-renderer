@@ -3,7 +3,9 @@ import { useCallback, ReactElement } from "react";
 import { observer } from "mobx-react-lite";
 import { ItemsList } from "./item-list.tsx";
 import { Button } from "../controls/button.tsx";
+import { AnswerErrors } from "./answer-errors.tsx";
 import {
+  getAnswerErrorId,
   getItemDescribedBy,
   getItemLabelId,
   sanitizeForId,
@@ -42,6 +44,16 @@ export const Answer = observer(function Answer<T extends AnswerType>({
     item.removeAnswer(index);
   }, [item, index]);
 
+  const answerErrorId =
+    answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
+
+  const describedByPieces = [
+    getItemDescribedBy(item),
+    answerErrorId,
+  ].filter((value): value is string => Boolean(value));
+  const describedById =
+    describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
+
   return (
     <div className="af-answer">
       {renderRow({
@@ -50,7 +62,7 @@ export const Answer = observer(function Answer<T extends AnswerType>({
         index,
         inputId: sanitizeForId(answer.key),
         labelId: getItemLabelId(item),
-        describedById: getItemDescribedBy(item),
+        describedById,
         answer: answer as IAnswerInstance<AnswerValueType<T>>,
       })}
       {item.repeats && (
@@ -71,6 +83,7 @@ export const Answer = observer(function Answer<T extends AnswerType>({
           <ItemsList items={answer.nodes} />
         </div>
       )}
+      <AnswerErrors answer={answer} />
     </div>
   );
 });

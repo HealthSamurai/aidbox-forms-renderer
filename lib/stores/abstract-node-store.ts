@@ -1,4 +1,4 @@
-import { computed, observable, runInAction } from "mobx";
+import { computed, makeObservable, observable, runInAction } from "mobx";
 import {
   AnswerType,
   ExpressionEnvironment,
@@ -6,6 +6,7 @@ import {
   IExpressionEnvironmentProvider,
   IForm,
   INode,
+  INodeValidator,
   IScope,
 } from "./types.ts";
 import {
@@ -31,11 +32,12 @@ export abstract class AbstractNodeStore
   protected _scope: IScope;
   protected _key: string;
   protected _expressionRegistry: ExpressionRegistry | undefined;
+  protected validator: INodeValidator | undefined;
 
   @observable
   private dirty = false;
 
-  constructor(
+  protected constructor(
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | null,
@@ -43,6 +45,8 @@ export abstract class AbstractNodeStore
     parentKey: string,
   ) {
     super(form, template, parentStore);
+
+    makeObservable(this);
 
     this._scope = this.createScope(parentScope);
     this._key = this.createKey(parentKey);
@@ -90,7 +94,10 @@ export abstract class AbstractNodeStore
 
   @computed
   get maxOccurs() {
-    return findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger;
+    return (
+      findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger ??
+      Number.POSITIVE_INFINITY
+    );
   }
 
   @computed
@@ -127,11 +134,17 @@ export abstract class AbstractNodeStore
       return [];
     }
 
-    const registryIssues = this.expressionRegistry?.issues ?? [];
+    const issues: OperationOutcomeIssue[] = [];
 
-    return registryIssues.concat(
-      this.shouldValidate ? this.computeIssues() : [],
-    );
+    if (this.expressionRegistry?.issues) {
+      issues.push(...this.expressionRegistry.issues);
+    }
+
+    if (this.shouldValidate && this.validator) {
+      issues.push(...this.validator.issues);
+    }
+
+    return issues;
   }
 
   @computed
@@ -158,10 +171,6 @@ export abstract class AbstractNodeStore
 
   protected get shouldValidate() {
     return this.form.isSubmitAttempted || this.isDirty;
-  }
-
-  protected computeIssues(): OperationOutcomeIssue[] {
-    return [];
   }
 
   protected initializeExpressionRegistry(

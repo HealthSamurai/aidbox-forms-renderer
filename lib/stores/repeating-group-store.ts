@@ -15,8 +15,7 @@ export class RepeatingGroupStore
 {
   readonly index: number;
 
-  private readonly group: IRepeatingGroupWrapper;
-
+  readonly group: IRepeatingGroupWrapper;
   @observable.shallow
   readonly nodes = observable.array<ICoreNode>([], {
     deep: false,

@@ -20,8 +20,6 @@ import {
   SnapshotKind,
 } from "./types.ts";
 import {
-  OperationOutcomeIssue,
-  Quantity,
   QuestionnaireItem,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
@@ -29,19 +27,9 @@ import {
 
 import { AbstractNodeStore } from "./abstract-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
+import { QuestionValidator } from "./question-validator.ts";
 
-import {
-  answerHasContent,
-  getDateBounds,
-  getDateTimeBounds,
-  getDecimalBounds,
-  getIntegerBounds,
-  getQuantityBounds,
-  getTimeBounds,
-  getValue,
-  isQuantity,
-  makeIssue,
-} from "../utils.ts";
+import { answerHasContent, getValue } from "../utils.ts";
 
 type AnswerLifecycle =
   | "pristine"
@@ -74,6 +62,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
+    this.validator = new QuestionValidator(this);
 
     if (!this.applyResponseValues(responseItem?.answer)) {
       this.applyTemplateInitialValues();
@@ -95,7 +84,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @override
   override get maxOccurs(): number {
-    return this.repeats ? (super.maxOccurs ?? Number.POSITIVE_INFINITY) : 1;
+    return this.repeats ? super.maxOccurs : 1;
   }
 
   @computed
@@ -467,67 +456,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
   }
 
-  private resolveNumberBound(
-    candidate: unknown,
-    fallback: number | undefined,
-  ): number | undefined {
-    if (Array.isArray(candidate)) {
-      const entries: unknown[] = candidate;
-      for (let index = entries.length - 1; index >= 0; index -= 1) {
-        const parsed = this.parseNumber(entries[index]);
-        if (parsed != null) {
-          return parsed;
-        }
-      }
-      return fallback;
-    }
-
-    const parsed = this.parseNumber(candidate);
-    return parsed ?? fallback;
-  }
-
-  private resolveStringBound(
-    candidate: unknown,
-    fallback: string | undefined,
-  ): string | undefined {
-    if (Array.isArray(candidate)) {
-      const entries: unknown[] = candidate;
-      for (let index = entries.length - 1; index >= 0; index -= 1) {
-        const value = entries[index];
-        if (typeof value === "string") {
-          return value;
-        }
-      }
-      return fallback;
-    }
-
-    if (typeof candidate === "string") {
-      return candidate;
-    }
-    return fallback;
-  }
-
-  private resolveQuantityBound(
-    candidate: unknown,
-    fallback: Quantity | undefined,
-  ): Quantity | undefined {
-    if (Array.isArray(candidate)) {
-      const entries: unknown[] = candidate;
-      for (let index = entries.length - 1; index >= 0; index -= 1) {
-        const value = entries[index];
-        if (value && typeof value === "object" && isQuantity(value)) {
-          return value;
-        }
-      }
-      return fallback;
-    }
-
-    if (candidate && typeof candidate === "object" && isQuantity(candidate)) {
-      return candidate;
-    }
-    return fallback;
-  }
-
   @action
   private pushAnswer(
     initial: AnswerValueType<T> | null,
@@ -552,268 +480,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       this.answers.clear();
     });
     existingAnswers.forEach((answer) => answer.dispose());
-  }
-
-  protected override computeIssues(): OperationOutcomeIssue[] {
-    if (this.readOnly) {
-      return [];
-    }
-
-    const populatedAnswers = this.answers.filter(answerHasContent);
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (this.minOccurs > 0 && populatedAnswers.length < this.minOccurs) {
-      issues.push(
-        makeIssue(
-          "required",
-          this.minOccurs === 1
-            ? "Answer is required."
-            : `At least ${this.minOccurs} answers are required.`,
-        ),
-      );
-    }
-
-    if (populatedAnswers.length > this.maxOccurs) {
-      issues.push(
-        makeIssue(
-          "structure",
-          `No more than ${this.maxOccurs} answers are permitted.`,
-        ),
-      );
-    }
-
-    populatedAnswers.forEach((answer, index) => {
-      issues.push(...this.validateAnswerValue(answer, index));
-    });
-
-    return issues;
-  }
-
-  private validateAnswerValue(
-    answer: IAnswerInstance<AnswerValueType<T>>,
-    index: number,
-  ): OperationOutcomeIssue[] {
-    // TODO: enforce terminology bindings (answerOption/answerValueSet, open-choice) and attachment/reference specifics.
-    switch (this.type) {
-      case "string":
-      case "text":
-        return this.validateStringValue(answer.value, index);
-      case "integer": {
-        const bounds = getIntegerBounds(this.template);
-        const min = this.resolveNumberBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveNumberBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateNumericValue(answer.value, index, min, max);
-      }
-      case "decimal": {
-        const bounds = getDecimalBounds(this.template);
-        const min = this.resolveNumberBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveNumberBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateNumericValue(answer.value, index, min, max);
-      }
-      case "date": {
-        const bounds = getDateBounds(this.template);
-        const min = this.resolveStringBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveStringBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateComparableValue(answer.value, index, min, max);
-      }
-      case "dateTime": {
-        const bounds = getDateTimeBounds(this.template);
-        const min = this.resolveStringBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveStringBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateComparableValue(answer.value, index, min, max);
-      }
-      case "time": {
-        const bounds = getTimeBounds(this.template);
-        const min = this.resolveStringBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveStringBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateComparableValue(answer.value, index, min, max);
-      }
-      case "quantity": {
-        const bounds = getQuantityBounds(this.template);
-        const min = this.resolveQuantityBound(
-          this.expressionRegistry?.minValue?.value,
-          bounds.min,
-        );
-        const max = this.resolveQuantityBound(
-          this.expressionRegistry?.maxValue?.value,
-          bounds.max,
-        );
-        return this.validateQuantityValue(answer.value, index, min, max);
-      }
-      case "boolean":
-        return [];
-      case "url":
-        // TODO: enforce canonical/regex constraints for URLs when provided.
-        return [];
-      case "coding":
-        return [];
-      case "attachment":
-        // TODO: enforce attachment size/content-type constraints.
-        return [];
-      case "reference":
-        // TODO: enforce target profile validation for references.
-        return [];
-      default:
-        return [];
-    }
-  }
-
-  private validateStringValue(
-    value: AnswerValueType<T> | null,
-    index: number,
-  ): OperationOutcomeIssue[] {
-    if (typeof value !== "string") {
-      return [];
-    }
-
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (value.trim().length === 0) {
-      issues.push(makeIssue("required", "Text answers may not be blank."));
-    }
-
-    if (
-      this.template.maxLength != null &&
-      value.length > this.template.maxLength
-    ) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} exceeds the maximum length of ${this.template.maxLength}.`,
-        ),
-      );
-    }
-
-    return issues;
-  }
-
-  private validateNumericValue(
-    value: AnswerValueType<T> | null,
-    index: number,
-    min?: number,
-    max?: number,
-  ): OperationOutcomeIssue[] {
-    if (typeof value !== "number") {
-      return [];
-    }
-
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (min != null && value < min) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must be greater than or equal to ${min}.`,
-        ),
-      );
-    }
-
-    if (max != null && value > max) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must be less than or equal to ${max}.`,
-        ),
-      );
-    }
-
-    return issues;
-  }
-
-  private validateComparableValue(
-    value: AnswerValueType<T> | null,
-    index: number,
-    min?: string,
-    max?: string,
-  ): OperationOutcomeIssue[] {
-    if (typeof value !== "string") {
-      return [];
-    }
-
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (min != null && value < min) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must not be earlier than ${min}.`,
-        ),
-      );
-    }
-
-    if (max != null && value > max) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must not be later than ${max}.`,
-        ),
-      );
-    }
-
-    return issues;
-  }
-
-  private validateQuantityValue(
-    value: AnswerValueType<T> | null,
-    index: number,
-    min: Quantity | undefined,
-    max: Quantity | undefined,
-  ): OperationOutcomeIssue[] {
-    const quantity = value as Quantity | null;
-    if (!quantity || typeof quantity.value !== "number") {
-      return [];
-    }
-
-    const issues: OperationOutcomeIssue[] = [];
-    if (min?.value != null && quantity.value < min.value) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must be greater than or equal to ${min.value}.`,
-        ),
-      );
-    }
-
-    if (max?.value != null && quantity.value > max.value) {
-      issues.push(
-        makeIssue(
-          "invalid",
-          `Answer #${index + 1} must be less than or equal to ${max.value}.`,
-        ),
-      );
-    }
-
-    return issues;
   }
 
   @computed.struct

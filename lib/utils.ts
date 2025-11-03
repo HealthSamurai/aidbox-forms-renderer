@@ -3,12 +3,11 @@ import {
   AnswerValueType,
   IAnswerInstance,
   ICoreNode,
-  INode,
   IQuestionNode,
   IRepeatingGroupNode,
   OperationOutcomeIssueCode,
 } from "./stores/types.ts";
-import type {
+import {
   Attachment,
   Coding,
   Element,
@@ -17,7 +16,6 @@ import type {
   OperationOutcomeIssue,
   Quantity,
   QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
   QuestionnaireItemEnableWhen,
   Reference,
 } from "fhir/r5";
@@ -26,16 +24,20 @@ export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export function getItemLabelId(item: INode): string {
+export function getItemLabelId(item: ICoreNode): string {
   return sanitizeForId(`af-${item.key}-label`);
 }
 
-export function getItemHelpId(item: INode): string {
+export function getItemHelpId(item: ICoreNode): string {
   return sanitizeForId(`af-${item.key}-help`);
 }
 
-export function getItemErrorId(item: INode): string {
+export function getItemErrorId(item: ICoreNode): string {
   return sanitizeForId(`af-${item.key}-errors`);
+}
+
+export function getAnswerErrorId(answer: IAnswerInstance<unknown>): string {
+  return sanitizeForId(`af-${answer.key}-errors`);
 }
 
 // prettier-ignore
@@ -44,6 +46,12 @@ export const EXT = {
   MAX_OCCURS:                "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
   MIN_VALUE:                 "http://hl7.org/fhir/StructureDefinition/minValue",
   MAX_VALUE:                 "http://hl7.org/fhir/StructureDefinition/maxValue",
+  MIN_LENGTH:                "http://hl7.org/fhir/StructureDefinition/minLength",
+  MAX_DECIMAL_PLACES:        "http://hl7.org/fhir/StructureDefinition/maxDecimalPlaces",
+  MIME_TYPE:                 "http://hl7.org/fhir/StructureDefinition/mimeType",
+  MAX_SIZE:                  "http://hl7.org/fhir/StructureDefinition/maxSize",
+  SDC_MIN_QUANTITY:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minQuantity",
+  SDC_MAX_QUANTITY:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxQuantity",
   HIDDEN:                    "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
   ITEM_CONTROL:              "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
   QUESTIONNAIRE_UNIT:        "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
@@ -61,6 +69,10 @@ export function findExtension(
   url: string,
 ): Extension | undefined {
   return element.extension?.find((e) => e.url === url);
+}
+
+export function findExtensions(element: Element, url: string): Extension[] {
+  return element.extension?.filter((e) => e.url === url) ?? [];
 }
 
 export const ITEM_CONTROL_CODES = [
@@ -133,8 +145,7 @@ export function getItemControl(
       continue;
     }
 
-    const coding =
-      extension.valueCoding ?? extension.valueCodeableConcept?.coding?.[0];
+    const coding = extension.valueCodeableConcept?.coding?.[0];
     if (!coding) {
       continue;
     }
@@ -166,58 +177,37 @@ export function isQuantity(value: unknown): value is Quantity {
   );
 }
 
-export function getIntegerBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueInteger;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueInteger;
-  return {
-    min: typeof min === "number" ? min : undefined,
-    max: typeof max === "number" ? max : undefined,
-  };
+export function parseNumber(value: unknown): number | undefined {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+  }
+
+  return undefined;
 }
 
-export function getDecimalBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueDecimal;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueDecimal;
-  return {
-    min: typeof min === "number" ? min : undefined,
-    max: typeof max === "number" ? max : undefined,
-  };
-}
+export function countDecimalPlaces(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
 
-export function getDateBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueDate;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueDate;
-  return {
-    min: typeof min === "string" ? min : undefined,
-    max: typeof max === "string" ? max : undefined,
-  };
-}
+  const asString = value.toString();
+  if (!asString.includes("e") && asString.includes(".")) {
+    return asString.split(".")[1]?.length ?? 0;
+  }
 
-export function getDateTimeBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueDateTime;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueDateTime;
-  return {
-    min: typeof min === "string" ? min : undefined,
-    max: typeof max === "string" ? max : undefined,
-  };
-}
+  const [base, exponentPart] = asString.split("e");
+  const exponent = Number(exponentPart);
+  if (Number.isNaN(exponent)) {
+    return 0;
+  }
 
-export function getTimeBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueTime;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueTime;
-  return {
-    min: typeof min === "string" ? min : undefined,
-    max: typeof max === "string" ? max : undefined,
-  };
-}
-
-export function getQuantityBounds(item: QuestionnaireItem) {
-  const min = findExtension(item, EXT.MIN_VALUE)?.valueQuantity;
-  const max = findExtension(item, EXT.MAX_VALUE)?.valueQuantity;
-  return {
-    min: isQuantity(min) ? min : undefined,
-    max: isQuantity(max) ? max : undefined,
-  };
+  const fractional = base.includes(".") ? (base.split(".")[1]?.length ?? 0) : 0;
+  return Math.max(0, fractional - exponent);
 }
 
 export function omit<T extends object, K extends keyof T>(
@@ -229,6 +219,37 @@ export function omit<T extends object, K extends keyof T>(
     delete result[key];
   }
   return result as Omit<T, K>;
+}
+
+export function estimateAttachmentSize(
+  attachment: Attachment,
+): number | undefined {
+  if (typeof attachment.size === "number") {
+    return attachment.size;
+  }
+
+  if (typeof attachment.size === "string") {
+    const parsed = Number(attachment.size);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+
+  if (typeof attachment.data === "string") {
+    const length = attachment.data.length;
+    if (length === 0) {
+      return 0;
+    }
+
+    const padding = attachment.data.endsWith("==")
+      ? 2
+      : attachment.data.endsWith("=")
+        ? 1
+        : 0;
+    return Math.floor((length * 3) / 4) - padding;
+  }
+
+  return undefined;
 }
 
 export async function prepareAttachmentFromFile(
@@ -394,6 +415,26 @@ export const getAnswer = <T extends AnswerType>(
   obj: PolyCarrierFor<"answer", T> | null | undefined,
   type: T,
 ): AnswerValueType<T> | undefined => getPolymorphic(obj, "answer", type);
+
+export function extractExtensionValue<T extends AnswerType>(
+  element: Element,
+  url: string,
+  type: T,
+): AnswerValueType<T> | undefined {
+  const extension = findExtension(element, url);
+  return extension ? getValue(extension, type) : undefined;
+}
+
+export function extractExtensionsValues<T extends AnswerType>(
+  element: Element,
+  url: string,
+  type: T,
+): AnswerValueType<T>[] {
+  const extensions = findExtensions(element, url);
+  return extensions
+    .map((extension) => getValue(extension, type))
+    .filter((value): value is AnswerValueType<T> => value != null);
+}
 
 type ValueKeyFor<T extends AnswerType> = PolyKeyFor<"value", T>;
 type ValueCarrierFor<T extends AnswerType> = PolyCarrierFor<"value", T>;
@@ -801,7 +842,7 @@ function formatTimeValue(value: unknown): string | null {
   return TIME_SHORT_FORMATTERS[info.precision].format(date);
 }
 
-function compareDateValues(
+export function compareDateValues(
   actual: unknown,
   expected: unknown,
 ): number | undefined {
@@ -819,7 +860,7 @@ function compareDateValues(
   return compareNumbers(Date.parse(actual), Date.parse(expected));
 }
 
-function compareDateTimeValues(
+export function compareDateTimeValues(
   actual: unknown,
   expected: unknown,
 ): number | undefined {
@@ -858,7 +899,7 @@ function compareDateTimeValues(
   return undefined;
 }
 
-function compareTimeValues(
+export function compareTimeValues(
   actual: unknown,
   expected: unknown,
 ): number | undefined {
@@ -1153,11 +1194,14 @@ export function cloneValue<T>(value: T): T {
 }
 
 export function stringifyValue<T extends AnswerType>(
-  option: QuestionnaireItemAnswerOption,
   type: T,
   value: AnswerValueType<T>,
-  fallback: string,
+  fallback: string = "",
 ): string {
+  if (value == null) {
+    return fallback;
+  }
+
   if (type === "date" && typeof value === "string") {
     return formatDateForDisplay(value) ?? fallback;
   }
@@ -1170,11 +1214,6 @@ export function stringifyValue<T extends AnswerType>(
     return formatTimeValue(value) ?? fallback;
   }
 
-  if (option.valueCoding) {
-    const coding = option.valueCoding;
-    return coding.display ?? coding.code ?? fallback;
-  }
-
   if (typeof value === "string") {
     return value;
   }
@@ -1185,6 +1224,10 @@ export function stringifyValue<T extends AnswerType>(
 
   if (typeof value === "boolean") {
     return value ? "Yes" : "No";
+  }
+
+  if (type === "coding" && isCoding(value)) {
+    return value.display ?? value.code ?? fallback;
   }
 
   if (type === "quantity" && isQuantity(value)) {

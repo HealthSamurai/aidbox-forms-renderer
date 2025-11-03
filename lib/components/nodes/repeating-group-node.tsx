@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IRepeatingGroupNode } from "../../stores/types.ts";
 import { ItemsList } from "../common/item-list.tsx";
 import { Button } from "../controls/button.tsx";
+import { ItemErrors } from "../common/item-errors.tsx";
 
 export type RepeatingGroupNodeProps = {
   instance: IRepeatingGroupNode;
@@ -18,6 +19,7 @@ export const RepeatingGroupNode = observer(function RepeatingGroupNode({
       <div className="af-group-instance-children">
         <ItemsList items={instance.nodes} />
       </div>
+      <ItemErrors item={instance} />
       {canRemove ? (
         <div className="af-group-instance-toolbar">
           <Button

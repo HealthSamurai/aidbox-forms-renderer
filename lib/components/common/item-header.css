@@ -1,42 +1,13 @@
 .af-item-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.af-item-header-main {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.125rem;
   flex-wrap: wrap;
-}
-
-.af-item-header-main .af-item-label {
-  min-width: 0;
-}
-
-.af-item-label {
-  font-weight: 500;
-  display: inline-flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.af-item-label-inline {
-  flex-direction: row;
-}
-
-.af-item-prefix {
-  color: #718096;
-}
-
-.af-item-required {
-  color: #e53e3e;
+  position: relative;
 }
 
 .af-required {
   color: #e53e3e;
-  margin-left: 0.25rem;
   font-weight: 600;
   line-height: 1;
 }

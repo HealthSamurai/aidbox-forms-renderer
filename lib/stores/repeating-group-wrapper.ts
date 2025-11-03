@@ -15,12 +15,8 @@ import {
 } from "fhir/r5";
 import { CoreAbstractNode } from "./core-abstract-node.ts";
 import { RepeatingGroupStore } from "./repeating-group-store.ts";
-import {
-  EXT,
-  findExtension,
-  instanceHasResponses,
-  makeIssue,
-} from "../utils.ts";
+import { RepeatingGroupWrapperValidator } from "./repeating-group-wrapper-validator.ts";
+import { EXT, findExtension } from "../utils.ts";
 
 export class RepeatingGroupWrapper
   extends CoreAbstractNode
@@ -35,6 +31,8 @@ export class RepeatingGroupWrapper
     name: "RepeatingGroupWrapper.instances",
   });
 
+  private readonly validator: RepeatingGroupWrapperValidator;
+
   constructor(
     form: IForm,
     template: QuestionnaireItem,
@@ -47,6 +45,8 @@ export class RepeatingGroupWrapper
 
     this.scope = parentScope.extend(false);
     this.key = `${parentKey}_/_${this.template.linkId}`;
+
+    this.validator = new RepeatingGroupWrapperValidator(this);
 
     responseItems?.forEach((responseItem) => this.pushInstance(responseItem));
     this.ensureMinOccurs();
@@ -152,37 +152,11 @@ export class RepeatingGroupWrapper
   }
 
   override get hasErrors(): boolean {
-    return false;
+    return this.nodes.some((instance) => instance.hasErrors);
   }
 
   get issues(): OperationOutcomeIssue[] {
-    if (this.readOnly) {
-      return [];
-    }
-
-    const occurs = this.nodes.filter(instanceHasResponses).length;
-
-    const issues: OperationOutcomeIssue[] = [];
-
-    if (this.minOccurs > 0 && occurs < this.minOccurs) {
-      issues.push(
-        makeIssue(
-          "required",
-          `At least ${this.minOccurs} occurrence(s) required.`,
-        ),
-      );
-    }
-
-    if (this.maxOccurs != null && occurs > this.maxOccurs) {
-      issues.push(
-        makeIssue(
-          "structure",
-          `No more than ${this.maxOccurs} occurrence(s) permitted.`,
-        ),
-      );
-    }
-
-    return issues;
+    return this.validator.issues;
   }
 
   override clearDirty(): void {}

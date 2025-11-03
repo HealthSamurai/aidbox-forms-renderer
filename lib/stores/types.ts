@@ -115,8 +115,8 @@ export interface ICoreNode {
 
 export interface IBaseNode extends ICoreNode {
   readonly readOnly: boolean;
-  readonly minOccurs: number; // minOccurs || (required ? 1 : 0)
-  readonly maxOccurs: number | undefined; // maxOccurs
+  readonly minOccurs: number;
+  readonly maxOccurs: number | undefined;
   readonly expressionRegistry: ExpressionRegistry | undefined;
 
   readonly isDirty: boolean;
@@ -140,6 +140,8 @@ export interface IRepeatingGroupWrapper extends ICoreNode {
   readonly nodes: Array<IRepeatingGroupNode>;
   readonly canAdd: boolean;
   readonly canRemove: boolean;
+  readonly minOccurs: number;
+  readonly maxOccurs: number;
   addInstance(): void;
   removeInstance(index: number): void;
 }
@@ -153,6 +155,7 @@ export interface IAnswerInstance<TValue> {
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
   readonly scope: IScope;
+  readonly issues: Array<OperationOutcomeIssue>;
   dispose(): void;
 }
 
@@ -177,6 +180,10 @@ export type INode =
   | IRepeatingGroupWrapper
   | IRepeatingGroupNode
   | IQuestionNode;
+
+export interface INodeValidator {
+  readonly issues: Array<OperationOutcomeIssue>;
+}
 
 export interface IForm {
   questionnaire: Questionnaire;
