@@ -11,12 +11,14 @@ export const NonRepeatingGroupNode = observer(function NonRepeatingGroupNode({
   item: INonRepeatingGroupNode;
 }) {
   return (
-    <fieldset className="af-group" data-linkid={item.linkId}>
-      {item.template.text && <ItemText as="legend" item={item} />}
-      <div className="af-group-children">
-        <ItemsList items={item.nodes} />
-      </div>
+    <div className="flex flex-col gap-2">
+      <fieldset className="af-group" data-linkid={item.linkId}>
+        {item.template.text && <ItemText as="legend" item={item} />}
+        <div className="af-group-children">
+          <ItemsList items={item.nodes} />
+        </div>
+      </fieldset>
       <ItemErrors item={item} />
-    </fieldset>
+    </div>
   );
 });

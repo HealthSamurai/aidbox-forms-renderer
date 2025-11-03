@@ -1,10 +1,3 @@
-.af-group {
-  border: 1px solid var(--af-border-color, #d1d5db);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
 .af-group-children {
   display: grid;
   gap: 1rem;

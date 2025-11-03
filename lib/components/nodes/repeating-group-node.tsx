@@ -25,7 +25,6 @@ export const RepeatingGroupNode = observer(function RepeatingGroupNode({
           <Button
             type="button"
             variant="danger"
-            size="sm"
             onClick={() => instance.remove()}
             disabled={!canRemove}
           >

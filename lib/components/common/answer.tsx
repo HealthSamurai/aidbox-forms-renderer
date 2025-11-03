@@ -47,10 +47,9 @@ export const Answer = observer(function Answer<T extends AnswerType>({
   const answerErrorId =
     answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
 
-  const describedByPieces = [
-    getItemDescribedBy(item),
-    answerErrorId,
-  ].filter((value): value is string => Boolean(value));
+  const describedByPieces = [getItemDescribedBy(item), answerErrorId].filter(
+    (value): value is string => Boolean(value),
+  );
   const describedById =
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
@@ -70,7 +69,6 @@ export const Answer = observer(function Answer<T extends AnswerType>({
           <Button
             type="button"
             variant="danger"
-            size="sm"
             onClick={handleRemove}
             disabled={!item.canRemove}
           >

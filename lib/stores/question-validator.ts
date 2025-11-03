@@ -36,8 +36,8 @@ export class QuestionValidator implements INodeValidator {
         makeIssue(
           "required",
           this.question.minOccurs === 1
-            ? "Answer is required."
-            : `At least ${this.question.minOccurs} answers are required.`,
+            ? "At least one  non-empty answer is required."
+            : `At least ${this.question.minOccurs} non-empty answers are required.`,
         ),
       );
     }
