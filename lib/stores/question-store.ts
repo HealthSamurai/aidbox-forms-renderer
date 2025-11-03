@@ -1,3 +1,4 @@
+import type { IReactionDisposer } from "mobx";
 import {
   action,
   comparer,
@@ -6,21 +7,21 @@ import {
   override,
   reaction,
 } from "mobx";
-import type { IReactionDisposer } from "mobx";
 import {
   AnswerType,
+  type AnswerTypeToDataType,
   DataTypeToType,
   IAnswerInstance,
-  IPresentableNode,
   IForm,
   INode,
+  IPresentableNode,
   IQuestionNode,
   IScope,
   SnapshotKind,
-  type AnswerTypeToDataType,
 } from "./types.ts";
 import {
   QuestionnaireItem,
+  QuestionnaireItemAnswerOption,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
@@ -32,6 +33,7 @@ import { QuestionValidator } from "./question-validator.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
+  answerify,
   EXT,
   extractExtensionValue,
   getValue,
@@ -112,6 +114,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     };
 
     return coding?.code ? keyboardMap[coding.code] : undefined;
+  }
+
+  @computed.struct
+  get answerOptions(): QuestionnaireItemAnswerOption[] {
+    const slot = this.expressionRegistry?.answer;
+    return slot
+      ? answerify(this.type, slot.value)
+      : (this.template.answerOption ?? []);
   }
 
   @override

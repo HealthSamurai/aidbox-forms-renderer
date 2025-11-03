@@ -22,7 +22,7 @@ export const QuestionNode = observer(function QuestionNode({
 }: {
   item: IQuestionNode;
 }) {
-  if ((item.template.answerOption?.length ?? 0) > 0) {
+  if (item.answerOptions.length > 0) {
     return <AnswerOptionNode item={item} />;
   }
 

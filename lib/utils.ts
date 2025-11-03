@@ -19,6 +19,7 @@ import {
   Quantity,
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
+  QuestionnaireItemAnswerOption,
   Reference,
 } from "fhir/r5";
 
@@ -61,12 +62,113 @@ export const EXT = {
   SDC_ENABLE_WHEN_EXPR:      "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
   SDC_CALCULATED_EXPR:       "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INITIAL_EXPR:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+  SDC_ANSWER_EXPR:           "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
   SDC_VARIABLE:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
   SDC_KEYBOARD:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-keyboard",
   CQF_EXPRESSION:            "http://hl7.org/fhir/StructureDefinition/cqf-expression",
   CQF_CALCULATED_VALUE:      "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
   TARGET_CONSTRAINT:         "http://hl7.org/fhir/StructureDefinition/targetConstraint",
 } as const;
+
+export function answerify<T extends AnswerType>(
+  answerType: T,
+  raw: unknown,
+): QuestionnaireItemAnswerOption[] {
+  const dataType = ANSWER_TYPE_TO_DATA_TYPE[answerType];
+  const options: QuestionnaireItemAnswerOption[] = [];
+  const normalize = (value: unknown) => {
+    switch (answerType) {
+      case "boolean":
+        if (typeof value === "boolean") {
+          return value as DataTypeToType<AnswerTypeToDataType<T>>;
+        }
+        if (typeof value === "string") {
+          if (/^true$/i.test(value)) {
+            return true as DataTypeToType<AnswerTypeToDataType<T>>;
+          }
+          if (/^false$/i.test(value)) {
+            return false as DataTypeToType<AnswerTypeToDataType<T>>;
+          }
+        }
+        return undefined;
+      case "decimal":
+      case "integer": {
+        const numberValue = parseNumber(value);
+        return numberValue === undefined
+          ? undefined
+          : (numberValue as DataTypeToType<AnswerTypeToDataType<T>>);
+      }
+      case "date":
+      case "dateTime":
+      case "time":
+      case "string":
+      case "text":
+      case "url":
+        if (typeof value === "string") {
+          return value as DataTypeToType<AnswerTypeToDataType<T>>;
+        }
+        return undefined;
+      case "coding":
+        return isCoding(value)
+          ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+          : undefined;
+      case "quantity":
+        return isQuantity(value)
+          ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+          : undefined;
+      case "reference":
+        return isReference(value)
+          ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+          : undefined;
+      case "attachment":
+        return isAttachment(value)
+          ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+          : undefined;
+      default:
+        return undefined;
+    }
+  };
+
+  const append = (entry: unknown) => {
+    if (entry == null) return;
+
+    if (Array.isArray(entry)) {
+      entry.forEach(append);
+      return;
+    }
+
+    if (entry && typeof entry === "object") {
+      const optionValue = getValue(
+        entry as QuestionnaireItemAnswerOption,
+        dataType,
+      );
+
+      if (optionValue !== undefined) {
+        const normalized = normalize(optionValue);
+        if (normalized === undefined) {
+          return;
+        }
+
+        options.push({
+          ...(entry as QuestionnaireItemAnswerOption),
+          ...asAnswerFragment(dataType, normalized),
+        });
+        return;
+      }
+    }
+
+    const normalized = normalize(entry);
+    if (normalized === undefined) {
+      return;
+    }
+
+    options.push(asAnswerFragment(dataType, normalized));
+  };
+
+  append(raw);
+
+  return options;
+}
 
 export function findExtension(
   element: Element,

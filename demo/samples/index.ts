@@ -15,6 +15,7 @@ import expressionCalculated from "./expression-calculated.json" assert { type: "
 import expressionEnableWhen from "./expression-enable-when.json" assert { type: "json" };
 import expressionDynamicBounds from "./expression-dynamic-bounds.json" assert { type: "json" };
 import answerOptions from "./answer-options.json" assert { type: "json" };
+import answerExpression from "./answer-expression.json" assert { type: "json" };
 import validation from "./validation.json" assert { type: "json" };
 import targetConstraint from "./target-constraint.json" assert { type: "json" };
 
@@ -99,6 +100,11 @@ export const demoSamples: readonly DemoSample[] = [
     id: "answer-options",
     label: "Answer options",
     questionnaire: answerOptions as Questionnaire,
+  },
+  {
+    id: "answer-expression",
+    label: "Answer expressions",
+    questionnaire: answerExpression as Questionnaire,
   },
   {
     id: "validation",

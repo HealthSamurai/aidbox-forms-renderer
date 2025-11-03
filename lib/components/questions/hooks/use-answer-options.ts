@@ -24,34 +24,30 @@ type LegacyOption = {
   label: string;
 };
 
-function computeOptions<T extends AnswerType>(
-  item: IQuestionNode<T>,
-): AnswerOptionEntry<T>[] {
-  const { answerOption = [] } = item.template;
-  return answerOption.flatMap((option, index) => {
-    const value = getValue(option, ANSWER_TYPE_TO_DATA_TYPE[item.type]);
-    if (value === undefined) {
-      return [];
-    }
-
-    const label = stringifyValue(
-      ANSWER_TYPE_TO_DATA_TYPE[item.type],
-      value,
-      `Option ${index + 1}`,
-    );
-
-    return [
-      {
-        key: `${item.key}::${index}`,
-        label,
-        value,
-      },
-    ];
-  });
-}
-
 export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
-  const options = useMemo(() => computeOptions(item), [item]);
+  const answerOptions = item.answerOptions;
+  const answerType = item.type;
+  const itemKey = item.key;
+
+  const options = useMemo(() => {
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[answerType];
+    return answerOptions.flatMap((option, index) => {
+      const value = getValue(option, dataType);
+      if (value === undefined) {
+        return [];
+      }
+
+      const label = stringifyValue(dataType, value, `Option ${index + 1}`);
+
+      return [
+        {
+          key: `${itemKey}::${index}`,
+          label,
+          value,
+        } satisfies AnswerOptionEntry<T>,
+      ];
+    });
+  }, [answerOptions, answerType, itemKey]);
 
   const valueByKey = useMemo(() => {
     const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();

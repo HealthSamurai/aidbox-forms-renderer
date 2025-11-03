@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
 import { FormStore } from "../../../stores/form-store.ts";
 import { isQuestionNode } from "../../../stores/question-store.ts";
 import { QuestionNode } from "../../nodes/question-node.tsx";
+import {
+  makeAnswerExpression,
+  makeVariable,
+} from "../../../stores/__tests__/expression-fixtures.ts";
 
 function getQuestionNode(form: FormStore, linkId: string) {
   const node = form.scope.lookupNode(linkId);
@@ -45,7 +49,9 @@ describe("AnswerOptionNode", () => {
     expect(combobox).toHaveValue("");
 
     const user = userEvent.setup();
-    const greenOption = screen.getByRole("option", { name: "Green" }) as HTMLOptionElement;
+    const greenOption = screen.getByRole("option", {
+      name: "Green",
+    }) as HTMLOptionElement;
     await user.selectOptions(combobox, greenOption.value);
 
     expect(greenOption.selected).toBe(true);
@@ -88,7 +94,9 @@ describe("AnswerOptionNode", () => {
     render(<QuestionNode item={question} />);
 
     const combobox = screen.getByRole("combobox", { name: /severity/i });
-    const selectedOption = screen.getByRole("option", { name: "Moderate" }) as HTMLOptionElement;
+    const selectedOption = screen.getByRole("option", {
+      name: "Moderate",
+    }) as HTMLOptionElement;
     expect(combobox).toBeInTheDocument();
     expect(selectedOption.selected).toBe(true);
     expect(question.answers.at(0)?.value).toMatchObject({
@@ -148,5 +156,62 @@ describe("AnswerOptionNode", () => {
       screen.queryByRole("option", { name: "Chocolate", hidden: true }),
     ).toBeNull();
     expect(question.answers.at(0)?.value).toBe("Vanilla");
+  });
+
+  it("upgrades a question to a select when answerExpression yields options", async () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "panel",
+          type: "group",
+          extension: [
+            makeVariable(
+              "sourceValues",
+              "%context.item.where(linkId='source').answer.valueString",
+            ),
+          ],
+          item: [
+            {
+              linkId: "source",
+              text: "Source",
+              type: "string",
+            },
+            {
+              linkId: "mirror",
+              text: "Mirror",
+              type: "string",
+              extension: [makeAnswerExpression("%sourceValues")],
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const source = getQuestionNode(form, "source");
+    const mirror = getQuestionNode(form, "mirror");
+
+    render(<QuestionNode item={mirror} />);
+
+    expect(
+      screen.getByRole("textbox", { name: /mirror/i }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      source.setAnswer(0, "Alpha");
+    });
+
+    const combobox = await screen.findByRole("combobox", { name: /mirror/i });
+    expect(combobox).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Alpha" })).toBeInTheDocument();
+
+    await act(async () => {
+      source.setAnswer(0, "Beta");
+    });
+
+    expect(screen.getByRole("option", { name: "Beta" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Alpha" })).toBeNull();
   });
 });

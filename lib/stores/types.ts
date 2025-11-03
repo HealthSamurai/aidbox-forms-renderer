@@ -26,6 +26,7 @@ import {
   Quantity,
   Questionnaire,
   QuestionnaireItem,
+  QuestionnaireItemAnswerOption,
   QuestionnaireResponse,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
@@ -55,6 +56,7 @@ export type ExpressionSlotKind =
   | "enable-when"
   | "initial"
   | "calculated"
+  | "answer"
   | "min-value"
   | "max-value"
   | "constraint";
@@ -367,6 +369,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   extends IActualNode {
   readonly type: T;
   readonly repeats: boolean;
+  readonly answerOptions: ReadonlyArray<QuestionnaireItemAnswerOption>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
 
   answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;

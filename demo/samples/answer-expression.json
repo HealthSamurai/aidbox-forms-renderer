@@ -1,0 +1,74 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "answer-expression",
+  "status": "active",
+  "title": "Answer Expression Showcase",
+  "description": "Demonstrates runtime answer lists populated by sdc-questionnaire-answerExpression for multiple data types.",
+  "item": [
+    {
+      "linkId": "dynamic-colors",
+      "text": "Collect and reuse color choices",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "name": "collectedColors",
+            "language": "text/fhirpath",
+            "expression": "%context.item.where(linkId='color-source').answer.valueString"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "color-source",
+          "type": "string",
+          "repeats": true,
+          "text": "Add every color that should be available"
+        },
+        {
+          "linkId": "color-select",
+          "type": "string",
+          "text": "Pick a favorite color",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "%collectedColors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "sleep-patterns",
+      "text": "Choose typical sleep duration",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "(6.0 | 7.0 | 7.5 | 8.0)"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "dose-options",
+      "text": "Suggested dosage",
+      "type": "quantity",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "(%factory.Quantity('http://unitsofmeasure.org', 'mg', 50, 'mg') | %factory.Quantity('http://unitsofmeasure.org', 'mg', 100, 'mg') | %factory.Quantity('http://unitsofmeasure.org', 'mg', 150, 'mg'))"
+          }
+        }
+      ]
+    }
+  ]
+}

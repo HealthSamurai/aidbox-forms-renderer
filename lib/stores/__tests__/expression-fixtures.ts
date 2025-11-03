@@ -75,6 +75,20 @@ export function makeMinValueExpression(
   } as Extension;
 }
 
+export function makeAnswerExpression(
+  expression: string,
+  name?: string,
+): Extension {
+  return {
+    url: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
+    valueExpression: {
+      language: "text/fhirpath",
+      expression,
+      ...(name ? { name } : {}),
+    },
+  };
+}
+
 export function makeMaxValueExpression(
   name: string | undefined,
   expression: string,

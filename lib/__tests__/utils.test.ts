@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
-import type { Attachment, Coding, Element, Quantity, Reference } from "fhir/r5";
+import type {
+  Attachment,
+  Coding,
+  Element,
+  Quantity,
+  QuestionnaireItemAnswerOption,
+  Reference,
+} from "fhir/r5";
 
 import {
+  answerify,
   areValuesEqual,
   cloneValue,
   countDecimalPlaces,
@@ -249,6 +257,143 @@ describe("stringifyValue", () => {
         "https://file",
       );
     });
+  });
+});
+
+describe("answerify", () => {
+  it("flattens nested collections", () => {
+    const result = answerify("string", ["Alpha", ["Beta", ["Gamma"]]]);
+    expect(result).toEqual([
+      { valueString: "Alpha" },
+      { valueString: "Beta" },
+      { valueString: "Gamma" },
+    ]);
+  });
+
+  it("coerces boolean strings", () => {
+    const result = answerify("boolean", ["true", "FALSE", "maybe"]);
+    expect(result).toEqual([{ valueBoolean: true }, { valueBoolean: false }]);
+  });
+
+  it("parses numerics for integer questions", () => {
+    const result = answerify("integer", ["5", 7, "oops"]);
+    expect(result).toEqual([{ valueInteger: 5 }, { valueInteger: 7 }]);
+  });
+
+  it("parses numerics for decimal questions", () => {
+    const result = answerify("decimal", ["1.5", 2, "oops"]);
+    expect(result).toEqual([{ valueDecimal: 1.5 }, { valueDecimal: 2 }]);
+  });
+
+  it("wraps bare coding objects", () => {
+    const coding: Coding = { system: "http://loinc.org", code: "718-7" };
+    const [option] = answerify("coding", coding);
+    expect(option).toEqual({ valueCoding: coding });
+    expect(option.valueCoding).toBe(coding);
+  });
+
+  it("returns structured codings unchanged when provided as answerOption", () => {
+    const option: QuestionnaireItemAnswerOption = {
+      valueCoding: { system: "http://loinc.org", code: "890-5" },
+      extension: [{ url: "test", valueString: "meta" }],
+    };
+    const [result] = answerify("coding", [option]);
+    expect(result).not.toBe(option);
+    expect(result.valueCoding).toEqual(option.valueCoding);
+    expect(result.extension).toBe(option.extension);
+  });
+
+  it("clones provided answerOption wrappers", () => {
+    const original = {
+      valueCoding: { code: "opt", display: "Option" },
+      extension: [{ url: "x", valueString: "meta" }],
+    } satisfies QuestionnaireItemAnswerOption;
+
+    const [option] = answerify("coding", [original]);
+
+    expect(option.valueCoding).toEqual(original.valueCoding);
+    expect(option.valueCoding).toBe(original.valueCoding);
+    expect(option.extension).toEqual(original.extension);
+    expect(option.extension).toBe(original.extension);
+  });
+
+  it("filters unsupported values", () => {
+    const result = answerify("boolean", [null, undefined, 1, "maybe"]);
+    expect(result).toEqual([]);
+  });
+
+  it("clones structured quantity answers", () => {
+    const quantity = { value: 42, unit: "kg" } satisfies Quantity;
+    const result = answerify("quantity", quantity);
+    expect(result).toHaveLength(1);
+    expect((result[0] as { valueQuantity?: Quantity }).valueQuantity).toBe(
+      quantity,
+    );
+  });
+
+  it("passes through references", () => {
+    const reference = {
+      reference: "Patient/1",
+      display: "Alice",
+    } satisfies Reference;
+    const result = answerify("reference", reference);
+    expect(result).toHaveLength(1);
+    expect((result[0] as { valueReference?: Reference }).valueReference).toBe(
+      reference,
+    );
+  });
+
+  it("passes through attachments", () => {
+    const attachment = {
+      url: "https://example.org",
+      title: "Scan",
+    } satisfies Attachment;
+    const result = answerify("attachment", attachment);
+    expect(result).toHaveLength(1);
+    expect(
+      (result[0] as { valueAttachment?: Attachment }).valueAttachment,
+    ).toBe(attachment);
+  });
+
+  it("accepts string-like types", () => {
+    const result = answerify("string", "alpha");
+    expect(result).toEqual([{ valueString: "alpha" }]);
+  });
+
+  it("accepts text type", () => {
+    const result = answerify("text", "long form");
+    expect(result).toEqual([{ valueString: "long form" }]);
+  });
+
+  it("accepts date values", () => {
+    const result = answerify("date", ["2025-01-01", "invalid"]);
+    expect(result.map((option) => getValue(option, "date"))).toEqual([
+      "2025-01-01",
+      "invalid",
+    ]);
+  });
+
+  it("accepts dateTime values", () => {
+    const result = answerify("dateTime", ["2025-01-01T09:30:00Z", 42]);
+    expect(result).toEqual([{ valueDateTime: "2025-01-01T09:30:00Z" }]);
+  });
+
+  it("accepts time values", () => {
+    const result = answerify("time", ["08:15:00", null]);
+    expect(result).toEqual([{ valueTime: "08:15:00" }]);
+  });
+
+  it("rejects unsupported types", () => {
+    const result = answerify("reference", ["string", 42, null]);
+    expect(result).toEqual([]);
+  });
+
+  it("handles empty source arrays", () => {
+    expect(answerify("string", [])).toEqual([]);
+  });
+
+  it("ignores undefined root value", () => {
+    expect(answerify("string", undefined)).toEqual([]);
   });
 });
 

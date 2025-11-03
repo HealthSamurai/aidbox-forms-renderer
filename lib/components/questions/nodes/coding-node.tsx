@@ -19,10 +19,10 @@ export const CodingNode = observer(function CodingNode({
 }) {
   const options = React.useMemo(
     () =>
-      (item.template.answerOption ?? [])
+      item.answerOptions
         .map((option) => option.valueCoding)
         .filter((coding): coding is Coding => Boolean(coding)),
-    [item.template.answerOption],
+    [item.answerOptions],
   );
 
   const optionMap = React.useMemo(() => {

@@ -47,6 +47,7 @@ export class ExpressionRegistry {
   readonly enableWhen: IExpressionSlot | undefined;
   readonly initial: IExpressionSlot | undefined;
   readonly calculated: IExpressionSlot | undefined;
+  readonly answer: IExpressionSlot | undefined;
   readonly minValue: IExpressionSlot | undefined;
   readonly maxValue: IExpressionSlot | undefined;
 
@@ -79,6 +80,11 @@ export class ExpressionRegistry {
       this.calculated = this.createSlot(
         extractExtensionValue(element, EXT.SDC_CALCULATED_EXPR, "Expression"),
         "calculated",
+      );
+
+      this.answer = this.createSlot(
+        extractExtensionValue(element, EXT.SDC_ANSWER_EXPR, "Expression"),
+        "answer",
       );
 
       if (type) {
