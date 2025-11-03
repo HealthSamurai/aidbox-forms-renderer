@@ -1,3 +1,5 @@
+import type { HTMLAttributes } from "react";
+
 export function TextInput({
   id,
   type = "text",
@@ -7,6 +9,7 @@ export function TextInput({
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
+  inputMode,
 }: {
   id?: string | undefined;
   type?: string | undefined;
@@ -16,6 +19,7 @@ export function TextInput({
   placeholder?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
+  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
 }) {
   return (
     <input
@@ -28,6 +32,7 @@ export function TextInput({
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      inputMode={inputMode}
     />
   );
 }

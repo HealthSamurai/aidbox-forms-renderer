@@ -23,6 +23,7 @@ export const StringNode = observer(function StringNode({
             value={value ?? ""}
             onChange={setValue}
             disabled={item.readOnly}
+            inputMode={item.keyboardType}
           />
         )}
       />

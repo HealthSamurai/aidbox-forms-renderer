@@ -62,6 +62,7 @@ export const EXT = {
   SDC_CALCULATED_EXPR:       "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INITIAL_EXPR:          "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
   SDC_VARIABLE:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+  SDC_KEYBOARD:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-keyboard",
   CQF_EXPRESSION:            "http://hl7.org/fhir/StructureDefinition/cqf-expression",
   CQF_CALCULATED_VALUE:      "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
   TARGET_CONSTRAINT:         "http://hl7.org/fhir/StructureDefinition/targetConstraint",

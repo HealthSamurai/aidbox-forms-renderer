@@ -1,3 +1,5 @@
+import type { HTMLAttributes } from "react";
+
 export function TextArea({
   id,
   value,
@@ -7,6 +9,7 @@ export function TextArea({
   rows = 4,
   ariaLabelledBy,
   ariaDescribedBy,
+  inputMode,
 }: {
   id?: string | undefined;
   value: string;
@@ -16,6 +19,7 @@ export function TextArea({
   rows?: number | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
+  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
 }) {
   return (
     <textarea
@@ -28,6 +32,7 @@ export function TextArea({
       rows={rows}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      inputMode={inputMode}
     />
   );
 }

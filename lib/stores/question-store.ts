@@ -32,8 +32,11 @@ import { QuestionValidator } from "./question-validator.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
+  EXT,
+  extractExtensionValue,
   getValue,
 } from "../utils.ts";
+import type { HTMLAttributes } from "react";
 
 type AnswerLifecycle =
   | "pristine"
@@ -86,6 +89,29 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed
   get repeats() {
     return !!this.template.repeats;
+  }
+
+  @computed
+  get keyboardType(): HTMLAttributes<Element>["inputMode"] | undefined {
+    if (this.type !== "string" && this.type !== "text") {
+      return undefined;
+    }
+
+    const coding = extractExtensionValue(
+      this.template,
+      EXT.SDC_KEYBOARD,
+      "Coding",
+    );
+
+    const keyboardMap: Record<string, HTMLAttributes<Element>["inputMode"]> = {
+      phone: "tel",
+      email: "email",
+      number: "numeric",
+      url: "url",
+      chat: "text",
+    };
+
+    return coding?.code ? keyboardMap[coding.code] : undefined;
   }
 
   @override

@@ -42,6 +42,7 @@ import {
 } from "fhir/r5";
 import type { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { ExpressionRegistry } from "./expression-registry.ts";
+import type { HTMLAttributes } from "react";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -366,6 +367,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   extends IActualNode {
   readonly type: T;
   readonly repeats: boolean;
+  readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
 
   answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;
 
