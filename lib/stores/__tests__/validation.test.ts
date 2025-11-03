@@ -9,7 +9,7 @@ import type {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  ICoreNode,
+  IPresentableNode,
   IQuestionNode,
 } from "../types.ts";
 
@@ -104,7 +104,7 @@ const maxSizeExtension = (value: number) => ({
 });
 
 const expectQuestionNode = <T extends AnswerType = AnswerType>(
-  node: ICoreNode | undefined,
+  node: IPresentableNode | undefined,
 ): IQuestionNode<T> => {
   expect(node && isQuestionNode(node)).toBe(true);
   if (!node || !isQuestionNode(node)) {
@@ -322,7 +322,9 @@ describe("validation", () => {
       expect(birth.hasErrors).toBe(false);
 
       checkIn.setAnswer(0, "2023-12-31T23:59:59Z");
-      expect(checkInAnswer.issues.at(0)?.diagnostics).toMatch(/not be earlier/i);
+      expect(checkInAnswer.issues.at(0)?.diagnostics).toMatch(
+        /not be earlier/i,
+      );
 
       checkIn.setAnswer(0, "2025-01-01T00:00:00Z");
       expect(checkInAnswer.issues.at(0)?.diagnostics).toMatch(/not be later/i);
@@ -583,8 +585,9 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("fluid"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (question as unknown as { _expressionRegistry?: unknown })
-        ._expressionRegistry as { [key: string]: unknown } | undefined;
+      const registry = (
+        question as unknown as { _expressionRegistry?: unknown }
+      )._expressionRegistry as { [key: string]: unknown } | undefined;
       expect(registry).toBeDefined();
       if (!registry) return;
 
@@ -640,8 +643,9 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (question as unknown as { _expressionRegistry?: unknown })
-        ._expressionRegistry as { [key: string]: unknown } | undefined;
+      const registry = (
+        question as unknown as { _expressionRegistry?: unknown }
+      )._expressionRegistry as { [key: string]: unknown } | undefined;
       expect(registry).toBeDefined();
       if (!registry) return;
 
@@ -681,8 +685,9 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (question as unknown as { _expressionRegistry?: unknown })
-        ._expressionRegistry as { [key: string]: unknown } | undefined;
+      const registry = (
+        question as unknown as { _expressionRegistry?: unknown }
+      )._expressionRegistry as { [key: string]: unknown } | undefined;
       expect(registry).toBeDefined();
       if (!registry) return;
 
@@ -726,8 +731,9 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (question as unknown as { _expressionRegistry?: unknown })
-        ._expressionRegistry as { [key: string]: unknown } | undefined;
+      const registry = (
+        question as unknown as { _expressionRegistry?: unknown }
+      )._expressionRegistry as { [key: string]: unknown } | undefined;
       expect(registry).toBeDefined();
       if (!registry) return;
 
@@ -839,125 +845,124 @@ describe("validation", () => {
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/decimal place/i);
 
-    question.setAnswer(0, 12.34);
-    expect(answer.issues).toHaveLength(0);
+      question.setAnswer(0, 12.34);
+      expect(answer.issues).toHaveLength(0);
+    });
   });
 
+  describe("repeating group", () => {
+    it("validates repeating group occurs limits", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "family-history",
+            text: "Family history",
+            type: "group",
+            repeats: true,
+            extension: [minOccurs(1), maxOccurs(2)],
+            item: [
+              {
+                linkId: "condition",
+                text: "Condition",
+                type: "string",
+                required: true,
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const group = form.scope.lookupNode("family-history");
+      expect(group && isRepeatingGroupWrapper(group)).toBe(true);
+      if (!group || !isRepeatingGroupWrapper(group)) return;
+
+      // Submit with empty answers
+      expect(form.validateAll()).toBe(false);
+      expect(group.issues).toHaveLength(1);
+      expect(group.issues[0]?.diagnostics).toMatch(/occurrence/i);
+
+      const firstInstance = group.nodes.at(0);
+      expect(firstInstance).toBeDefined();
+      if (!firstInstance) return;
+
+      const question = firstInstance.nodes.at(0);
+      expect(question && isQuestionNode(question)).toBe(true);
+      if (!question || !isQuestionNode(question)) return;
+
+      question.setAnswer(0, "Diabetes");
+      expect(group.issues).toHaveLength(0);
+      expect(form.validateAll()).toBe(true);
+    });
   });
 
-describe("repeating group", () => {
-  it("validates repeating group occurs limits", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "family-history",
-          text: "Family history",
-          type: "group",
-          repeats: true,
-          extension: [minOccurs(1), maxOccurs(2)],
-          item: [
-            {
-              linkId: "condition",
-              text: "Condition",
-              type: "string",
-              required: true,
-            },
-          ],
-        },
-      ],
-    };
+  describe("non-repeating group", () => {
+    it("validates group minOccurs when descendants empty", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "lifestyle",
+            text: "Lifestyle",
+            type: "group",
+            extension: [minOccurs(1)],
+            item: [
+              {
+                linkId: "exercise",
+                text: "Exercise details",
+                type: "string",
+              },
+            ],
+          },
+        ],
+      };
 
-    const form = new FormStore(questionnaire);
-    const group = form.scope.lookupNode("family-history");
-    expect(group && isRepeatingGroupWrapper(group)).toBe(true);
-    if (!group || !isRepeatingGroupWrapper(group)) return;
+      const form = new FormStore(questionnaire);
+      const group = form.scope.lookupNode("lifestyle");
+      expect(group && isNonRepeatingGroupNode(group)).toBe(true);
+      if (!group || !isNonRepeatingGroupNode(group)) return;
 
-    // Submit with empty answers
-    expect(form.validateAll()).toBe(false);
-    expect(group.issues).toHaveLength(1);
-    expect(group.issues[0]?.diagnostics).toMatch(/occurrence/i);
+      expect(form.validateAll()).toBe(false);
+      expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);
 
-    const firstInstance = group.nodes.at(0);
-    expect(firstInstance).toBeDefined();
-    if (!firstInstance) return;
+      const child = group.nodes.at(0);
+      expect(child && isQuestionNode(child)).toBe(true);
+      if (!child || !isQuestionNode(child)) return;
+      child.setAnswer(0, "Runs daily");
 
-    const question = firstInstance.nodes.at(0);
-    expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
-
-    question.setAnswer(0, "Diabetes");
-    expect(group.issues).toHaveLength(0);
-    expect(form.validateAll()).toBe(true);
+      expect(form.validateAll()).toBe(true);
+      expect(group.hasErrors).toBe(false);
+    });
   });
-});
 
-describe("non-repeating group", () => {
-  it("validates group minOccurs when descendants empty", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "lifestyle",
-          text: "Lifestyle",
-          type: "group",
-          extension: [minOccurs(1)],
-          item: [
-            {
-              linkId: "exercise",
-              text: "Exercise details",
-              type: "string",
-            },
-          ],
-        },
-      ],
-    };
+  describe("form interactions", () => {
+    it("clears submit state after successful validation", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "email",
+            text: "Email",
+            type: "string",
+            required: true,
+          },
+        ],
+      };
 
-    const form = new FormStore(questionnaire);
-    const group = form.scope.lookupNode("lifestyle");
-    expect(group && isNonRepeatingGroupNode(group)).toBe(true);
-    if (!group || !isNonRepeatingGroupNode(group)) return;
+      const form = new FormStore(questionnaire);
+      const question = expectQuestionNode(form.scope.lookupNode("email"));
 
-    expect(form.validateAll()).toBe(false);
-    expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);
+      expect(form.validateAll()).toBe(false);
+      expect(form.isSubmitAttempted).toBe(true);
 
-    const child = group.nodes.at(0);
-    expect(child && isQuestionNode(child)).toBe(true);
-    if (!child || !isQuestionNode(child)) return;
-    child.setAnswer(0, "Runs daily");
-
-    expect(form.validateAll()).toBe(true);
-    expect(group.hasErrors).toBe(false);
+      question.setAnswer(0, "user@example.com");
+      expect(form.validateAll()).toBe(true);
+      expect(form.isSubmitAttempted).toBe(false);
+      expect(question.hasErrors).toBe(false);
+    });
   });
-});
-
-describe("form interactions", () => {
-  it("clears submit state after successful validation", () => {
-    const questionnaire: Questionnaire = {
-      resourceType: "Questionnaire",
-      status: "active",
-      item: [
-        {
-          linkId: "email",
-          text: "Email",
-          type: "string",
-          required: true,
-        },
-      ],
-    };
-
-    const form = new FormStore(questionnaire);
-    const question = expectQuestionNode(form.scope.lookupNode("email"));
-
-    expect(form.validateAll()).toBe(false);
-    expect(form.isSubmitAttempted).toBe(true);
-
-    question.setAnswer(0, "user@example.com");
-    expect(form.validateAll()).toBe(true);
-    expect(form.isSubmitAttempted).toBe(false);
-    expect(question.hasErrors).toBe(false);
-  });
-});
 });

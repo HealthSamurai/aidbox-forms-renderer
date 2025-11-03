@@ -47,8 +47,8 @@ export interface IExpressionEnvironmentProvider {
 
 export interface IScope {
   extend(ownsNodes: boolean): IScope;
-  registerNode(node: ICoreNode): void;
-  lookupNode(linkId: string): ICoreNode | undefined;
+  registerNode(node: IPresentableNode): void;
+  lookupNode(linkId: string): IPresentableNode | undefined;
   registerExpression(slot: IExpressionSlot): void;
   lookupExpression(name: string): IExpressionSlot | undefined;
   listExpressions(): IterableIterator<[string, IExpressionSlot]>;
@@ -80,7 +80,7 @@ export type AnswerValueType<T extends AnswerType> =
 
 export type SnapshotKind = "response" | "expression";
 
-export interface ICoreNode {
+export interface IPresentableNode {
   readonly template: QuestionnaireItem;
 
   readonly form: IForm;
@@ -113,7 +113,7 @@ export interface ICoreNode {
   dispose(): void;
 }
 
-export interface IBaseNode extends ICoreNode {
+export interface IActualNode extends IPresentableNode {
   readonly readOnly: boolean;
   readonly minOccurs: number;
   readonly maxOccurs: number | undefined;
@@ -122,21 +122,21 @@ export interface IBaseNode extends ICoreNode {
   readonly isDirty: boolean;
 }
 
-export interface INonRepeatingGroupNode extends IBaseNode {
-  nodes: Array<ICoreNode>;
+export interface INonRepeatingGroupNode extends IActualNode {
+  nodes: Array<IPresentableNode>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface IDisplayNode extends IBaseNode {}
+export interface IDisplayNode extends IActualNode {}
 
-export interface IRepeatingGroupNode extends IBaseNode {
+export interface IRepeatingGroupNode extends IActualNode {
   readonly index: number;
-  readonly nodes: Array<ICoreNode>;
+  readonly nodes: Array<IPresentableNode>;
   readonly expressionIssues: Array<OperationOutcomeIssue>;
   remove(): void;
 }
 
-export interface IRepeatingGroupWrapper extends ICoreNode {
+export interface IRepeatingGroupWrapper extends IPresentableNode {
   readonly nodes: Array<IRepeatingGroupNode>;
   readonly canAdd: boolean;
   readonly canRemove: boolean;
@@ -151,7 +151,7 @@ export type IGroupNode = IRepeatingGroupNode | INonRepeatingGroupNode;
 export interface IAnswerInstance<TValue> {
   readonly key: string;
   value: TValue | null;
-  readonly nodes: Array<ICoreNode>;
+  readonly nodes: Array<IPresentableNode>;
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
   readonly scope: IScope;
@@ -160,7 +160,7 @@ export interface IAnswerInstance<TValue> {
 }
 
 export interface IQuestionNode<TType extends AnswerType = AnswerType>
-  extends IBaseNode {
+  extends IActualNode {
   readonly type: TType;
   readonly repeats: boolean;
 
@@ -188,7 +188,7 @@ export interface INodeValidator {
 export interface IForm {
   questionnaire: Questionnaire;
   response: QuestionnaireResponse | undefined;
-  nodes: Array<ICoreNode>;
+  nodes: Array<IPresentableNode>;
   readonly expressionResponse: QuestionnaireResponse;
   readonly coordinator: EvaluationCoordinator;
   readonly expressionRegistry: ExpressionRegistry;
@@ -204,7 +204,7 @@ export interface IForm {
     parentScope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
-  ): ICoreNode;
+  ): IPresentableNode;
   reset(): void;
   dispose(): void;
 }

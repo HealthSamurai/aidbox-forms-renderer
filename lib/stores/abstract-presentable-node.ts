@@ -1,5 +1,5 @@
 import { computed, makeObservable } from "mobx";
-import { ICoreNode, IForm, INode, IScope } from "./types.ts";
+import { IPresentableNode, IForm, INode, IScope } from "./types.ts";
 import type {
   Coding,
   OperationOutcomeIssue,
@@ -8,7 +8,7 @@ import type {
 } from "fhir/r5";
 import { EXT, findExtension, getItemControl } from "../utils.ts";
 
-export abstract class CoreAbstractNode implements ICoreNode {
+export abstract class AbstractPresentableNode implements IPresentableNode {
   readonly form: IForm;
   readonly template: QuestionnaireItem;
   readonly parentStore: INode | null;

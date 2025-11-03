@@ -4,7 +4,7 @@ import type {
   AnswerValueType,
   IAnswerInstance,
   IScope,
-  ICoreNode,
+  IPresentableNode,
   IQuestionNode,
   SnapshotKind,
 } from "./types.ts";
@@ -29,7 +29,7 @@ export class AnswerInstance<TType extends AnswerType>
   value: AnswerValueType<TType> | null = null;
 
   @observable.shallow
-  readonly nodes = observable.array<ICoreNode>([], {
+  readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "AnswerInstance.nodes",
   });

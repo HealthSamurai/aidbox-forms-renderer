@@ -1,5 +1,5 @@
 import {
-  ICoreNode,
+  IPresentableNode,
   IDisplayNode,
   IForm,
   INode,
@@ -7,10 +7,13 @@ import {
   SnapshotKind,
 } from "./types.ts";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
-import { AbstractNodeStore } from "./abstract-node-store.ts";
+import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { computed } from "mobx";
 
-export class DisplayStore extends AbstractNodeStore implements IDisplayNode {
+export class DisplayStore
+  extends AbstractActualNodeStore
+  implements IDisplayNode
+{
   constructor(
     form: IForm,
     template: QuestionnaireItem,
@@ -47,6 +50,8 @@ export class DisplayStore extends AbstractNodeStore implements IDisplayNode {
   dispose(): void {}
 }
 
-export function isDisplayNode(it: ICoreNode | undefined): it is IDisplayNode {
+export function isDisplayNode(
+  it: IPresentableNode | undefined,
+): it is IDisplayNode {
   return it instanceof DisplayStore;
 }

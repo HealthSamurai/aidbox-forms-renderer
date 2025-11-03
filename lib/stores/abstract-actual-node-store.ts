@@ -2,7 +2,7 @@ import { computed, makeObservable, observable, runInAction } from "mobx";
 import {
   AnswerType,
   ExpressionEnvironment,
-  IBaseNode,
+  IActualNode,
   IExpressionEnvironmentProvider,
   IForm,
   INode,
@@ -23,11 +23,11 @@ import {
   findExtension,
 } from "../utils.ts";
 import { isQuestionNode } from "./question-store.ts";
-import { CoreAbstractNode } from "./core-abstract-node.ts";
+import { AbstractPresentableNode } from "./abstract-presentable-node.ts";
 
-export abstract class AbstractNodeStore
-  extends CoreAbstractNode
-  implements IBaseNode, IExpressionEnvironmentProvider
+export abstract class AbstractActualNodeStore
+  extends AbstractPresentableNode
+  implements IActualNode, IExpressionEnvironmentProvider
 {
   protected _scope: IScope;
   protected _key: string;

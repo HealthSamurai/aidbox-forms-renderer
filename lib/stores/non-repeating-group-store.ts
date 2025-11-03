@@ -1,5 +1,5 @@
 import {
-  ICoreNode,
+  IPresentableNode,
   IForm,
   INode,
   INonRepeatingGroupNode,
@@ -9,16 +9,16 @@ import {
 import { computed, observable } from "mobx";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
-import { AbstractNodeStore } from "./abstract-node-store.ts";
+import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { shouldCreateStore } from "../utils.ts";
 import { NonRepeatingGroupValidator } from "./non-repeating-group-validator.ts";
 
 export class NonRepeatingGroupStore
-  extends AbstractNodeStore
+  extends AbstractActualNodeStore
   implements INonRepeatingGroupNode
 {
   @observable.shallow
-  nodes = observable.array<ICoreNode>([], {
+  nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "NonRepeatingGroupStore.children",
   });
@@ -95,7 +95,7 @@ export class NonRepeatingGroupStore
 }
 
 export function isNonRepeatingGroupNode(
-  it: ICoreNode | undefined,
+  it: IPresentableNode | undefined,
 ): it is INonRepeatingGroupNode {
   return it instanceof NonRepeatingGroupStore;
 }

@@ -2,7 +2,7 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  ICoreNode,
+  IPresentableNode,
   IQuestionNode,
   IRepeatingGroupNode,
   OperationOutcomeIssueCode,
@@ -24,15 +24,15 @@ export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export function getItemLabelId(item: ICoreNode): string {
+export function getItemLabelId(item: IPresentableNode): string {
   return sanitizeForId(`af-${item.key}-label`);
 }
 
-export function getItemHelpId(item: ICoreNode): string {
+export function getItemHelpId(item: IPresentableNode): string {
   return sanitizeForId(`af-${item.key}-help`);
 }
 
-export function getItemErrorId(item: ICoreNode): string {
+export function getItemErrorId(item: IPresentableNode): string {
   return sanitizeForId(`af-${item.key}-errors`);
 }
 
@@ -987,8 +987,8 @@ export function compareNumbers(
 }
 
 export function isAncestorOf(
-  ancestor: ICoreNode,
-  candidate: ICoreNode,
+  ancestor: IPresentableNode,
+  candidate: IPresentableNode,
 ): boolean {
   let parent = candidate.parentStore;
   while (parent) {
@@ -999,7 +999,7 @@ export function isAncestorOf(
 }
 
 export function evaluateEnableWhenCondition(
-  self: ICoreNode,
+  self: IPresentableNode,
   condition: QuestionnaireItemEnableWhen,
   question: IQuestionNode,
 ): boolean {

@@ -1,6 +1,6 @@
 import {
   ExpressionEnvironment,
-  ICoreNode,
+  IPresentableNode,
   IExpressionEnvironmentProvider,
   IForm,
   INode,
@@ -41,7 +41,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private readonly initialResponse: QuestionnaireResponse | undefined;
 
   @observable.shallow
-  readonly nodes = observable.array<ICoreNode>([], {
+  readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "FormStore.children",
   });
@@ -99,7 +99,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     scope: IScope,
     parentKey: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
-  ): ICoreNode {
+  ): IPresentableNode {
     switch (item.type) {
       case "display": {
         const store = new DisplayStore(
@@ -212,7 +212,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     nodes.forEach((node) => node.dispose());
   }
 
-  private nodeHasErrors(node: ICoreNode): boolean {
+  private nodeHasErrors(node: IPresentableNode): boolean {
     if (node.hasErrors) {
       return true;
     }
@@ -220,7 +220,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     return this.getChildNodes(node).some((child) => this.nodeHasErrors(child));
   }
 
-  private getChildNodes(node: ICoreNode): ICoreNode[] {
+  private getChildNodes(node: IPresentableNode): IPresentableNode[] {
     if (isRepeatingGroupWrapper(node)) {
       return node.nodes.flatMap((instance) => instance.nodes);
     }
@@ -233,7 +233,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     return [];
   }
 
-  private clearNodeDirty(node: ICoreNode) {
+  private clearNodeDirty(node: IPresentableNode) {
     node.clearDirty();
     this.getChildNodes(node).forEach((child) => this.clearNodeDirty(child));
   }

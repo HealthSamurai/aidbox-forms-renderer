@@ -12,7 +12,7 @@ import {
   AnswerType,
   AnswerValueType,
   IAnswerInstance,
-  ICoreNode,
+  IPresentableNode,
   IForm,
   INode,
   IQuestionNode,
@@ -25,7 +25,7 @@ import {
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 
-import { AbstractNodeStore } from "./abstract-node-store.ts";
+import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 import { QuestionValidator } from "./question-validator.ts";
 
@@ -39,7 +39,7 @@ type AnswerLifecycle =
   | "manual";
 
 export class QuestionStore<T extends AnswerType = AnswerType>
-  extends AbstractNodeStore
+  extends AbstractActualNodeStore
   implements IQuestionNode<T>
 {
   @observable.shallow
@@ -528,7 +528,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
 // todo: consider TType in runtime
 export function isQuestionNode<TType extends AnswerType = AnswerType>(
-  it: ICoreNode | undefined,
+  it: IPresentableNode | undefined,
 ): it is IQuestionNode<TType> {
   return it instanceof QuestionStore;
 }

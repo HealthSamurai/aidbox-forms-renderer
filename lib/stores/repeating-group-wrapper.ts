@@ -1,6 +1,6 @@
 import { action, computed, observable, override } from "mobx";
 import {
-  ICoreNode,
+  IPresentableNode,
   IForm,
   INode,
   IRepeatingGroupNode,
@@ -13,13 +13,13 @@ import {
   QuestionnaireItem,
   QuestionnaireResponseItem,
 } from "fhir/r5";
-import { CoreAbstractNode } from "./core-abstract-node.ts";
+import { AbstractPresentableNode } from "./abstract-presentable-node.ts";
 import { RepeatingGroupStore } from "./repeating-group-store.ts";
 import { RepeatingGroupWrapperValidator } from "./repeating-group-wrapper-validator.ts";
 import { EXT, findExtension } from "../utils.ts";
 
 export class RepeatingGroupWrapper
-  extends CoreAbstractNode
+  extends AbstractPresentableNode
   implements IRepeatingGroupWrapper
 {
   readonly scope: IScope;
@@ -169,7 +169,7 @@ export class RepeatingGroupWrapper
 }
 
 export function isRepeatingGroupWrapper(
-  it: ICoreNode | undefined,
+  it: IPresentableNode | undefined,
 ): it is IRepeatingGroupWrapper {
   return it instanceof RepeatingGroupWrapper;
 }

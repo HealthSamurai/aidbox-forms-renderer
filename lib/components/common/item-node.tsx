@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { DisplayNode } from "../nodes/display-node.tsx";
-import { ICoreNode } from "../../stores/types.ts";
+import { IPresentableNode } from "../../stores/types.ts";
 import { NonRepeatingGroupNode } from "../nodes/non-repeating-group-node.tsx";
 import { RepeatingGroupWrapper } from "../nodes/repeating-group-wrapper.tsx";
 import { QuestionNode } from "../nodes/question-node.tsx";
@@ -12,7 +12,7 @@ import { isQuestionNode } from "../../stores/question-store.ts";
 export const ItemNode = observer(function ItemNode({
   item,
 }: {
-  item: ICoreNode;
+  item: IPresentableNode;
 }) {
   if (isQuestionNode(item)) return <QuestionNode item={item} />;
   if (isNonRepeatingGroupNode(item))

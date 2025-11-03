@@ -1,23 +1,23 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import {
-  ICoreNode,
+  IPresentableNode,
   IRepeatingGroupNode,
   IRepeatingGroupWrapper,
   SnapshotKind,
 } from "./types.ts";
 import type { QuestionnaireResponseItem } from "fhir/r5";
-import { AbstractNodeStore } from "./abstract-node-store.ts";
+import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { shouldCreateStore } from "../utils.ts";
 
 export class RepeatingGroupStore
-  extends AbstractNodeStore
+  extends AbstractActualNodeStore
   implements IRepeatingGroupNode
 {
   readonly index: number;
 
   readonly group: IRepeatingGroupWrapper;
   @observable.shallow
-  readonly nodes = observable.array<ICoreNode>([], {
+  readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "RepeatingGroupStore.nodes",
   });
@@ -108,7 +108,7 @@ export class RepeatingGroupStore
 }
 
 export function isRepeatingGroupNode(
-  it: ICoreNode | undefined,
+  it: IPresentableNode | undefined,
 ): it is IRepeatingGroupNode {
   return it instanceof RepeatingGroupStore;
 }

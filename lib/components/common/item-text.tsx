@@ -1,11 +1,11 @@
 import { createElement } from "react";
-import type { ICoreNode, IQuestionNode } from "../../stores/types.ts";
+import type { IPresentableNode, IQuestionNode } from "../../stores/types.ts";
 import { observer } from "mobx-react-lite";
 import { getItemLabelId, sanitizeForId } from "../../utils.ts";
 import { isQuestionNode } from "../../stores/question-store.ts";
 
 interface ItemTextProps {
-  item: ICoreNode;
+  item: IPresentableNode;
   as?: "label" | "span" | "legend";
   id?: string;
   className?: string;
@@ -18,8 +18,7 @@ export const ItemText = observer(function ItemText({
   className,
 }: ItemTextProps) {
   const labelId = id ?? getItemLabelId(item);
-  const htmlFor =
-    as === "label" ? getPrimaryControlId(item) : undefined;
+  const htmlFor = as === "label" ? getPrimaryControlId(item) : undefined;
 
   return createElement(
     as,
@@ -33,7 +32,7 @@ export const ItemText = observer(function ItemText({
   );
 });
 
-function getPrimaryControlId(item: ICoreNode): string | undefined {
+function getPrimaryControlId(item: IPresentableNode): string | undefined {
   if (!isQuestionNode(item)) {
     return undefined;
   }

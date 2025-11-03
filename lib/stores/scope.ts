@@ -2,7 +2,7 @@ import {
   IExpressionSlot,
   IScope,
   ExpressionEnvironment,
-  ICoreNode,
+  IPresentableNode,
 } from "./types.ts";
 import { makeObservable, observable, ObservableMap } from "mobx";
 
@@ -16,7 +16,9 @@ export class Scope implements IScope {
   private parent: IScope | undefined;
 
   @observable.shallow
-  private readonly nodeRegistry: ObservableMap<string, ICoreNode> | undefined;
+  private readonly nodeRegistry:
+    | ObservableMap<string, IPresentableNode>
+    | undefined;
 
   @observable.shallow
   private readonly expressionRegistry = observable.map<string, IExpressionSlot>(
@@ -28,7 +30,7 @@ export class Scope implements IScope {
     makeObservable(this);
 
     this.nodeRegistry = ownsNodes
-      ? observable.map<string, ICoreNode>(
+      ? observable.map<string, IPresentableNode>(
           {},
           { deep: false, name: "NodeScope.storeRegistry" },
         )
@@ -58,7 +60,7 @@ export class Scope implements IScope {
     return extended;
   }
 
-  registerNode(node: ICoreNode): void {
+  registerNode(node: IPresentableNode): void {
     if (this.nodeRegistry) {
       this.nodeRegistry.set(node.linkId, node);
       return;
@@ -66,7 +68,7 @@ export class Scope implements IScope {
     this.parent?.registerNode(node);
   }
 
-  lookupNode(linkId: string): ICoreNode | undefined {
+  lookupNode(linkId: string): IPresentableNode | undefined {
     if (this.nodeRegistry) {
       const node = this.nodeRegistry.get(linkId);
       if (node) {
