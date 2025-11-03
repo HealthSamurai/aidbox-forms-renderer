@@ -2,7 +2,7 @@ import { JSX } from 'react/jsx-runtime';
 import { Questionnaire } from 'fhir/r5';
 import { QuestionnaireResponse } from 'fhir/r5';
 
-declare function Renderer({ questionnaire, initialResponse, onSubmit, onChange, }: RendererProps): JSX.Element;
+declare function Renderer({ questionnaire, initialResponse, onSubmit, onChange, }: RendererProps): JSX.Element | null;
 export default Renderer;
 
 declare type RendererProps = {
