@@ -1,6 +1,9 @@
 import {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataType,
+  DataTypeToSuffix,
+  DataTypeToType,
   IAnswerInstance,
   IPresentableNode,
   IQuestionNode,
@@ -11,7 +14,6 @@ import {
   Attachment,
   Coding,
   Element,
-  Expression,
   Extension,
   OperationOutcomeIssue,
   Quantity,
@@ -62,6 +64,7 @@ export const EXT = {
   SDC_VARIABLE:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
   CQF_EXPRESSION:            "http://hl7.org/fhir/StructureDefinition/cqf-expression",
   CQF_CALCULATED_VALUE:      "http://hl7.org/fhir/uv/cql/StructureDefinition/cqf-calculatedValue",
+  TARGET_CONSTRAINT:         "http://hl7.org/fhir/StructureDefinition/targetConstraint",
 } as const;
 
 export function findExtension(
@@ -328,7 +331,7 @@ export function answerHasOwnValue(answer: IAnswerInstance<unknown>): boolean {
 }
 
 export function answerHasContent<T extends AnswerType>(
-  answer: IAnswerInstance<AnswerValueType<T>>,
+  answer: IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>,
 ): boolean {
   if (answer.nodes.some((child) => child.responseItems.length > 0)) {
     return true;
@@ -347,103 +350,151 @@ export function getItemDescribedBy<T extends AnswerType>(
   return describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 }
 
-// prettier-ignore
-type KeySuffixFor<T extends AnswerType> =
-  T extends "boolean"    ? "Boolean"   :
-  T extends "decimal"    ? "Decimal"   :
-  T extends "integer"    ? "Integer"   :
-  T extends "date"       ? "Date"      :
-  T extends "dateTime"   ? "DateTime"  :
-  T extends "time"       ? "Time"      :
-  T extends "string"     ? "String"    :
-  T extends "text"       ? "String"    : // text -> String
-  T extends "url"        ? "Uri"       : // url  -> Uri
-  T extends "coding"     ? "Coding"    :
-  T extends "attachment" ? "Attachment":
-  T extends "reference"  ? "Reference" :
-  T extends "quantity"   ? "Quantity"  :
-                           never;
-
 export type PolyKeyFor<
   Base extends string,
-  T extends AnswerType,
-> = `${Base}${KeySuffixFor<T>}`;
+  T extends DataType,
+> = `${Base}${DataTypeToSuffix<T>}`;
 
-export type PolyCarrierFor<Base extends string, T extends AnswerType> = {
+export type PolyCarrierFor<Base extends string, T extends DataType> = {
   [K in PolyKeyFor<Base, T>]?: unknown;
 };
 
-// prettier-ignore
-export const SUFFIX_BY_TYPE: { [K in AnswerType]: KeySuffixFor<K> } = {
-  boolean:    "Boolean",
-  decimal:    "Decimal",
-  integer:    "Integer",
-  date:       "Date",
-  dateTime:   "DateTime",
-  time:       "Time",
-  string:     "String",
-  text:       "String",
-  url:        "Uri",
-  coding:     "Coding",
+export const ANSWER_TYPE_TO_DATA_TYPE: Record<AnswerType, DataType> = {
+  boolean: "boolean",
+  decimal: "decimal",
+  integer: "integer",
+  date: "date",
+  dateTime: "dateTime",
+  time: "time",
+  string: "string",
+  text: "string",
+  url: "uri",
+  coding: "Coding",
   attachment: "Attachment",
-  reference:  "Reference",
-  quantity:   "Quantity",
+  reference: "Reference",
+  quantity: "Quantity",
+};
+
+// prettier-ignore
+export const DATA_TYPE_TO_SUFFIX: { [K in DataType]: DataTypeToSuffix<K> } = {
+  "base64Binary": "Base64Binary",
+  "boolean": "Boolean",
+  "canonical": "Canonical",
+  "code": "Code",
+  "date": "Date",
+  "dateTime": "DateTime",
+  "decimal": "Decimal",
+  "id": "Id",
+  "instant": "Instant",
+  "integer": "Integer",
+  "integer64": "Integer64",
+  "markdown": "Markdown",
+  "oid": "Oid",
+  "positiveInt": "PositiveInt",
+  "string": "String",
+  "time": "Time",
+  "unsignedInt": "UnsignedInt",
+  "uri": "Uri",
+  "url": "Url",
+  "uuid": "Uuid",
+  "Address": "Address",
+  "Age": "Age",
+  "Annotation": "Annotation",
+  "Attachment": "Attachment",
+  "CodeableConcept": "CodeableConcept",
+  "CodeableReference": "CodeableReference",
+  "Coding": "Coding",
+  "ContactPoint": "ContactPoint",
+  "Count": "Count",
+  "Distance": "Distance",
+  "Duration": "Duration",
+  "HumanName": "HumanName",
+  "Identifier": "Identifier",
+  "Money": "Money",
+  "Period": "Period",
+  "Quantity": "Quantity",
+  "Range": "Range",
+  "Ratio": "Ratio",
+  "RatioRange": "RatioRange",
+  "Reference": "Reference",
+  "SampledData": "SampledData",
+  "Signature": "Signature",
+  "Timing": "Timing",
+  "ContactDetail": "ContactDetail",
+  "DataRequirement": "DataRequirement",
+  "Expression": "Expression",
+  "ParameterDefinition": "ParameterDefinition",
+  "RelatedArtifact": "RelatedArtifact",
+  "TriggerDefinition": "TriggerDefinition",
+  "UsageContext": "UsageContext",
+  "Availability": "Availability",
+  "ExtendedContactDetail": "ExtendedContactDetail",
+  "Dosage": "Dosage",
+  "Meta": "Meta",
 } as const;
 
-export function getPolymorphic<Base extends string, T extends AnswerType>(
+export function getPolymorphic<Base extends string, T extends DataType>(
   obj: PolyCarrierFor<Base, T> | null | undefined,
   base: Base,
   type: T,
-): AnswerValueType<T> | undefined {
+): DataTypeToType<T> | undefined {
   if (!obj) return undefined;
 
   // Build the key at runtime, e.g., "valueString" | "answerUri" | "fooQuantity"
-  const suffix = SUFFIX_BY_TYPE[type];
+  const suffix = DATA_TYPE_TO_SUFFIX[type];
   const key = `${base}${suffix}` satisfies PolyKeyFor<Base, T>;
 
-  return (obj as Record<string, unknown>)[key] as
-    | AnswerValueType<T>
-    | undefined;
+  return (obj as Record<string, unknown>)[key] as DataTypeToType<T> | undefined;
 }
 
-export const getValue = <T extends AnswerType>(
+export const getValue = <T extends DataType>(
   obj: PolyCarrierFor<"value", T> | null | undefined,
   type: T,
-): AnswerValueType<T> | undefined => getPolymorphic(obj, "value", type);
+): DataTypeToType<T> | undefined => getPolymorphic(obj, "value", type);
 
-export const getAnswer = <T extends AnswerType>(
+export const getAnswer = <T extends DataType>(
   obj: PolyCarrierFor<"answer", T> | null | undefined,
   type: T,
-): AnswerValueType<T> | undefined => getPolymorphic(obj, "answer", type);
+): DataTypeToType<T> | undefined => getPolymorphic(obj, "answer", type);
 
-export function extractExtensionValue<T extends AnswerType>(
-  element: Element,
+export function extractExtensionValue<T extends DataType>(
+  element: Pick<Element, "extension"> | undefined,
   url: string,
   type: T,
-): AnswerValueType<T> | undefined {
-  const extension = findExtension(element, url);
+): DataTypeToType<T> | undefined {
+  const extension = element && findExtension(element, url);
   return extension ? getValue(extension, type) : undefined;
 }
 
-export function extractExtensionsValues<T extends AnswerType>(
-  element: Element,
+export function extractExtensionValueElement<T extends DataType>(
+  element: Pick<Element, "extension">,
   url: string,
   type: T,
-): AnswerValueType<T>[] {
+): Element | undefined {
+  const extension = findExtension(element, url);
+  const key = `_value${DATA_TYPE_TO_SUFFIX[type]}` as keyof Extension;
+  return extension?.[key] as Element;
+}
+
+export function extractExtensionsValues<T extends DataType>(
+  element: Pick<Element, "extension">,
+  url: string,
+  type: T,
+): DataTypeToType<T>[] {
   const extensions = findExtensions(element, url);
   return extensions
     .map((extension) => getValue(extension, type))
-    .filter((value): value is AnswerValueType<T> => value != null);
+    .filter((value): value is DataTypeToType<T> => value != null);
 }
 
-type ValueKeyFor<T extends AnswerType> = PolyKeyFor<"value", T>;
-type ValueCarrierFor<T extends AnswerType> = PolyCarrierFor<"value", T>;
+type ValueKeyFor<T extends DataType> = PolyKeyFor<"value", T>;
+type ValueCarrierFor<T extends DataType> = PolyCarrierFor<"value", T>;
 
-export function asAnswerFragment<T extends AnswerType>(
+export function asAnswerFragment<T extends DataType>(
   type: T,
-  value: AnswerValueType<T>,
+  value: DataTypeToType<T>,
 ): ValueCarrierFor<T> {
-  const key = `value${SUFFIX_BY_TYPE[type]}` as ValueKeyFor<T>;
+  const key = `value${DATA_TYPE_TO_SUFFIX[type]}` as ValueKeyFor<T>;
   return {
     [key]: value,
   } as ValueCarrierFor<T>;
@@ -575,14 +626,14 @@ const TIME_SHORT_FORMATTERS: Record<TimePrecision, Intl.DateTimeFormat> = {
 
 type DatePrecision = "year" | "month" | "day";
 
-function getDatePrecision(value: string): DatePrecision | null {
+export function getDatePrecision(value: string): DatePrecision | null {
   if (/^\d{4}$/.test(value)) return "year";
   if (/^\d{4}-\d{2}$/.test(value)) return "month";
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return "day";
   return null;
 }
 
-function areFhirDatesEqual(a: string, b: string): boolean {
+export function areFhirDatesEqual(a: string, b: string): boolean {
   const precisionA = getDatePrecision(a);
   const precisionB = getDatePrecision(b);
   if (!precisionA || !precisionB || precisionA !== precisionB) {
@@ -591,13 +642,13 @@ function areFhirDatesEqual(a: string, b: string): boolean {
   return a === b;
 }
 
-function areDateValuesEqual(a: unknown, b: unknown): boolean {
+export function areDateValuesEqual(a: unknown, b: unknown): boolean {
   return (
     typeof a === "string" && typeof b === "string" && areFhirDatesEqual(a, b)
   );
 }
 
-function formatDateForDisplay(value: unknown): string | null {
+export function formatDateForDisplay(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
@@ -642,7 +693,7 @@ type ParsedFhirDateTime = {
   epochMillis?: number;
 };
 
-function parseFhirDateTime(value: string): ParsedFhirDateTime | null {
+export function parseFhirDateTime(value: string): ParsedFhirDateTime | null {
   const [datePart, timeAndZone] = value.split("T");
   if (!datePart) {
     return null;
@@ -707,7 +758,7 @@ function parseFhirDateTime(value: string): ParsedFhirDateTime | null {
   return result;
 }
 
-function areFhirDateTimesEqual(a: string, b: string): boolean {
+export function areFhirDateTimesEqual(a: string, b: string): boolean {
   const parsedA = parseFhirDateTime(a);
   const parsedB = parseFhirDateTime(b);
   if (!parsedA || !parsedB) {
@@ -739,7 +790,7 @@ function areFhirDateTimesEqual(a: string, b: string): boolean {
   return a === b;
 }
 
-function formatDateTimeForDisplay(value: unknown): string | null {
+export function formatDateTimeForDisplay(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
@@ -761,7 +812,7 @@ function formatDateTimeForDisplay(value: unknown): string | null {
   return DATE_TIME_FORMATTER.format(date);
 }
 
-function areDateTimeValuesEqual(a: unknown, b: unknown): boolean {
+export function areDateTimeValuesEqual(a: unknown, b: unknown): boolean {
   return (
     typeof a === "string" &&
     typeof b === "string" &&
@@ -771,7 +822,7 @@ function areDateTimeValuesEqual(a: unknown, b: unknown): boolean {
 
 type TimePrecision = "hour" | "minute" | "second" | "millisecond";
 
-function parseFhirTime(value: string): {
+export function parseFhirTime(value: string): {
   precision: TimePrecision;
   millis: number;
 } | null {
@@ -798,7 +849,7 @@ function parseFhirTime(value: string): {
   return { precision, millis };
 }
 
-function areFhirTimesEqual(a: string, b: string): boolean {
+export function areFhirTimesEqual(a: string, b: string): boolean {
   const parsedA = parseFhirTime(a);
   const parsedB = parseFhirTime(b);
   if (!parsedA || !parsedB) {
@@ -812,13 +863,13 @@ function areFhirTimesEqual(a: string, b: string): boolean {
   return parsedA.millis === parsedB.millis;
 }
 
-function areTimeValuesEqual(a: unknown, b: unknown): boolean {
+export function areTimeValuesEqual(a: unknown, b: unknown): boolean {
   return (
     typeof a === "string" && typeof b === "string" && areFhirTimesEqual(a, b)
   );
 }
 
-function formatTimeValue(value: unknown): string | null {
+export function formatTimeValue(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
@@ -914,7 +965,7 @@ export function compareTimeValues(
   return timeA.millis - timeB.millis;
 }
 
-function compareStringValues(
+export function compareStringValues(
   actual: unknown,
   expected: unknown,
 ): number | undefined {
@@ -1025,7 +1076,10 @@ export function evaluateEnableWhenCondition(
     }
 
     case "=": {
-      const expected = getAnswer(condition, question.type);
+      const expected = getAnswer(
+        condition,
+        ANSWER_TYPE_TO_DATA_TYPE[question.type],
+      );
       if (expected === undefined) {
         return false;
       }
@@ -1033,7 +1087,9 @@ export function evaluateEnableWhenCondition(
       for (const answer of answers) {
         const actual = answer.value;
         if (actual == null) continue;
-        if (valuesEqual(actual, expected, question.type)) {
+        if (
+          valuesEqual(actual, expected, ANSWER_TYPE_TO_DATA_TYPE[question.type])
+        ) {
           return true;
         }
       }
@@ -1041,7 +1097,10 @@ export function evaluateEnableWhenCondition(
     }
 
     case "!=": {
-      const expected = getAnswer(condition, question.type);
+      const expected = getAnswer(
+        condition,
+        ANSWER_TYPE_TO_DATA_TYPE[question.type],
+      );
       if (expected === undefined) {
         return false;
       }
@@ -1051,7 +1110,9 @@ export function evaluateEnableWhenCondition(
         const actual = answer.value;
         if (actual == null) continue;
         comparable = true;
-        if (valuesEqual(actual, expected, question.type)) {
+        if (
+          valuesEqual(actual, expected, ANSWER_TYPE_TO_DATA_TYPE[question.type])
+        ) {
           return false;
         }
       }
@@ -1062,7 +1123,10 @@ export function evaluateEnableWhenCondition(
     case ">=":
     case "<":
     case "<=": {
-      const expected = getAnswer(condition, question.type);
+      const expected = getAnswer(
+        condition,
+        ANSWER_TYPE_TO_DATA_TYPE[question.type],
+      );
       if (expected === undefined) return false;
 
       switch (question.type) {
@@ -1078,7 +1142,11 @@ export function evaluateEnableWhenCondition(
           for (const answer of answers) {
             const actual = answer.value;
             if (actual == null) continue;
-            const diff = compareValues(actual, expected, question.type);
+            const diff = compareValues(
+              actual,
+              expected,
+              ANSWER_TYPE_TO_DATA_TYPE[question.type],
+            );
             if (diff === undefined) continue;
             if (
               (operator === ">" && diff > 0) ||
@@ -1105,12 +1173,15 @@ export function evaluateEnableWhenCondition(
   }
 }
 
-function valuesEqual(actual: unknown, expected: unknown, type: AnswerType) {
+export function valuesEqual(
+  actual: unknown,
+  expected: unknown,
+  type: DataType,
+) {
   switch (type) {
     case "decimal":
     case "integer":
     case "string":
-    case "text":
     case "url":
     case "boolean":
       return actual === expected;
@@ -1120,23 +1191,67 @@ function valuesEqual(actual: unknown, expected: unknown, type: AnswerType) {
       return areDateTimeValuesEqual(actual, expected);
     case "time":
       return areTimeValuesEqual(actual, expected);
-    case "coding":
+    case "Coding":
       return areCodingsEqual(actual, expected);
-    case "quantity":
+    case "Quantity":
       return areQuantitiesEqual(actual, expected);
-    case "reference":
+    case "Reference":
       return areReferencesEqual(actual, expected);
-    case "attachment":
+    case "Attachment":
       return areAttachmentsEqual(actual, expected);
+    case "base64Binary":
+    case "canonical":
+    case "code":
+    case "id":
+    case "instant":
+    case "integer64":
+    case "markdown":
+    case "oid":
+    case "positiveInt":
+    case "unsignedInt":
+    case "uri":
+    case "uuid":
+    case "Address":
+    case "Age":
+    case "Annotation":
+    case "CodeableConcept":
+    case "CodeableReference":
+    case "ContactPoint":
+    case "Count":
+    case "Distance":
+    case "Duration":
+    case "HumanName":
+    case "Identifier":
+    case "Money":
+    case "Period":
+    case "Range":
+    case "Ratio":
+    case "RatioRange":
+    case "SampledData":
+    case "Signature":
+    case "Timing":
+    case "ContactDetail":
+    case "DataRequirement":
+    case "Expression":
+    case "ParameterDefinition":
+    case "RelatedArtifact":
+    case "TriggerDefinition":
+    case "UsageContext":
+    case "Availability":
+    case "ExtendedContactDetail":
+    case "Dosage":
+    case "Meta": {
+      throw new Error('Not implemented yet: "Meta" case');
+    }
     default:
       return actual === expected;
   }
 }
 
-function compareValues(
+export function compareValues(
   actual: unknown,
   expected: unknown,
-  type: AnswerType,
+  type: DataType,
 ): number | undefined {
   switch (type) {
     case "decimal":
@@ -1149,17 +1264,58 @@ function compareValues(
     case "time":
       return compareTimeValues(actual, expected);
     case "string":
-    case "text":
     case "url":
       return compareStringValues(actual, expected);
-    case "quantity":
+    case "Quantity":
       return compareQuantities(actual, expected);
-    case "coding":
-    case "reference":
-    case "attachment":
     case "boolean":
-    default:
-      return undefined;
+    case "base64Binary":
+    case "canonical":
+    case "code":
+    case "id":
+    case "instant":
+    case "integer64":
+    case "markdown":
+    case "oid":
+    case "positiveInt":
+    case "unsignedInt":
+    case "uri":
+    case "uuid":
+    case "Address":
+    case "Age":
+    case "Annotation":
+    case "Attachment":
+    case "CodeableConcept":
+    case "CodeableReference":
+    case "Coding":
+    case "ContactPoint":
+    case "Count":
+    case "Distance":
+    case "Duration":
+    case "HumanName":
+    case "Identifier":
+    case "Money":
+    case "Period":
+    case "Range":
+    case "Ratio":
+    case "RatioRange":
+    case "Reference":
+    case "SampledData":
+    case "Signature":
+    case "Timing":
+    case "ContactDetail":
+    case "DataRequirement":
+    case "Expression":
+    case "ParameterDefinition":
+    case "RelatedArtifact":
+    case "TriggerDefinition":
+    case "UsageContext":
+    case "Availability":
+    case "ExtendedContactDetail":
+    case "Dosage":
+    case "Meta": {
+      throw new Error('Not implemented yet: "Meta" case');
+    }
   }
 }
 
@@ -1193,9 +1349,9 @@ export function cloneValue<T>(value: T): T {
   return value;
 }
 
-export function stringifyValue<T extends AnswerType>(
+export function stringifyValue<T extends DataType>(
   type: T,
-  value: AnswerValueType<T>,
+  value: DataTypeToType<T>,
   fallback: string = "",
 ): string {
   if (value == null) {
@@ -1226,11 +1382,11 @@ export function stringifyValue<T extends AnswerType>(
     return value ? "Yes" : "No";
   }
 
-  if (type === "coding" && isCoding(value)) {
+  if (type === "Coding" && isCoding(value)) {
     return value.display ?? value.code ?? fallback;
   }
 
-  if (type === "quantity" && isQuantity(value)) {
+  if (type === "Quantity" && isQuantity(value)) {
     const quantity = value as Quantity;
     const pieces = [
       quantity.value != null ? String(quantity.value) : undefined,
@@ -1239,12 +1395,12 @@ export function stringifyValue<T extends AnswerType>(
     return pieces.join(" ") || fallback;
   }
 
-  if (type === "reference") {
+  if (type === "Reference") {
     const ref = value as Reference;
     return ref.display ?? ref.reference ?? fallback;
   }
 
-  if (type === "attachment") {
+  if (type === "Attachment") {
     const attachment = value as Attachment;
     return (
       attachment.title ??
@@ -1258,25 +1414,24 @@ export function stringifyValue<T extends AnswerType>(
   return fallback;
 }
 
-export function areValuesEqual<T extends AnswerType>(
+export function areValuesEqual<T extends DataType>(
   type: T,
-  a: AnswerValueType<T>,
-  b: AnswerValueType<T>,
+  a: DataTypeToType<T>,
+  b: DataTypeToType<T>,
 ): boolean {
   switch (type) {
-    case "coding":
+    case "Coding":
       return areCodingsEqual(a, b);
-    case "quantity":
+    case "Quantity":
       return areQuantitiesEqual(a, b);
-    case "reference":
+    case "Reference":
       return areReferencesEqual(a, b);
-    case "attachment":
+    case "Attachment":
       return areAttachmentsEqual(a, b);
     case "string":
     case "boolean":
     case "decimal":
     case "integer":
-    case "text":
     case "url":
       return a === b;
     case "date":
@@ -1285,65 +1440,49 @@ export function areValuesEqual<T extends AnswerType>(
       return areDateTimeValuesEqual(a, b);
     case "time":
       return areTimeValuesEqual(a, b);
+    case "base64Binary":
+    case "canonical":
+    case "code":
+    case "id":
+    case "instant":
+    case "integer64":
+    case "markdown":
+    case "oid":
+    case "positiveInt":
+    case "unsignedInt":
+    case "uri":
+    case "uuid":
+    case "Address":
+    case "Age":
+    case "Annotation":
+    case "CodeableConcept":
+    case "CodeableReference":
+    case "ContactPoint":
+    case "Count":
+    case "Distance":
+    case "Duration":
+    case "HumanName":
+    case "Identifier":
+    case "Money":
+    case "Period":
+    case "Range":
+    case "Ratio":
+    case "RatioRange":
+    case "SampledData":
+    case "Signature":
+    case "Timing":
+    case "ContactDetail":
+    case "DataRequirement":
+    case "Expression":
+    case "ParameterDefinition":
+    case "RelatedArtifact":
+    case "TriggerDefinition":
+    case "UsageContext":
+    case "Availability":
+    case "ExtendedContactDetail":
+    case "Dosage":
+    case "Meta": {
+      throw new Error('Not implemented yet: "Meta" case');
+    }
   }
-}
-
-export function extractVariableExpressions(
-  extensions: Extension[] | undefined,
-): Expression[] {
-  return (extensions || [])
-    .map(
-      (extension) =>
-        extension.url === EXT.SDC_VARIABLE && extension.valueExpression,
-    )
-    .filter(Boolean) as Expression[];
-}
-
-export function extractEnableWhenExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_ENABLE_WHEN_EXPR)
-    ?.valueExpression;
-}
-
-export function extractInitialExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_INITIAL_EXPR)
-    ?.valueExpression;
-}
-
-export function extractCalculatedExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_CALCULATED_EXPR)
-    ?.valueExpression;
-}
-
-export function extractMinValueExpression<T extends AnswerType>(
-  extensions: Extension[] | undefined,
-  type: T,
-): Expression | undefined {
-  const extension = extensions?.find(({ url }) => url === EXT.MIN_VALUE);
-  if (extension) {
-    const key = `_value${SUFFIX_BY_TYPE[type]}` as keyof Element;
-    return (extension[key] as Element | null)?.extension?.find(
-      ({ url }) => url === EXT.CQF_EXPRESSION,
-    )?.valueExpression;
-  }
-  return undefined;
-}
-
-export function extractMaxValueExpression<T extends AnswerType>(
-  extensions: Extension[] | undefined,
-  type: T,
-): Expression | undefined {
-  const extension = extensions?.find(({ url }) => url === EXT.MAX_VALUE);
-  if (extension) {
-    const key = `_value${SUFFIX_BY_TYPE[type]}` as keyof Element;
-    return (extension[key] as Element | null)?.extension?.find(
-      ({ url }) => url === EXT.CQF_EXPRESSION,
-    )?.valueExpression;
-  }
-  return undefined;
 }

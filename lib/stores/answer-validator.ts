@@ -2,6 +2,7 @@ import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue, Quantity } from "fhir/r5";
 
 import {
+  ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
   compareDateTimeValues,
   compareDateValues,
@@ -19,7 +20,8 @@ import {
 } from "../utils.ts";
 import type {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IAnswerInstance,
   INodeValidator,
   IQuestionNode,
@@ -28,11 +30,13 @@ import type {
 export class AnswerValidator<T extends AnswerType = AnswerType>
   implements INodeValidator
 {
-  private readonly answer: IAnswerInstance<AnswerValueType<T>>;
+  private readonly answer: IAnswerInstance<
+    DataTypeToType<AnswerTypeToDataType<T>>
+  >;
   private readonly question: IQuestionNode<T>;
 
   constructor(
-    answer: IAnswerInstance<AnswerValueType<T>>,
+    answer: IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>,
     question: IQuestionNode<T>,
   ) {
     this.answer = answer;
@@ -62,7 +66,9 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     }
 
     const type = this.question.type;
-    const value = this.answer.value as AnswerValueType<T> | null;
+    const value = this.answer.value as DataTypeToType<
+      AnswerTypeToDataType<T>
+    > | null;
 
     let issues: OperationOutcomeIssue[];
     switch (type) {
@@ -121,7 +127,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
             numberMax = undefined;
           }
           issues = this.validateNumericValue(
-            value as AnswerValueType<"integer"> | null,
+            value as DataTypeToType<"integer"> | null,
             numberMin,
             numberMax,
           );
@@ -140,7 +146,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
             maxDecimalPlaces = undefined;
           }
           issues = this.validateNumericValue(
-            value as AnswerValueType<"decimal"> | null,
+            value as DataTypeToType<"decimal"> | null,
             numberMin,
             numberMax,
             maxDecimalPlaces,
@@ -171,9 +177,9 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         }
         issues = this.validateTemporalValue(
           value as
-            | AnswerValueType<"date">
-            | AnswerValueType<"dateTime">
-            | AnswerValueType<"time">
+            | DataTypeToType<"date">
+            | DataTypeToType<"dateTime">
+            | DataTypeToType<"time">
             | null,
           {
             minLength,
@@ -203,7 +209,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
               quantityMax = undefined;
             }
           }
-          const quantityValue = value as AnswerValueType<"quantity"> | null;
+          const quantityValue = value as DataTypeToType<"Quantity"> | null;
           if (!quantityValue || typeof quantityValue.value !== "number") {
             issues = [];
             break;
@@ -214,10 +220,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
           if (quantityMin) {
             const diff = compareQuantities(quantityValue, quantityMin);
             if (diff !== undefined && diff < 0) {
-              const formattedMin = stringifyValue(
-                "quantity",
-                quantityMin as AnswerValueType<"quantity">,
-              );
+              const formattedMin = stringifyValue("Quantity", quantityMin);
               quantityIssues.push(
                 makeIssue(
                   "invalid",
@@ -230,10 +233,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
           if (quantityMax) {
             const diff = compareQuantities(quantityValue, quantityMax);
             if (diff !== undefined && diff > 0) {
-              const formattedMax = stringifyValue(
-                "quantity",
-                quantityMax as AnswerValueType<"quantity">,
-              );
+              const formattedMax = stringifyValue("Quantity", quantityMax);
               quantityIssues.push(
                 makeIssue(
                   "invalid",
@@ -248,7 +248,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         break;
       case "attachment":
         {
-          const attachment = value as AnswerValueType<"attachment"> | null;
+          const attachment = value as DataTypeToType<"Attachment"> | null;
           if (!attachment) {
             issues = [];
             break;
@@ -318,8 +318,8 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
 
     if (min != null && value < min) {
       const formattedMin = stringifyValue(
-        this.question.type,
-        min as AnswerValueType<T>,
+        ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
+        min as DataTypeToType<AnswerTypeToDataType<T>>,
       );
       issues.push(
         makeIssue(
@@ -331,8 +331,8 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
 
     if (max != null && value > max) {
       const formattedMax = stringifyValue(
-        this.question.type,
-        max as AnswerValueType<T>,
+        ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
+        max as DataTypeToType<AnswerTypeToDataType<T>>,
       );
       issues.push(
         makeIssue(
@@ -403,8 +403,8 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
       );
       if (comparison != null && comparison < 0) {
         const formattedMin = stringifyValue(
-          this.question.type,
-          constraints.comparableMin as AnswerValueType<T>,
+          ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
+          constraints.comparableMin as DataTypeToType<AnswerTypeToDataType<T>>,
         );
         issues.push(
           makeIssue(
@@ -423,8 +423,8 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
       );
       if (comparison != null && comparison > 0) {
         const formattedMax = stringifyValue(
-          this.question.type,
-          constraints.comparableMax as AnswerValueType<T>,
+          ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
+          constraints.comparableMax as DataTypeToType<AnswerTypeToDataType<T>>,
         );
         issues.push(
           makeIssue("invalid", `Value must not be later than ${formattedMax}.`),
@@ -555,12 +555,12 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
       extractExtensionValue(
         template,
         kind === "min" ? EXT.SDC_MIN_QUANTITY : EXT.SDC_MAX_QUANTITY,
-        "quantity",
+        "Quantity",
       ) ??
       extractExtensionValue(
         template,
         kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE,
-        "quantity",
+        "Quantity",
       )
     );
   }

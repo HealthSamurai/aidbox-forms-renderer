@@ -161,6 +161,7 @@ export class RepeatingGroupWrapper
 
   override clearDirty(): void {}
 
+  @action
   dispose(): void {
     const instances = this.nodes.slice();
     this.nodes.clear();

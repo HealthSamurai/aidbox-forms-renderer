@@ -10,7 +10,6 @@ import {
   IScope,
 } from "./types.ts";
 import {
-  Extension,
   OperationOutcomeIssue,
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
@@ -51,7 +50,7 @@ export abstract class AbstractActualNodeStore
     this._scope = this.createScope(parentScope);
     this._key = this.createKey(parentKey);
 
-    this.initializeExpressionRegistry(this, template.extension);
+    this.initializeExpressionRegistry(this, template);
   }
 
   protected createScope(baseScope: IScope): IScope {
@@ -136,8 +135,19 @@ export abstract class AbstractActualNodeStore
 
     const issues: OperationOutcomeIssue[] = [];
 
-    if (this.expressionRegistry?.issues) {
+    if (this.expressionRegistry) {
       issues.push(...this.expressionRegistry.issues);
+
+      const shouldApplyConstraints = this.shouldValidate && !this.readOnly;
+      if (shouldApplyConstraints) {
+        issues.push(
+          ...this.expressionRegistry.constraints
+            .map((constraint) => constraint.issue)
+            .filter(
+              (issue): issue is OperationOutcomeIssue => issue !== undefined,
+            ),
+        );
+      }
     }
 
     if (this.shouldValidate && this.validator) {
@@ -175,17 +185,15 @@ export abstract class AbstractActualNodeStore
 
   protected initializeExpressionRegistry(
     provider: IExpressionEnvironmentProvider,
-    extensions: Extension[] | undefined,
+    template: QuestionnaireItem,
   ) {
-    if (extensions?.length) {
-      this._expressionRegistry = new ExpressionRegistry(
-        this.form.coordinator,
-        this.scope,
-        provider,
-        extensions,
-        this.template.type as AnswerType,
-      );
-    }
+    this._expressionRegistry = new ExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      provider,
+      template,
+      this.template.type as AnswerType,
+    );
   }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {

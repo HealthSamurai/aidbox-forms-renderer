@@ -3,7 +3,8 @@ import { ReactElement, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import type {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IQuestionNode,
 } from "../../stores/types.ts";
 import { Button } from "../controls/button.tsx";
@@ -11,7 +12,9 @@ import { Answer, RowRenderProps } from "./answer.tsx";
 
 export type AnswerListProps<T extends AnswerType> = {
   item: IQuestionNode<T>;
-  renderRow: (p: RowRenderProps<AnswerValueType<T>>) => ReactElement;
+  renderRow: (
+    p: RowRenderProps<DataTypeToType<AnswerTypeToDataType<T>>>,
+  ) => ReactElement;
 };
 
 export const AnswerList = observer(function AnswerList<T extends AnswerType>({

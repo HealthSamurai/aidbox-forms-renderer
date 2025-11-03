@@ -6,7 +6,7 @@ import {
   IScope,
   SnapshotKind,
 } from "./types.ts";
-import { computed, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
@@ -87,6 +87,7 @@ export class NonRepeatingGroupStore
     );
   }
 
+  @action
   dispose(): void {
     const children = this.nodes.slice();
     this.nodes.clear();

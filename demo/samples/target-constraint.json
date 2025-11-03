@@ -1,0 +1,211 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "target-constraint",
+  "status": "active",
+  "title": "Target Constraint Extensions",
+  "description": "Demonstrates target-constraint expressions that enforce formatting and cross-item business rules beyond standard SDC flags.",
+  "item": [
+    {
+      "linkId": "identity",
+      "type": "group",
+      "text": "Identity for badge printing",
+      "item": [
+        {
+          "linkId": "given-name",
+          "type": "string",
+          "text": "Given name (printed on badge)",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+              "extension": [
+                {
+                  "url": "key",
+                  "valueId": "given-name-uppercase"
+                },
+                {
+                  "url": "severity",
+                  "valueCode": "error"
+                },
+                {
+                  "url": "human",
+                  "valueString": "Start the given name with a capital letter so the badge matches the facility format."
+                },
+                {
+                  "url": "expression",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "answer.valueString.all($this = '' or $this.substring(0, 1) = $this.substring(0, 1).upper())"
+                  }
+                }
+              ]
+            }
+          ],
+          "item": [
+            {
+              "linkId": "given-name-help",
+              "type": "display",
+              "text": "Example: \"Maria\" passes, \"maria\" fails until the first letter is capitalized.",
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                  "valueCodeableConcept": {
+                    "coding": [
+                      {
+                        "system": "http://hl7.org/fhir/questionnaire-item-control",
+                        "code": "help"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "contact-info",
+      "type": "group",
+      "text": "Work contact channel",
+      "item": [
+        {
+          "linkId": "work-email",
+          "type": "string",
+          "text": "Work email for study updates",
+          "extension": [        {
+            "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+            "extension": [
+              {
+                "url": "key",
+                "valueId": "email-domain-match"
+              },
+              {
+                "url": "severity",
+                "valueCode": "error"
+              },
+              {
+                "url": "human",
+                "valueString": "Use an email address that ends with the approved domain."
+              },
+              {
+                "url": "location",
+                "valueString": "QuestionnaireResponse.item.where(linkId='contact-info')"
+              },
+              {
+                "url": "expression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "iif(%workEmail.empty() or %collegeDomain.empty(), true, %workEmail.first().lower().endsWith('@' & %collegeDomain.first().lower()))"
+                }
+              }
+            ]
+          }]
+        },
+        {
+          "linkId": "organization-domain",
+          "type": "string",
+          "text": "Approved organization email domain",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+              "extension": [
+                {
+                  "url": "key",
+                  "valueId": "college-domain-warning"
+                },
+                {
+                  "url": "severity",
+                  "valueCode": "warning"
+                },
+                {
+                  "url": "human",
+                  "valueString": "Provide a subdomain of the college site (for example, research.college.edu)."
+                },
+                {
+                  "url": "expression",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "iif(%collegeDomain.empty(), true, %collegeDomain.first().endsWith('college.edu'))"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "workEmail",
+            "expression": "%context.item.where(linkId='work-email').answer.valueString"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "collegeDomain",
+            "expression": "%context.item.where(linkId='organization-domain').answer.valueString"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "updates-consent",
+      "type": "boolean",
+      "text": "May we email you study updates at this address?"
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+      "extension": [
+        {
+          "url": "key",
+          "valueId": "consent-needs-email"
+        },
+        {
+          "url": "severity",
+          "valueCode": "error"
+        },
+        {
+          "url": "human",
+          "valueString": "Consent is only valid if a work email is on file."
+        },
+        {
+          "url": "expression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "item.where(linkId='updates-consent').answer.valueBoolean.where($this = true).empty() or repeat(item).where(linkId='work-email').answer.valueString.exists()"
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+      "extension": [
+        {
+          "url": "key",
+          "valueId": "professional-email-warning"
+        },
+        {
+          "url": "severity",
+          "valueCode": "warning"
+        },
+        {
+          "url": "human",
+          "valueString": "Using a personal email address may delay provisioning; consider supplying a college-issued account."
+        },
+        {
+          "url": "expression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "item.where(linkId='contact-info').item.where(linkId='work-email').answer.valueString.where($this.lower().endsWith('@gmail.com') or $this.lower().endsWith('@yahoo.com') or $this.lower().endsWith('@hotmail.com')).empty()"
+          }
+        }
+      ]
+    }
+  ]
+}

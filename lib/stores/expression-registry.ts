@@ -5,18 +5,20 @@ import {
   IExpressionEnvironmentProvider,
   IExpressionSlot,
   IScope,
+  TargetConstraintDefinition,
 } from "./types.ts";
-import type { Expression, Extension, OperationOutcomeIssue } from "fhir/r5";
+import type { Element, Expression, OperationOutcomeIssue } from "fhir/r5";
 import {
-  extractCalculatedExpression,
-  extractEnableWhenExpression,
-  extractInitialExpression,
-  extractMaxValueExpression,
-  extractMinValueExpression,
-  extractVariableExpressions,
+  ANSWER_TYPE_TO_DATA_TYPE,
+  EXT,
+  extractExtensionsValues,
+  extractExtensionValue,
+  extractExtensionValueElement,
+  findExtensions,
   makeIssue,
 } from "../utils.ts";
 import { ExpressionSlot } from "./expression-slot.ts";
+import { ConstraintSlot } from "./constraint-slot.ts";
 import { DuplicateExpressionNameError } from "./scope.ts";
 import { computed, makeObservable, observable } from "mobx";
 
@@ -36,6 +38,12 @@ export class ExpressionRegistry {
     },
   );
 
+  @observable.shallow
+  readonly constraints = observable.array<ConstraintSlot>([], {
+    deep: false,
+    name: "ExpressionRegistry.constraints",
+  });
+
   readonly enableWhen: IExpressionSlot | undefined;
   readonly initial: IExpressionSlot | undefined;
   readonly calculated: IExpressionSlot | undefined;
@@ -46,40 +54,95 @@ export class ExpressionRegistry {
     private coordinator: EvaluationCoordinator,
     private scope: IScope,
     private environmentProvider: IExpressionEnvironmentProvider,
-    extensions: Extension[] | undefined,
+    element: Element,
     type?: AnswerType | undefined,
   ) {
     makeObservable(this);
 
-    extractVariableExpressions(extensions).forEach((expression) => {
-      this.createSlot(expression, "variable");
-    });
-
-    this.enableWhen = this.createSlot(
-      extractEnableWhenExpression(extensions),
-      "enable-when",
-    );
-
-    this.initial = this.createSlot(
-      extractInitialExpression(extensions),
-      "initial",
-    );
-
-    this.calculated = this.createSlot(
-      extractCalculatedExpression(extensions),
-      "calculated",
-    );
-
-    if (type) {
-      this.minValue = this.createSlot(
-        extractMinValueExpression(extensions, type),
-        "min-value",
+    if (element.extension) {
+      extractExtensionsValues(element, EXT.SDC_VARIABLE, "Expression").forEach(
+        (expression) => {
+          this.createSlot(expression, "variable");
+        },
       );
 
-      this.maxValue = this.createSlot(
-        extractMaxValueExpression(extensions, type),
-        "max-value",
+      this.enableWhen = this.createSlot(
+        extractExtensionValue(element, EXT.SDC_ENABLE_WHEN_EXPR, "Expression"),
+        "enable-when",
       );
+
+      this.initial = this.createSlot(
+        extractExtensionValue(element, EXT.SDC_INITIAL_EXPR, "Expression"),
+        "initial",
+      );
+
+      this.calculated = this.createSlot(
+        extractExtensionValue(element, EXT.SDC_CALCULATED_EXPR, "Expression"),
+        "calculated",
+      );
+
+      if (type) {
+        this.minValue = this.createSlot(
+          extractExtensionValue(
+            extractExtensionValueElement(
+              element,
+              EXT.MIN_VALUE,
+              ANSWER_TYPE_TO_DATA_TYPE[type],
+            ),
+            EXT.CQF_EXPRESSION,
+            "Expression",
+          ),
+          "min-value",
+        );
+
+        this.maxValue = this.createSlot(
+          extractExtensionValue(
+            extractExtensionValueElement(
+              element,
+              EXT.MAX_VALUE,
+              ANSWER_TYPE_TO_DATA_TYPE[type],
+            ),
+            EXT.CQF_EXPRESSION,
+            "Expression",
+          ),
+          "max-value",
+        );
+      }
+
+      const definitions = findExtensions(element, EXT.TARGET_CONSTRAINT).map(
+        (extension): TargetConstraintDefinition => ({
+          key: extractExtensionValue(extension, "key", "id"),
+          severity: extractExtensionValue(extension, "severity", "code") as
+            | "error"
+            | "warning",
+          human: extractExtensionValue(extension, "human", "string"),
+          expression: extractExtensionValue(
+            extension,
+            "expression",
+            "Expression",
+          ),
+          location: extractExtensionValue(extension, "location", "string"),
+          requirements: extractExtensionValue(
+            extension,
+            "requirements",
+            "markdown",
+          ),
+        }),
+      );
+
+      definitions.forEach((definition) => {
+        const slot = this.createSlot(definition.expression, "constraint");
+        if (slot) {
+          this.constraints.push(new ConstraintSlot(definition, slot));
+        } else {
+          this.registrationIssues.push(
+            makeIssue(
+              "invalid",
+              `Constraint ${definition.key ? `"${definition.key}"` : "with no key"} is missing an expression.`,
+            ),
+          );
+        }
+      });
     }
   }
 
@@ -108,7 +171,6 @@ export class ExpressionRegistry {
 
     return slot;
   }
-
   @computed
   get issues(): OperationOutcomeIssue[] {
     return this.registrationIssues.concat(

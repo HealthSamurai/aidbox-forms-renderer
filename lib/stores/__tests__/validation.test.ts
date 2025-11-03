@@ -7,7 +7,8 @@ import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
 import { isQuestionNode } from "../question-store.ts";
 import type {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IAnswerInstance,
   IPresentableNode,
   IQuestionNode,
@@ -116,13 +117,13 @@ const expectQuestionNode = <T extends AnswerType = AnswerType>(
 const expectAnswerInstance = <T extends AnswerType = AnswerType>(
   question: IQuestionNode<T>,
   index = 0,
-): IAnswerInstance<AnswerValueType<T>> => {
+): IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>> => {
   const answer = question.answers[index];
   expect(answer).toBeDefined();
   if (!answer) {
     throw new Error("Expected answer instance");
   }
-  return answer as IAnswerInstance<AnswerValueType<T>>;
+  return answer as IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>;
 };
 
 describe("validation", () => {

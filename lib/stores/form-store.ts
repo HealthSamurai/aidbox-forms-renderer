@@ -1,9 +1,9 @@
 import {
   ExpressionEnvironment,
-  IPresentableNode,
   IExpressionEnvironmentProvider,
   IForm,
   INode,
+  IPresentableNode,
   IScope,
   SnapshotKind,
 } from "./types.ts";
@@ -64,7 +64,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       this.coordinator,
       this.scope,
       this,
-      questionnaire.extension,
+      questionnaire,
     );
 
     runInAction(() => {
@@ -172,14 +172,31 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
   @computed
   get issues(): OperationOutcomeIssue[] {
-    return [...this.expressionRegistry.issues];
+    const issues = [...this.expressionRegistry.issues];
+    if (this.isSubmitAttempted) {
+      issues.push(
+        ...this.expressionRegistry.constraints
+          .map((constraint) => constraint.issue)
+          .filter(
+            (issue): issue is OperationOutcomeIssue => issue !== undefined,
+          ),
+      );
+    }
+    return issues;
   }
 
   @action
   validateAll() {
     this.submitAttempted = true;
     // TODO: surface a form-level summary when validation fails.
-    const isValid = !this.nodes.some((node) => this.nodeHasErrors(node));
+    const blockingFormIssues = this.expressionRegistry.constraints
+      .map((constraint) => constraint.issue)
+      .filter((issue): issue is OperationOutcomeIssue => issue !== undefined)
+      .some((issue) => issue.severity === "error");
+
+    const isValid =
+      !blockingFormIssues &&
+      !this.nodes.some((node) => this.nodeHasErrors(node));
 
     if (isValid) {
       this.submitAttempted = false;
@@ -204,16 +221,19 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     this.nodes.forEach((node) => this.clearNodeDirty(node));
   }
 
+  @action
   dispose(): void {
     const nodes = this.nodes.slice();
-    runInAction(() => {
-      this.nodes.clear();
-    });
+    this.nodes.clear();
     nodes.forEach((node) => node.dispose());
   }
 
   private nodeHasErrors(node: IPresentableNode): boolean {
-    if (node.hasErrors) {
+    const hasBlockingIssue = node.issues.some(
+      (issue) => issue.severity === "error" || issue.severity === "fatal",
+    );
+
+    if (hasBlockingIssue) {
       return true;
     }
 

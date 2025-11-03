@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from "react";
 import type {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IQuestionNode,
 } from "../../../stores/types.ts";
 import {
@@ -9,12 +10,13 @@ import {
   stringifyValue,
   areValuesEqual,
   cloneValue,
+  ANSWER_TYPE_TO_DATA_TYPE,
 } from "../../../utils.ts";
 
 export type AnswerOptionEntry<T extends AnswerType> = {
   key: string;
   label: string;
-  value: AnswerValueType<T>;
+  value: DataTypeToType<AnswerTypeToDataType<T>>;
 };
 
 type LegacyOption = {
@@ -27,12 +29,16 @@ function computeOptions<T extends AnswerType>(
 ): AnswerOptionEntry<T>[] {
   const { answerOption = [] } = item.template;
   return answerOption.flatMap((option, index) => {
-    const value = getValue(option, item.type);
+    const value = getValue(option, ANSWER_TYPE_TO_DATA_TYPE[item.type]);
     if (value === undefined) {
       return [];
     }
 
-    const label = stringifyValue(item.type, value, `Option ${index + 1}`);
+    const label = stringifyValue(
+      ANSWER_TYPE_TO_DATA_TYPE[item.type],
+      value,
+      `Option ${index + 1}`,
+    );
 
     return [
       {
@@ -48,7 +54,7 @@ export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
   const options = useMemo(() => computeOptions(item), [item]);
 
   const valueByKey = useMemo(() => {
-    const map = new Map<string, AnswerValueType<T>>();
+    const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();
     options.forEach((entry) => {
       map.set(entry.key, entry.value);
     });
@@ -56,10 +62,10 @@ export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
   }, [options]);
 
   const getKeyForValue = useCallback(
-    (value: AnswerValueType<T> | null) => {
+    (value: DataTypeToType<AnswerTypeToDataType<T>> | null) => {
       if (value == null) return "";
       const match = options.find((entry) =>
-        areValuesEqual(item.type, value, entry.value),
+        areValuesEqual(ANSWER_TYPE_TO_DATA_TYPE[item.type], value, entry.value),
       );
       return match?.key ?? "";
     },
@@ -75,12 +81,19 @@ export function useAnswerOptions<T extends AnswerType>(item: IQuestionNode<T>) {
   );
 
   const getLegacyOptionForValue = useCallback(
-    (answerKey: string, value: AnswerValueType<T> | null): LegacyOption | null => {
+    (
+      answerKey: string,
+      value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+    ): LegacyOption | null => {
       if (value == null) {
         return null;
       }
 
-      const label = stringifyValue(item.type, value, "Legacy answer");
+      const label = stringifyValue(
+        ANSWER_TYPE_TO_DATA_TYPE[item.type],
+        value,
+        "Legacy answer",
+      );
       if (!label) {
         return null;
       }

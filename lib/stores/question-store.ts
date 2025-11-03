@@ -5,12 +5,11 @@ import {
   observable,
   override,
   reaction,
-  runInAction,
 } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import {
   AnswerType,
-  AnswerValueType,
+  DataTypeToType,
   IAnswerInstance,
   IPresentableNode,
   IForm,
@@ -18,6 +17,7 @@ import {
   IQuestionNode,
   IScope,
   SnapshotKind,
+  type AnswerTypeToDataType,
 } from "./types.ts";
 import {
   QuestionnaireItem,
@@ -29,7 +29,11 @@ import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 import { QuestionValidator } from "./question-validator.ts";
 
-import { answerHasContent, getValue } from "../utils.ts";
+import {
+  ANSWER_TYPE_TO_DATA_TYPE,
+  answerHasContent,
+  getValue,
+} from "../utils.ts";
 
 type AnswerLifecycle =
   | "pristine"
@@ -43,7 +47,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   implements IQuestionNode<T>
 {
   @observable.shallow
-  readonly answers = observable.array<IAnswerInstance<AnswerValueType<T>>>([], {
+  readonly answers = observable.array<
+    IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>
+  >([], {
     deep: false,
     name: "QuestionStore.answers",
   });
@@ -98,7 +104,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @action
-  addAnswer(initial: AnswerValueType<T> | null = null) {
+  addAnswer(initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null) {
     if (this.canAdd) {
       this.pushAnswer(initial);
       this.markDirty();
@@ -117,14 +123,17 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @action
-  setAnswer(index: number, value: AnswerValueType<T> | null) {
+  setAnswer(
+    index: number,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+  ) {
     if (index === 0 && this.answers.length === 0) {
       this.ensureBaselineAnswers();
     }
 
     const answer = this.answers[index];
     if (answer) {
-      answer.value = value;
+      answer.value = value === "" ? null : value;
       this.markDirty();
       this.markUserOverridden();
     }
@@ -229,9 +238,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const values = entries
-      .map((entry) => getValue(entry, this.type))
+      .map((entry) => getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]))
       .filter(
-        (value): value is AnswerValueType<T> =>
+        (value): value is DataTypeToType<AnswerTypeToDataType<T>> =>
           value !== undefined && value !== null,
       );
 
@@ -309,7 +318,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     answers.forEach((answer) => {
-      this.pushAnswer(getValue(answer, this.type) ?? null, answer.item);
+      this.pushAnswer(
+        getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]) ?? null,
+        answer.item,
+      );
     });
 
     this.lifecycle = "response";
@@ -348,7 +360,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     });
   }
 
-  private syncRepeatingAnswers(values: Array<AnswerValueType<T> | null>) {
+  private syncRepeatingAnswers(
+    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | null>,
+  ) {
     while (this.answers.length < values.length && this.canAdd) {
       this.pushAnswer(null);
     }
@@ -367,7 +381,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private normalizeExpressionValues(value: unknown) {
     const collection = Array.isArray(value) ? value : [value];
-    const result: Array<AnswerValueType<T> | null> = [];
+    const result: Array<DataTypeToType<AnswerTypeToDataType<T>> | null> = [];
     collection.forEach((entry) => {
       const coerced = this.coerceExpressionValue(entry);
       if (coerced !== undefined) {
@@ -379,7 +393,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private coerceExpressionValue(
     value: unknown,
-  ): AnswerValueType<T> | null | undefined {
+  ): DataTypeToType<AnswerTypeToDataType<T>> | null | undefined {
     if (value === undefined) {
       return undefined;
     }
@@ -390,16 +404,19 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     switch (this.type) {
       case "boolean":
-        if (typeof value === "boolean") return value as AnswerValueType<T>;
+        if (typeof value === "boolean")
+          return value as DataTypeToType<AnswerTypeToDataType<T>>;
         if (typeof value === "string") {
-          if (/^true$/i.test(value)) return true as AnswerValueType<T>;
-          if (/^false$/i.test(value)) return false as AnswerValueType<T>;
+          if (/^true$/i.test(value))
+            return true as DataTypeToType<AnswerTypeToDataType<T>>;
+          if (/^false$/i.test(value))
+            return false as DataTypeToType<AnswerTypeToDataType<T>>;
         }
         return undefined;
       case "decimal":
       case "integer": {
         const numberValue = this.parseNumber(value);
-        return numberValue as AnswerValueType<T>;
+        return numberValue as DataTypeToType<AnswerTypeToDataType<T>>;
       }
       case "date":
       case "dateTime":
@@ -408,7 +425,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "text":
       case "url":
         if (typeof value === "string") {
-          return value as AnswerValueType<T>;
+          return value as DataTypeToType<AnswerTypeToDataType<T>>;
         }
         return undefined;
       case "coding":
@@ -416,7 +433,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       case "reference":
       case "quantity":
         if (typeof value === "object") {
-          return value as AnswerValueType<T>;
+          return value as DataTypeToType<AnswerTypeToDataType<T>>;
         }
         return undefined;
       default:
@@ -435,7 +452,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     return undefined;
   }
 
-  private answersMatch(values: Array<AnswerValueType<T> | null>) {
+  private answersMatch(
+    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | null>,
+  ) {
     if (this.repeats) {
       if (values.length !== this.answers.length) {
         return false;
@@ -458,7 +477,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private pushAnswer(
-    initial: AnswerValueType<T> | null,
+    initial: DataTypeToType<AnswerTypeToDataType<T>> | null,
     responseItems?: QuestionnaireResponseItem[],
   ) {
     const answer = new AnswerInstance(
@@ -471,14 +490,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.answers.push(answer);
   }
 
+  @action
   dispose(): void {
     const disposers = this.disposers.splice(0);
     disposers.forEach((dispose) => dispose());
 
     const existingAnswers = this.answers.slice();
-    runInAction(() => {
-      this.answers.clear();
-    });
+    this.answers.clear();
     existingAnswers.forEach((answer) => answer.dispose());
   }
 

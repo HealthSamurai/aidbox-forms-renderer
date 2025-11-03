@@ -36,7 +36,7 @@ export class RepeatingGroupStore
     this._scope = group.scope.extend(true);
     this._key = `${group.key}_/_${index}`;
 
-    this.initializeExpressionRegistry(this, group.template.extension);
+    this.initializeExpressionRegistry(this, group.template);
 
     this.nodes.replace(
       (this.template.item ?? []).filter(shouldCreateStore).map((item) =>
@@ -100,6 +100,7 @@ export class RepeatingGroupStore
     }
   }
 
+  @action
   dispose(): void {
     const children = this.nodes.slice();
     this.nodes.clear();

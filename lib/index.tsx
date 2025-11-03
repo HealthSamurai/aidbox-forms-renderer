@@ -1,7 +1,7 @@
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "./stores/form-store.ts";
 import { Form } from "./components/form.tsx";
-import { useDisposable } from "./hooks/use-disposable.ts";
+import { useMemo } from "react";
 
 type RendererProps = {
   questionnaire: Questionnaire;
@@ -16,7 +16,7 @@ function Renderer({
   onSubmit,
   onChange,
 }: RendererProps) {
-  const store = useDisposable(
+  const store = useMemo(
     () => new FormStore(questionnaire, initialResponse),
     [questionnaire, initialResponse],
   );

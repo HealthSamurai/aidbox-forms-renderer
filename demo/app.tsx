@@ -116,7 +116,7 @@ export function App() {
     }
     const url = new URL(window.location.href);
     url.searchParams.set("sample", selectedSampleId);
-    window.history.replaceState(null, "", url);
+    window.history.pushState(null, "", url);
   }, [selectedSampleId]);
 
   const hasPendingChanges =

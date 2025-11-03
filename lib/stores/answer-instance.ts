@@ -1,32 +1,37 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import type {
   AnswerType,
-  AnswerValueType,
+  DataTypeToType,
   IAnswerInstance,
   IScope,
   IPresentableNode,
   IQuestionNode,
   SnapshotKind,
+  AnswerTypeToDataType,
 } from "./types.ts";
 import type {
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
-import { asAnswerFragment, shouldCreateStore } from "../utils.ts";
+import {
+  ANSWER_TYPE_TO_DATA_TYPE,
+  asAnswerFragment,
+  shouldCreateStore,
+} from "../utils.ts";
 import type { OperationOutcomeIssue } from "fhir/r5";
 import { AnswerValidator } from "./answer-validator.ts";
 
-export class AnswerInstance<TType extends AnswerType>
-  implements IAnswerInstance<AnswerValueType<TType>>
+export class AnswerInstance<T extends AnswerType>
+  implements IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>
 {
   readonly key: string;
   readonly scope: IScope;
 
-  readonly question: IQuestionNode<TType>;
-  private readonly validator: AnswerValidator<TType>;
+  readonly question: IQuestionNode<T>;
+  private readonly validator: AnswerValidator<T>;
 
   @observable.ref
-  value: AnswerValueType<TType> | null = null;
+  value: DataTypeToType<AnswerTypeToDataType<T>> | null = null;
 
   @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
@@ -35,10 +40,10 @@ export class AnswerInstance<TType extends AnswerType>
   });
 
   constructor(
-    question: IQuestionNode<TType>,
+    question: IQuestionNode<T>,
     scope: IScope,
     index: number,
-    initial: AnswerValueType<TType> | null = null,
+    initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {
     makeObservable(this);
@@ -61,8 +66,8 @@ export class AnswerInstance<TType extends AnswerType>
     this.nodes.replace(children);
     this.value = initial;
     this.validator = new AnswerValidator(
-      this as IAnswerInstance<AnswerValueType<TType>>,
-      this.question as IQuestionNode<TType>,
+      this as IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>,
+      this.question as IQuestionNode<T>,
     );
   }
 
@@ -96,7 +101,9 @@ export class AnswerInstance<TType extends AnswerType>
     }
 
     const answer: QuestionnaireResponseItemAnswer =
-      value == null ? {} : asAnswerFragment(this.question.type, value);
+      value == null
+        ? {}
+        : asAnswerFragment(ANSWER_TYPE_TO_DATA_TYPE[this.question.type], value);
 
     if (childItems.length > 0) {
       answer.item = childItems;
@@ -105,6 +112,7 @@ export class AnswerInstance<TType extends AnswerType>
     return answer;
   }
 
+  @action
   dispose(): void {
     const children = this.nodes.slice();
     this.nodes.clear();

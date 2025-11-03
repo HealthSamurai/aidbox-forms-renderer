@@ -1,14 +1,44 @@
-import type {
+import {
+  Address,
+  Age,
+  Annotation,
   Attachment,
+  Availability,
+  CodeableConcept,
+  CodeableReference,
   Coding,
+  ContactDetail,
+  ContactPoint,
+  Count,
+  DataRequirement,
+  Distance,
+  Dosage,
+  Duration,
+  Expression,
+  ExtendedContactDetail,
+  HumanName,
+  Identifier,
+  Meta,
+  Money,
   OperationOutcomeIssue,
+  ParameterDefinition,
+  Period,
   Quantity,
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireResponse,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
+  Range,
+  Ratio,
+  RatioRange,
   Reference,
+  RelatedArtifact,
+  SampledData,
+  Signature,
+  Timing,
+  TriggerDefinition,
+  UsageContext,
 } from "fhir/r5";
 import type { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { ExpressionRegistry } from "./expression-registry.ts";
@@ -25,7 +55,8 @@ export type ExpressionSlotKind =
   | "initial"
   | "calculated"
   | "min-value"
-  | "max-value";
+  | "max-value"
+  | "constraint";
 
 export interface IExpressionSlot {
   readonly name?: string | undefined;
@@ -61,22 +92,194 @@ export type AnswerType = Exclude<
   "group" | "display" | "question"
 >;
 
-export type AnswerValueType<T extends AnswerType> =
+export type DataType =
+  | "base64Binary"
+  | "boolean"
+  | "canonical"
+  | "code"
+  | "date"
+  | "dateTime"
+  | "decimal"
+  | "id"
+  | "instant"
+  | "integer"
+  | "integer64"
+  | "markdown"
+  | "oid"
+  | "positiveInt"
+  | "string"
+  | "time"
+  | "unsignedInt"
+  | "uri"
+  | "url"
+  | "uuid"
+  | "Address"
+  | "Age"
+  | "Annotation"
+  | "Attachment"
+  | "CodeableConcept"
+  | "CodeableReference"
+  | "Coding"
+  | "ContactPoint"
+  | "Count"
+  | "Distance"
+  | "Duration"
+  | "HumanName"
+  | "Identifier"
+  | "Money"
+  | "Period"
+  | "Quantity"
+  | "Range"
+  | "Ratio"
+  | "RatioRange"
+  | "Reference"
+  | "SampledData"
+  | "Signature"
+  | "Timing"
+  | "ContactDetail"
+  | "DataRequirement"
+  | "Expression"
+  | "ParameterDefinition"
+  | "RelatedArtifact"
+  | "TriggerDefinition"
+  | "UsageContext"
+  | "Availability"
+  | "ExtendedContactDetail"
+  | "Dosage"
+  | "Meta";
+
+export type AnswerTypeToDataType<T extends AnswerType> =
   // prettier-ignore
-  T extends "boolean"    ? boolean :
-  T extends "decimal"    ? number  :
-  T extends "integer"    ? number  :
-  T extends "date"       ? string  :
-  T extends "dateTime"   ? string  :
-  T extends "time"       ? string  :
-  T extends "string"     ? string  :
-  T extends "text"       ? string  :
-  T extends "url"        ? string  :
-  T extends "coding"     ? Coding  :
-  T extends "attachment" ? Attachment :
-  T extends "reference"  ? Reference :
-  T extends "quantity"   ? Quantity :
+  T extends "boolean"    ? "boolean"    :
+  T extends "decimal"    ? "decimal"    :
+  T extends "integer"    ? "integer"    :
+  T extends "date"       ? "date"       :
+  T extends "dateTime"   ? "dateTime"   :
+  T extends "time"       ? "time"       :
+  T extends "string"     ? "string"     :
+  T extends "text"       ? "string"     :
+  T extends "url"        ? "uri"        :
+  T extends "coding"     ? "Coding"     :
+  T extends "attachment" ? "Attachment" :
+  T extends "reference"  ? "Reference"  :
+  T extends "quantity"   ? "Quantity"   :
                            never;
+
+export type DataTypeToType<T extends DataType> =
+  // prettier-ignore
+  T extends "base64Binary"          ? string :
+  T extends "boolean"               ? boolean  :
+  T extends "canonical"             ? string  :
+  T extends "code"                  ? string  :
+  T extends "date"                  ? string  :
+  T extends "dateTime"              ? string  :
+  T extends "decimal"               ? number  :
+  T extends "id"                    ? string  :
+  T extends "instant"               ? string  :
+  T extends "integer"               ? number  :
+  T extends "integer64"             ? string :
+  T extends "markdown"              ? string :
+  T extends "oid"                   ? string :
+  T extends "positiveInt"           ? number :
+  T extends "string"                ? string :
+  T extends "time"                  ? string :
+  T extends "unsignedInt"           ? number :
+  T extends "uri"                   ? string :
+  T extends "url"                   ? string :
+  T extends "uuid"                  ? string :
+  T extends "Address"               ? Address :
+  T extends "Age"                   ? Age :
+  T extends "Annotation"            ? Annotation :
+  T extends "Attachment"            ? Attachment :
+  T extends "CodeableConcept"       ? CodeableConcept :
+  T extends "CodeableReference"     ? CodeableReference :
+  T extends "Coding"                ? Coding :
+  T extends "ContactPoint"          ? ContactPoint :
+  T extends "Count"                 ? Count :
+  T extends "Distance"              ? Distance :
+  T extends "Duration"              ? Duration :
+  T extends "HumanName"             ? HumanName :
+  T extends "Identifier"            ? Identifier :
+  T extends "Money"                 ? Money :
+  T extends "Period"                ? Period :
+  T extends "Quantity"              ? Quantity :
+  T extends "Range"                 ? Range :
+  T extends "Ratio"                 ? Ratio :
+  T extends "RatioRange"            ? RatioRange :
+  T extends "Reference"             ? Reference :
+  T extends "SampledData"           ? SampledData :
+  T extends "Signature"             ? Signature :
+  T extends "Timing"                ? Timing :
+  T extends "ContactDetail"         ? ContactDetail :
+  T extends "DataRequirement"       ? DataRequirement :
+  T extends "Expression"            ? Expression :
+  T extends "ParameterDefinition"   ? ParameterDefinition :
+  T extends "RelatedArtifact"       ? RelatedArtifact :
+  T extends "TriggerDefinition"     ? TriggerDefinition :
+  T extends "UsageContext"          ? UsageContext :
+  T extends "Availability"          ? Availability :
+  T extends "ExtendedContactDetail" ? ExtendedContactDetail :
+  T extends "Dosage"                ? Dosage :
+  T extends "Meta"                  ? Meta :
+                                    never;
+
+// prettier-ignore
+export type DataTypeToSuffix<T extends DataType> =
+  T extends "base64Binary"          ? "Base64Binary"          :
+  T extends "boolean"               ? "Boolean"               :
+  T extends "canonical"             ? "Canonical"             :
+  T extends "code"                  ? "Code"                  :
+  T extends "date"                  ? "Date"                  :
+  T extends "dateTime"              ? "DateTime"              :
+  T extends "decimal"               ? "Decimal"               :
+  T extends "id"                    ? "Id"                    :
+  T extends "instant"               ? "Instant"               :
+  T extends "integer"               ? "Integer"               :
+  T extends "integer64"             ? "Integer64"             :
+  T extends "markdown"              ? "Markdown"              :
+  T extends "oid"                   ? "Oid"                   :
+  T extends "positiveInt"           ? "PositiveInt"           :
+  T extends "string"                ? "String"                :
+  T extends "time"                  ? "Time"                  :
+  T extends "unsignedInt"           ? "UnsignedInt"           :
+  T extends "uri"                   ? "Uri"                   :
+  T extends "url"                   ? "Url"                   :
+  T extends "uuid"                  ? "Uuid"                  :
+  T extends "Address"               ? "Address"               :
+  T extends "Age"                   ? "Age"                   :
+  T extends "Annotation"            ? "Annotation"            :
+  T extends "Attachment"            ? "Attachment"            :
+  T extends "CodeableConcept"       ? "CodeableConcept"       :
+  T extends "CodeableReference"     ? "CodeableReference"     :
+  T extends "Coding"                ? "Coding"                :
+  T extends "ContactPoint"          ? "ContactPoint"          :
+  T extends "Count"                 ? "Count"                 :
+  T extends "Distance"              ? "Distance"              :
+  T extends "Duration"              ? "Duration"              :
+  T extends "HumanName"             ? "HumanName"             :
+  T extends "Identifier"            ? "Identifier"            :
+  T extends "Money"                 ? "Money"                 :
+  T extends "Period"                ? "Period"                :
+  T extends "Quantity"              ? "Quantity"              :
+  T extends "Range"                 ? "Range"                 :
+  T extends "Ratio"                 ? "Ratio"                 :
+  T extends "RatioRange"            ? "RatioRange"            :
+  T extends "Reference"             ? "Reference"             :
+  T extends "SampledData"           ? "SampledData"           :
+  T extends "Signature"             ? "Signature"             :
+  T extends "Timing"                ? "Timing"                :
+  T extends "ContactDetail"         ? "ContactDetail"         :
+  T extends "DataRequirement"       ? "DataRequirement"       :
+  T extends "Expression"            ? "Expression"            :
+  T extends "ParameterDefinition"   ? "ParameterDefinition"   :
+  T extends "RelatedArtifact"       ? "RelatedArtifact"       :
+  T extends "TriggerDefinition"     ? "TriggerDefinition"     :
+  T extends "UsageContext"          ? "UsageContext"          :
+  T extends "Availability"          ? "Availability"          :
+  T extends "ExtendedContactDetail" ? "ExtendedContactDetail" :
+  T extends "Dosage"                ? "Dosage"                :
+  T extends "Meta"                  ? "Meta"                  :
+                                    never;
 
 export type SnapshotKind = "response" | "expression";
 
@@ -148,9 +351,9 @@ export interface IRepeatingGroupWrapper extends IPresentableNode {
 
 export type IGroupNode = IRepeatingGroupNode | INonRepeatingGroupNode;
 
-export interface IAnswerInstance<TValue> {
+export interface IAnswerInstance<T> {
   readonly key: string;
-  value: TValue | null;
+  value: T | null;
   readonly nodes: Array<IPresentableNode>;
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
@@ -159,19 +362,22 @@ export interface IAnswerInstance<TValue> {
   dispose(): void;
 }
 
-export interface IQuestionNode<TType extends AnswerType = AnswerType>
+export interface IQuestionNode<T extends AnswerType = AnswerType>
   extends IActualNode {
-  readonly type: TType;
+  readonly type: T;
   readonly repeats: boolean;
 
-  answers: Array<IAnswerInstance<AnswerValueType<TType>>>;
+  answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;
 
   readonly canAdd: boolean;
   readonly canRemove: boolean;
 
-  addAnswer(initial?: AnswerValueType<TType> | null): void;
+  addAnswer(initial?: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
   removeAnswer(index: number): void;
-  setAnswer(index: number, value: AnswerValueType<TType> | null): void;
+  setAnswer(
+    index: number,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+  ): void;
 }
 
 export type INode =
@@ -207,4 +413,13 @@ export interface IForm {
   ): IPresentableNode;
   reset(): void;
   dispose(): void;
+}
+
+export interface TargetConstraintDefinition {
+  key: string | undefined;
+  severity: "error" | "warning" | undefined;
+  human: string | undefined;
+  expression: Expression | undefined;
+  location: string | undefined;
+  requirements: string | undefined;
 }

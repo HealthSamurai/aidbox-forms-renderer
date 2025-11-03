@@ -12,7 +12,8 @@ import {
 } from "../../utils.ts";
 import type {
   AnswerType,
-  AnswerValueType,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IAnswerInstance,
   IQuestionNode,
 } from "../../stores/types.ts";
@@ -29,8 +30,10 @@ export type RowRenderProps<TValue> = {
 
 export type AnswerProps<T extends AnswerType> = {
   item: IQuestionNode<T>;
-  renderRow: (p: RowRenderProps<AnswerValueType<T>>) => ReactElement;
-  answer: IAnswerInstance<AnswerValueType<T>>;
+  renderRow: (
+    p: RowRenderProps<DataTypeToType<AnswerTypeToDataType<T>>>,
+  ) => ReactElement;
+  answer: IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>;
   index: number;
 };
 
@@ -56,13 +59,15 @@ export const Answer = observer(function Answer<T extends AnswerType>({
   return (
     <div className="af-answer">
       {renderRow({
-        value: answer.value as AnswerValueType<T> | null,
+        value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
         setValue: (value) => item.setAnswer(index, value),
         index,
         inputId: sanitizeForId(answer.key),
         labelId: getItemLabelId(item),
         describedById,
-        answer: answer as IAnswerInstance<AnswerValueType<T>>,
+        answer: answer as IAnswerInstance<
+          DataTypeToType<AnswerTypeToDataType<T>>
+        >,
       })}
       {item.repeats && (
         <div className="af-answer-toolbar">
