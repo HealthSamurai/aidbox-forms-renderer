@@ -32,6 +32,7 @@ import {
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 import { QuestionValidator } from "./question-validator.ts";
+import { RemoteValueSetExpander } from "../services/valueset-expander.ts";
 
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
@@ -40,6 +41,7 @@ import {
   booleanify,
   EXT,
   extractExtensionValue,
+  findExtension,
   getValue,
   normalizeExpressionValues,
   withQuestionnaireResponseItemMeta,
@@ -309,7 +311,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private setupValueSetExpansion() {
     if (!this.answerValueSet || !this.form.config?.terminologyService) {
-      console.log("Skipping expansion: no answerValueSet or terminologyService");
       return;
     }
 
@@ -317,7 +318,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       this.expansionState = "loading";
     });
 
-    this.form.config.terminologyService
+    // Use preferred terminology server if specified, otherwise use default
+    const preferredTerminologyServer = findExtension(this.template, EXT.PREFERRED_TERMINOLOGY_SERVER)?.valueUrl;
+
+    const expander = preferredTerminologyServer
+      ? new RemoteValueSetExpander(preferredTerminologyServer)
+      : this.form.config.terminologyService;
+
+    expander
       .expand(this.answerValueSet)
       .then((codings: Coding[]) => {
         runInAction(() => {
