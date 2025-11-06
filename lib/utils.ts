@@ -21,6 +21,7 @@ import {
   QuestionnaireItemEnableWhen,
   QuestionnaireItemAnswerOption,
   Reference,
+  Expression,
 } from "fhir/r5";
 
 export function sanitizeForId(value: string) {
@@ -169,6 +170,8 @@ export function answerify<T extends AnswerType>(
 
   return options;
 }
+
+
 
 export function findExtension(
   element: Element,
@@ -1588,4 +1591,50 @@ export function areValuesEqual<T extends DataType>(
       throw new Error('Not implemented yet: "Meta" case');
     }
   }
+}
+
+export function extractVariableExpressions(
+  extensions: Extension[] | undefined,
+): Expression[] {
+  return (extensions || [])
+    .map(
+      (extension) =>
+        extension.url === EXT.SDC_VARIABLE && extension.valueExpression,
+    )
+    .filter(Boolean) as Expression[];
+}
+
+export function extractEnableWhenExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_ENABLE_WHEN_EXPR)
+    ?.valueExpression;
+}
+
+export function extractInitialExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_INITIAL_EXPR)
+    ?.valueExpression;
+}
+
+export function extractCalculatedExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.SDC_CALCULATED_EXPR)
+    ?.valueExpression;
+}
+
+export function extractCQFExpression(
+  extensions: Extension[] | undefined,
+): Expression | undefined {
+  return extensions?.find(({ url }) => url === EXT.CQF_EXPRESSION)
+    ?.valueExpression;
+}
+
+
+export function isQuestionnaireItem(
+  item: Element
+): item is QuestionnaireItem {
+  return ("text" in item);
 }

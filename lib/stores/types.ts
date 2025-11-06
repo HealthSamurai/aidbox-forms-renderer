@@ -59,7 +59,13 @@ export type ExpressionSlotKind =
   | "answer"
   | "min-value"
   | "max-value"
-  | "constraint";
+  | "constraint"
+  | "min-quantity"
+  | "max-quantity"
+  | "text"
+  | "readonly"
+  | "repeats";
+
 
 export interface IExpressionSlot {
   readonly name?: string | undefined;

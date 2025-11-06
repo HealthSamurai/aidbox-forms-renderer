@@ -90,6 +90,7 @@ export class ExpressionSlot implements IExpressionSlot {
         this.setError(undefined);
         return result;
       } catch (error) {
+        console.log("error: ", error);
         const message = `Failed to evaluate ${this.toString()} expression ${this.summarizeError(error)}`;
         this.setError(makeIssue("invalid", message));
         return undefined;

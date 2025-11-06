@@ -42,7 +42,7 @@ export class DisplayStore
     return [
       {
         linkId: this.linkId,
-        text: this.text,
+        text: kind === 'expression' ? this.template.text : this.text,
       },
     ];
   }

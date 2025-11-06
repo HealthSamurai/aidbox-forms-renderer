@@ -162,6 +162,16 @@ export abstract class AbstractActualNodeStore
     return this.dirty;
   }
 
+  override get text (): string | undefined {
+    const textSlot = this.expressionRegistry?.text;
+    if (textSlot) {
+      const value = textSlot.value;
+      console.log("Text slot: ", textSlot.value);
+      return value != null ? String(value) : undefined;
+    }
+    return this.template.text;
+  }
+
   markDirty() {
     if (!this.dirty) {
       runInAction(() => {

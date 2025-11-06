@@ -15,7 +15,8 @@ import {
   extractExtensionValue,
   extractExtensionValueElement,
   findExtensions,
-  makeIssue,
+  isQuestionnaireItem,
+  makeIssue
 } from "../utils.ts";
 import { ExpressionSlot } from "./expression-slot.ts";
 import { ConstraintSlot } from "./constraint-slot.ts";
@@ -50,6 +51,14 @@ export class ExpressionRegistry {
   readonly answer: IExpressionSlot | undefined;
   readonly minValue: IExpressionSlot | undefined;
   readonly maxValue: IExpressionSlot | undefined;
+  readonly maxQuantity: IExpressionSlot | undefined;
+  readonly minQuantity: IExpressionSlot | undefined;
+
+  readonly text: IExpressionSlot | undefined;
+  readonly readonly: IExpressionSlot | undefined;
+  readonly repeats: IExpressionSlot | undefined;
+
+
 
   constructor(
     private coordinator: EvaluationCoordinator,
@@ -114,6 +123,29 @@ export class ExpressionRegistry {
           "max-value",
         );
       }
+    }
+
+      console.log("Element: ", element);
+      if(isQuestionnaireItem(element)) {
+        console.log("Element text: ", element);
+        this.text = this.createSlot(
+          extractExtensionValue(element._text, EXT.CQF_EXPRESSION, "Expression"),
+          "text"          
+        );
+
+        this.readonly = this.createSlot(
+          extractExtensionValue(element._readOnly, EXT.CQF_EXPRESSION, "Expression"),
+          "readonly"          
+        );
+
+        this.repeats = this.createSlot(
+          extractExtensionValue(element._repeats, EXT.CQF_EXPRESSION, "Expression"),
+          "repeats"          
+        )
+      }
+      
+        
+      
 
       const definitions = findExtensions(element, EXT.TARGET_CONSTRAINT).map(
         (extension): TargetConstraintDefinition => ({
@@ -149,7 +181,7 @@ export class ExpressionRegistry {
           );
         }
       });
-    }
+    
   }
 
   private createSlot(
@@ -177,12 +209,13 @@ export class ExpressionRegistry {
 
     return slot;
   }
+
   @computed
   get issues(): OperationOutcomeIssue[] {
     return this.registrationIssues.concat(
       this.slots
-        .map((slot) => slot.error)
-        .filter((issue): issue is OperationOutcomeIssue => issue !== undefined),
+      .map((slot) => slot.error)
+      .filter((issue): issue is OperationOutcomeIssue => issue !== undefined),
     );
   }
 }

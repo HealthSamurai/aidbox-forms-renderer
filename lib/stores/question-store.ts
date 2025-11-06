@@ -557,7 +557,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     const item: QuestionnaireResponseItem = {
       linkId: this.linkId,
-      text: this.text,
+      text: kind === "expression" ? this.template.text : this.text,
     };
 
     if (answers.length > 0) {
