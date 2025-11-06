@@ -11,6 +11,7 @@ export function NumberInput({
   ariaLabelledBy,
   ariaDescribedBy,
   unitLabel,
+  list,
 }: {
   id?: string | undefined;
   value: number | null;
@@ -21,6 +22,7 @@ export function NumberInput({
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   unitLabel?: string | undefined;
+  list?: string | undefined;
 }) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -34,6 +36,7 @@ export function NumberInput({
   const input = (
     <input
       id={inputId}
+      list={list}
       className="af-input af-number-input-field"
       type="number"
       value={value ?? ""}

@@ -20,6 +20,7 @@ import answerOptions from "./answer-options.json" assert { type: "json" };
 import answerExpression from "./answer-expression.json" assert { type: "json" };
 import validation from "./validation.json" assert { type: "json" };
 import targetConstraint from "./target-constraint.json" assert { type: "json" };
+import answerConstraints from "./answer-constraint-examples.json" assert { type: "json" };
 
 type DemoSample = {
   readonly id: string;
@@ -128,4 +129,9 @@ export const demoSamples: readonly DemoSample[] = [
     label: "Target constraints",
     questionnaire: targetConstraint as Questionnaire,
   },
+  {
+    id: "answer-constraint",
+    label: "Answer constraints",
+    questionnaire: answerConstraints as Questionnaire,
+  }
 ] as const;

@@ -24,6 +24,7 @@ export type RowRenderProps<TValue> = {
   index: number;
   inputId: string;
   labelId: string;
+  list?: string | undefined;
   describedById: string | undefined;
   answer: IAnswerInstance<TValue>;
 };

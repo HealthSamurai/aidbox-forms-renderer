@@ -4,6 +4,7 @@ import { ItemHeader } from "../../common/item-header.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { NumberInput } from "../../controls/number-input.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
+import { AnswerOptionWrapper } from "../../common/answer-option-wrapper.tsx";
 
 export const DecimalNode = observer(function DecimalNode({
   item,
@@ -15,16 +16,23 @@ export const DecimalNode = observer(function DecimalNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
-          <NumberInput
-            id={inputId}
-            ariaLabelledBy={labelId}
-            ariaDescribedBy={describedById}
-            value={value ?? null}
-            onChange={setValue}
-            disabled={item.readOnly}
-            step="any"
-            unitLabel={item.unitDisplay}
+        renderRow={(rowProps) => (
+          <AnswerOptionWrapper
+            item={item}
+            rowProps={rowProps}
+            renderInput={(rowProps) => (
+              <NumberInput
+                id={rowProps.inputId}
+                list={rowProps.list}
+                ariaLabelledBy={rowProps.labelId}
+                ariaDescribedBy={rowProps.describedById}
+                value={rowProps.value ?? null}
+                onChange={rowProps.setValue}
+                disabled={item.readOnly}
+                step="any"
+                unitLabel={item.unitDisplay}
+              />
+            )}
           />
         )}
       />

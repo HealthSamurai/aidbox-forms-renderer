@@ -6,6 +6,7 @@ import { TimeInput } from "../../controls/time-input.tsx";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { AnswerList } from "../../common/answer-list.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
+import { AnswerOptionWrapper } from "../../common/answer-option-wrapper.tsx";
 
 export const DateLikeNode = observer(function DateLikeNode({
   item,
@@ -24,14 +25,20 @@ export const DateLikeNode = observer(function DateLikeNode({
       <ItemHeader item={item} />
       <AnswerList
         item={item}
-        renderRow={({ value, setValue, inputId, labelId, describedById }) => (
-          <Control
-            id={inputId}
-            ariaLabelledBy={labelId}
-            ariaDescribedBy={describedById}
-            value={value ?? ""}
-            onChange={setValue}
-            disabled={item.readOnly}
+        renderRow={(rowProps) => (
+          <AnswerOptionWrapper
+            item={item}
+            rowProps={rowProps}
+            renderInput={(rowProps) => (
+              <Control
+                id={rowProps.inputId}
+                ariaLabelledBy={rowProps.labelId}
+                ariaDescribedBy={rowProps.describedById}
+                value={rowProps.value ?? ""}
+                onChange={rowProps.setValue}
+                disabled={item.readOnly}
+              />
+            )}
           />
         )}
       />

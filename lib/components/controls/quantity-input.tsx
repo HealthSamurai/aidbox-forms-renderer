@@ -12,6 +12,7 @@ export function QuantityInput({
   ariaDescribedBy,
   unitOptions,
   inputId,
+  list,
 }: {
   value: Quantity | null;
   onChange: (next: Quantity | null) => void;
@@ -20,6 +21,7 @@ export function QuantityInput({
   ariaDescribedBy?: string | undefined;
   unitOptions: ReadonlyArray<Coding>;
   inputId: string;
+  list?: string | undefined;
 }) {
   const describedBy = ariaDescribedBy ?? undefined;
 
@@ -56,6 +58,7 @@ export function QuantityInput({
       <div className="af-quantity-input__value">
         <input
           id={inputId}
+          list={list}
           className="af-input"
           type="number"
           value={value?.value ?? ""}

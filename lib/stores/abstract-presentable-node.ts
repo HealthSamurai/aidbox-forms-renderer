@@ -93,6 +93,11 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
     return false;
   }
 
+  @computed 
+  get answerConstraint() {
+    return this.template.answerConstraint ?? "optionsOnly";
+  }
+
   @computed
   get unitDisplay(): string | undefined {
     if (this.template.type !== "integer" && this.template.type !== "decimal") {
@@ -116,6 +121,8 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
           .map((extension) => extension.valueCoding)
           .filter((coding): coding is Coding => coding != null);
   }
+
+  
 
   abstract get scope(): IScope;
 

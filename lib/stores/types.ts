@@ -402,6 +402,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   readonly type: T;
   readonly repeats: boolean;
   readonly answerOptions: ReadonlyArray<QuestionnaireItemAnswerOption>;
+  readonly answerConstraint: QuestionnaireItem["answerConstraint"];
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
 
   answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;

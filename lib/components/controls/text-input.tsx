@@ -4,16 +4,18 @@ export function TextInput({
   id,
   type = "text",
   value,
-  onChange,
+  onChange, 
   disabled,
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
+  list,
 }: {
   id?: string | undefined;
   type?: string | undefined;
   value: string;
+  list?: string | undefined;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
@@ -24,6 +26,7 @@ export function TextInput({
   return (
     <input
       id={id}
+      list={list}
       className="af-input"
       type={type}
       value={value}
