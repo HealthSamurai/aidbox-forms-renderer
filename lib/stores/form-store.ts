@@ -36,10 +36,16 @@ import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { Scope } from "./scope.ts";
 import { BaseExpressionRegistry } from "./base-expression-registry.ts";
 import { shouldCreateStore } from "../utils.ts";
+import type { IValueSetExpander } from "./valueset-types.ts";
+
+export interface FormStoreConfig {
+  terminologyService?: IValueSetExpander;
+}
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
   questionnaire: Questionnaire;
   private readonly initialResponse: QuestionnaireResponse | undefined;
+  readonly config: FormStoreConfig;
 
   @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
@@ -55,8 +61,13 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   readonly coordinator = new EvaluationCoordinator();
   readonly expressionRegistry: IExpressionRegistry;
 
-  constructor(questionnaire: Questionnaire, response?: QuestionnaireResponse) {
+  constructor(
+    questionnaire: Questionnaire,
+    response?: QuestionnaireResponse,
+    config?: FormStoreConfig,
+  ) {
     makeObservable(this);
+    this.config = config ?? {};
 
     this.questionnaire = questionnaire;
     this.initialResponse = response;

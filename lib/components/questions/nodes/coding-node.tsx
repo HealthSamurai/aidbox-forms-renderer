@@ -1,4 +1,3 @@
-import React from "react";
 import { observer } from "mobx-react-lite";
 import { ItemHeader } from "../../common/item-header.tsx";
 import { ItemErrors } from "../../common/item-errors.tsx";
@@ -17,28 +16,32 @@ export const CodingNode = observer(function CodingNode({
 }: {
   item: IQuestionNode<"coding">;
 }) {
-  const options = React.useMemo(
-    () =>
-      item.answerOptions
-        .map((option) => option.valueCoding)
-        .filter((coding): coding is Coding => Boolean(coding)),
-    [item.answerOptions],
-  );
 
-  const optionMap = React.useMemo(() => {
-    const map = new Map<string, Coding>();
-    for (const coding of options) {
-      map.set(codingKey(coding), coding);
-    }
-    return map;
-  }, [options]);
+  // Don't use React.useMemo with MobX computed properties - observer handles memoization
+  const options = item.answerOptions
+    .map((option) => option.valueCoding)
+    .filter((coding): coding is Coding => Boolean(coding));
+
+  const optionMap = new Map<string, Coding>();
+  for (const coding of options) {
+    optionMap.set(codingKey(coding), coding);
+  }
 
   const hasChoices = options.length > 0;
+  const isLoading = item.expansionState === "loading";
+  const hasError = item.expansionState === "error";
 
+  
   return (
     <div className="af-item" data-linkid={item.linkId}>
       <ItemHeader item={item} />
-      {hasChoices ? (
+      {isLoading ? (
+        <div className="af-loading">Loading options...</div>
+      ) : hasError ? (
+        <div className="af-error">
+          Failed to load options: {item.expansionError}
+        </div>
+      ) : hasChoices ? (
         <AnswerList
           item={item}
           renderRow={({ value, setValue, inputId, labelId, describedById }) => (

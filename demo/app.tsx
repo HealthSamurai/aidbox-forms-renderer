@@ -1,7 +1,7 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { default as Renderer } from "../lib";
+import { CachedValueSetExpander, RemoteValueSetExpander, default as Renderer } from "../lib";
 
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { json } from "@codemirror/lang-json";
@@ -106,6 +106,10 @@ export function App() {
     () => JSON.stringify(questionnaire, null, 2),
     [questionnaire],
   );
+
+  const terminologyService = useMemo(() => new CachedValueSetExpander(
+    new RemoteValueSetExpander('https://tx.fhir.org/r5')
+  ), []);
 
   const editorExtensions = useMemo(() => [json()], []);
   const responseViewerExtensions = editorExtensions;
@@ -228,6 +232,7 @@ export function App() {
           <div className="h-full flex-1 overflow-auto">
             <Renderer
               questionnaire={questionnaire}
+              terminologyService={terminologyService}
               onSubmit={setQuestionnaireResponse}
               onChange={setQuestionnaireResponse}
             />

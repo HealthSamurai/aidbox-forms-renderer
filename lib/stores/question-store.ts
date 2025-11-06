@@ -3,9 +3,11 @@ import {
   action,
   comparer,
   computed,
+  makeObservable,
   observable,
   override,
   reaction,
+  runInAction,
 } from "mobx";
 import {
   AnswerType,
@@ -24,6 +26,7 @@ import {
   QuestionnaireItemAnswerOption,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
+  Coding
 } from "fhir/r5";
 
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
@@ -96,6 +99,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     this.ensureBaselineAnswers();
     this.detectInitialOverride();
     this.setupExpressionReactions();
+    this.setupValueSetExpansion();
   }
 
   @computed
@@ -136,12 +140,33 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     return coding?.code ? keyboardMap[coding.code] : undefined;
   }
 
-  @computed.struct
+  @observable.ref
+  private expandedValueSetOptions: QuestionnaireItemAnswerOption[] | null =
+    null;
+
+  @observable
+  expansionState: "idle" | "loading" | "error" = "idle";
+
+  @observable
+  expansionError: string | null = null;
+
+  @computed
   get answerOptions(): QuestionnaireItemAnswerOption[] {
     const slot = this.expressionRegistry.answer;
-    return slot
-      ? answerify(this.type, slot.value)
-      : (this.template.answerOption ?? []);
+    if (slot) {
+      return answerify(this.type, slot.value);
+    }
+
+    if (this.expandedValueSetOptions) {
+      return this.expandedValueSetOptions;
+    }
+
+    return this.template.answerOption ?? [];
+  }
+
+  @computed
+  get answerValueSet(): string | undefined {
+    return this.template.answerValueSet;
   }
 
   @override
@@ -280,6 +305,36 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       );
       this.trackDisposer(disposer);
     }
+  }
+
+  private setupValueSetExpansion() {
+    if (!this.answerValueSet || !this.form.config?.terminologyService) {
+      console.log("Skipping expansion: no answerValueSet or terminologyService");
+      return;
+    }
+
+    runInAction(() => {
+      this.expansionState = "loading";
+    });
+
+    this.form.config.terminologyService
+      .expand(this.answerValueSet)
+      .then((codings: Coding[]) => {
+        runInAction(() => {
+          this.expandedValueSetOptions = codings.map((coding: Coding) => ({
+            valueCoding: coding,
+          }));
+          this.expansionState = "idle";
+          this.expansionError = null;
+        });
+      })
+      .catch((error: unknown) => {
+        runInAction(() => {
+          this.expansionError =
+            error instanceof Error ? error.message : String(error);
+          this.expansionState = "error";
+        });
+      });
   }
 
   @action

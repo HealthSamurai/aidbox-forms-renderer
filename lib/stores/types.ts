@@ -403,7 +403,11 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   readonly repeats: boolean;
   readonly answerOptions: ReadonlyArray<QuestionnaireItemAnswerOption>;
   readonly answerConstraint: QuestionnaireItem["answerConstraint"];
+  readonly answerValueSet: string | undefined;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
+
+  readonly expansionState: "idle" | "loading" | "error";
+  readonly expansionError: string | null;
 
   answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;
 
@@ -437,6 +441,7 @@ export interface IForm {
   readonly coordinator: IEvaluationCoordinator;
   readonly expressionRegistry: IExpressionRegistry;
   readonly scope: IScope;
+  readonly config: { terminologyService?: import("./valueset-types.ts").IValueSetExpander };
 
   readonly isSubmitAttempted: boolean;
   readonly issues: Array<OperationOutcomeIssue>;
