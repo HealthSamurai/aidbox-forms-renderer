@@ -23,6 +23,13 @@
   box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.2);
 }
 
+.af-item input:disabled,
+.af-item textarea:disabled,
+.af-item select:disabled {
+  background-color: #edf2f7;
+  cursor: not-allowed;
+}
+
 .af-item textarea {
   min-height: 5rem;
   resize: vertical;

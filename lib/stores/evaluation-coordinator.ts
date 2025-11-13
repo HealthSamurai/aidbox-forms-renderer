@@ -1,8 +1,8 @@
-import { IExpressionSlot } from "./types.ts";
+import { IEvaluationCoordinator, IExpressionSlot } from "./types.ts";
 
 export class CircularDependencyError extends Error {}
 
-export class EvaluationCoordinator {
+export class EvaluationCoordinator implements IEvaluationCoordinator {
   // Tracks nested expression reads to detect circular dependencies across slots.
   private readonly evaluationStack: string[] = [];
 
@@ -34,7 +34,7 @@ export class EvaluationCoordinator {
     }
   }
 
-  trackWrite(slot: IExpressionSlot, commit: () => boolean) {
+  trackWrite(slot: IExpressionSlot, commit: () => boolean): void {
     // Every write attempt increases the slot’s pass count; exceeding maxPasses treats it as a cycle.
     this.recentWriters.add(slot);
     const next = (this.writeCounts.get(slot) ?? 0) + 1;

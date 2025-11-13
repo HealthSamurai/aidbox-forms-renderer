@@ -12,10 +12,12 @@ import {
   answerify,
   areValuesEqual,
   cloneValue,
+  compareQuantities,
   countDecimalPlaces,
   estimateAttachmentSize,
   extractExtensionValue,
   getValue,
+  normalizeExpressionValues,
   stringifyValue,
 } from "../utils.ts";
 
@@ -555,6 +557,68 @@ describe("areValuesEqual", () => {
       const quantityB: Quantity = { value: 10, unit: "kg", comparator: ">=" };
       expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(false);
     });
+
+    it("returns true for comparator-only structural matches", () => {
+      const quantityA: Quantity = { comparator: "<", value: 5, unit: "mg" };
+      const quantityB: Quantity = { comparator: "<", value: 5, unit: "mg" };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(true);
+    });
+
+    it("returns true for non-numeric but structurally equal quantities", () => {
+      const quantityA: Quantity = { unit: "packs", system: "http://foo" };
+      const quantityB: Quantity = { unit: "packs", system: "http://foo" };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(true);
+    });
+
+    it("returns false when non-numeric structures differ", () => {
+      const quantityA: Quantity = { unit: "packs", system: "http://foo" };
+      const quantityB: Quantity = { unit: "bottles", system: "http://foo" };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(false);
+    });
+
+    it("treats UCUM-convertible units as equal", () => {
+      const quantityA: Quantity = {
+        value: 1,
+        system: "http://unitsofmeasure.org",
+        code: "g",
+      };
+      const quantityB: Quantity = {
+        value: 1000,
+        system: "http://unitsofmeasure.org",
+        code: "mg",
+      };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(true);
+    });
+
+    it("treats undefined system with UCUM code as convertible", () => {
+      const quantityA: Quantity = { value: 2, code: "g" };
+      const quantityB: Quantity = {
+        value: 2000,
+        system: "http://unitsofmeasure.org",
+        code: "mg",
+      };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(true);
+    });
+
+    it("returns false when UCUM conversion fails", () => {
+      const quantityA: Quantity = {
+        value: 5,
+        system: "http://unitsofmeasure.org",
+        code: "invalid",
+      };
+      const quantityB: Quantity = {
+        value: 5,
+        system: "http://unitsofmeasure.org",
+        code: "mg",
+      };
+
+      expect(areValuesEqual("Quantity", quantityA, quantityB)).toBe(false);
+    });
   });
 
   describe("reference", () => {
@@ -624,6 +688,84 @@ describe("areValuesEqual", () => {
   });
 });
 
+describe("normalizeExpressionValues", () => {
+  it("drops undefined entries but keeps null placeholders", () => {
+    expect(normalizeExpressionValues("string", undefined)).toEqual([]);
+    expect(normalizeExpressionValues("string", null)).toEqual([null]);
+  });
+
+  it("parses booleans from primitives and strings", () => {
+    expect(normalizeExpressionValues("boolean", [true, "FALSE"])).toEqual([
+      true,
+      false,
+    ]);
+  });
+
+  it("parses integers and decimals from numbers and numeric strings", () => {
+    expect(normalizeExpressionValues("integer", 42)).toEqual([42]);
+    expect(normalizeExpressionValues("decimal", "3.14")).toEqual([3.14]);
+  });
+
+  it("parses textual types only from primitives", () => {
+    expect(normalizeExpressionValues("text", "note")).toEqual(["note"]);
+    expect(normalizeExpressionValues("string", "alpha")).toEqual(["alpha"]);
+    expect(normalizeExpressionValues("time", "08:30")).toEqual(["08:30"]);
+  });
+
+  it("passes through structured resources like Coding/Attachment/Reference", () => {
+    const coding: Coding = { system: "sys", code: "1" };
+    const attachment: Attachment = { url: "https://file" };
+    const reference: Reference = { reference: "Patient/1" };
+    expect(normalizeExpressionValues("coding", coding)).toEqual([coding]);
+    expect(normalizeExpressionValues("attachment", attachment)).toEqual([
+      attachment,
+    ]);
+    expect(normalizeExpressionValues("reference", reference)).toEqual([
+      reference,
+    ]);
+  });
+
+  it("parses quoted quantity literals returned as strings", () => {
+    const [quantity] = normalizeExpressionValues("quantity", "10 'mg'");
+    expect(quantity).toEqual({
+      value: 10,
+      unit: "mg",
+      code: "mg",
+      system: "http://unitsofmeasure.org",
+    });
+  });
+
+  it("parses bare quantity literals returned as strings", () => {
+    const [quantity] = normalizeExpressionValues("quantity", "1 day");
+    expect(quantity).toEqual({
+      value: 1,
+      unit: "day",
+      code: "day",
+      system: "http://unitsofmeasure.org",
+    });
+  });
+
+  it("parses unitless quantity literals as value-only quantities", () => {
+    const [quantity] = normalizeExpressionValues("quantity", "42");
+    expect(quantity).toEqual({ value: 42 });
+  });
+
+  it("passes through structured quantity objects", () => {
+    const original = { value: 5, unit: "kg" };
+    expect(normalizeExpressionValues("quantity", original)).toEqual([original]);
+  });
+
+  it("ignores unparsable quantity literals", () => {
+    const result = normalizeExpressionValues("quantity", "not a quantity");
+    expect(result).toHaveLength(0);
+  });
+
+  it("only keeps the first value when arrays have multiple entries", () => {
+    const values = normalizeExpressionValues("integer", [10, 15]);
+    expect(values).toEqual([10, 15]);
+  });
+});
+
 describe("cloneValue", () => {
   it("returns string primitives unchanged", () => {
     expect(cloneValue("text")).toBe("text");
@@ -668,5 +810,91 @@ describe("time formatting", () => {
   it("formats time values using locale", () => {
     const formatted = stringifyValue("time", "13:30:00", "fallback");
     expect(formatted).toMatch(/1:30/);
+  });
+});
+
+describe("compareQuantities", () => {
+  const UCUM_SYSTEM = "http://unitsofmeasure.org";
+
+  it("returns a positive value when actual exceeds expected with identical units", () => {
+    const actual: Quantity = {
+      value: 5,
+      unit: "cup",
+      system: "http://example",
+    };
+    const expected: Quantity = {
+      value: 3,
+      unit: "cup",
+      system: "http://example",
+    };
+
+    const diff = compareQuantities(actual, expected);
+    expect(diff).toBeGreaterThan(0);
+  });
+
+  it("returns a negative value when UCUM conversion shows actual is lower", () => {
+    const actual: Quantity = { value: 500, system: UCUM_SYSTEM, code: "mg" };
+    const expected: Quantity = { value: 1, system: UCUM_SYSTEM, code: "g" };
+
+    const diff = compareQuantities(actual, expected);
+    expect(diff).toBeLessThan(0);
+  });
+
+  it("returns zero when UCUM conversion matches even with unit text", () => {
+    const actual: Quantity = { value: 1, system: UCUM_SYSTEM, unit: "kg" };
+    const expected: Quantity = { value: 1000, system: UCUM_SYSTEM, unit: "g" };
+
+    const diff = compareQuantities(actual, expected);
+    expect(diff).toBe(0);
+  });
+
+  it("returns undefined when quantities are not comparable", () => {
+    const actual: Quantity = { value: 1, system: UCUM_SYSTEM, code: "mg" };
+    const expected: Quantity = {
+      value: 1,
+      system: "http://example",
+      code: "mg",
+    };
+
+    expect(compareQuantities(actual, expected)).toBeUndefined();
+  });
+
+  it("returns undefined when comparators differ", () => {
+    const actual: Quantity = {
+      value: 5,
+      comparator: "<",
+      system: UCUM_SYSTEM,
+      code: "mg",
+    };
+    const expected: Quantity = {
+      value: 5,
+      comparator: "<=",
+      system: UCUM_SYSTEM,
+      code: "mg",
+    };
+
+    expect(compareQuantities(actual, expected)).toBeUndefined();
+  });
+
+  it("returns undefined when either value lacks numeric data", () => {
+    const actual: Quantity = { unit: "mg", system: UCUM_SYSTEM };
+    const expected: Quantity = { value: 5, unit: "mg", system: UCUM_SYSTEM };
+
+    expect(compareQuantities(actual, expected)).toBeUndefined();
+  });
+
+  it("treats undefined system with UCUM code as convertible", () => {
+    const actual: Quantity = { value: 2, code: "g" };
+    const expected: Quantity = { value: 1000, system: UCUM_SYSTEM, code: "mg" };
+
+    const diff = compareQuantities(actual, expected);
+    expect(diff).toBeGreaterThan(0);
+  });
+
+  it("returns undefined when UCUM conversion fails for invalid code", () => {
+    const actual: Quantity = { value: 5, system: UCUM_SYSTEM, code: "invalid" };
+    const expected: Quantity = { value: 5, system: UCUM_SYSTEM, code: "mg" };
+
+    expect(compareQuantities(actual, expected)).toBeUndefined();
   });
 });

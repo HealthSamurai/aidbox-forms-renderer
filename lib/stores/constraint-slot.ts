@@ -23,7 +23,6 @@ export class ConstraintSlot {
 
     const value = this.slot.value;
 
-    console.log("ConstraintSlot", this.definition.key, value);
     if (value === undefined || value === null) {
       return undefined;
     }

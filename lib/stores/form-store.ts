@@ -1,6 +1,7 @@
 import {
   ExpressionEnvironment,
   IExpressionEnvironmentProvider,
+  IExpressionRegistry,
   IForm,
   INode,
   IPresentableNode,
@@ -33,7 +34,7 @@ import {
 } from "./repeating-group-wrapper.ts";
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { Scope } from "./scope.ts";
-import { ExpressionRegistry } from "./expression-registry.ts";
+import { BaseExpressionRegistry } from "./base-expression-registry.ts";
 import { shouldCreateStore } from "../utils.ts";
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
@@ -52,7 +53,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private submitAttempted = false;
 
   readonly coordinator = new EvaluationCoordinator();
-  readonly expressionRegistry: ExpressionRegistry;
+  readonly expressionRegistry: IExpressionRegistry;
 
   constructor(questionnaire: Questionnaire, response?: QuestionnaireResponse) {
     makeObservable(this);
@@ -60,7 +61,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     this.questionnaire = questionnaire;
     this.initialResponse = response;
 
-    this.expressionRegistry = new ExpressionRegistry(
+    this.expressionRegistry = new BaseExpressionRegistry(
       this.coordinator,
       this.scope,
       this,
@@ -114,6 +115,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       }
       case "group":
         if (item.repeats) {
+          // todo: handle dynamic repeats changes
           const store = new RepeatingGroupWrapper(
             this,
             item,
@@ -172,15 +174,12 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
   @computed
   get issues(): OperationOutcomeIssue[] {
-    const issues = [...this.expressionRegistry.issues];
+    const issues = [
+      ...this.expressionRegistry.registrationIssues,
+      ...this.expressionRegistry.slotsIssues,
+    ];
     if (this.isSubmitAttempted) {
-      issues.push(
-        ...this.expressionRegistry.constraints
-          .map((constraint) => constraint.issue)
-          .filter(
-            (issue): issue is OperationOutcomeIssue => issue !== undefined,
-          ),
-      );
+      issues.push(...this.expressionRegistry.constraintsIssues);
     }
     return issues;
   }
@@ -189,10 +188,9 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   validateAll() {
     this.submitAttempted = true;
     // TODO: surface a form-level summary when validation fails.
-    const blockingFormIssues = this.expressionRegistry.constraints
-      .map((constraint) => constraint.issue)
-      .filter((issue): issue is OperationOutcomeIssue => issue !== undefined)
-      .some((issue) => issue.severity === "error");
+    const blockingFormIssues = this.expressionRegistry.constraintsIssues.some(
+      (issue) => issue.severity === "error",
+    );
 
     const isValid =
       !blockingFormIssues &&
@@ -248,7 +246,8 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       return node.nodes;
     }
     if (isQuestionNode(node)) {
-      return node.answers.flatMap((answer) => answer.nodes);
+      const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
+      return answers.flatMap((answer) => answer.nodes);
     }
     return [];
   }

@@ -1,0 +1,112 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-dynamic-quantity",
+  "status": "active",
+  "title": "Dynamic Quantity Expressions",
+  "description": "Shows minQuantityExpression and maxQuantityExpression adjusting the allowable titration window for a medication dose.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Adjust the current dose and clinic limit to see the suggested titration window update."
+    },
+    {
+      "linkId": "dosing",
+      "type": "group",
+      "text": "Dose planning",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "currentDose",
+            "expression": "%context.item.where(linkId='current-dose').answer.valueQuantity.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "clinicCeiling",
+            "expression": "%context.item.where(linkId='clinic-limit').answer.valueQuantity.last()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "current-dose",
+          "type": "quantity",
+          "text": "Current daily dose",
+          "initial": [
+            {
+              "valueQuantity": {
+                "value": 60,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "clinic-limit",
+          "type": "quantity",
+          "text": "Clinic ceiling",
+          "initial": [
+            {
+              "valueQuantity": {
+                "value": 90,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "target-dose",
+          "type": "quantity",
+          "text": "Proposed target dose",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minQuantity",
+              "valueQuantity": {
+                "value": 0,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%currentDose.exists(), %currentDose - 10 'mg', 0 'mg')"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxQuantity",
+              "valueQuantity": {
+                "value": 0,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%clinicCeiling.exists(), %clinicCeiling, 120 'mg')"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

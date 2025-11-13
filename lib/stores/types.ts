@@ -41,8 +41,6 @@ import {
   TriggerDefinition,
   UsageContext,
 } from "fhir/r5";
-import type { EvaluationCoordinator } from "./evaluation-coordinator.ts";
-import { ExpressionRegistry } from "./expression-registry.ts";
 import type { HTMLAttributes } from "react";
 
 export type OperationOutcomeIssueCode =
@@ -59,17 +57,47 @@ export type ExpressionSlotKind =
   | "answer"
   | "min-value"
   | "max-value"
+  | "min-occurs"
+  | "max-occurs"
   | "constraint"
   | "min-quantity"
   | "max-quantity"
+  | "required"
   | "text"
-  | "readonly"
+  | "read-only"
   | "repeats";
 
+export interface IEvaluationCoordinator {
+  trackEvaluation<T>(slot: IExpressionSlot, run: () => T): T;
+  trackWrite(slot: IExpressionSlot, commit: () => boolean): void;
+}
+export interface IExpressionRegistry {
+  readonly registrationIssues: OperationOutcomeIssue[];
+  readonly slotsIssues: OperationOutcomeIssue[];
+  readonly constraintsIssues: OperationOutcomeIssue[];
+}
+
+export interface INodeExpressionRegistry extends IExpressionRegistry {
+  readonly enableWhen: IExpressionSlot | undefined;
+  readonly initial: IExpressionSlot | undefined;
+  readonly calculated: IExpressionSlot | undefined;
+  readonly answer: IExpressionSlot | undefined;
+  readonly minValue: IExpressionSlot | undefined;
+  readonly maxValue: IExpressionSlot | undefined;
+  readonly maxQuantity: IExpressionSlot | undefined;
+  readonly minQuantity: IExpressionSlot | undefined;
+  readonly minOccurs: IExpressionSlot | undefined;
+  readonly maxOccurs: IExpressionSlot | undefined;
+  readonly required: IExpressionSlot | undefined;
+
+  readonly text: IExpressionSlot | undefined;
+  readonly readOnly: IExpressionSlot | undefined;
+  readonly repeats: IExpressionSlot | undefined;
+}
 
 export interface IExpressionSlot {
   readonly name?: string | undefined;
-  readonly value: unknown;
+  readonly value: unknown; // todo: make a universal normalization function for the value
   readonly error?: OperationOutcomeIssue | undefined;
   readonly kind: ExpressionSlotKind;
 
@@ -326,10 +354,9 @@ export interface IPresentableNode {
 }
 
 export interface IActualNode extends IPresentableNode {
-  readonly readOnly: boolean;
   readonly minOccurs: number;
-  readonly maxOccurs: number | undefined;
-  readonly expressionRegistry: ExpressionRegistry | undefined;
+  readonly maxOccurs: number;
+  readonly expressionRegistry: INodeExpressionRegistry;
 
   readonly isDirty: boolean;
 }
@@ -344,7 +371,6 @@ export interface IDisplayNode extends IActualNode {}
 export interface IRepeatingGroupNode extends IActualNode {
   readonly index: number;
   readonly nodes: Array<IPresentableNode>;
-  readonly expressionIssues: Array<OperationOutcomeIssue>;
   remove(): void;
 }
 
@@ -407,8 +433,8 @@ export interface IForm {
   response: QuestionnaireResponse | undefined;
   nodes: Array<IPresentableNode>;
   readonly expressionResponse: QuestionnaireResponse;
-  readonly coordinator: EvaluationCoordinator;
-  readonly expressionRegistry: ExpressionRegistry;
+  readonly coordinator: IEvaluationCoordinator;
+  readonly expressionRegistry: IExpressionRegistry;
   readonly scope: IScope;
 
   readonly isSubmitAttempted: boolean;

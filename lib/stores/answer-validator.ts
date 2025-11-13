@@ -3,7 +3,6 @@ import type { OperationOutcomeIssue, Quantity } from "fhir/r5";
 
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
-  answerHasContent,
   compareDateTimeValues,
   compareDateValues,
   compareQuantities,
@@ -15,7 +14,7 @@ import {
   findExtensions,
   isQuantity,
   makeIssue,
-  parseNumber,
+  normalizeExpressionValues,
   stringifyValue,
 } from "../utils.ts";
 import type {
@@ -57,14 +56,6 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
       return [];
     }
 
-    const populatedAnswers = this.question.answers.filter(answerHasContent);
-    const populatedIndex = populatedAnswers.findIndex(
-      (candidate) => candidate === this.answer,
-    );
-    if (populatedIndex < 0) {
-      return [];
-    }
-
     const type = this.question.type;
     const value = this.answer.value as DataTypeToType<
       AnswerTypeToDataType<T>
@@ -90,12 +81,6 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         }
 
         const stringIssues: OperationOutcomeIssue[] = [];
-
-        if (value.trim().length === 0) {
-          stringIssues.push(
-            makeIssue("required", "Text answers may not be blank."),
-          );
-        }
 
         if (minLength != null && value.length < minLength) {
           stringIssues.push(
@@ -219,7 +204,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
 
           if (quantityMin) {
             const diff = compareQuantities(quantityValue, quantityMin);
-            if (diff !== undefined && diff < 0) {
+            if (diff === undefined || diff < 0) {
               const formattedMin = stringifyValue("Quantity", quantityMin);
               quantityIssues.push(
                 makeIssue(
@@ -232,7 +217,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
 
           if (quantityMax) {
             const diff = compareQuantities(quantityValue, quantityMax);
-            if (diff !== undefined && diff > 0) {
+            if (diff === undefined || diff > 0) {
               const formattedMax = stringifyValue("Quantity", quantityMax);
               quantityIssues.push(
                 makeIssue(
@@ -510,7 +495,11 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         : this.question.expressionRegistry?.maxValue;
 
     if (slot !== undefined) {
-      return this.resolveNumberExpression(slot.value);
+      const source = Array.isArray(slot.value) ? slot.value[0] : slot.value;
+      const candidate = normalizeExpressionValues(type, source).at(0);
+      return typeof candidate === "number" && Number.isFinite(candidate)
+        ? candidate
+        : undefined;
     }
 
     const url = kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE;
@@ -522,11 +511,15 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     type: "date" | "dateTime" | "time",
   ): string | undefined {
     const template = this.question.template;
-    const registry = this.question.expressionRegistry;
-    const slot = kind === "min" ? registry?.minValue : registry?.maxValue;
+    const slot =
+      kind === "min"
+        ? this.question.expressionRegistry.minValue
+        : this.question.expressionRegistry.maxValue;
 
     if (slot !== undefined) {
-      return this.resolveStringExpression(slot.value);
+      const source = Array.isArray(slot.value) ? slot.value[0] : slot.value;
+      const candidate = normalizeExpressionValues(type, source).at(0);
+      return typeof candidate === "string" ? candidate : undefined;
     }
 
     const url = kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE;
@@ -544,11 +537,19 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
   private resolveQuantityBound(kind: "min" | "max"): Quantity | undefined {
     const template = this.question.template;
 
-    const registry = this.question.expressionRegistry;
-    const slot = kind === "min" ? registry?.minValue : registry?.maxValue;
+    const slot =
+      kind === "min"
+        ? (this.question.expressionRegistry.minQuantity ??
+          this.question.expressionRegistry.minValue)
+        : (this.question.expressionRegistry.maxQuantity ??
+          this.question.expressionRegistry.maxValue);
 
     if (slot !== undefined) {
-      return this.resolveQuantityExpression(slot.value);
+      const source = Array.isArray(slot.value) ? slot.value[0] : slot.value;
+      const resolved = normalizeExpressionValues("quantity", source).at(0);
+      if (resolved) {
+        return isQuantity(resolved) ? resolved : undefined;
+      }
     }
 
     return (
@@ -563,86 +564,5 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         "Quantity",
       )
     );
-  }
-
-  private resolveNumberExpression(candidate: unknown): number | undefined {
-    const entry = Array.isArray(candidate) ? candidate[0] : candidate;
-    if (entry == null) {
-      return undefined;
-    }
-
-    if (typeof entry === "number" || typeof entry === "string") {
-      return parseNumber(entry);
-    }
-
-    if (typeof entry === "object") {
-      const container = entry as {
-        valueDecimal?: unknown;
-        valueInteger?: unknown;
-        value?: unknown;
-      };
-      const numericCandidate =
-        container.valueDecimal ?? container.valueInteger ?? container.value;
-      if (
-        typeof numericCandidate === "number" ||
-        typeof numericCandidate === "string"
-      ) {
-        return parseNumber(numericCandidate);
-      }
-    }
-
-    return undefined;
-  }
-
-  private resolveStringExpression(candidate: unknown): string | undefined {
-    const entry = Array.isArray(candidate) ? candidate[0] : candidate;
-    if (entry == null) {
-      return undefined;
-    }
-
-    if (typeof entry === "string") {
-      return entry;
-    }
-
-    if (typeof entry === "object") {
-      const container = entry as {
-        valueString?: unknown;
-        valueDate?: unknown;
-        valueDateTime?: unknown;
-        valueTime?: unknown;
-        value?: unknown;
-      };
-      const candidateString =
-        container.valueString ??
-        container.valueDate ??
-        container.valueDateTime ??
-        container.valueTime ??
-        container.value;
-
-      return typeof candidateString === "string" ? candidateString : undefined;
-    }
-
-    return undefined;
-  }
-
-  private resolveQuantityExpression(candidate: unknown): Quantity | undefined {
-    const entry = Array.isArray(candidate) ? candidate[0] : candidate;
-
-    if (!entry || typeof entry !== "object") {
-      return undefined;
-    }
-
-    if (isQuantity(entry)) {
-      return entry as Quantity;
-    }
-
-    const container = entry as { valueQuantity?: unknown; value?: unknown };
-    const nested = container.valueQuantity ?? container.value;
-
-    if (nested && typeof nested === "object" && isQuantity(nested)) {
-      return nested as Quantity;
-    }
-
-    return undefined;
   }
 }

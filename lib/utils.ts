@@ -20,9 +20,11 @@ import {
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
   QuestionnaireItemAnswerOption,
+  QuestionnaireResponseItem,
   Reference,
-  Expression,
 } from "fhir/r5";
+import r5 from "fhirpath/fhir-context/r5";
+import { UcumLhcUtils } from "@lhncbc/ucum-lhc";
 
 export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
@@ -171,8 +173,6 @@ export function answerify<T extends AnswerType>(
   return options;
 }
 
-
-
 export function findExtension(
   element: Element,
   url: string,
@@ -297,6 +297,46 @@ export function parseNumber(value: unknown): number | undefined {
   }
 
   return undefined;
+}
+
+function parseQuantityString(value: string): Quantity | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const match = trimmed.match(
+    /^([+-]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][+-]?\d+)?)\s*(.*)$/,
+  );
+  if (!match) {
+    return undefined;
+  }
+
+  const numericPortion = parseNumber(match[1]);
+  if (numericPortion === undefined) {
+    return undefined;
+  }
+
+  const unitPortion = match[2]?.trim() ?? "";
+  if (unitPortion.length === 0) {
+    return { value: numericPortion };
+  }
+
+  const normalizedUnit =
+    unitPortion.length >= 2 &&
+    ((unitPortion.startsWith("'") && unitPortion.endsWith("'")) ||
+      (unitPortion.startsWith('"') && unitPortion.endsWith('"')))
+      ? unitPortion.slice(1, -1)
+      : unitPortion;
+
+  return normalizedUnit.length > 0
+    ? {
+        value: numericPortion,
+        unit: normalizedUnit,
+        code: normalizedUnit,
+        system: "http://unitsofmeasure.org",
+      }
+    : { value: numericPortion };
 }
 
 export function countDecimalPlaces(value: number): number {
@@ -661,13 +701,47 @@ export function areQuantitiesEqual(actual: unknown, expected: unknown) {
     return false;
   }
 
-  return (
-    (actual.value ?? null) === (expected.value ?? null) &&
-    (actual.unit ?? null) === (expected.unit ?? null) &&
-    (actual.system ?? null) === (expected.system ?? null) &&
-    (actual.code ?? null) === (expected.code ?? null) &&
-    (actual.comparator ?? null) === (expected.comparator ?? null)
-  );
+  if ((actual.comparator ?? null) !== (expected.comparator ?? null)) {
+    return false;
+  }
+
+  const actualValue =
+    typeof actual.value === "number" ? actual.value : undefined;
+  const expectedValue =
+    typeof expected.value === "number" ? expected.value : undefined;
+
+  if (actualValue === undefined || expectedValue === undefined) {
+    return (
+      (actual.value ?? null) === (expected.value ?? null) &&
+      (actual.unit ?? null) === (expected.unit ?? null) &&
+      (actual.system ?? null) === (expected.system ?? null) &&
+      (actual.code ?? null) === (expected.code ?? null)
+    );
+  }
+
+  if (haveSameQuantityIdentity(actual, expected)) {
+    return actualValue === expectedValue;
+  }
+
+  if (isConvertibleQuantity(actual) && isConvertibleQuantity(expected)) {
+    const targetCode = getUcumUnitCode(expected);
+    if (targetCode) {
+      const normalizedActual = convertQuantityValue(actual, targetCode);
+      if (typeof normalizedActual === "number") {
+        return normalizedActual === expectedValue;
+      }
+    }
+
+    const fallbackTarget = getUcumUnitCode(actual);
+    if (fallbackTarget) {
+      const normalizedExpected = convertQuantityValue(expected, fallbackTarget);
+      if (typeof normalizedExpected === "number") {
+        return normalizedExpected === actualValue;
+      }
+    }
+  }
+
+  return false;
 }
 
 export function areReferencesEqual(actual: unknown, expected: unknown) {
@@ -1110,6 +1184,74 @@ export function fhirTimeToMillis(value: unknown): number | undefined {
   return ((hours * 60 + minutes) * 60 + seconds) * 1000 + millis;
 }
 
+const UCUM_SYSTEM_URI = "http://unitsofmeasure.org";
+
+let ucumUtilsInstance: UcumLhcUtils | undefined;
+
+function getUcumUtils(): UcumLhcUtils {
+  if (!ucumUtilsInstance) {
+    ucumUtilsInstance = new UcumLhcUtils();
+  }
+  return ucumUtilsInstance;
+}
+
+function isUcumSystem(system: string | null | undefined): boolean {
+  return system == null || system === UCUM_SYSTEM_URI;
+}
+
+function getUcumUnitCode(quantity: Quantity): string | undefined {
+  const raw = quantity.code ?? quantity.unit;
+  if (typeof raw !== "string") {
+    return undefined;
+  }
+  const trimmed = raw.trim();
+  return trimmed.length === 0 ? undefined : trimmed;
+}
+
+function isConvertibleQuantity(quantity: Quantity): boolean {
+  return (
+    isUcumSystem(quantity.system ?? undefined) &&
+    getUcumUnitCode(quantity) !== undefined
+  );
+}
+
+function convertQuantityValue(
+  quantity: Quantity,
+  targetCode: string,
+): number | undefined {
+  if (typeof quantity.value !== "number") {
+    return undefined;
+  }
+
+  const sourceCode = getUcumUnitCode(quantity);
+  if (!sourceCode) {
+    return undefined;
+  }
+
+  try {
+    const result = getUcumUtils().convertUnitTo(
+      sourceCode,
+      quantity.value,
+      targetCode,
+    );
+    if (result.status === "succeeded" && typeof result.toVal === "number") {
+      return result.toVal;
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
+function haveSameQuantityIdentity(a: Quantity, b: Quantity): boolean {
+  return (
+    (a.system ?? null) === (b.system ?? null) &&
+    (a.code ?? null) === (b.code ?? null) &&
+    (a.unit ?? null) === (b.unit ?? null)
+  );
+}
+
 export function compareQuantities(
   value: unknown,
   expected: unknown,
@@ -1118,12 +1260,7 @@ export function compareQuantities(
     return undefined;
   }
 
-  if (
-    (value.system ?? null) !== (expected.system ?? null) ||
-    (value.code ?? null) !== (expected.code ?? null) ||
-    (value.unit ?? null) !== (expected.unit ?? null) ||
-    (value.comparator ?? null) !== (expected.comparator ?? null)
-  ) {
+  if ((value.comparator ?? null) !== (expected.comparator ?? null)) {
     return undefined;
   }
 
@@ -1131,7 +1268,21 @@ export function compareQuantities(
     return undefined;
   }
 
-  return value.value - expected.value;
+  if (haveSameQuantityIdentity(value, expected)) {
+    return value.value - expected.value;
+  }
+
+  if (isConvertibleQuantity(value) && isConvertibleQuantity(expected)) {
+    const targetCode = getUcumUnitCode(expected);
+    if (targetCode) {
+      const normalizedActual = convertQuantityValue(value, targetCode);
+      if (typeof normalizedActual === "number") {
+        return normalizedActual - expected.value;
+      }
+    }
+  }
+
+  return undefined;
 }
 
 export function compareNumbers(
@@ -1161,15 +1312,17 @@ export function evaluateEnableWhenCondition(
   question: IQuestionNode,
 ): boolean {
   if (
-    isAncestorOf(self, question) || // ff the question is a *descendant*, we must treat it as not valued (otherwise that would recurse).
+    isAncestorOf(self, question) || // if the question is a *descendant*, we must treat it as not valued (otherwise that would recurse).
     !question.isEnabled // if the dependency exists but is currently disabled, also treat as not valued.
   ) {
     return condition.operator === "exists"
       ? condition.answerBoolean === false // When nothing is valued, only "exists = false" is true.
       : false; // All other operators cannot match without any answers
   }
-
-  const answers = question.answers.filter(answerHasOwnValue);
+  const answers = question.repeats
+    ? question.answers
+    : question.answers.slice(0, 1);
+  const populatedAnswers = answers.filter(answerHasOwnValue);
   const operator = condition.operator;
 
   switch (operator) {
@@ -1178,7 +1331,9 @@ export function evaluateEnableWhenCondition(
       if (typeof expected !== "boolean") {
         return false;
       }
-      return expected ? answers.length > 0 : answers.length === 0;
+      return expected
+        ? populatedAnswers.length > 0
+        : populatedAnswers.length === 0;
     }
 
     case "=": {
@@ -1190,7 +1345,7 @@ export function evaluateEnableWhenCondition(
         return false;
       }
 
-      for (const answer of answers) {
+      for (const answer of populatedAnswers) {
         const actual = answer.value;
         if (actual == null) continue;
         if (
@@ -1212,7 +1367,7 @@ export function evaluateEnableWhenCondition(
       }
 
       let comparable = false;
-      for (const answer of answers) {
+      for (const answer of populatedAnswers) {
         const actual = answer.value;
         if (actual == null) continue;
         comparable = true;
@@ -1245,7 +1400,7 @@ export function evaluateEnableWhenCondition(
         case "text":
         case "url":
         case "quantity": {
-          for (const answer of answers) {
+          for (const answer of populatedAnswers) {
             const actual = answer.value;
             if (actual == null) continue;
             const diff = compareValues(
@@ -1593,48 +1748,98 @@ export function areValuesEqual<T extends DataType>(
   }
 }
 
-export function extractVariableExpressions(
-  extensions: Extension[] | undefined,
-): Expression[] {
-  return (extensions || [])
-    .map(
-      (extension) =>
-        extension.url === EXT.SDC_VARIABLE && extension.valueExpression,
-    )
-    .filter(Boolean) as Expression[];
+export function normalizeExpressionValues<T extends AnswerType>(
+  type: T,
+  value: unknown,
+): Array<DataTypeToType<AnswerTypeToDataType<T>> | null> {
+  const collection = Array.isArray(value) ? value : [value];
+  const result: Array<DataTypeToType<AnswerTypeToDataType<T>> | null> = [];
+  collection.forEach((entry) => {
+    const coerced = coerceExpressionValue(type, entry);
+    if (coerced !== undefined) {
+      result.push(coerced);
+    }
+  });
+  return result;
 }
 
-export function extractEnableWhenExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_ENABLE_WHEN_EXPR)
-    ?.valueExpression;
+export function coerceExpressionValue<T extends AnswerType>(
+  type: T,
+  value: unknown,
+): DataTypeToType<AnswerTypeToDataType<T>> | null | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  switch (type) {
+    case "boolean":
+      if (typeof value === "boolean")
+        return value as DataTypeToType<AnswerTypeToDataType<T>>;
+      if (typeof value === "string") {
+        if (/^true$/i.test(value))
+          return true as DataTypeToType<AnswerTypeToDataType<T>>;
+        if (/^false$/i.test(value))
+          return false as DataTypeToType<AnswerTypeToDataType<T>>;
+      }
+      return undefined;
+    case "decimal":
+    case "integer": {
+      const numberValue = parseNumber(value);
+      return numberValue as DataTypeToType<AnswerTypeToDataType<T>>;
+    }
+    case "date":
+    case "dateTime":
+    case "time":
+    case "string":
+    case "text":
+    case "url":
+      return typeof value === "string"
+        ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+        : undefined;
+    case "coding":
+    case "attachment":
+    case "reference":
+      return value && typeof value === "object"
+        ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+        : undefined;
+    case "quantity":
+      if (typeof value === "string") {
+        const parsedQuantity = parseQuantityString(value);
+        if (parsedQuantity) {
+          return parsedQuantity as DataTypeToType<AnswerTypeToDataType<T>>;
+        }
+      }
+
+      return value && typeof value === "object" && isQuantity(value)
+        ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
+        : undefined;
+    default:
+      return undefined;
+  }
 }
 
-export function extractInitialExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_INITIAL_EXPR)
-    ?.valueExpression;
-}
+export function withQuestionnaireResponseItemMeta(
+  item: QuestionnaireResponseItem,
+): QuestionnaireResponseItem {
+  if (!Object.hasOwn(item, "__path__")) {
+    Object.defineProperty(item, "__path__", {
+      enumerable: false,
+      configurable: false,
+      writable: false,
+      value: {
+        model: r5,
+        fhirNodeDataType: "QuestionnaireResponse.item",
+        propName: "item",
+        path: "QuestionnaireResponse.item",
+        parentResNode: null,
+        index: null,
+      },
+    });
+  }
 
-export function extractCalculatedExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.SDC_CALCULATED_EXPR)
-    ?.valueExpression;
-}
-
-export function extractCQFExpression(
-  extensions: Extension[] | undefined,
-): Expression | undefined {
-  return extensions?.find(({ url }) => url === EXT.CQF_EXPRESSION)
-    ?.valueExpression;
-}
-
-
-export function isQuestionnaireItem(
-  item: Element
-): item is QuestionnaireItem {
-  return ("text" in item);
+  return item;
 }

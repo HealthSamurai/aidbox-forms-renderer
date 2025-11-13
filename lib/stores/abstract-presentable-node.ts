@@ -1,5 +1,5 @@
 import { computed, makeObservable } from "mobx";
-import { IPresentableNode, IForm, INode, IScope } from "./types.ts";
+import { IForm, INode, IPresentableNode, IScope } from "./types.ts";
 import type {
   Coding,
   OperationOutcomeIssue,
@@ -46,16 +46,23 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
 
   @computed
   get help() {
-    return (
-      this.template.item?.find(
-        (item) => item.type === "display" && getItemControl(item) === "help",
-      )?.text ?? undefined
-    );
+    return this.template.item?.find(
+      (item) => item.type === "display" && getItemControl(item) === "help",
+    )?.text;
   }
 
   @computed
   get required() {
     return !!this.template.required;
+  }
+
+  @computed
+  get isEnabled(): boolean {
+    if (this.parentStore && !this.parentStore.isEnabled) {
+      return false;
+    }
+
+    return this._isEnabled;
   }
 
   @computed
@@ -67,7 +74,7 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
     }
 
     return (
-      !!this.template.readOnly ||
+      this._readOnly ||
       (!this.isEnabled && this.template.disabledDisplay === "protected")
     );
   }
@@ -114,7 +121,9 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
 
   abstract get key(): string;
 
-  abstract get isEnabled(): boolean;
+  protected abstract get _isEnabled(): boolean;
+
+  protected abstract get _readOnly(): boolean;
 
   abstract get hasErrors(): boolean;
 

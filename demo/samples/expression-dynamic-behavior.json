@@ -1,0 +1,206 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "expression-dynamic-behavior",
+  "status": "active",
+  "title": "Dynamic Behavior Expressions",
+  "description": "Shows how expressions can switch labels, read-only state, repeats, required flags, and min/max occurs settings at runtime.",
+  "item": [
+    {
+      "linkId": "intro",
+      "type": "display",
+      "text": "Use the toggles below to see the nickname and update fields react to expressions."
+    },
+    {
+      "linkId": "controls",
+      "type": "group",
+      "text": "Behavior toggles",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "useNickname",
+            "expression": "%context.item.where(linkId='nickname-label-toggle').answer.valueBoolean.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "lockNickname",
+            "expression": "%context.item.where(linkId='nickname-lock-toggle').answer.valueBoolean.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "allowMultiple",
+            "expression": "%context.item.where(linkId='nickname-repeat-toggle').answer.valueBoolean.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "requireNickname",
+            "expression": "%context.item.where(linkId='nickname-required-toggle').answer.valueBoolean.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "updateMin",
+            "expression": "%context.item.where(linkId='min-occurs-count').answer.valueInteger.last()"
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "name": "updateMax",
+            "expression": "%context.item.where(linkId='max-occurs-count').answer.valueInteger.last()"
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "nickname-label-toggle",
+          "type": "boolean",
+          "text": "Use personalized nickname label?"
+        },
+        {
+          "linkId": "nickname-lock-toggle",
+          "type": "boolean",
+          "text": "Lock nickname entry?"
+        },
+        {
+          "linkId": "nickname-repeat-toggle",
+          "type": "boolean",
+          "text": "Allow multiple nicknames?"
+        },
+        {
+          "linkId": "nickname-required-toggle",
+          "type": "boolean",
+          "text": "Make nickname required?"
+        },
+        {
+          "linkId": "min-occurs-count",
+          "type": "integer",
+          "text": "Minimum number of weekly updates",
+          "initial": [
+            {
+              "valueInteger": 1
+            }
+          ]
+        },
+        {
+          "linkId": "max-occurs-count",
+          "type": "integer",
+          "text": "Maximum number of weekly updates",
+          "initial": [
+            {
+              "valueInteger": 3
+            }
+          ]
+        },
+        {
+          "linkId": "nickname",
+          "type": "string",
+          "repeats": true,
+          "text": "Nickname",
+          "_text": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "iif(%useNickname, 'Preferred nickname', 'Optional nickname')"
+                }
+              }
+            ]
+          },
+          "_readOnly": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%lockNickname"
+                }
+              }
+            ]
+          },
+          "_repeats": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%allowMultiple"
+                }
+              }
+            ]
+          },
+          "_required": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%requireNickname"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "linkId": "status-updates",
+          "type": "string",
+          "text": "Weekly update",
+          "repeats": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+              "valueInteger": 0,
+              "_valueInteger": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%updateMin.exists(), %updateMin, 0)"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+              "valueInteger": 5,
+              "_valueInteger": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%updateMax.exists(), %updateMax, 5)"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "item": [
+            {
+              "linkId": "update-note",
+              "type": "string",
+              "text": "Summary"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

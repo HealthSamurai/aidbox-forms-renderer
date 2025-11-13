@@ -146,7 +146,7 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry?.enableWhen;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -176,7 +176,7 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry?.enableWhen;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );
@@ -206,7 +206,7 @@ describe("enableWhenExpression", () => {
     }
 
     expect(controlled.isEnabled).toBe(false);
-    const slot = controlled.expressionRegistry?.enableWhen;
+    const slot = controlled.expressionRegistry.enableWhen;
     expect(slot?.error?.diagnostics).toContain(
       "Failed to evaluate enable-when expression",
     );

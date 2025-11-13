@@ -1,6 +1,11 @@
-import { computed, makeObservable, observable, runInAction } from "mobx";
 import {
-  AnswerType,
+  computed,
+  makeObservable,
+  observable,
+  override,
+  runInAction,
+} from "mobx";
+import {
   ExpressionEnvironment,
   IActualNode,
   IExpressionEnvironmentProvider,
@@ -14,12 +19,13 @@ import {
   QuestionnaireItem,
   QuestionnaireItemEnableWhen,
 } from "fhir/r5";
-import { ExpressionRegistry } from "./expression-registry.ts";
+import { NodeExpressionRegistry } from "./node-expression-registry.ts";
 import {
   booleanify,
   evaluateEnableWhenCondition,
   EXT,
   findExtension,
+  normalizeExpressionValues,
 } from "../utils.ts";
 import { isQuestionNode } from "./question-store.ts";
 import { AbstractPresentableNode } from "./abstract-presentable-node.ts";
@@ -30,7 +36,7 @@ export abstract class AbstractActualNodeStore
 {
   protected _scope: IScope;
   protected _key: string;
-  protected _expressionRegistry: ExpressionRegistry | undefined;
+  abstract readonly expressionRegistry: NodeExpressionRegistry;
   protected validator: INodeValidator | undefined;
 
   @observable
@@ -49,8 +55,6 @@ export abstract class AbstractActualNodeStore
 
     this._scope = this.createScope(parentScope);
     this._key = this.createKey(parentKey);
-
-    this.initializeExpressionRegistry(this, template);
   }
 
   protected createScope(baseScope: IScope): IScope {
@@ -70,14 +74,11 @@ export abstract class AbstractActualNodeStore
     return this._key;
   }
 
-  get expressionRegistry(): ExpressionRegistry | undefined {
-    return this._expressionRegistry;
-  }
-
   @computed
   get expressionEnvironment(): ExpressionEnvironment {
     return this.scope.mergeEnvironment({
       questionnaire: this.form.questionnaire,
+      resource: this.form.expressionResponse,
       qitem: this.template,
       context: this.expressionItems.at(0),
     });
@@ -85,27 +86,61 @@ export abstract class AbstractActualNodeStore
 
   @computed
   get minOccurs() {
-    return (
-      findExtension(this.template, EXT.MIN_OCCURS)?.valueInteger ??
-      (this.required ? 1 : 0)
-    );
+    const minOccursSlot = this.expressionRegistry.minOccurs;
+    if (minOccursSlot) {
+      const values = normalizeExpressionValues("integer", minOccursSlot.value);
+      const candidate = values[0];
+      if (candidate != null && Number.isFinite(candidate) && candidate >= 0) {
+        return Math.floor(candidate);
+      }
+    }
+
+    const extensionValue = findExtension(
+      this.template,
+      EXT.MIN_OCCURS,
+    )?.valueInteger;
+    if (typeof extensionValue === "number") {
+      return extensionValue;
+    }
+
+    return this.required ? 1 : 0;
   }
 
   @computed
   get maxOccurs() {
-    return (
-      findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger ??
-      Number.POSITIVE_INFINITY
-    );
+    const maxOccursSlot = this.expressionRegistry.maxOccurs;
+    if (maxOccursSlot) {
+      const values = normalizeExpressionValues("integer", maxOccursSlot.value);
+      const candidate = values[0];
+      if (candidate != null && Number.isFinite(candidate) && candidate >= 0) {
+        return Math.floor(candidate);
+      }
+    }
+
+    const extensionValue = findExtension(
+      this.template,
+      EXT.MAX_OCCURS,
+    )?.valueInteger;
+    if (typeof extensionValue === "number") {
+      return extensionValue;
+    }
+
+    return Number.POSITIVE_INFINITY;
+  }
+
+  @override
+  override get required() {
+    const slot = this.expressionRegistry.required;
+    if (slot) {
+      return booleanify(slot.value);
+    }
+
+    return super.required;
   }
 
   @computed
-  get isEnabled() {
-    if (this.parentStore && !this.parentStore.isEnabled) {
-      return false;
-    }
-
-    const enableWhenSlot = this.expressionRegistry?.enableWhen;
+  protected get _isEnabled() {
+    const enableWhenSlot = this.expressionRegistry.enableWhen;
     if (enableWhenSlot) {
       return booleanify(enableWhenSlot.value);
     }
@@ -123,6 +158,16 @@ export abstract class AbstractActualNodeStore
   }
 
   @computed
+  protected get _readOnly() {
+    const slot = this.expressionRegistry.readOnly;
+    if (slot) {
+      return booleanify(slot.value);
+    }
+
+    return !!this.template.readOnly;
+  }
+
+  @computed
   get hasErrors() {
     return this.issues.length > 0;
   }
@@ -135,19 +180,12 @@ export abstract class AbstractActualNodeStore
 
     const issues: OperationOutcomeIssue[] = [];
 
-    if (this.expressionRegistry) {
-      issues.push(...this.expressionRegistry.issues);
+    issues.push(...this.expressionRegistry.registrationIssues);
+    issues.push(...this.expressionRegistry.slotsIssues);
 
-      const shouldApplyConstraints = this.shouldValidate && !this.readOnly;
-      if (shouldApplyConstraints) {
-        issues.push(
-          ...this.expressionRegistry.constraints
-            .map((constraint) => constraint.issue)
-            .filter(
-              (issue): issue is OperationOutcomeIssue => issue !== undefined,
-            ),
-        );
-      }
+    const shouldApplyConstraints = this.shouldValidate && !this.readOnly;
+    if (shouldApplyConstraints) {
+      issues.push(...this.expressionRegistry.constraintsIssues);
     }
 
     if (this.shouldValidate && this.validator) {
@@ -162,12 +200,10 @@ export abstract class AbstractActualNodeStore
     return this.dirty;
   }
 
-  override get text (): string | undefined {
-    const textSlot = this.expressionRegistry?.text;
-    if (textSlot) {
-      const value = textSlot.value;
-      console.log("Text slot: ", textSlot.value);
-      return value != null ? String(value) : undefined;
+  override get text(): string | undefined {
+    const slot = this.expressionRegistry.text;
+    if (slot) {
+      return normalizeExpressionValues("text", slot.value).at(0) ?? undefined;
     }
     return this.template.text;
   }
@@ -191,19 +227,6 @@ export abstract class AbstractActualNodeStore
 
   protected get shouldValidate() {
     return this.form.isSubmitAttempted || this.isDirty;
-  }
-
-  protected initializeExpressionRegistry(
-    provider: IExpressionEnvironmentProvider,
-    template: QuestionnaireItem,
-  ) {
-    this._expressionRegistry = new ExpressionRegistry(
-      this.form.coordinator,
-      this.scope,
-      provider,
-      template,
-      this.template.type as AnswerType,
-    );
   }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {

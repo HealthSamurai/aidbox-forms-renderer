@@ -5,18 +5,25 @@ import {
   INonRepeatingGroupNode,
   IScope,
   SnapshotKind,
+  AnswerType,
 } from "./types.ts";
 import { action, computed, observable } from "mobx";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
-import { shouldCreateStore } from "../utils.ts";
+import {
+  shouldCreateStore,
+  withQuestionnaireResponseItemMeta,
+} from "../utils.ts";
 import { NonRepeatingGroupValidator } from "./non-repeating-group-validator.ts";
+import { NodeExpressionRegistry } from "./node-expression-registry.ts";
 
 export class NonRepeatingGroupStore
   extends AbstractActualNodeStore
   implements INonRepeatingGroupNode
 {
+  readonly expressionRegistry: NodeExpressionRegistry;
+
   @observable.shallow
   nodes = observable.array<IPresentableNode>([], {
     deep: false,
@@ -32,6 +39,14 @@ export class NonRepeatingGroupStore
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
+
+    this.expressionRegistry = new NodeExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      this,
+      template,
+      this.template.type as AnswerType,
+    );
 
     this.nodes.replace(
       (this.template.item ?? [])
@@ -69,10 +84,10 @@ export class NonRepeatingGroupStore
       }
     }
 
-    const item: QuestionnaireResponseItem = {
+    const item = withQuestionnaireResponseItemMeta({
       linkId: this.linkId,
-      text: this.text,
-    };
+      text: kind === "expression" ? this.template.text : this.text,
+    });
 
     if (childItems.length > 0) {
       item.item = childItems;

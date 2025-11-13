@@ -26,7 +26,10 @@ export class QuestionValidator implements INodeValidator {
     }
 
     const issues: OperationOutcomeIssue[] = [];
-    const populatedAnswers = this.question.answers.filter(answerHasContent);
+    const answers = this.question.repeats
+      ? this.question.answers
+      : this.question.answers.slice(0, 1);
+    const populatedAnswers = answers.filter(answerHasContent);
 
     if (
       this.question.minOccurs > 0 &&

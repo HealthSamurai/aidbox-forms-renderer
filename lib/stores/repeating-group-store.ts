@@ -1,5 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import {
+  AnswerType,
   IPresentableNode,
   IRepeatingGroupNode,
   IRepeatingGroupWrapper,
@@ -7,13 +8,18 @@ import {
 } from "./types.ts";
 import type { QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
-import { shouldCreateStore } from "../utils.ts";
+import {
+  shouldCreateStore,
+  withQuestionnaireResponseItemMeta,
+} from "../utils.ts";
+import { NodeExpressionRegistry } from "./node-expression-registry.ts";
 
 export class RepeatingGroupStore
   extends AbstractActualNodeStore
   implements IRepeatingGroupNode
 {
   readonly index: number;
+  readonly expressionRegistry: NodeExpressionRegistry;
 
   readonly group: IRepeatingGroupWrapper;
   @observable.shallow
@@ -36,7 +42,13 @@ export class RepeatingGroupStore
     this._scope = group.scope.extend(true);
     this._key = `${group.key}_/_${index}`;
 
-    this.initializeExpressionRegistry(this, group.template);
+    this.expressionRegistry = new NodeExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      this,
+      group.template,
+      this.template.type as AnswerType,
+    );
 
     this.nodes.replace(
       (this.template.item ?? []).filter(shouldCreateStore).map((item) =>
@@ -70,10 +82,10 @@ export class RepeatingGroupStore
       }
     }
 
-    const item: QuestionnaireResponseItem = {
+    const item = withQuestionnaireResponseItemMeta({
       linkId: this.group.linkId,
-      text: this.group.text,
-    };
+      text: mode === "expression" ? this.template.text : this.group.text,
+    });
 
     if (childItems.length > 0) {
       item.item = childItems;
@@ -86,11 +98,6 @@ export class RepeatingGroupStore
     return this.nodes.flatMap((child) =>
       kind === "response" ? child.responseItems : child.expressionItems,
     );
-  }
-
-  @computed
-  get expressionIssues() {
-    return this.expressionRegistry?.issues ?? [];
   }
 
   @action.bound

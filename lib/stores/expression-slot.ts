@@ -2,10 +2,10 @@ import { Expression, OperationOutcomeIssue } from "fhir/r5";
 import { action, computed, makeObservable, observable } from "mobx";
 import {
   ExpressionSlotKind,
+  IEvaluationCoordinator,
   IExpressionEnvironmentProvider,
   IExpressionSlot,
 } from "./types.ts";
-import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { makeIssue } from "../utils.ts";
 import fhirpath, { Model } from "fhirpath";
 import r5 from "fhirpath/fhir-context/r5";
@@ -19,7 +19,7 @@ export class UnsupportedExpressionLanguageError extends Error {
 export class ExpressionSlot implements IExpressionSlot {
   readonly kind: ExpressionSlotKind;
 
-  private readonly coordinator: EvaluationCoordinator;
+  private readonly coordinator: IEvaluationCoordinator;
   private readonly expression: Expression;
   private readonly environmentProvider: IExpressionEnvironmentProvider;
 
@@ -30,7 +30,7 @@ export class ExpressionSlot implements IExpressionSlot {
   private _error: OperationOutcomeIssue | undefined;
 
   constructor(
-    coordinator: EvaluationCoordinator,
+    coordinator: IEvaluationCoordinator,
     environmentProvider: IExpressionEnvironmentProvider,
     kind: ExpressionSlotKind,
     expression: Expression,
@@ -50,6 +50,10 @@ export class ExpressionSlot implements IExpressionSlot {
 
   @computed
   get error() {
+    if (!this._cycle && this._error === undefined) {
+      void this.value;
+    }
+
     if (this._cycle) {
       const message = `Failed to evaluate ${this.toString()} expression due to a dependency cycle`;
       return makeIssue("business-rule", message);
@@ -90,8 +94,9 @@ export class ExpressionSlot implements IExpressionSlot {
         this.setError(undefined);
         return result;
       } catch (error) {
-        console.log("error: ", error);
         const message = `Failed to evaluate ${this.toString()} expression ${this.summarizeError(error)}`;
+        console.warn("Unrecognized expression evaluation error:", error);
+
         this.setError(makeIssue("invalid", message));
         return undefined;
       }
@@ -132,6 +137,7 @@ export class ExpressionSlot implements IExpressionSlot {
     if (this._cycle) {
       return "due to a dependency cycle";
     }
+
     return "because it returned an error";
   }
 

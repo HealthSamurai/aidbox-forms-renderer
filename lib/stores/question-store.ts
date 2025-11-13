@@ -34,11 +34,15 @@ import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
   answerify,
+  booleanify,
   EXT,
   extractExtensionValue,
   getValue,
+  normalizeExpressionValues,
+  withQuestionnaireResponseItemMeta,
 } from "../utils.ts";
 import type { HTMLAttributes } from "react";
+import { NodeExpressionRegistry } from "./node-expression-registry.ts";
 
 type AnswerLifecycle =
   | "pristine"
@@ -51,6 +55,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   extends AbstractActualNodeStore
   implements IQuestionNode<T>
 {
+  readonly expressionRegistry: NodeExpressionRegistry;
+
   @observable.shallow
   readonly answers = observable.array<
     IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>
@@ -73,6 +79,15 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
     super(form, template, parentStore, parentScope, parentKey);
+
+    this.expressionRegistry = new NodeExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      this,
+      template,
+      this.template.type as AnswerType,
+    );
+
     this.validator = new QuestionValidator(this);
 
     if (!this.applyResponseValues(responseItem?.answer)) {
@@ -90,6 +105,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @computed
   get repeats() {
+    const slot = this.expressionRegistry.repeats;
+    if (slot) {
+      return booleanify(slot.value);
+    }
+
     return !!this.template.repeats;
   }
 
@@ -118,7 +138,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @computed.struct
   get answerOptions(): QuestionnaireItemAnswerOption[] {
-    const slot = this.expressionRegistry?.answer;
+    const slot = this.expressionRegistry.answer;
     return slot
       ? answerify(this.type, slot.value)
       : (this.template.answerOption ?? []);
@@ -191,13 +211,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @computed
   private get hasContent() {
-    return this.answers.some(answerHasContent);
+    const answers = this.repeats ? this.answers : this.answers.slice(0, 1);
+    return answers.some(answerHasContent);
   }
 
   private detectInitialOverride() {
-    const registry = this.expressionRegistry;
     if (
-      !registry?.calculated ||
+      !this.expressionRegistry.calculated ||
       this.readOnly ||
       this.lifecycle !== "response"
     ) {
@@ -208,8 +228,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       return;
     }
 
-    const calculated = this.normalizeExpressionValues(
-      registry.calculated.value,
+    const calculated = normalizeExpressionValues(
+      this.type,
+      this.expressionRegistry.calculated.value,
     );
     if (calculated.length === 0 || !this.answersMatch(calculated)) {
       this.markUserOverridden();
@@ -228,12 +249,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private setupExpressionReactions() {
-    const registry = this.expressionRegistry;
-    if (!registry) {
-      return;
-    }
-
-    const { initial, calculated } = registry;
+    const { initial, calculated } = this.expressionRegistry;
     if (initial) {
       const disposer = reaction(
         () => [this.isEnabled, initial.value, this.hasContent, this.lifecycle],
@@ -316,21 +332,25 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private applyInitialExpressionValue() {
-    const initial = this.expressionRegistry?.initial;
+    const initial = this.expressionRegistry.initial;
     if (!initial || !this.isEnabled) return false;
 
     const seededContent = this.lifecycle === "template";
     if (this.hasContent && !seededContent) return true;
     if (initial.value === undefined) return false;
 
-    const values = this.normalizeExpressionValues(initial.value);
+    const values = normalizeExpressionValues(this.type, initial.value);
     if (values.length === 0) return false;
 
     if (this.repeats) {
+      const cappedValues = Number.isFinite(this.maxOccurs)
+        ? values.slice(0, this.maxOccurs)
+        : values;
+
       const existing = this.answers.slice();
       this.answers.clear();
       existing.forEach((answer) => answer.dispose());
-      values.forEach((entry) => {
+      cappedValues.forEach((entry) => {
         this.pushAnswer(entry);
       });
     } else {
@@ -366,7 +386,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private applyCalculatedExpressionValue() {
-    const calculated = this.expressionRegistry?.calculated;
+    const calculated = this.expressionRegistry.calculated;
     if (!calculated) return;
 
     if (!this.isEnabled || this.lifecycle === "manual") {
@@ -379,7 +399,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     // trackWrite bumps the expressions’s pass count and only resets it if we report stability.
     this.form.coordinator.trackWrite(calculated, () => {
-      const values = this.normalizeExpressionValues(calculated.value);
+      const values = normalizeExpressionValues(this.type, calculated.value);
       if (values.length === 0 || this.answersMatch(values)) return true;
 
       if (this.repeats) {
@@ -413,79 +433,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       if (!answer) return;
       answer.value = entry ?? null;
     });
-  }
-
-  private normalizeExpressionValues(value: unknown) {
-    const collection = Array.isArray(value) ? value : [value];
-    const result: Array<DataTypeToType<AnswerTypeToDataType<T>> | null> = [];
-    collection.forEach((entry) => {
-      const coerced = this.coerceExpressionValue(entry);
-      if (coerced !== undefined) {
-        result.push(coerced);
-      }
-    });
-    return result;
-  }
-
-  private coerceExpressionValue(
-    value: unknown,
-  ): DataTypeToType<AnswerTypeToDataType<T>> | null | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    if (value === null) {
-      return null;
-    }
-
-    switch (this.type) {
-      case "boolean":
-        if (typeof value === "boolean")
-          return value as DataTypeToType<AnswerTypeToDataType<T>>;
-        if (typeof value === "string") {
-          if (/^true$/i.test(value))
-            return true as DataTypeToType<AnswerTypeToDataType<T>>;
-          if (/^false$/i.test(value))
-            return false as DataTypeToType<AnswerTypeToDataType<T>>;
-        }
-        return undefined;
-      case "decimal":
-      case "integer": {
-        const numberValue = this.parseNumber(value);
-        return numberValue as DataTypeToType<AnswerTypeToDataType<T>>;
-      }
-      case "date":
-      case "dateTime":
-      case "time":
-      case "string":
-      case "text":
-      case "url":
-        if (typeof value === "string") {
-          return value as DataTypeToType<AnswerTypeToDataType<T>>;
-        }
-        return undefined;
-      case "coding":
-      case "attachment":
-      case "reference":
-      case "quantity":
-        if (typeof value === "object") {
-          return value as DataTypeToType<AnswerTypeToDataType<T>>;
-        }
-        return undefined;
-      default:
-        return undefined;
-    }
-  }
-
-  private parseNumber(value: unknown) {
-    if (typeof value === "number") {
-      return value;
-    }
-    if (typeof value === "string") {
-      const parsed = Number(value);
-      return Number.isNaN(parsed) ? undefined : parsed;
-    }
-    return undefined;
   }
 
   private answersMatch(
@@ -555,10 +502,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       }
     }
 
-    const item: QuestionnaireResponseItem = {
+    const item = withQuestionnaireResponseItemMeta({
       linkId: this.linkId,
       text: kind === "expression" ? this.template.text : this.text,
-    };
+    });
 
     if (answers.length > 0) {
       item.answer = answers;
@@ -570,7 +517,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private collectAnswers(
     kind: SnapshotKind,
   ): QuestionnaireResponseItemAnswer[] {
-    return this.answers
+    const answers =
+      kind === "expression"
+        ? this.answers
+        : this.repeats
+          ? this.answers
+          : this.answers.slice(0, 1);
+    return answers
       .map((answer) =>
         kind === "response" ? answer.responseAnswer : answer.expressionAnswer,
       )

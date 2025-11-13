@@ -14,6 +14,8 @@ import expressionInitial from "./expression-initial.json" assert { type: "json" 
 import expressionCalculated from "./expression-calculated.json" assert { type: "json" };
 import expressionEnableWhen from "./expression-enable-when.json" assert { type: "json" };
 import expressionDynamicBounds from "./expression-dynamic-bounds.json" assert { type: "json" };
+import expressionDynamicBehavior from "./expression-dynamic-behavior.json" assert { type: "json" };
+import expressionDynamicQuantity from "./expression-dynamic-quantity.json" assert { type: "json" };
 import answerOptions from "./answer-options.json" assert { type: "json" };
 import answerExpression from "./answer-expression.json" assert { type: "json" };
 import validation from "./validation.json" assert { type: "json" };
@@ -95,6 +97,16 @@ export const demoSamples: readonly DemoSample[] = [
     id: "expression-dynamic-bounds",
     label: "Dynamic min/max expressions",
     questionnaire: expressionDynamicBounds as Questionnaire,
+  },
+  {
+    id: "expression-dynamic-behavior",
+    label: "Dynamic behavior expressions",
+    questionnaire: expressionDynamicBehavior as Questionnaire,
+  },
+  {
+    id: "expression-dynamic-quantity",
+    label: "Dynamic quantity expressions",
+    questionnaire: expressionDynamicQuantity as Questionnaire,
   },
   {
     id: "answer-options",

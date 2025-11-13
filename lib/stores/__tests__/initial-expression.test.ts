@@ -56,6 +56,41 @@ describe("initialExpression", () => {
     expect(name.answers[0]?.value).toBe("custom");
   });
 
+  it("caps repeating initialExpression seeding to maxOccurs limits", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "history",
+          type: "string",
+          repeats: true,
+          extension: [
+            {
+              url: "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+              valueInteger: 2,
+            },
+            makeInitialExpression(undefined, "'Alpha' | 'Beta' | 'Gamma'"),
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(questionnaire);
+    const history = form.scope.lookupNode("history");
+
+    if (!isQuestionNode(history)) {
+      throw new Error("Expected history question store");
+    }
+
+    expect(history.repeats).toBe(true);
+    expect(history.answers).toHaveLength(2);
+    expect(history.answers.map((answer) => answer.value)).toEqual([
+      "Alpha",
+      "Beta",
+    ]);
+  });
+
   it("exposes named initial expressions for descendants", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

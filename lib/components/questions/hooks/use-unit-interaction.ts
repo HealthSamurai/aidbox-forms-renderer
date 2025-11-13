@@ -41,7 +41,15 @@ export function useUnitInteraction({
     }
 
     return true;
-  }, [firstEnabledOptionKey, hasManualSelection, hasSingleUnit, value?.code, value?.system, value?.unit, value?.value]);
+  }, [
+    firstEnabledOptionKey,
+    hasManualSelection,
+    hasSingleUnit,
+    value?.code,
+    value?.system,
+    value?.unit,
+    value?.value,
+  ]);
 
   const applyQuantityChange = useCallback(
     (builder: (draft: Quantity) => void) => {
@@ -123,7 +131,13 @@ export function useUnitInteraction({
   const handleFreeTextChange = useCallback(
     (text: string) => {
       applyQuantityChange((draft) => {
-        draft.unit = text || undefined;
+        if (text) {
+          draft.unit = text;
+        } else {
+          delete draft.unit;
+        }
+        delete draft.code;
+        delete draft.system;
       });
     },
     [applyQuantityChange],

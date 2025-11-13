@@ -16,7 +16,11 @@ import {
 import { AbstractPresentableNode } from "./abstract-presentable-node.ts";
 import { RepeatingGroupStore } from "./repeating-group-store.ts";
 import { RepeatingGroupWrapperValidator } from "./repeating-group-wrapper-validator.ts";
-import { EXT, findExtension } from "../utils.ts";
+import {
+  EXT,
+  findExtension,
+  withQuestionnaireResponseItemMeta,
+} from "../utils.ts";
 
 export class RepeatingGroupWrapper
   extends AbstractPresentableNode
@@ -87,8 +91,14 @@ export class RepeatingGroupWrapper
     return !this.nodes.some((instance) => !instance.hidden);
   }
 
-  get isEnabled(): boolean {
-    return this.parentStore?.isEnabled ?? true;
+  @computed
+  protected get _isEnabled() {
+    return true;
+  }
+
+  @computed
+  protected get _readOnly(): boolean {
+    return !!this.template.readOnly;
   }
 
   @action
@@ -139,7 +149,12 @@ export class RepeatingGroupWrapper
     }
 
     if (this.nodes.length === 0) {
-      return [{ linkId: this.linkId, text: this.text }];
+      return [
+        withQuestionnaireResponseItemMeta({
+          linkId: this.linkId,
+          text: kind === "expression" ? this.template.text : this.text,
+        }),
+      ];
     }
 
     return this.nodes

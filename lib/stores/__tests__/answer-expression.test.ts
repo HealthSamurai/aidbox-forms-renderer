@@ -27,7 +27,7 @@ describe("answerExpression", () => {
       throw new Error("Expected question store for color");
     }
 
-    const slot = color.expressionRegistry?.answer;
+    const slot = color.expressionRegistry.answer;
     expect(slot).toBeDefined();
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual(["Red", "Green", "Blue"]);
@@ -84,7 +84,7 @@ describe("answerExpression", () => {
       throw new Error("Expected question stores for source and mirror");
     }
 
-    const slot = mirror.expressionRegistry?.answer;
+    const slot = mirror.expressionRegistry.answer;
     expect(slot).toBeDefined();
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual([]);

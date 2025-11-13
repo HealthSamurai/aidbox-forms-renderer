@@ -5,6 +5,12 @@ import { FormStore } from "../form-store.ts";
 import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
 import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
 import { isQuestionNode } from "../question-store.ts";
+import {
+  makeCqfExpression,
+  makeMaxOccursExpression,
+  makeMinOccursExpression,
+  makeVariable,
+} from "./expression-fixtures.ts";
 import type {
   AnswerType,
   AnswerTypeToDataType,
@@ -160,6 +166,138 @@ describe("validation", () => {
       expect(question.hasErrors).toBe(false);
     });
 
+    it("updates question minOccurs when expression output changes", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "panel",
+            type: "group",
+            extension: [
+              makeVariable(
+                "requireTwo",
+                "%context.item.where(linkId='gate').answer.valueBoolean.last()",
+              ),
+            ],
+            item: [
+              {
+                linkId: "gate",
+                type: "boolean",
+              },
+              {
+                linkId: "target",
+                type: "string",
+                repeats: true,
+                extension: [
+                  makeMinOccursExpression(
+                    "iif(%requireTwo.exists() and %requireTwo, 2, 1)",
+                  ),
+                  {
+                    url: "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+                    valueInteger: 5,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const gate = form.scope.lookupNode("gate");
+      const target = form.scope.lookupNode("target");
+
+      if (!isQuestionNode(gate) || !isQuestionNode(target)) {
+        throw new Error("Expected gate and target question stores");
+      }
+
+      expect(target.minOccurs).toBe(1);
+      expect(target.canRemove).toBe(false);
+
+      gate.setAnswer(0, true);
+      expect(target.minOccurs).toBe(2);
+      expect(target.canRemove).toBe(false);
+
+      target.addAnswer("extra");
+      expect(target.answers).toHaveLength(2);
+      expect(target.canRemove).toBe(false);
+
+      gate.setAnswer(0, false);
+      expect(target.minOccurs).toBe(1);
+      expect(target.canRemove).toBe(true);
+    });
+
+    it("caps additions when expression reduces maxOccurs", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "panel",
+            type: "group",
+            extension: [
+              makeVariable(
+                "limitOne",
+                "%context.item.where(linkId='gate').answer.valueBoolean.last()",
+              ),
+            ],
+            item: [
+              {
+                linkId: "gate",
+                type: "boolean",
+              },
+              {
+                linkId: "target",
+                type: "string",
+                repeats: true,
+                extension: [
+                  makeMaxOccursExpression(
+                    "iif(%limitOne.exists() and %limitOne, 1, 3)",
+                  ),
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const gate = form.scope.lookupNode("gate");
+      const target = form.scope.lookupNode("target");
+
+      if (!isQuestionNode(gate) || !isQuestionNode(target)) {
+        throw new Error("Expected gate and target question stores");
+      }
+
+      expect(target.expressionRegistry.maxOccurs).toBeDefined();
+      expect(target.expressionRegistry.maxOccurs?.error).toBeUndefined();
+      expect(target.maxOccurs).toBe(3);
+
+      target.addAnswer("first");
+      target.addAnswer("second");
+      target.addAnswer("third");
+      expect(target.answers).toHaveLength(3);
+      expect(target.canAdd).toBe(false);
+
+      gate.setAnswer(0, true);
+      expect(target.maxOccurs).toBe(1);
+      expect(target.canAdd).toBe(false);
+
+      const before = target.answers.length;
+      target.addAnswer("fourth");
+      expect(target.answers.length).toBe(before);
+
+      target.removeAnswer(2);
+      target.removeAnswer(1);
+      expect(target.answers).toHaveLength(1);
+      expect(target.canAdd).toBe(false);
+
+      gate.setAnswer(0, false);
+      expect(target.maxOccurs).toBe(3);
+      expect(target.canAdd).toBe(true);
+    });
+
     it("validates repeating question minOccurs across populated answers", () => {
       const questionnaire: Questionnaire = {
         resourceType: "Questionnaire",
@@ -218,6 +356,60 @@ describe("validation", () => {
         form.scope.lookupNode("readonly-question"),
       );
       expect(question.hasErrors).toBe(false);
+    });
+
+    it("makes questions required only when the guard expression is true", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "panel",
+            type: "group",
+            extension: [
+              makeVariable(
+                "gateFlag",
+                "%context.item.where(linkId='gate').answer.valueBoolean.last()",
+              ),
+            ],
+            item: [
+              {
+                linkId: "gate",
+                type: "boolean",
+              },
+              {
+                linkId: "detail",
+                type: "string",
+                _required: {
+                  extension: [makeCqfExpression("%gateFlag")],
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const gate = form.scope.lookupNode("gate");
+      const detail = form.scope.lookupNode("detail");
+
+      if (!isQuestionNode(gate) || !isQuestionNode(detail)) {
+        throw new Error("Expected gate and detail questions");
+      }
+
+      expect(form.validateAll()).toBe(true);
+      expect(detail.required).toBe(false);
+
+      gate.setAnswer(0, true);
+      expect(detail.required).toBe(true);
+      expect(form.validateAll()).toBe(false);
+
+      expect(detail.issues.some((issue) => issue.code === "required")).toBe(
+        true,
+      );
+
+      detail.setAnswer(0, "value");
+      expect(form.validateAll()).toBe(true);
     });
   });
 
@@ -515,7 +707,16 @@ describe("validation", () => {
         system: "http://unitsofmeasure.org",
         code: "g",
       });
-      expect(answer.issues).toHaveLength(0);
+      expect(
+        answer.issues.some((issue) =>
+          issue.diagnostics?.match(/greater than or equal to/i),
+        ),
+      ).toBe(true);
+      expect(
+        answer.issues.some((issue) =>
+          issue.diagnostics?.match(/less than or equal to/i),
+        ),
+      ).toBe(true);
 
       question.setAnswer(0, mgQuantity(15));
       expect(answer.issues).toHaveLength(0);
@@ -586,23 +787,17 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("fluid"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (
-        question as unknown as { _expressionRegistry?: unknown }
-      )._expressionRegistry as { [key: string]: unknown } | undefined;
-      expect(registry).toBeDefined();
-      if (!registry) return;
+      const registry = question.expressionRegistry;
 
       Object.defineProperty(registry, "minValue", {
         configurable: true,
         value: {
           value: [
             {
-              valueQuantity: {
-                value: 20,
-                unit: "ml",
-                system: "http://unitsofmeasure.org",
-                code: "ml",
-              },
+              value: 20,
+              unit: "ml",
+              system: "http://unitsofmeasure.org",
+              code: "ml",
             },
           ],
         },
@@ -644,20 +839,11 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (
-        question as unknown as { _expressionRegistry?: unknown }
-      )._expressionRegistry as { [key: string]: unknown } | undefined;
-      expect(registry).toBeDefined();
-      if (!registry) return;
-
+      const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
         configurable: true,
         value: {
-          value: [
-            {
-              valueBoolean: true,
-            },
-          ],
+          value: [true],
         },
       });
 
@@ -686,20 +872,11 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (
-        question as unknown as { _expressionRegistry?: unknown }
-      )._expressionRegistry as { [key: string]: unknown } | undefined;
-      expect(registry).toBeDefined();
-      if (!registry) return;
-
+      const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
         configurable: true,
         value: {
-          value: [
-            {
-              valueInteger: 25,
-            },
-          ],
+          value: [25],
         },
       });
 
@@ -732,16 +909,11 @@ describe("validation", () => {
       const question = expectQuestionNode(form.scope.lookupNode("score"));
       const answer = expectAnswerInstance(question);
 
-      const registry = (
-        question as unknown as { _expressionRegistry?: unknown }
-      )._expressionRegistry as { [key: string]: unknown } | undefined;
-      expect(registry).toBeDefined();
-      if (!registry) return;
-
+      const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
         configurable: true,
         value: {
-          value: [{ valueBoolean: true }, { valueInteger: 40 }],
+          value: [true, 40],
         },
       });
 
