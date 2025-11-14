@@ -3,7 +3,6 @@ import {
   action,
   comparer,
   computed,
-  makeObservable,
   observable,
   override,
   reaction,
