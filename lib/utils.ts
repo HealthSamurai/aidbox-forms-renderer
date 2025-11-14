@@ -66,6 +66,7 @@ export const EXT = {
   SDC_CALCULATED_EXPR:           "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
   SDC_INITIAL_EXPR:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
   SDC_ANSWER_EXPR:               "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression",
+  SDC_ANSWER_OPTIONS_TOGGLE:     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerOptionsToggleExpression",
   SDC_VARIABLE:                  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-variable",
   SDC_KEYBOARD:                  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-keyboard",
   CQF_EXPRESSION:                "http://hl7.org/fhir/StructureDefinition/cqf-expression",

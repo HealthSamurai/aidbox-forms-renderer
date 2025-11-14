@@ -128,7 +128,7 @@ This catalog captures the questionnaire-centric capabilities defined by the HL7 
     - [x] `Questionnaire.item.extension:maxDecimalPlaces` → [maxDecimalPlaces](https://hl7.org/fhir/StructureDefinition/maxDecimalPlaces)
     - [x] `Questionnaire.item.extension:mimeType` → [mimeType](https://hl7.org/fhir/StructureDefinition/mimeType)
     - [x] `Questionnaire.item.extension:maxSize` → [maxSize](https://hl7.org/fhir/StructureDefinition/maxSize)
-    - [ ] `Questionnaire.item.extension:answerOptionsToggleExpression` → [sdc-questionnaire-answerOptionsToggleExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerOptionsToggleExpression)
+    - [x] `Questionnaire.item.extension:answerOptionsToggleExpression` → [sdc-questionnaire-answerOptionsToggleExpression](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerOptionsToggleExpression)
     - [x] `Questionnaire.item.extension:unitOption` → [questionnaire-unitOption](https://hl7.org/fhir/StructureDefinition/questionnaire-unitOption)
     - [ ] `Questionnaire.item.extension:unitValueSet` → [questionnaire-unitValueSet](https://hl7.org/fhir/StructureDefinition/questionnaire-unitValueSet)
     - [ ] `Questionnaire.item.extension:unitOpen` → [sdc-questionnaire-unitOpen](https://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-unitOpen)

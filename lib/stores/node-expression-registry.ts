@@ -1,4 +1,5 @@
 import {
+  AnswerOptionToggleDefinition,
   AnswerType,
   IEvaluationCoordinator,
   IExpressionEnvironmentProvider,
@@ -6,14 +7,19 @@ import {
   INodeExpressionRegistry,
   IScope,
 } from "./types.ts";
-import type { QuestionnaireItem } from "fhir/r5";
+import type { QuestionnaireItem, QuestionnaireItemAnswerOption } from "fhir/r5";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
+  asAnswerFragment,
   EXT,
+  extractExtensionsValues,
   extractExtensionValue,
   extractExtensionValueElement,
+  findExtensions,
+  makeIssue,
 } from "../utils.ts";
 import { BaseExpressionRegistry } from "./base-expression-registry.ts";
+import { observable } from "mobx";
 
 export class NodeExpressionRegistry
   extends BaseExpressionRegistry
@@ -34,6 +40,15 @@ export class NodeExpressionRegistry
   readonly text: IExpressionSlot | undefined;
   readonly readOnly: IExpressionSlot | undefined;
   readonly repeats: IExpressionSlot | undefined;
+
+  @observable.shallow
+  readonly answerOptionToggles = observable.array<AnswerOptionToggleDefinition>(
+    [],
+    {
+      deep: false,
+      name: "NodeExpressionRegistry.answerOptionToggles",
+    },
+  );
 
   constructor(
     coordinator: IEvaluationCoordinator,
@@ -153,6 +168,40 @@ export class NodeExpressionRegistry
     this.repeats = this.createSlot(
       extractExtensionValue(element._repeats, EXT.CQF_EXPRESSION, "Expression"),
       "repeats",
+    );
+
+    findExtensions(element, EXT.SDC_ANSWER_OPTIONS_TOGGLE).forEach(
+      (extension, extensionIndex) => {
+        const options = extractExtensionsValues(
+          extension,
+          "option",
+          ANSWER_TYPE_TO_DATA_TYPE[type],
+        ).map((value) =>
+          asAnswerFragment(ANSWER_TYPE_TO_DATA_TYPE[type], value),
+        ) as QuestionnaireItemAnswerOption[];
+
+        const expressionSlot =
+          options.length > 0
+            ? this.createSlot(
+                extractExtensionValue(extension, "expression", "Expression"),
+                "answer-option-toggle",
+              )
+            : undefined;
+
+        if (expressionSlot) {
+          this.answerOptionToggles.push({
+            slot: expressionSlot,
+            options,
+          });
+        } else {
+          this.registrationIssues.push(
+            makeIssue(
+              "invalid",
+              `Answer option toggle #${extensionIndex + 1} on item "${element.linkId ?? "<missing>"}" is missing an expression or an option.`,
+            ),
+          );
+        }
+      },
     );
   }
 }

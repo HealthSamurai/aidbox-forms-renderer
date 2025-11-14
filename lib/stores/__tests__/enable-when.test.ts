@@ -398,7 +398,7 @@ describe("enableWhen", () => {
         values: [
           {
             system: "http://unitsofmeasure.org",
-            code: "mg",
+            code: "mgplus",
             unit: "mgplus",
             value: 6,
           },

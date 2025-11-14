@@ -711,6 +711,23 @@ describe("validation", () => {
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to/i),
         ),
+      ).toBe(false);
+      expect(
+        answer.issues.some((issue) =>
+          issue.diagnostics?.match(/less than or equal to/i),
+        ),
+      ).toBe(true);
+
+      question.setAnswer(0, {
+        value: 15,
+        unit: "mgplus",
+        system: "http://example.com/unit-system",
+        code: "mgplus",
+      });
+      expect(
+        answer.issues.some((issue) =>
+          issue.diagnostics?.match(/greater than or equal to/i),
+        ),
       ).toBe(true);
       expect(
         answer.issues.some((issue) =>

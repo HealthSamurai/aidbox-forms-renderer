@@ -1,4 +1,9 @@
-import type { Extension, Quantity } from "fhir/r5";
+import type {
+  Extension,
+  Quantity,
+  QuestionnaireItemAnswerOption,
+} from "fhir/r5";
+import { EXT } from "../../utils.ts";
 
 export function makeVariable(name: string, expression: string): Extension {
   return {
@@ -140,6 +145,30 @@ export function makeAnswerExpression(
       expression,
       ...(name ? { name } : {}),
     },
+  };
+}
+
+export function makeAnswerOptionToggle(
+  option: QuestionnaireItemAnswerOption,
+  expression: string,
+  name?: string,
+): Extension {
+  return {
+    url: EXT.SDC_ANSWER_OPTIONS_TOGGLE,
+    extension: [
+      {
+        url: "option",
+        ...(structuredClone(option) as QuestionnaireItemAnswerOption),
+      },
+      {
+        url: "expression",
+        valueExpression: {
+          language: "text/fhirpath",
+          expression,
+          ...(name ? { name } : {}),
+        },
+      },
+    ],
   };
 }
 

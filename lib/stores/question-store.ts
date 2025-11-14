@@ -25,7 +25,7 @@ import {
   QuestionnaireItemAnswerOption,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
-  Coding
+  Coding,
 } from "fhir/r5";
 
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
@@ -37,6 +37,7 @@ import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
   answerify,
+  areValuesEqual,
   booleanify,
   EXT,
   extractExtensionValue,
@@ -168,6 +169,39 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed
   get answerValueSet(): string | undefined {
     return this.template.answerValueSet;
+  }
+
+  isAnswerOptionEnabled(option: QuestionnaireItemAnswerOption): boolean {
+    const toggles = this.expressionRegistry.answerOptionToggles;
+    if (toggles.length === 0) {
+      return true;
+    }
+
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.type];
+
+    const optionValue = getValue(option, dataType);
+    if (optionValue === undefined) {
+      return true;
+    }
+
+    let matched = false;
+    for (const toggle of toggles) {
+      const toggleMatches = toggle.options.some((candidate) => {
+        const candidateValue = getValue(candidate, dataType);
+        return candidateValue === undefined
+          ? false
+          : areValuesEqual(dataType, candidateValue, optionValue);
+      });
+
+      if (toggleMatches) {
+        matched = true;
+        if (booleanify(toggle.slot.value)) {
+          return true;
+        }
+      }
+    }
+
+    return !matched;
   }
 
   @override
@@ -318,7 +352,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     });
 
     // Use preferred terminology server if specified, otherwise use default
-    const preferredTerminologyServer = findExtension(this.template, EXT.PREFERRED_TERMINOLOGY_SERVER)?.valueUrl;
+    const preferredTerminologyServer = findExtension(
+      this.template,
+      EXT.PREFERRED_TERMINOLOGY_SERVER,
+    )?.valueUrl;
 
     const expander = preferredTerminologyServer
       ? new RemoteValueSetExpander(preferredTerminologyServer)

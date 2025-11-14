@@ -55,6 +55,7 @@ export type ExpressionSlotKind =
   | "initial"
   | "calculated"
   | "answer"
+  | "answer-option-toggle"
   | "min-value"
   | "max-value"
   | "min-occurs"
@@ -77,6 +78,11 @@ export interface IExpressionRegistry {
   readonly constraintsIssues: OperationOutcomeIssue[];
 }
 
+export interface AnswerOptionToggleDefinition {
+  readonly slot: IExpressionSlot;
+  readonly options: ReadonlyArray<QuestionnaireItemAnswerOption>;
+}
+
 export interface INodeExpressionRegistry extends IExpressionRegistry {
   readonly enableWhen: IExpressionSlot | undefined;
   readonly initial: IExpressionSlot | undefined;
@@ -93,6 +99,8 @@ export interface INodeExpressionRegistry extends IExpressionRegistry {
   readonly text: IExpressionSlot | undefined;
   readonly readOnly: IExpressionSlot | undefined;
   readonly repeats: IExpressionSlot | undefined;
+
+  readonly answerOptionToggles: ReadonlyArray<AnswerOptionToggleDefinition>;
 }
 
 export interface IExpressionSlot {
@@ -420,6 +428,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
     index: number,
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ): void;
+  isAnswerOptionEnabled(option: QuestionnaireItemAnswerOption): boolean;
 }
 
 export type INode =
@@ -441,7 +450,9 @@ export interface IForm {
   readonly coordinator: IEvaluationCoordinator;
   readonly expressionRegistry: IExpressionRegistry;
   readonly scope: IScope;
-  readonly config: { terminologyService?: import("./valueset-types.ts").IValueSetExpander };
+  readonly config: {
+    terminologyService?: import("./valueset-types.ts").IValueSetExpander;
+  };
 
   readonly isSubmitAttempted: boolean;
   readonly issues: Array<OperationOutcomeIssue>;

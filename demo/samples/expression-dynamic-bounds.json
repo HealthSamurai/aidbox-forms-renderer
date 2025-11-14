@@ -44,17 +44,33 @@
           "text": "Target weight (kg)",
           "extension": [
             {
-              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
-              "valueExpression": {
-                "language": "text/fhirpath",
-                "expression": "iif(%baselineWeight.exists(), %baselineWeight - 10, 40)"
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDecimal": 0,
+              "_valueDecimal": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%baselineWeight.exists(), %baselineWeight - 10, 40)"
+                    }
+                  }
+                ]
               }
             },
             {
-              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
-              "valueExpression": {
-                "language": "text/fhirpath",
-                "expression": "iif(%baselineWeight.exists(), %baselineWeight - 2, 90)"
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDecimal": 0,
+              "_valueDecimal": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%baselineWeight.exists(), %baselineWeight - 2, 90)"
+                    }
+                  }
+                ]
               }
             }
           ]
@@ -70,17 +86,33 @@
           "text": "Target fasting glucose (mg/dL)",
           "extension": [
             {
-              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minValueExpression",
-              "valueExpression": {
-                "language": "text/fhirpath",
-                "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 20, 70)"
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 0,
+              "_valueInteger": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 20, 70)"
+                    }
+                  }
+                ]
               }
             },
             {
-              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-maxValueExpression",
-              "valueExpression": {
-                "language": "text/fhirpath",
-                "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 5, 110)"
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 0,
+              "_valueInteger": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "iif(%baselineGlucose.exists(), %baselineGlucose - 5, 110)"
+                    }
+                  }
+                ]
               }
             }
           ]
