@@ -1,0 +1,36 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "answer-valueset-demo",
+  "url": "http://example.org/Questionnaire/answer-valueset-demo",
+  "status": "active",
+  "title": "Answer ValueSet Demo (tx.fhir.org by default)",
+  "description": "Demonstrates answerValueSet property with ValueSet expansion",
+  "item": [
+    {
+      "linkId": "administrative-gender",
+      "type": "coding",
+      "text": "Administrative Gender (default server)",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/administrative-gender",
+      "required": true
+    },
+    
+    {
+      "linkId": "contact-method",
+      "type": "coding",
+      "text": "Preferred Contact Method",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/contact-point-system"
+    },
+    {
+      "linkId": "marital-status",
+      "type": "coding",
+      "text": "Marital Status (with preferredTerminologyServer) (tx.health-samurai.io)",
+      "answerValueSet": "http://hl7.org/fhir/ValueSet/marital-status",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-preferredTerminologyServer",
+          "valueUrl": "https://tx.health-samurai.io/fhir"
+        }
+      ]
+    }
+  ]
+}
