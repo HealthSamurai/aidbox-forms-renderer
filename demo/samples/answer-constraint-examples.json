@@ -1,0 +1,374 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "answer-constraint-examples",
+  "url": "http://example.org/Questionnaire/answer-constraint-examples",
+  "status": "active",
+  "title": "Answer Constraint Examples",
+  "description": "Demonstrates answerConstraint property with answerOptions",
+  "item": [
+    {
+      "linkId": "section-optionsOnly",
+      "type": "group",
+      "text": "Options Only (Default Behavior)",
+      "item": [
+        {
+          "linkId": "country",
+          "type": "string",
+          "text": "Select your country",
+          "answerConstraint": "optionsOnly",
+          "answerOption": [
+            {
+              "valueString": "USA"  
+            },
+            {
+              "valueString": "Canada"
+            },
+            {
+              "valueString": "UK"
+            },
+            {
+              "valueString": "Australia"
+            }
+          ]
+        },
+        {
+          "linkId": "priority",
+          "type": "integer",
+          "text": "Priority level",
+          "answerConstraint": "optionsOnly",
+          "answerOption": [
+            {
+              "valueInteger": 1
+            },
+            {
+              "valueInteger": 2
+            },
+            {
+              "valueInteger": 3
+            },
+            {
+              "valueInteger": 4
+            },
+            {
+              "valueInteger": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-optionsOrType",
+      "type": "group",
+      "text": "Options Or Type (Allow Custom Values of Same Type)",
+      "item": [
+        {
+          "linkId": "department",
+          "type": "string",
+          "text": "Department",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueString": "Engineering"
+            },
+            {
+              "valueString": "Sales"
+            },
+            {
+              "valueString": "Marketing"
+            },
+            {
+              "valueString": "HR"
+            }
+          ]
+        },
+        {
+          "linkId": "age-group",
+          "type": "integer",
+          "text": "Age",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueInteger": 18
+            },
+            {
+              "valueInteger": 25
+            },
+            {
+              "valueInteger": 35
+            },
+            {
+              "valueInteger": 45
+            },
+            {
+              "valueInteger": 55
+            },
+            {
+              "valueInteger": 65
+            }
+          ]
+        },
+        {
+          "linkId": "weight",
+          "type": "decimal",
+          "text": "Weight (kg)",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueDecimal": 50.0
+            },
+            {
+              "valueDecimal": 60.0
+            },
+            {
+              "valueDecimal": 70.0
+            },
+            {
+              "valueDecimal": 80.0
+            },
+            {
+              "valueDecimal": 90.0
+            }
+          ]
+        },
+        {
+          "linkId": "appointment-date",
+          "type": "date",
+          "text": "Preferred appointment date",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueDate": "2025-01-15"
+            },
+            {
+              "valueDate": "2025-01-22"
+            },
+            {
+              "valueDate": "2025-01-29"
+            },
+            {
+              "valueDate": "2025-02-05"
+            }
+          ]
+        },
+        {
+          "linkId": "appointment-time",
+          "type": "time",
+          "text": "Preferred time",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueTime": "09:00:00"
+            },
+            {
+              "valueTime": "10:00:00"
+            },
+            {
+              "valueTime": "11:00:00"
+            },
+            {
+              "valueTime": "14:00:00"
+            },
+            {
+              "valueTime": "15:00:00"
+            },
+            {
+              "valueTime": "16:00:00"
+            }
+          ]
+        },
+        {
+          "linkId": "meeting-datetime",
+          "type": "dateTime",
+          "text": "Meeting date and time",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueDateTime": "2025-01-15T09:00:00Z"
+            },
+            {
+              "valueDateTime": "2025-01-15T14:00:00Z"
+            },
+            {
+              "valueDateTime": "2025-01-16T09:00:00Z"
+            },
+            {
+              "valueDateTime": "2025-01-16T14:00:00Z"
+            }
+          ]
+        },
+        {
+          "linkId": "dosage",
+          "type": "quantity",
+          "text": "Medication dosage",
+          "answerConstraint": "optionsOrType",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "mg",
+                "display": "milligram"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "g",
+                "display": "gram"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "mL",
+                "display": "milliliter"
+              }
+            }
+          ],
+          "answerOption": [
+            {
+              "valueQuantity": {
+                "value": 10,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            },
+            {
+              "valueQuantity": {
+                "value": 25,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            },
+            {
+              "valueQuantity": {
+                "value": 50,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            },
+            {
+              "valueQuantity": {
+                "value": 100,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "section-mixed",
+      "type": "group",
+      "text": "Mixed Examples",
+      "item": [
+        {
+          "linkId": "symptom",
+          "type": "string",
+          "text": "Main symptom",
+          "answerConstraint": "optionsOrString",
+          "repeats": true,
+          "answerOption": [
+            {
+              "valueString": "Headache"
+            },
+            {
+              "valueString": "Fever"
+            },
+            {
+              "valueString": "Cough"
+            },
+            {
+              "valueString": "Fatigue"
+            },
+            {
+              "valueString": "Nausea"
+            }
+          ]
+        },
+        {
+          "linkId": "blood-pressure-systolic",
+          "type": "integer",
+          "text": "Systolic blood pressure (mmHg)",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueInteger": 90
+            },
+            {
+              "valueInteger": 100
+            },
+            {
+              "valueInteger": 110
+            },
+            {
+              "valueInteger": 120
+            },
+            {
+              "valueInteger": 130
+            },
+            {
+              "valueInteger": 140
+            },
+            {
+              "valueInteger": 150
+            }
+          ],
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 70
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 200
+            }
+          ]
+        },
+        {
+          "linkId": "temperature",
+          "type": "decimal",
+          "text": "Body temperature (°C)",
+          "answerConstraint": "optionsOrType",
+          "answerOption": [
+            {
+              "valueDecimal": 36.5
+            },
+            {
+              "valueDecimal": 37.0
+            },
+            {
+              "valueDecimal": 37.5
+            },
+            {
+              "valueDecimal": 38.0
+            },
+            {
+              "valueDecimal": 38.5
+            },
+            {
+              "valueDecimal": 39.0
+            }
+          ],
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDecimal": 35.0
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDecimal": 42.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
