@@ -25,15 +25,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-//    "noUncheckedIndexedAccess": true,
+    //    "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "exactOptionalPropertyTypes": true,
     "noPropertyAccessFromIndexSignature": true,
-    "noImplicitOverride": true,
-
+    "noImplicitOverride": true
   },
-  "include": [
-    "demo",
-  ]
+  "include": ["demo"]
 }

@@ -42,6 +42,7 @@ import {
   UsageContext,
 } from "fhir/r5";
 import type { HTMLAttributes } from "react";
+import { IPromiseBasedObservable } from "mobx-utils";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -346,6 +347,7 @@ export interface IPresentableNode {
   readonly unitDisplay: string | undefined;
   readonly unitOptions: ReadonlyArray<Coding>;
   readonly isEnabled: boolean;
+  readonly preferredTerminologyServers: ReadonlyArray<string>;
 
   readonly hasErrors: boolean;
   markDirty(): void;
@@ -405,6 +407,8 @@ export interface IAnswerInstance<T> {
   dispose(): void;
 }
 
+export type AsyncState = IPromiseBasedObservable<unknown>["state"];
+
 export interface IQuestionNode<T extends AnswerType = AnswerType>
   extends IActualNode {
   readonly type: T;
@@ -414,7 +418,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   readonly answerValueSet: string | undefined;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
 
-  readonly expansionState: "idle" | "loading" | "error";
+  readonly expansionState: AsyncState;
   readonly expansionError: string | null;
 
   answers: Array<IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>>;
@@ -442,6 +446,13 @@ export interface INodeValidator {
   readonly issues: Array<OperationOutcomeIssue>;
 }
 
+export interface IValueSetExpander {
+  expand(
+    canonical: string,
+    preferredServers: ReadonlyArray<string>,
+  ): Promise<Coding[]>;
+}
+
 export interface IForm {
   questionnaire: Questionnaire;
   response: QuestionnaireResponse | undefined;
@@ -450,9 +461,8 @@ export interface IForm {
   readonly coordinator: IEvaluationCoordinator;
   readonly expressionRegistry: IExpressionRegistry;
   readonly scope: IScope;
-  readonly config: {
-    terminologyService?: import("./valueset-types.ts").IValueSetExpander;
-  };
+  readonly valueSetExpander: IValueSetExpander;
+  readonly preferredTerminologyServers: ReadonlyArray<string>;
 
   readonly isSubmitAttempted: boolean;
   readonly issues: Array<OperationOutcomeIssue>;

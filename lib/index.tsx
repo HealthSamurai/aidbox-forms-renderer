@@ -2,14 +2,13 @@ import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "./stores/form-store.ts";
 import { Form } from "./components/form.tsx";
 import { useMemo } from "react";
-import type { IValueSetExpander } from "./stores/valueset-types.ts";
 
 type RendererProps = {
   questionnaire: Questionnaire;
   initialResponse?: QuestionnaireResponse | undefined;
   onChange?: ((response: QuestionnaireResponse) => void) | undefined;
   onSubmit?: ((response: QuestionnaireResponse) => void) | undefined;
-  terminologyService?: IValueSetExpander | undefined;
+  terminologyServerUrl?: string | undefined;
 };
 
 function Renderer({
@@ -17,16 +16,11 @@ function Renderer({
   initialResponse,
   onSubmit,
   onChange,
-  terminologyService,
+  terminologyServerUrl,
 }: RendererProps) {
   const store = useMemo(
-    () =>
-      new FormStore(
-        questionnaire,
-        initialResponse,
-        terminologyService ? { terminologyService } : undefined,
-      ),
-    [questionnaire, initialResponse, terminologyService],
+    () => new FormStore(questionnaire, initialResponse, terminologyServerUrl),
+    [questionnaire, initialResponse, terminologyServerUrl],
   );
 
   return (
@@ -35,9 +29,5 @@ function Renderer({
 }
 
 export default Renderer;
-export type { IValueSetExpander } from "./stores/valueset-types.ts";
-export {
-  RemoteValueSetExpander,
-  LocalValueSetExpander,
-} from "./services/valueset-expander.ts";
-export { CachedValueSetExpander } from "./services/valueset-cache.ts";
+export type { IValueSetExpander } from "./stores/types.ts";
+export { ValueSetExpander } from "./stores/valueset-expander.ts";

@@ -6,7 +6,13 @@ import type {
   QuestionnaireItem,
   QuestionnaireResponseItem,
 } from "fhir/r5";
-import { EXT, findExtension, getItemControl } from "../utils.ts";
+import {
+  dedupe,
+  EXT,
+  extractExtensionsValues,
+  findExtension,
+  getItemControl,
+} from "../utils.ts";
 
 export abstract class AbstractPresentableNode implements IPresentableNode {
   readonly form: IForm;
@@ -93,7 +99,7 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
     return false;
   }
 
-  @computed 
+  @computed
   get answerConstraint() {
     return this.template.answerConstraint ?? "optionsOnly";
   }
@@ -122,7 +128,24 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
           .filter((coding): coding is Coding => coding != null);
   }
 
-  
+  @computed
+  get preferredTerminologyServers(): readonly string[] {
+    const ownPreferences = extractExtensionsValues(
+      this.template,
+      EXT.PREFERRED_TERMINOLOGY_SERVER,
+      "url",
+    );
+
+    const inheritedPreferences =
+      this.parentStore?.preferredTerminologyServers ??
+      this.form.preferredTerminologyServers;
+
+    if (ownPreferences.length === 0) {
+      return inheritedPreferences;
+    }
+
+    return dedupe([...ownPreferences, ...inheritedPreferences]);
+  }
 
   abstract get scope(): IScope;
 

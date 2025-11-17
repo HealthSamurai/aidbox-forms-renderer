@@ -46,6 +46,22 @@ export function getAnswerErrorId(answer: IAnswerInstance<unknown>): string {
   return sanitizeForId(`af-${answer.key}-errors`);
 }
 
+export function dedupe<T>(values: readonly T[]): T[] {
+  const seen = new Set<T>();
+  const result: T[] = [];
+  values.forEach((value) => {
+    if (!seen.has(value)) {
+      seen.add(value);
+      result.push(value);
+    }
+  });
+  return result;
+}
+
+export function hasHttpStatus(error: unknown): error is { status: number } {
+  return typeof (error as { status?: unknown }).status === "number";
+}
+
 // prettier-ignore
 export const EXT = {
   MIN_OCCURS:                    "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",

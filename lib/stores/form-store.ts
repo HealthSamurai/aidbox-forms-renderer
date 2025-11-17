@@ -6,6 +6,7 @@ import {
   INode,
   IPresentableNode,
   IScope,
+  IValueSetExpander,
   SnapshotKind,
 } from "./types.ts";
 import {
@@ -35,17 +36,11 @@ import {
 import { EvaluationCoordinator } from "./evaluation-coordinator.ts";
 import { Scope } from "./scope.ts";
 import { BaseExpressionRegistry } from "./base-expression-registry.ts";
-import { shouldCreateStore } from "../utils.ts";
-import type { IValueSetExpander } from "./valueset-types.ts";
-
-export interface FormStoreConfig {
-  terminologyService?: IValueSetExpander;
-}
+import { EXT, extractExtensionsValues, shouldCreateStore } from "../utils.ts";
+import { ValueSetExpander } from "./valueset-expander.ts";
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
-  questionnaire: Questionnaire;
   private readonly initialResponse: QuestionnaireResponse | undefined;
-  readonly config: FormStoreConfig;
 
   @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
@@ -60,17 +55,18 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
   readonly coordinator = new EvaluationCoordinator();
   readonly expressionRegistry: IExpressionRegistry;
+  readonly valueSetExpander: IValueSetExpander;
 
   constructor(
-    questionnaire: Questionnaire,
+    readonly questionnaire: Questionnaire,
     response?: QuestionnaireResponse,
-    config?: FormStoreConfig,
+    terminologyServerUrl?: string,
   ) {
     makeObservable(this);
-    this.config = config ?? {};
 
     this.questionnaire = questionnaire;
     this.initialResponse = response;
+    this.valueSetExpander = new ValueSetExpander(terminologyServerUrl);
 
     this.expressionRegistry = new BaseExpressionRegistry(
       this.coordinator,
@@ -102,6 +98,15 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       questionnaire: this.questionnaire,
       context: this.expressionResponse,
     });
+  }
+
+  @computed
+  get preferredTerminologyServers(): readonly string[] {
+    return extractExtensionsValues(
+      this.questionnaire,
+      EXT.PREFERRED_TERMINOLOGY_SERVER,
+      "url",
+    );
   }
 
   @action

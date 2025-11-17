@@ -16,7 +16,6 @@ export const CodingNode = observer(function CodingNode({
 }: {
   item: IQuestionNode<"coding">;
 }) {
-
   // Don't use React.useMemo with MobX computed properties - observer handles memoization
   const options = item.answerOptions
     .map((option) => option.valueCoding)
@@ -28,10 +27,9 @@ export const CodingNode = observer(function CodingNode({
   }
 
   const hasChoices = options.length > 0;
-  const isLoading = item.expansionState === "loading";
-  const hasError = item.expansionState === "error";
+  const isLoading = item.expansionState === "pending";
+  const hasError = item.expansionState === "rejected";
 
-  
   return (
     <div className="af-item" data-linkid={item.linkId}>
       <ItemHeader item={item} />

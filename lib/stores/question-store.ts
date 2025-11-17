@@ -6,11 +6,11 @@ import {
   observable,
   override,
   reaction,
-  runInAction,
 } from "mobx";
 import {
   AnswerType,
   type AnswerTypeToDataType,
+  AsyncState,
   DataTypeToType,
   IAnswerInstance,
   IForm,
@@ -31,8 +31,6 @@ import {
 import { AbstractActualNodeStore } from "./abstract-actual-node-store.ts";
 import { AnswerInstance } from "./answer-instance.ts";
 import { QuestionValidator } from "./question-validator.ts";
-import { RemoteValueSetExpander } from "../services/valueset-expander.ts";
-
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
@@ -41,13 +39,14 @@ import {
   booleanify,
   EXT,
   extractExtensionValue,
-  findExtension,
   getValue,
   normalizeExpressionValues,
   withQuestionnaireResponseItemMeta,
 } from "../utils.ts";
 import type { HTMLAttributes } from "react";
 import { NodeExpressionRegistry } from "./node-expression-registry.ts";
+import { fromPromise } from "mobx-utils";
+import type { IPromiseBasedObservable } from "mobx-utils";
 
 type AnswerLifecycle =
   | "pristine"
@@ -143,14 +142,40 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @observable.ref
-  private expandedValueSetOptions: QuestionnaireItemAnswerOption[] | null =
-    null;
+  private valueSetExpansion: IPromiseBasedObservable<Coding[]> | null = null;
 
-  @observable
-  expansionState: "idle" | "loading" | "error" = "idle";
+  @computed.struct
+  private get expandedValueSetOptions():
+    | QuestionnaireItemAnswerOption[]
+    | null {
+    const expansion = this.valueSetExpansion;
+    if (!expansion || expansion.state !== "fulfilled" || !expansion.value) {
+      return null;
+    }
 
-  @observable
-  expansionError: string | null = null;
+    return expansion.value.map((coding: Coding) => ({
+      valueCoding: coding,
+    }));
+  }
+
+  @computed
+  get expansionState(): AsyncState {
+    return this.valueSetExpansion?.state ?? "fulfilled";
+  }
+
+  @computed
+  get expansionError(): string | null {
+    const expansion = this.valueSetExpansion;
+    if (!expansion || expansion.state !== "rejected") {
+      return null;
+    }
+
+    const reason = expansion.value;
+    if (reason instanceof Error) {
+      return reason.message;
+    }
+    return reason == null ? "Unknown error" : String(reason);
+  }
 
   @computed
   get answerOptions(): QuestionnaireItemAnswerOption[] {
@@ -343,42 +368,16 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private setupValueSetExpansion() {
-    if (!this.answerValueSet || !this.form.config?.terminologyService) {
+    if (!this.answerValueSet || !this.form.valueSetExpander) {
       return;
     }
 
-    runInAction(() => {
-      this.expansionState = "loading";
-    });
-
-    // Use preferred terminology server if specified, otherwise use default
-    const preferredTerminologyServer = findExtension(
-      this.template,
-      EXT.PREFERRED_TERMINOLOGY_SERVER,
-    )?.valueUrl;
-
-    const expander = preferredTerminologyServer
-      ? new RemoteValueSetExpander(preferredTerminologyServer)
-      : this.form.config.terminologyService;
-
-    expander
-      .expand(this.answerValueSet)
-      .then((codings: Coding[]) => {
-        runInAction(() => {
-          this.expandedValueSetOptions = codings.map((coding: Coding) => ({
-            valueCoding: coding,
-          }));
-          this.expansionState = "idle";
-          this.expansionError = null;
-        });
-      })
-      .catch((error: unknown) => {
-        runInAction(() => {
-          this.expansionError =
-            error instanceof Error ? error.message : String(error);
-          this.expansionState = "error";
-        });
-      });
+    this.valueSetExpansion = fromPromise(
+      this.form.valueSetExpander.expand(
+        this.answerValueSet,
+        this.preferredTerminologyServers,
+      ),
+    );
   }
 
   @action
