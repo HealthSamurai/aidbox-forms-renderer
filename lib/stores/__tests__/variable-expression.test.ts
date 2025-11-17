@@ -444,8 +444,7 @@ describe("variable expressions", () => {
       familyIndex: number,
       linkId: string,
     ) => {
-      const members =
-        familyIndex === 0 ? firstMembers : secondMembers;
+      const members = familyIndex === 0 ? firstMembers : secondMembers;
       const memberInstance = members.nodes[memberInstanceIndex];
       if (!memberInstance) {
         throw new Error(

@@ -21,7 +21,6 @@ export const QuestionNode = observer(function QuestionNode({
 }: {
   item: IQuestionNode;
 }) {
-
   switch (item.type) {
     case "string":
       return <StringNode item={item as IQuestionNode<"string">} />;

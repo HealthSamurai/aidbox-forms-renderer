@@ -58,7 +58,10 @@ export function NumberInput({
   }
 
   return (
-    <div className="af-number-input" data-has-unit={unitLabel ? "true" : "false"}>
+    <div
+      className="af-number-input"
+      data-has-unit={unitLabel ? "true" : "false"}
+    >
       <div className={frameClasses.join(" ")}>
         {input}
         {unitLabel && (

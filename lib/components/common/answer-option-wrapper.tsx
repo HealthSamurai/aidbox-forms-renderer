@@ -1,12 +1,19 @@
 import { ReactElement } from "react";
-import type { AnswerType, AnswerTypeToDataType, DataTypeToType, IQuestionNode } from "../../stores/types.ts";
+import type {
+  AnswerType,
+  AnswerTypeToDataType,
+  DataTypeToType,
+  IQuestionNode,
+} from "../../stores/types.ts";
 import { useAnswerOptions } from "../questions/hooks/use-answer-options.ts";
 import type { RowRenderProps } from "./answer.tsx";
 
 export type AnswerOptionWrapperProps<T extends AnswerType> = {
   item: IQuestionNode<T>;
   rowProps: RowRenderProps<DataTypeToType<AnswerTypeToDataType<T>>>;
-  renderInput: (rowProps: RowRenderProps<DataTypeToType<AnswerTypeToDataType<T>>>) => ReactElement;
+  renderInput: (
+    rowProps: RowRenderProps<DataTypeToType<AnswerTypeToDataType<T>>>,
+  ) => ReactElement;
 };
 
 export function AnswerOptionWrapper<T extends AnswerType>({

@@ -115,7 +115,8 @@ describe("initialization", () => {
                   valueCodeableConcept: {
                     coding: [
                       {
-                        system: "http://hl7.org/fhir/questionnaire-item-control",
+                        system:
+                          "http://hl7.org/fhir/questionnaire-item-control",
                         code: "unit",
                       },
                     ],
@@ -140,7 +141,8 @@ describe("initialization", () => {
                   valueCodeableConcept: {
                     coding: [
                       {
-                        system: "http://hl7.org/fhir/questionnaire-item-control",
+                        system:
+                          "http://hl7.org/fhir/questionnaire-item-control",
                         code: "help",
                       },
                     ],
@@ -167,9 +169,7 @@ describe("initialization", () => {
       const node = form.scope.lookupNode("visit-notes");
       expect(node && isQuestionNode(node)).toBe(true);
       if (!node || !isQuestionNode(node)) return;
-      expect(node.help).toBe(
-        "Summarize key observations from the encounter.",
-      );
+      expect(node.help).toBe("Summarize key observations from the encounter.");
       expect(node.answers.at(0)?.nodes).toHaveLength(0);
     });
   });

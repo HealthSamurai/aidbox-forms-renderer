@@ -34,10 +34,7 @@ export class NonRepeatingGroupValidator implements INodeValidator {
     }
 
     return [
-      makeIssue(
-        "required",
-        "At least one answer is required in this group.",
-      ),
+      makeIssue("required", "At least one answer is required in this group."),
     ];
   }
 }

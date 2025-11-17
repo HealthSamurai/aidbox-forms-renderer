@@ -45,7 +45,8 @@ describe("ItemHelp", () => {
     });
     const node = form.scope.lookupNode("question");
     expect(node && isQuestionNode(node)).toBe(true);
-    if (!node || !isQuestionNode(node)) throw new Error("Missing question node");
+    if (!node || !isQuestionNode(node))
+      throw new Error("Missing question node");
 
     const { container } = render(<ItemHelp item={node} />);
     expect(container).toBeEmptyDOMElement();
@@ -59,7 +60,8 @@ describe("ItemHelp", () => {
     });
     const node = form.scope.lookupNode("question");
     expect(node && isQuestionNode(node)).toBe(true);
-    if (!node || !isQuestionNode(node)) throw new Error("Missing question node");
+    if (!node || !isQuestionNode(node))
+      throw new Error("Missing question node");
 
     const { getByRole, getAllByText } = render(<ItemHelp item={node} />);
     const button = getByRole("button", { name: "More information" });

@@ -4,7 +4,7 @@ export function TextInput({
   id,
   type = "text",
   value,
-  onChange, 
+  onChange,
   disabled,
   placeholder,
   ariaLabelledBy,

@@ -441,5 +441,4 @@ describe("calculatedExpression", () => {
 
     expect(bmi.answers[0]?.value).toBeCloseTo(27.8, 1);
   });
-
 });

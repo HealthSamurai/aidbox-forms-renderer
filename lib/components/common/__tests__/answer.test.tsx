@@ -34,7 +34,8 @@ describe("Answer", () => {
     const form = new FormStore(buildQuestionnaire());
     const node = form.scope.lookupNode("required");
     expect(node && isQuestionNode(node)).toBe(true);
-    if (!node || !isQuestionNode(node)) throw new Error("Missing question node");
+    if (!node || !isQuestionNode(node))
+      throw new Error("Missing question node");
 
     const answer = node.answers[0];
     if (!answer) throw new Error("Expected answer instance");
@@ -62,9 +63,9 @@ describe("Answer", () => {
     const inputs = screen.getAllByRole("textbox");
     const input = inputs[inputs.length - 1];
     fireEvent.change(input, { target: { value: "a" } });
-        form.validateAll();
+    form.validateAll();
 
-        expect(answer.issues).toHaveLength(1);
+    expect(answer.issues).toHaveLength(1);
     expect(answer.issues[0]?.diagnostics).toMatch(/at least 3/i);
 
     expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(
@@ -76,7 +77,8 @@ describe("Answer", () => {
     const form = new FormStore(buildQuestionnaire());
     const node = form.scope.lookupNode("required");
     expect(node && isQuestionNode(node)).toBe(true);
-    if (!node || !isQuestionNode(node)) throw new Error("Missing question node");
+    if (!node || !isQuestionNode(node))
+      throw new Error("Missing question node");
 
     const answer = node.answers[0];
     if (!answer) throw new Error("Expected answer instance");
@@ -106,9 +108,9 @@ describe("Answer", () => {
     expect(answer.issues).toHaveLength(0);
 
     fireEvent.change(input, { target: { value: "a" } });
-        form.validateAll();
+    form.validateAll();
 
-        expect(answer.issues).toHaveLength(1);
+    expect(answer.issues).toHaveLength(1);
     expect(answer.issues[0]?.diagnostics).toMatch(/at least 3/i);
   });
 });

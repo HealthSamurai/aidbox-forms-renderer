@@ -26,8 +26,8 @@ export const QuantityNode = observer(function QuantityNode({
                 value={rowProps.value}
                 list={rowProps.list}
                 onChange={(next) => {
-                  console.log("Next quantity value: ", next);
-                  rowProps.setValue(next)}}
+                  rowProps.setValue(next);
+                }}
                 disabled={item.readOnly}
                 ariaLabelledBy={rowProps.labelId}
                 ariaDescribedBy={rowProps.describedById}

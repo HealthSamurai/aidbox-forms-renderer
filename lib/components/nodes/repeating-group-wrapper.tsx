@@ -28,9 +28,7 @@ export const RepeatingGroupWrapper = observer(function RepeatingGroupWrapper({
           {() => (
             <>
               {item.nodes
-                .filter(
-                  (instance: IRepeatingGroupNode) => !instance.hidden,
-                )
+                .filter((instance: IRepeatingGroupNode) => !instance.hidden)
                 .map((instance: IRepeatingGroupNode) => (
                   <RepeatingGroupNode
                     key={instance.key}
