@@ -1,0 +1,61 @@
+.af-option-autocomplete {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.af-option-autocomplete__field {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.af-option-autocomplete__field input[type="search"] {
+  flex: 1;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.af-option-autocomplete__field button {
+  border: none;
+  background: #edf2f7;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.af-option-autocomplete__options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  max-height: 12rem;
+  overflow: auto;
+}
+
+.af-option-autocomplete__options li + li {
+  border-top: 1px solid #e2e8f0;
+}
+
+.af-option-autocomplete__options button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.af-option-autocomplete__options button:hover,
+.af-option-autocomplete__options button:focus {
+  background: #edf2f7;
+}
+
+.af-option-autocomplete__spinner {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #4a5568;
+}

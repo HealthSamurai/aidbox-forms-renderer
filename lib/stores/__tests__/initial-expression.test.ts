@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
+import { FormStore } from "../form/form-store.ts";
 import {
   makeCalculatedExpression,
   makeInitialExpression,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 
 describe("initialExpression", () => {
   it("runs once when the item first becomes enabled", () => {

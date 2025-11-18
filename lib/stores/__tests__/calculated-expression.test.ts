@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { runInAction } from "mobx";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
+import { FormStore } from "../form/form-store.ts";
 import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 
 const bmiQuestionnaire: Questionnaire = {
   resourceType: "Questionnaire",

@@ -7,10 +7,10 @@ import type {
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
-import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 
 describe("response generation", () => {
   it("falls back to a local Questionnaire reference when canonical URL is absent", () => {
@@ -267,8 +267,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("demographics");
-    expect(group && isNonRepeatingGroupNode(group)).toBe(true);
-    if (!group || !isNonRepeatingGroupNode(group)) return;
+    expect(group && isGroupNode(group)).toBe(true);
+    if (!group || !isGroupNode(group)) return;
     const question = group.nodes.at(0);
     expect(question && isQuestionNode(question)).toBe(true);
     if (!question || !isQuestionNode(question)) return;
@@ -333,7 +333,7 @@ describe("response generation", () => {
     });
   });
 
-  it("drops empty repeating group instances from the response", () => {
+  it("drops empty repeating group nodes from the response", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       url: "Questionnaire/empty-group",
@@ -360,7 +360,7 @@ describe("response generation", () => {
     expect(group && isRepeatingGroupWrapper(group)).toBe(true);
     if (!group || !isRepeatingGroupWrapper(group)) return;
 
-    group.addInstance();
+    group.addNode();
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -369,7 +369,7 @@ describe("response generation", () => {
     });
   });
 
-  it("serializes multiple repeating group instances with their nested answers", () => {
+  it("serializes multiple repeating group node with their nested answers", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       url: "Questionnaire/family-history",
@@ -396,19 +396,18 @@ describe("response generation", () => {
     expect(group && isRepeatingGroupWrapper(group)).toBe(true);
     if (!group || !isRepeatingGroupWrapper(group)) return;
 
-    group.addInstance();
-    group.addInstance();
+    group.addNode();
+    group.addNode();
 
-    const firstInstance = group.nodes.at(0);
-    const secondInstance = group.nodes.at(1);
-    if (!firstInstance || !secondInstance) {
-      expect(firstInstance).toBeDefined();
-      expect(secondInstance).toBeDefined();
+    const [firstNode, secondNode] = group.nodes;
+    if (!firstNode || !secondNode) {
+      expect(firstNode).toBeDefined();
+      expect(secondNode).toBeDefined();
       return;
     }
 
-    const firstQuestion = firstInstance.nodes.at(0);
-    const secondQuestion = secondInstance.nodes.at(0);
+    const firstQuestion = firstNode.nodes.at(0);
+    const secondQuestion = secondNode.nodes.at(0);
     expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
     expect(secondQuestion && isQuestionNode(secondQuestion)).toBe(true);
     if (!firstQuestion || !secondQuestion) return;

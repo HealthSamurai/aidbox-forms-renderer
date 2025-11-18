@@ -7,9 +7,11 @@ import {
   IAnswerInstance,
   IPresentableNode,
   IQuestionNode,
-  IRepeatingGroupNode,
+  IGroupNode,
+  ITEM_CONTROLS,
   OperationOutcomeIssueCode,
-} from "./stores/types.ts";
+  ItemControl,
+} from "./types.ts";
 import {
   Attachment,
   Coding,
@@ -18,8 +20,8 @@ import {
   OperationOutcomeIssue,
   Quantity,
   QuestionnaireItem,
-  QuestionnaireItemEnableWhen,
   QuestionnaireItemAnswerOption,
+  QuestionnaireItemEnableWhen,
   QuestionnaireResponseItem,
   Reference,
 } from "fhir/r5";
@@ -30,20 +32,38 @@ export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export function getItemLabelId(item: IPresentableNode): string {
-  return sanitizeForId(`af-${item.key}-label`);
+export function getNodeLabelId(node: IPresentableNode): string {
+  return sanitizeForId(`af-${node.key}-label`);
 }
 
-export function getItemHelpId(item: IPresentableNode): string {
-  return sanitizeForId(`af-${item.key}-help`);
+export function getNodeHelpId(node: IPresentableNode): string {
+  return sanitizeForId(`af-${node.key}-help`);
 }
 
-export function getItemErrorId(item: IPresentableNode): string {
-  return sanitizeForId(`af-${item.key}-errors`);
+export function getNodeLegalId(node: IPresentableNode): string {
+  return sanitizeForId(`af-${node.key}-legal`);
 }
 
-export function getAnswerErrorId(answer: IAnswerInstance<unknown>): string {
+export function getNodeFlyoverId(node: IPresentableNode): string {
+  return sanitizeForId(`af-${node.key}-flyover`);
+}
+
+export function getNodeErrorId(node: IPresentableNode): string {
+  return sanitizeForId(`af-${node.key}-errors`);
+}
+
+export function getAnswerErrorId(answer: IAnswerInstance): string {
   return sanitizeForId(`af-${answer.key}-errors`);
+}
+
+export function getNodeDescribedBy<T extends AnswerType>(
+  node: IQuestionNode<T>,
+) {
+  const describedByPieces = [
+    node.help ? getNodeHelpId(node) : undefined,
+    node.hasErrors ? getNodeErrorId(node) : undefined,
+  ].filter(Boolean) as string[];
+  return describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 }
 
 export function dedupe<T>(values: readonly T[]): T[] {
@@ -62,6 +82,35 @@ export function hasHttpStatus(error: unknown): error is { status: number } {
   return typeof (error as { status?: unknown }).status === "number";
 }
 
+export const ITEM_CONTROL_SYSTEM =
+  "http://hl7.org/fhir/questionnaire-item-control";
+
+export function getItemControlCode(
+  item: QuestionnaireItem,
+): ItemControl | undefined {
+  const concept = extractExtensionValue(
+    item,
+    EXT.ITEM_CONTROL,
+    "CodeableConcept",
+  );
+
+  if (!concept) {
+    return undefined;
+  }
+
+  const codings = concept.coding ?? [];
+  if (codings.length !== 1) {
+    return undefined;
+  }
+
+  const [coding] = codings;
+  if (!coding || coding.system !== ITEM_CONTROL_SYSTEM) {
+    return undefined;
+  }
+  const code = coding.code as ItemControl;
+  return ITEM_CONTROLS.includes(code) ? code : undefined;
+}
+
 // prettier-ignore
 export const EXT = {
   MIN_OCCURS:                    "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -70,6 +119,8 @@ export const EXT = {
   MAX_VALUE:                     "http://hl7.org/fhir/StructureDefinition/maxValue",
   MIN_LENGTH:                    "http://hl7.org/fhir/StructureDefinition/minLength",
   MAX_DECIMAL_PLACES:            "http://hl7.org/fhir/StructureDefinition/maxDecimalPlaces",
+  ENTRY_FORMAT:                  "http://hl7.org/fhir/StructureDefinition/entryFormat",
+  SLIDER_STEP_VALUE:             "http://hl7.org/fhir/StructureDefinition/questionnaire-sliderStepValue",
   MIME_TYPE:                     "http://hl7.org/fhir/StructureDefinition/mimeType",
   MAX_SIZE:                      "http://hl7.org/fhir/StructureDefinition/maxSize",
   SDC_MIN_QUANTITY:              "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-minQuantity",
@@ -202,46 +253,76 @@ export function findExtensions(element: Element, url: string): Extension[] {
   return element.extension?.filter((e) => e.url === url) ?? [];
 }
 
-export const ITEM_CONTROL_CODES = [
-  "group",
-  "list",
-  "table",
-  "htable",
-  "gtable",
-  "atable",
-  "header",
-  "footer",
-  "text",
-  "inline",
-  "prompt",
-  "unit",
-  "lower",
-  "upper",
-  "flyover",
-  "help",
-  "question",
-  "autocomplete",
-  "drop-down",
-  "check-box",
-  "lookup",
-  "radio-button",
-  "slider",
-  "spinner",
-  "text-box",
-] as const;
-
-export type QuestionnaireItemControlCode = (typeof ITEM_CONTROL_CODES)[number];
-
-export const ITEM_CONTROL_SYSTEM =
-  "http://hl7.org/fhir/questionnaire-item-control";
-
 export function shouldCreateStore(item: QuestionnaireItem): boolean {
   if (item.type !== "display") {
     return true;
   }
 
-  const control = getItemControl(item);
-  return control !== "help" && control !== "unit";
+  const control = getItemControlCode(item);
+  return (
+    "help" !== control &&
+    "legal" !== control &&
+    "unit" !== control &&
+    "prompt" !== control &&
+    "flyover" !== control &&
+    "lower" !== control &&
+    "upper" !== control
+  );
+}
+
+export function findDisplayItemByControl(
+  container: QuestionnaireItem,
+  code: ItemControl,
+): QuestionnaireItem | undefined {
+  if (!container.item || container.item.length === 0) {
+    return undefined;
+  }
+
+  return container.item.find((child) => {
+    return child.type !== "display"
+      ? false
+      : code === getItemControlCode(child);
+  });
+}
+
+export function getNumericBounds(item: QuestionnaireItem): {
+  min: number | undefined;
+  max: number | undefined;
+} {
+  const min = extractNumericExtension(findExtension(item, EXT.MIN_VALUE));
+  const max = extractNumericExtension(findExtension(item, EXT.MAX_VALUE));
+  return { min, max };
+}
+
+export function getSliderStepValue(
+  item: QuestionnaireItem,
+): number | undefined {
+  const extension = findExtension(item, EXT.SLIDER_STEP_VALUE);
+  if (!extension) return undefined;
+  if (typeof extension.valueInteger === "number") {
+    return extension.valueInteger;
+  }
+  if (typeof extension.valueDecimal === "number") {
+    return extension.valueDecimal;
+  }
+  return undefined;
+}
+
+function extractNumericExtension(extension: Extension | undefined) {
+  if (!extension) return undefined;
+  if (typeof extension.valueInteger === "number") {
+    return extension.valueInteger;
+  }
+  if (typeof extension.valueDecimal === "number") {
+    return extension.valueDecimal;
+  }
+  if (
+    extension.valueQuantity &&
+    typeof extension.valueQuantity.value === "number"
+  ) {
+    return extension.valueQuantity.value;
+  }
+  return undefined;
 }
 
 export function isEmptyObject(value: unknown): boolean {
@@ -261,32 +342,6 @@ export function isEmptyObject(value: unknown): boolean {
     }
     return true;
   });
-}
-
-export function getItemControl(
-  item: QuestionnaireItem,
-  system: string = ITEM_CONTROL_SYSTEM,
-): QuestionnaireItemControlCode | undefined {
-  for (const extension of item.extension ?? []) {
-    if (extension.url !== EXT.ITEM_CONTROL) {
-      continue;
-    }
-
-    const coding = extension.valueCodeableConcept?.coding?.[0];
-    if (!coding) {
-      continue;
-    }
-
-    if (coding.system && coding.system !== system) {
-      continue;
-    }
-
-    if (coding.code) {
-      return coding.code as QuestionnaireItemControlCode;
-    }
-  }
-
-  return undefined;
 }
 
 export function isQuantity(value: unknown): value is Quantity {
@@ -462,8 +517,8 @@ export function pruneAttachment(value: Attachment): Attachment | null {
   return Object.keys(next).length > 0 ? next : null;
 }
 
-export function instanceHasResponses(instance: IRepeatingGroupNode): boolean {
-  return instance.nodes.some((child) => child.responseItems.length > 0);
+export function groupHasResponses(group: IGroupNode): boolean {
+  return group.nodes.some((node) => node.responseItems.length > 0);
 }
 
 export function makeIssue(
@@ -477,7 +532,7 @@ export function makeIssue(
   };
 }
 
-export function answerHasOwnValue(answer: IAnswerInstance<unknown>): boolean {
+export function answerHasOwnValue(answer: IAnswerInstance): boolean {
   const value = answer.value;
   if (value == null) {
     return false;
@@ -495,23 +550,13 @@ export function answerHasOwnValue(answer: IAnswerInstance<unknown>): boolean {
 }
 
 export function answerHasContent<T extends AnswerType>(
-  answer: IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>,
+  answer: IAnswerInstance<T>,
 ): boolean {
   if (answer.nodes.some((child) => child.responseItems.length > 0)) {
     return true;
   }
 
   return answerHasOwnValue(answer);
-}
-
-export function getItemDescribedBy<T extends AnswerType>(
-  item: IQuestionNode<T>,
-) {
-  const describedByPieces = [
-    item.help ? getItemHelpId(item) : undefined,
-    item.hasErrors ? getItemErrorId(item) : undefined,
-  ].filter(Boolean) as string[];
-  return describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 }
 
 export type PolyKeyFor<

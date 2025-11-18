@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
+import { FormStore } from "../form/form-store.ts";
 import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
-import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 
 describe("variable expressions", () => {
   it("records questionnaire-level variable name collisions on the form", () => {
@@ -126,7 +126,7 @@ describe("variable expressions", () => {
     expect(parentFromChild.answers[0]?.value).toBe("parent");
   });
 
-  it("scopes group variables per instance and reacts to changes", () => {
+  it("scopes group variables per node and reacts to changes", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -164,28 +164,28 @@ describe("variable expressions", () => {
       throw new Error("Expected repeating group store");
     }
 
-    household.addInstance();
-    household.addInstance();
+    household.addNode();
+    household.addNode();
 
-    const [firstInstance, secondInstance] = household.nodes;
+    const [firstNode, secondNode] = household.nodes;
 
-    if (!firstInstance || !secondInstance) {
-      throw new Error("Expected initial repeating group instances");
+    if (!firstNode || !secondNode) {
+      throw new Error("Expected initial repeating group nodes");
     }
 
-    const findQuestion = (linkId: string, instanceIndex: number) => {
-      const instance =
-        instanceIndex === 0
-          ? firstInstance
-          : instanceIndex === 1
-            ? secondInstance
-            : household.nodes[instanceIndex];
+    const findQuestion = (linkId: string, nodeIndex: number) => {
+      const node =
+        nodeIndex === 0
+          ? firstNode
+          : nodeIndex === 1
+            ? secondNode
+            : household.nodes[nodeIndex];
 
-      if (!instance) {
-        throw new Error(`Missing instance #${instanceIndex}`);
+      if (!node) {
+        throw new Error(`Missing node #${nodeIndex}`);
       }
 
-      const child = instance.nodes.find((item) => item.linkId === linkId);
+      const child = node.nodes.find((item) => item.linkId === linkId);
       if (!child || !isQuestionNode(child)) {
         throw new Error(`Expected question store for ${linkId}`);
       }
@@ -207,12 +207,12 @@ describe("variable expressions", () => {
     expect(firstEcho.answers[0]?.value).toBe("Alice");
     expect(secondEcho.answers[0]?.value).toBe("Bianca");
 
-    household.addInstance();
+    household.addNode();
 
-    const thirdInstance = household.nodes[2];
+    const thirdNode = household.nodes[2];
 
-    if (!thirdInstance) {
-      throw new Error("Expected third repeating group instance");
+    if (!thirdNode) {
+      throw new Error("Expected third repeating group node");
     }
 
     const thirdName = findQuestion("name", 2);
@@ -233,7 +233,7 @@ describe("variable expressions", () => {
     expect(thirdEcho.answers[0]?.value).toBe("Clara");
   });
 
-  it("computes group-scoped aggregates per instance", () => {
+  it("computes group-scoped aggregates per node", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -274,21 +274,21 @@ describe("variable expressions", () => {
       throw new Error("Expected repeating group store");
     }
 
-    household.addInstance();
-    household.addInstance();
+    household.addNode();
+    household.addNode();
 
-    const [firstInstance, secondInstance] = household.nodes;
+    const [firstNode, secondNode] = household.nodes;
 
-    if (!firstInstance || !secondInstance) {
-      throw new Error("Expected two repeating group instances");
+    if (!firstNode || !secondNode) {
+      throw new Error("Expected two repeating group nodes");
     }
 
-    const findQuestion = (instanceIndex: number, linkId: string) => {
-      const instance = household.nodes[instanceIndex];
-      if (!instance) {
-        throw new Error(`Missing instance #${instanceIndex}`);
+    const findQuestion = (nodeIndex: number, linkId: string) => {
+      const node = household.nodes[nodeIndex];
+      if (!node) {
+        throw new Error(`Missing node #${nodeIndex}`);
       }
-      const child = instance.nodes.find((item) => item.linkId === linkId);
+      const child = node.nodes.find((item) => item.linkId === linkId);
       if (!child || !isQuestionNode(child)) {
         throw new Error(`Expected question store for ${linkId}`);
       }
@@ -309,12 +309,12 @@ describe("variable expressions", () => {
     secondResidents.setAnswer(0, "Charlie");
 
     const firstResidentCountSlot =
-      firstInstance.scope.lookupExpression("residentCount");
+      firstNode.scope.lookupExpression("residentCount");
     const secondResidentCountSlot =
-      secondInstance.scope.lookupExpression("residentCount");
+      secondNode.scope.lookupExpression("residentCount");
 
     if (!firstResidentCountSlot || !secondResidentCountSlot) {
-      throw new Error("Expected residentCount variables for instances");
+      throw new Error("Expected residentCount variables for nodes");
     }
 
     expect(firstResidents.answers.map((answer) => answer.value)).toEqual([
@@ -336,7 +336,7 @@ describe("variable expressions", () => {
     expect(secondResidentCountSlot.value).toEqual([1]);
   });
 
-  it("exposes group variables to nested repeating groups per instance", () => {
+  it("exposes group variables to nested repeating groups per node", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -387,33 +387,33 @@ describe("variable expressions", () => {
       throw new Error("Expected repeating families group");
     }
 
-    families.addInstance();
-    families.addInstance();
+    families.addNode();
+    families.addNode();
 
     const [firstFamily, secondFamily] = families.nodes;
 
     if (!firstFamily || !secondFamily) {
-      throw new Error("Expected repeating family instances");
+      throw new Error("Expected repeating family nodes");
     }
 
-    const findQuestion = (instanceIndex: number, linkId: string) => {
-      const instance = families.nodes[instanceIndex];
-      if (!instance) {
-        throw new Error(`Missing family instance #${instanceIndex}`);
+    const findQuestion = (nodeIndex: number, linkId: string) => {
+      const node = families.nodes[nodeIndex];
+      if (!node) {
+        throw new Error(`Missing family node #${nodeIndex}`);
       }
-      const child = instance.nodes.find((item) => item.linkId === linkId);
+      const child = node.nodes.find((item) => item.linkId === linkId);
       if (!child || !isQuestionNode(child)) {
         throw new Error(`Expected question store for ${linkId}`);
       }
       return child;
     };
 
-    const findRepeatingGroup = (instanceIndex: number, linkId: string) => {
-      const instance = families.nodes[instanceIndex];
-      if (!instance) {
-        throw new Error(`Missing family instance #${instanceIndex}`);
+    const findRepeatingGroup = (nodeIndex: number, linkId: string) => {
+      const node = families.nodes[nodeIndex];
+      if (!node) {
+        throw new Error(`Missing family node #${nodeIndex}`);
       }
-      const child = instance.nodes.find((item) => item.linkId === linkId);
+      const child = node.nodes.find((item) => item.linkId === linkId);
       if (!child || !isRepeatingGroupWrapper(child)) {
         throw new Error(`Expected repeating group store for ${linkId}`);
       }
@@ -429,29 +429,29 @@ describe("variable expressions", () => {
     const firstMembers = findRepeatingGroup(0, "members");
     const secondMembers = findRepeatingGroup(1, "members");
 
-    firstMembers.addInstance();
-    secondMembers.addInstance();
+    firstMembers.addNode();
+    secondMembers.addNode();
 
-    const firstMemberInstance = firstMembers.nodes[0];
-    const secondMemberInstance = secondMembers.nodes[0];
+    const firstMemberNode = firstMembers.nodes[0];
+    const secondMemberNode = secondMembers.nodes[0];
 
-    if (!firstMemberInstance || !secondMemberInstance) {
-      throw new Error("Expected member instances");
+    if (!firstMemberNode || !secondMemberNode) {
+      throw new Error("Expected member nodes");
     }
 
     const findMemberQuestion = (
-      memberInstanceIndex: number,
+      memberNodeIndex: number,
       familyIndex: number,
       linkId: string,
     ) => {
       const members = familyIndex === 0 ? firstMembers : secondMembers;
-      const memberInstance = members.nodes[memberInstanceIndex];
-      if (!memberInstance) {
+      const memberNode = members.nodes[memberNodeIndex];
+      if (!memberNode) {
         throw new Error(
-          `Missing member instance #${memberInstanceIndex} for family #${familyIndex}`,
+          `Missing member node #${memberNodeIndex} for family #${familyIndex}`,
         );
       }
-      const child = memberInstance.nodes.find((item) => item.linkId === linkId);
+      const child = memberNode.nodes.find((item) => item.linkId === linkId);
       if (!child || !isQuestionNode(child)) {
         throw new Error(`Expected question store for ${linkId}`);
       }
@@ -475,7 +475,7 @@ describe("variable expressions", () => {
     expect(secondFamilyTag.answers[0]?.value).toBe("Johnson");
   });
 
-  it("binds variables per repeating group instance for descendants", () => {
+  it("binds variables per repeating group node for descendants", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -529,17 +529,16 @@ describe("variable expressions", () => {
       throw new Error("Expected repeating group");
     }
 
-    const firstInstance = addresses.nodes[0];
-    const secondInstance = addresses.nodes[1];
+    const [firstNode, secondNode] = addresses.nodes;
 
-    if (!firstInstance || !secondInstance) {
-      throw new Error("Expected repeating group instances");
+    if (!firstNode || !secondNode) {
+      throw new Error("Expected repeating group nodes");
     }
 
-    const firstStreet = firstInstance.nodes.find(
+    const firstStreet = firstNode.nodes.find(
       (child) => child.linkId === "street",
     );
-    const secondStreet = secondInstance.nodes.find(
+    const secondStreet = secondNode.nodes.find(
       (child) => child.linkId === "street",
     );
 
@@ -613,7 +612,7 @@ describe("variable expressions", () => {
     expect(aliasVariable.value).toEqual(["Alpha", "Beta"]);
   });
 
-  it("isolates variables per repeating group instance and repeating question answer", () => {
+  it("isolates variables per repeating group node and repeating question answer", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -716,12 +715,12 @@ describe("variable expressions", () => {
 
     expect(addresses.nodes.length).toBe(2);
 
-    const [firstInstance, secondInstance] = addresses.nodes;
+    const [firstNode, secondNode] = addresses.nodes;
 
-    const firstResidents = firstInstance?.nodes.find(
+    const firstResidents = firstNode?.nodes.find(
       (child) => child.linkId === "residents",
     );
-    const secondResidents = secondInstance?.nodes.find(
+    const secondResidents = secondNode?.nodes.find(
       (child) => child.linkId === "residents",
     );
 
@@ -806,7 +805,7 @@ describe("variable expressions", () => {
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("duplicate-vars");
 
-    if (!group || !isNonRepeatingGroupNode(group)) {
+    if (!group || !isGroupNode(group)) {
       throw new Error("Expected group store");
     }
 
@@ -922,7 +921,7 @@ describe("variable expressions", () => {
     const form = new FormStore(questionnaire);
     const unsupported = form.scope.lookupNode("unsupported");
 
-    if (!unsupported || !isNonRepeatingGroupNode(unsupported)) {
+    if (!unsupported || !isGroupNode(unsupported)) {
       throw new Error("Expected group store");
     }
 
@@ -991,7 +990,7 @@ describe("variable expressions", () => {
     const form = new FormStore(questionnaire);
     const cycle = form.scope.lookupNode("cycle");
 
-    if (!cycle || !isNonRepeatingGroupNode(cycle)) {
+    if (!cycle || !isGroupNode(cycle)) {
       throw new Error("Expected group store");
     }
 
@@ -1029,7 +1028,7 @@ describe("variable expressions", () => {
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("indirect-cycle");
 
-    if (!group || !isNonRepeatingGroupNode(group)) {
+    if (!group || !isGroupNode(group)) {
       throw new Error("Expected group store");
     }
 

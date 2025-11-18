@@ -1,3 +1,4 @@
+import "./text-area.css";
 import type { HTMLAttributes } from "react";
 
 export function TextArea({

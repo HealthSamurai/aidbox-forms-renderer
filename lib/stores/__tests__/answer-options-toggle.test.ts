@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire, QuestionnaireItemAnswerOption } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeAnswerOptionToggle, makeVariable } from "./expression-fixtures.ts";
 
 const RED_CODING: QuestionnaireItemAnswerOption = {
@@ -75,16 +75,19 @@ describe("answerOptionsToggleExpression", () => {
       throw new Error("Expected toggle and color question nodes");
     }
 
-    const [redOption, greenOption] = color.answerOptions;
+    const getEntry = (code: string) =>
+      color.options.entries.find(
+        (entry) => entry.option.valueCoding?.code === code,
+      );
 
-    expect(color.isAnswerOptionEnabled(redOption)).toBe(false);
-    expect(color.isAnswerOptionEnabled(greenOption)).toBe(true);
+    expect(getEntry("red")?.disabled).toBe(true);
+    expect(getEntry("green")?.disabled).toBe(false);
 
     toggle.setAnswer(0, true);
-    expect(color.isAnswerOptionEnabled(redOption)).toBe(true);
+    expect(getEntry("red")?.disabled).toBe(false);
 
     toggle.setAnswer(0, false);
-    expect(color.isAnswerOptionEnabled(redOption)).toBe(false);
+    expect(getEntry("red")?.disabled).toBe(true);
   });
 
   it("treats multiple toggle expressions for the same option as logical OR", () => {
@@ -127,9 +130,10 @@ describe("answerOptionsToggleExpression", () => {
       throw new Error("Expected color question node");
     }
 
-    const [redOption, greenOption] = color.answerOptions;
+    const getEntry = (value: string) =>
+      color.options.entries.find((entry) => entry.option.valueString === value);
 
-    expect(color.isAnswerOptionEnabled(redOption)).toBe(true);
-    expect(color.isAnswerOptionEnabled(greenOption)).toBe(true);
+    expect(getEntry("Red")?.disabled).toBe(false);
+    expect(getEntry("Green")?.disabled).toBe(false);
   });
 });

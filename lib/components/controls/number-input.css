@@ -51,3 +51,15 @@
   border-color: #3182ce;
   box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.2);
 }
+
+.af-numeric-control {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.af-number-inline-unit {
+  font-size: 0.875rem;
+  color: #4a5568;
+  font-weight: 500;
+}

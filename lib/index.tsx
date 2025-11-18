@@ -1,6 +1,6 @@
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
-import { FormStore } from "./stores/form-store.ts";
-import { Form } from "./components/form.tsx";
+import { FormStore } from "./stores/form/form-store.ts";
+import { Form } from "./components/form/form.tsx";
 import { useMemo } from "react";
 
 type RendererProps = {
@@ -29,5 +29,5 @@ function Renderer({
 }
 
 export default Renderer;
-export type { IValueSetExpander } from "./stores/types.ts";
-export { ValueSetExpander } from "./stores/valueset-expander.ts";
+export type { IValueSetExpander } from "./types.ts";
+export { ValueSetExpander } from "./stores/services/valueset-expander.ts";

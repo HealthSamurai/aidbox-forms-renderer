@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
-import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 import {
   makeCqfExpression,
   makeMaxOccursExpression,
@@ -13,12 +13,10 @@ import {
 } from "./expression-fixtures.ts";
 import type {
   AnswerType,
-  AnswerTypeToDataType,
-  DataTypeToType,
   IAnswerInstance,
   IPresentableNode,
   IQuestionNode,
-} from "../types.ts";
+} from "../../types.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -123,13 +121,13 @@ const expectQuestionNode = <T extends AnswerType = AnswerType>(
 const expectAnswerInstance = <T extends AnswerType = AnswerType>(
   question: IQuestionNode<T>,
   index = 0,
-): IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>> => {
+): IAnswerInstance<T> => {
   const answer = question.answers[index];
   expect(answer).toBeDefined();
   if (!answer) {
     throw new Error("Expected answer instance");
   }
-  return answer as IAnswerInstance<DataTypeToType<AnswerTypeToDataType<T>>>;
+  return answer as IAnswerInstance<T>;
 };
 
 describe("validation", () => {
@@ -1074,11 +1072,11 @@ describe("validation", () => {
       expect(group.issues).toHaveLength(1);
       expect(group.issues[0]?.diagnostics).toMatch(/occurrence/i);
 
-      const firstInstance = group.nodes.at(0);
-      expect(firstInstance).toBeDefined();
-      if (!firstInstance) return;
+      const firstNode = group.nodes.at(0);
+      expect(firstNode).toBeDefined();
+      if (!firstNode) return;
 
-      const question = firstInstance.nodes.at(0);
+      const question = firstNode.nodes.at(0);
       expect(question && isQuestionNode(question)).toBe(true);
       if (!question || !isQuestionNode(question)) return;
 
@@ -1112,8 +1110,8 @@ describe("validation", () => {
 
       const form = new FormStore(questionnaire);
       const group = form.scope.lookupNode("lifestyle");
-      expect(group && isNonRepeatingGroupNode(group)).toBe(true);
-      if (!group || !isNonRepeatingGroupNode(group)) return;
+      expect(group && isGroupNode(group)).toBe(true);
+      if (!group || !isGroupNode(group)) return;
 
       expect(form.validateAll()).toBe(false);
       expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);

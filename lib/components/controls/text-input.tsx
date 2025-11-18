@@ -1,3 +1,4 @@
+import "./text-input.css";
 import type { HTMLAttributes } from "react";
 
 export function TextInput({

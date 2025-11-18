@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import type { ChangeEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -51,7 +52,10 @@ function DensePanel({
     <Panel
       defaultSize={defaultSize}
       minSize={minSize}
-      className={`flex h-full flex-col border rounded border-slate-200 bg-white ${minWidthClass ?? ""}`}
+      className={classNames(
+        "flex h-full flex-col border rounded border-slate-200 bg-white",
+        minWidthClass,
+      )}
     >
       <div className="flex items-center justify-between gap-1 border-b border-slate-200 bg-slate-100 pl-2 pr-3">
         <h2 className="py-2.5 flex-1 min-w-0 text-xs font-semibold uppercase tracking-wide text-slate-700 whitespace-nowrap">

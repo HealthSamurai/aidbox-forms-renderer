@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isQuestionNode } from "../question-store.ts";
-import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
 import { makeCqfExpression, makeVariable } from "./expression-fixtures.ts";
 
 describe("fhirpath metadata", () => {
@@ -243,7 +243,7 @@ describe("dynamic item expressions", () => {
       const child = form.scope.lookupNode("child");
 
       if (
-        !isNonRepeatingGroupNode(section) ||
+        !isGroupNode(section) ||
         !isQuestionNode(lock) ||
         !isQuestionNode(child)
       ) {

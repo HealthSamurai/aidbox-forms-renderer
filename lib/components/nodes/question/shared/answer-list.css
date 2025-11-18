@@ -1,0 +1,9 @@
+.af-answer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.af-answer-list-toolbar {
+  margin-top: 0.5rem;
+}

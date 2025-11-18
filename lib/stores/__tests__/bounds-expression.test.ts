@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
+import { FormStore } from "../form/form-store.ts";
 import {
   makeMaxQuantityExpression,
   makeMaxValueExpression,
@@ -9,7 +9,7 @@ import {
   makeMinValueExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 
 describe("min/max value expressions", () => {
   it("enforces a calculated minimum", () => {

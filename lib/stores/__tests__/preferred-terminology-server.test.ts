@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isQuestionNode } from "../question-store.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
 import { EXT } from "../../utils.ts";
 
 describe("preferredTerminologyServer resolution", () => {
@@ -151,9 +151,9 @@ describe("preferredTerminologyServer resolution", () => {
     expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
     if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
 
-    const instance = wrapper.nodes[0];
-    expect(instance).toBeDefined();
-    const childQuestion = instance?.nodes.find(
+    const node = wrapper.nodes[0];
+    expect(node).toBeDefined();
+    const childQuestion = node?.nodes.find(
       (node) => node.linkId === "group-question",
     );
     expect(childQuestion?.preferredTerminologyServers[0]).toBe(
@@ -201,7 +201,7 @@ describe("preferredTerminologyServer resolution", () => {
     );
   });
 
-  it("propagates through repeating group instances into nested answer child nodes", () => {
+  it("propagates through repeating group nodes into nested answer child nodes", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
       status: "active",
@@ -238,10 +238,8 @@ describe("preferredTerminologyServer resolution", () => {
     expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
     if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
 
-    const instance = wrapper.nodes[0];
-    const question = instance?.nodes.find(
-      (node) => node.linkId === "rg-question",
-    );
+    const node = wrapper.nodes[0];
+    const question = node?.nodes.find((node) => node.linkId === "rg-question");
     expect(question && isQuestionNode(question)).toBe(true);
     if (!question || !isQuestionNode(question)) return;
 

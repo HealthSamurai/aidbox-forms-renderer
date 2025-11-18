@@ -1,0 +1,13 @@
+.af-attachment-input--hidden {
+  display: none;
+}
+
+.af-attachment-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.af-attachment-summary__label {
+  flex: 1 1 auto;
+}

@@ -1,49 +1,50 @@
 ### Core concepts
-* rendered (realized) questionnaire response is form managed by `FormStore`, which keeps a registry of top-level nodes
-* rendered questionnaire response item is node (one of the node stores implementing `INodeStore`)
-* questionnaire item is template for node (`QuestionnaireItem` backing each store)
-* nodes can have child nodes (`children` or `instances` on the store)
-* node can be either a display, a group, or a question (`DisplayStore`, `NonRepeatingGroupStore`/`RepeatingGroupUmbrella`, `QuestionStore`)
-* display node cannot have child nodes
-* question node is answerable node
-* display node and group node are not answerable nodes
-* group node can be repeated
-* question node can be repeated when `repeats` is true
-* display node is rendered as text block
-* non-repeated group node is rendered as a block with header and list of child nodes
-* repeated group node (`RepeatingGroupWrapper`) is rendered as list of instances exposed through its `nodes` collection plus an add button
-* each repeating group instance (`RepeatingGroupStore`) renders a block with header, remove button, and its child nodes while extending the scope registry for nested `linkId`s
-* repeated question node is rendered as a block with label, list of answers with remove button, and add button
-* non-repeating question node keeps exactly one `AnswerInstance`, hides add/remove controls, and still renders a label with a single input control
-* answers are rendered as blocks with input control and optional child nodes, represented by `AnswerInstance`, which keeps a scoped registry for nested items
-* input control type depends on question node's template type
-* string/text question node is rendered as text input control
-* integer question node is rendered as number input control
-* decimal question node is rendered as decimal input control
-* boolean question node is rendered as checkbox input control
-* date question node is rendered as date picker input control
-* dateTime question node is rendered as date-time picker input control
-* time question node is rendered as time picker input control
-* quantity question node is rendered as composite input control for value and unit
-* coding question node is rendered as dropdown/select input control
-* reference question node is rendered as autocomplete input control
-* url question node is rendered as URL input control
-* attachment question node is rendered as file upload input control
-* repeatable question nodes may render single control for multiple answers
-* `AbstractActualNodeStore` forwards registration and lookup through parent scopes so nested nodes can access ancestors
-* question answers seed from questionnaire response items so repeated answers load existing values
-* repeating group instances seed from matching response items
-* repeating groups enforce min/max occurs limits on their instances
-* question nodes enforce min/max occurs limits on their answers
-* readonly and hidden both consider the items enablement under the hood so isEnabled must not be used in ui components
+
+- rendered (realized) questionnaire response is form managed by `FormStore`, which keeps a registry of top-level nodes
+- rendered questionnaire response item is node (one of the node stores implementing `INodeStore`)
+- questionnaire item is template for node (`QuestionnaireItem` backing each store)
+- nodes can have child nodes (`children` or `instances` on the store)
+- node can be either a display, a group, or a question (`DisplayStore`, `GroupStore`/`RepeatingGroupWrapper`, `QuestionStore`)
+- display node cannot have child nodes
+- question node is answerable node
+- display node and group node are not answerable nodes
+- group node can be repeated
+- question node can be repeated when `repeats` is true
+- display node is rendered as text block
+- non-repeated group node is rendered as a block with header and list of child nodes
+- repeated group node (`RepeatingGroupWrapper`) is rendered as list of instances exposed through its `nodes` collection plus an add button
+- each repeating group instance (`GroupStore`) renders a block with header, remove button, and its child nodes while extending the scope registry for nested `linkId`s
+- repeated question node is rendered as a block with label, list of answers with remove button, and add button
+- non-repeating question node keeps exactly one `AnswerInstance`, hides add/remove controls, and still renders a label with a single input control
+- answers are rendered as blocks with input control and optional child nodes, represented by `AnswerInstance`, which keeps a scoped registry for nested items
+- input control type depends on question node's template type
+- string/text question node is rendered as text input control
+- integer question node is rendered as number input control
+- decimal question node is rendered as decimal input control
+- boolean question node is rendered as checkbox input control
+- date question node is rendered as date picker input control
+- dateTime question node is rendered as date-time picker input control
+- time question node is rendered as time picker input control
+- quantity question node is rendered as composite input control for value and unit
+- coding question node is rendered as dropdown/select input control
+- reference question node is rendered as autocomplete input control
+- url question node is rendered as URL input control
+- attachment question node is rendered as file upload input control
+- repeatable question nodes may render single control for multiple answers
+- `AbstractActualNodeStore` forwards registration and lookup through parent scopes so nested nodes can access ancestors
+- question answers seed from questionnaire response items so repeated answers load existing values
+- repeating group instances seed from matching response items
+- repeating groups enforce min/max occurs limits on their instances
+- question nodes enforce min/max occurs limits on their answers
+- readonly and hidden both consider the items enablement under the hood so isEnabled must not be used in ui components
 
 ### Node hierarchy
+
 ```
 IPresentableNode
 ├── IActualNode
 │   ├── DisplayStore implements IActualNode
-│   ├── NonRepeatingGroupStore implements IActualNode
-│   ├── RepeatingGroupStore implements IActualNode
+│   ├── GroupStore implements IActualNode
 │   └── QuestionStore implements IActualNode
 └── IRepeatingGroupWrapper extends IPresentableNode
     └── RepeatingGroupWrapper implements IRepeatingGroupWrapper
@@ -51,16 +52,16 @@ IPresentableNode
 AbstractPresentableNode (base class for every IPresentableNode implementation)
 └── AbstractActualNodeStore extends AbstractPresentableNode (base for all IActualNode implementations)
     ├── DisplayStore
-    ├── NonRepeatingGroupStore
-    ├── RepeatingGroupStore
+    ├── GroupStore
     └── QuestionStore
 ```
 
 ### Coding guidelines
-* do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores
-* rely on MobX decorators instead and call `makeObservable(this)` in constructor
-* prefer undefined over null to encode absence of value
-* when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
-* prefer small isolated tests with dedicated test data
-* prefer having functions over class methods if `this` is not used
-* exactOptionalPropertyTypes is enabled so when defining types prefer union with undefined over optional properties
+
+- do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores
+- rely on MobX decorators instead and call `makeObservable(this)` in constructor
+- prefer undefined over null to encode absence of value
+- when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
+- prefer small isolated tests with dedicated test data
+- prefer having functions over class methods if `this` is not used
+- exactOptionalPropertyTypes is enabled so when defining types prefer union with undefined over optional properties

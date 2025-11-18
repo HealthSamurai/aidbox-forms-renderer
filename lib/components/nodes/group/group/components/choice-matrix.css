@@ -1,0 +1,117 @@
+.af-choice-matrix {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.af-choice-matrix__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.af-choice-matrix__table th,
+.af-choice-matrix__table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.af-choice-matrix__question-header {
+  text-align: left;
+  min-width: 200px;
+}
+
+.af-choice-matrix__row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.af-choice-matrix__row-title {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.af-choice-matrix__row-tools {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.af-choice-matrix__cell {
+  min-height: 2.5rem;
+}
+
+.af-choice-matrix__cell--empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.af-choice-matrix__cell[data-selected="true"] .af-choice-matrix__mark {
+  border-color: #4f46e5;
+  background: #eef2ff;
+}
+
+.af-choice-matrix__cell[data-disabled="true"] {
+  opacity: 0.6;
+}
+
+.af-choice-matrix__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.af-choice-matrix__control input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.af-choice-matrix__mark {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  border: 2px solid #cbd5f5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.af-choice-matrix__details-row td {
+  background: #f8fafc;
+  text-align: left;
+}
+
+.af-choice-matrix__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.af-choice-matrix__answer-children {
+  padding-left: 1.5rem;
+}
+
+.af-choice-matrix__status {
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.af-choice-matrix__status--error {
+  color: #b91c1c;
+}
+
+.af-choice-matrix__details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.af-choice-matrix__empty {
+  font-style: italic;
+  color: #94a3b8;
+}

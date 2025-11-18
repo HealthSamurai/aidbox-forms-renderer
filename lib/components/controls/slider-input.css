@@ -1,0 +1,59 @@
+.af-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.af-slider-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.af-slider-track input[type="range"] {
+  flex: 1;
+  appearance: none;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4f46e5, #805ad5);
+  outline: none;
+}
+
+.af-slider-track input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4f46e5;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.25);
+}
+
+.af-slider-track input[type="range"]::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4f46e5;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.25);
+}
+
+.af-slider-value {
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #1a202c;
+}
+
+.af-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #4a5568;
+}
+
+.af-slider[data-disabled="true"] .af-slider-track input[type="range"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -7,13 +7,12 @@ import type {
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isDisplayNode } from "../display-store.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
-import { isNonRepeatingGroupNode } from "../non-repeating-group-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isDisplayNode } from "../nodes/display/display-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeInitialExpression } from "./expression-fixtures.ts";
-import { isRepeatingGroupNode } from "../repeating-group-store.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -227,14 +226,14 @@ describe("initialization", () => {
 
     it("creates a group store with child nodes", () => {
       const singleGroupStore = getGroupStore();
-      expect(isNonRepeatingGroupNode(singleGroupStore)).toBe(true);
-      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      expect(isGroupNode(singleGroupStore)).toBe(true);
+      if (!isGroupNode(singleGroupStore)) return;
       expect(singleGroupStore.nodes).toHaveLength(2);
     });
 
     it("hydrates question answers within the group", () => {
       const singleGroupStore = getGroupStore();
-      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      if (!isGroupNode(singleGroupStore)) return;
       const groupQuestion = singleGroupStore.nodes.at(0);
       expect(groupQuestion?.key).toBe("_/_single-group_/_group-question");
       expect(groupQuestion && isQuestionNode(groupQuestion)).toBe(true);
@@ -245,7 +244,7 @@ describe("initialization", () => {
 
     it("retains display child content inside the group", () => {
       const singleGroupStore = getGroupStore();
-      if (!isNonRepeatingGroupNode(singleGroupStore)) return;
+      if (!isGroupNode(singleGroupStore)) return;
       const groupNote = singleGroupStore.nodes.at(1);
       expect(groupNote && isDisplayNode(groupNote)).toBe(true);
       expect(groupNote?.key).toBe("_/_single-group_/_group-note");
@@ -283,8 +282,8 @@ describe("initialization", () => {
       it("still materializes child nodes from the template", () => {
         const form = createMissingGroupStore();
         const group = form.scope.lookupNode("single-group");
-        expect(group && isNonRepeatingGroupNode(group)).toBe(true);
-        if (!group || !isNonRepeatingGroupNode(group)) return;
+        expect(group && isGroupNode(group)).toBe(true);
+        if (!group || !isGroupNode(group)) return;
         const childIds = group.nodes.map((child) => child.linkId);
         expect(childIds).toEqual(["required-question"]);
       });
@@ -292,7 +291,7 @@ describe("initialization", () => {
       it("seeds required questions with empty answers", () => {
         const form = createMissingGroupStore();
         const group = form.scope.lookupNode("single-group");
-        if (!group || !isNonRepeatingGroupNode(group)) return;
+        if (!group || !isGroupNode(group)) return;
         const question = group.nodes.at(0);
         expect(question && isQuestionNode(question)).toBe(true);
         if (!question || !isQuestionNode(question)) return;
@@ -303,7 +302,7 @@ describe("initialization", () => {
   });
 
   describe("repeating groups", () => {
-    it("stays enabled even when its instances are disabled", () => {
+    it("stays enabled even when its nodes are disabled", () => {
       const questionnaire: Questionnaire = {
         resourceType: "Questionnaire",
         status: "active",
@@ -346,26 +345,26 @@ describe("initialization", () => {
         throw new Error("Expected wrapper and toggle question");
       }
 
-      wrapper.addInstance();
-      const instance = wrapper.nodes.at(0);
-      expect(instance).toBeDefined();
+      wrapper.addNode();
+      const node = wrapper.nodes.at(0);
+      expect(node).toBeDefined();
 
-      if (!instance || !isRepeatingGroupNode(instance)) {
-        throw new Error("Expecting instance to be a repeating group node");
+      if (!node || !isGroupNode(node)) {
+        throw new Error("Expecting node to be a group node");
       }
 
       expect(wrapper.isEnabled).toBe(true);
-      expect(instance.isEnabled).toBe(false);
+      expect(node.isEnabled).toBe(false);
 
       toggle.setAnswer(0, true);
 
       expect(wrapper.isEnabled).toBe(true);
-      expect(instance.isEnabled).toBe(true);
+      expect(node.isEnabled).toBe(true);
 
       toggle.setAnswer(0, false);
 
       expect(wrapper.isEnabled).toBe(true);
-      expect(instance.isEnabled).toBe(false);
+      expect(node.isEnabled).toBe(false);
     });
 
     const questionnaire: Questionnaire = {
@@ -424,7 +423,7 @@ describe("initialization", () => {
       return group;
     };
 
-    it("creates one instance per response item", () => {
+    it("creates one node per response item", () => {
       const repeatingGroupStore = getGroupStore();
       expect(isRepeatingGroupWrapper(repeatingGroupStore)).toBe(true);
       if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
@@ -443,9 +442,9 @@ describe("initialization", () => {
     it("hydrates repeating child question answers", () => {
       const repeatingGroupStore = getGroupStore();
       if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
-      const [firstInstance, secondInstance] = repeatingGroupStore.nodes;
-      const firstRepeat = firstInstance?.nodes.at(0);
-      const secondRepeat = secondInstance?.nodes.at(0);
+      const [firstNode, secondNode] = repeatingGroupStore.nodes;
+      const firstRepeat = firstNode?.nodes.at(0);
+      const secondRepeat = secondNode?.nodes.at(0);
       expect(firstRepeat && isQuestionNode(firstRepeat)).toBe(true);
       expect(secondRepeat && isQuestionNode(secondRepeat)).toBe(true);
       if (!firstRepeat || !secondRepeat) return;
@@ -454,11 +453,11 @@ describe("initialization", () => {
       expect(secondRepeat.answers.at(0)?.value).toBe("2024-02-01");
     });
 
-    it("assigns unique path keys per instance child", () => {
+    it("assigns unique path keys per node child", () => {
       const repeatingGroupStore = getGroupStore();
       if (!isRepeatingGroupWrapper(repeatingGroupStore)) return;
       const childPaths = repeatingGroupStore.nodes
-        .map((instance) => instance.nodes.at(0)?.key)
+        .map((node) => node.nodes.at(0)?.key)
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
       childPaths.forEach((path) => {
@@ -467,23 +466,23 @@ describe("initialization", () => {
       expect(new Set(childPaths).size).toBe(childPaths.length);
     });
 
-    it("indexes repeated children inside the instance scope", () => {
+    it("indexes repeated children inside the node scope", () => {
       const form = createStore();
       expect(form.scope.lookupNode("repeat-question")).toBeUndefined();
       const group = form.scope.lookupNode("repeating-group");
       expect(group && isRepeatingGroupWrapper(group)).toBe(true);
       if (!group || !isRepeatingGroupWrapper(group)) return;
-      const [firstInstance, secondInstance] = group.nodes;
-      const firstChild = firstInstance?.scope.lookupNode("repeat-question");
-      const secondChild = secondInstance?.scope.lookupNode("repeat-question");
+      const [firstNode, secondNode] = group.nodes;
+      const firstChild = firstNode?.scope.lookupNode("repeat-question");
+      const secondChild = secondNode?.scope.lookupNode("repeat-question");
       expect(firstChild && isQuestionNode(firstChild)).toBe(true);
       expect(secondChild && isQuestionNode(secondChild)).toBe(true);
       if (!firstChild || !secondChild) return;
       expect(firstChild.key).not.toBe(secondChild.key);
     });
 
-    describe("when response omits instances", () => {
-      const questionnaireWithoutInstances: Questionnaire = {
+    describe("when response omits items", () => {
+      const questionnaire: Questionnaire = {
         resourceType: "Questionnaire",
         status: "active",
         item: [
@@ -505,14 +504,14 @@ describe("initialization", () => {
         ],
       };
 
-      const responseWithoutInstances: QuestionnaireResponse = {
+      const responseWithoutItems: QuestionnaireResponse = {
         resourceType: "QuestionnaireResponse",
         questionnaire: "#questionnaire",
         status: "in-progress",
       };
 
       const createEmptyGroupStore = () =>
-        new FormStore(questionnaireWithoutInstances, responseWithoutInstances);
+        new FormStore(questionnaire, responseWithoutItems);
 
       const getEmptyRepeatingGroup = () => {
         const form = createEmptyGroupStore();
@@ -521,14 +520,12 @@ describe("initialization", () => {
         return group;
       };
 
-      it("seeds the minimum number of empty instances", () => {
+      it("seeds the minimum number of empty nodes", () => {
         const group = getEmptyRepeatingGroup();
         expect(isRepeatingGroupWrapper(group)).toBe(true);
         if (!isRepeatingGroupWrapper(group)) return;
         expect(group.nodes).toHaveLength(2);
-        expect(
-          group.nodes.every((instance) => instance.nodes.length === 1),
-        ).toBe(true);
+        expect(group.nodes.every((node) => node.nodes.length === 1)).toBe(true);
         const firstQuestion = group.nodes.at(0)?.nodes.at(0);
         expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
         if (firstQuestion && isQuestionNode(firstQuestion)) {
@@ -601,7 +598,7 @@ describe("initialization", () => {
       const createMaxGroupStore = () =>
         new FormStore(questionnaireAtMax, responseAtMax);
 
-      it("prevents adding new instances when maxOccurs reached", () => {
+      it("prevents adding new nodes when maxOccurs reached", () => {
         const form = createMaxGroupStore();
         const group = form.scope.lookupNode("repeating-group");
         expect(group && isRepeatingGroupWrapper(group)).toBe(true);
@@ -1229,8 +1226,8 @@ describe("initialization", () => {
         expect(parent && isQuestionNode(parent)).toBe(true);
         if (!parent || !isQuestionNode(parent)) return;
         const group = parent.answers.at(0)?.nodes?.at(0);
-        expect(group && isNonRepeatingGroupNode(group)).toBe(true);
-        if (!group || !isNonRepeatingGroupNode(group)) return;
+        expect(group && isGroupNode(group)).toBe(true);
+        if (!group || !isGroupNode(group)) return;
         const grandchild = group.nodes.at(0);
         expect(grandchild?.key).toBe(
           "_/_parent-question_/_child-group_/_grandchild-question",
@@ -1242,7 +1239,7 @@ describe("initialization", () => {
         const parent = form.scope.lookupNode("parent-question");
         if (!parent || !isQuestionNode(parent)) return;
         const group = parent.answers.at(0)?.nodes?.at(0);
-        if (!group || !isNonRepeatingGroupNode(group)) return;
+        if (!group || !isGroupNode(group)) return;
         const grandchild = group.nodes.at(0);
         expect(grandchild && isQuestionNode(grandchild)).toBe(true);
         if (!grandchild || !isQuestionNode(grandchild)) return;

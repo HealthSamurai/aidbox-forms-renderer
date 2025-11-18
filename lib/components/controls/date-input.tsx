@@ -1,3 +1,4 @@
+import "./text-input.css";
 import { ComponentProps } from "react";
 import { TextInput } from "./text-input.tsx";
 

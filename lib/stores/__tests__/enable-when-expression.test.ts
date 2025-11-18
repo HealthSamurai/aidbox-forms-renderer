@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
+import { FormStore } from "../form/form-store.ts";
 import {
   makeCalculatedExpression,
   makeEnableExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../question-store.ts";
-import { isRepeatingGroupWrapper } from "../repeating-group-wrapper.ts";
-import { isRepeatingGroupNode } from "../repeating-group-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupNode } from "../nodes/groups/group-store.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {
@@ -243,18 +243,18 @@ describe("enableWhenExpression", () => {
     expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
     if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
 
-    wrapper.addInstance();
+    wrapper.addNode();
     expect(wrapper.nodes.length).toBe(1);
 
-    const instance = wrapper.nodes.at(0);
-    expect(instance && isRepeatingGroupNode(instance)).toBe(true);
-    if (!instance || !isRepeatingGroupNode(instance)) return;
+    const node = wrapper.nodes.at(0);
+    expect(node && isGroupNode(node)).toBe(true);
+    if (!node || !isGroupNode(node)) return;
 
-    expect(instance.isEnabled).toBe(false);
-    expect(instance.hidden).toBe(true);
-    expect(instance.responseItems).toHaveLength(0);
+    expect(node.isEnabled).toBe(false);
+    expect(node.hidden).toBe(true);
+    expect(node.responseItems).toHaveLength(0);
 
-    const control = instance.nodes.find((node) => node.linkId === "control");
+    const control = node.nodes.find((node) => node.linkId === "control");
     expect(control && isQuestionNode(control)).toBe(true);
     if (!control || !isQuestionNode(control)) return;
 

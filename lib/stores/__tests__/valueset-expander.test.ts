@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ValueSetExpander } from "../valueset-expander.ts";
+import { ValueSetExpander } from "../services/valueset-expander.ts";
 
 const buildFetchResponse = (contains = [{ system: "sys", code: "code" }]) =>
   ({

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { Extension, Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isQuestionNode } from "../question-store.ts";
-import type { IQuestionNode } from "../types.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import type { IQuestionNode } from "../../types.ts";
 
 const targetConstraint = (config: {
   key?: string | undefined;

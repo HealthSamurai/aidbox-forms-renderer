@@ -1,5 +1,7 @@
-import { useId } from "react";
 import "./number-input.css";
+import "./text-input.css";
+import classNames from "classnames";
+import { useId } from "react";
 
 export function NumberInput({
   id,
@@ -52,17 +54,16 @@ export function NumberInput({
     />
   );
 
-  const frameClasses = ["af-number-input-frame"];
-  if (!unitLabel) {
-    frameClasses.push("af-number-input-frame--solo");
-  }
-
   return (
     <div
       className="af-number-input"
       data-has-unit={unitLabel ? "true" : "false"}
     >
-      <div className={frameClasses.join(" ")}>
+      <div
+        className={classNames("af-number-input-frame", {
+          "af-number-input-frame--solo": !unitLabel,
+        })}
+      >
         {input}
         {unitLabel && (
           <span id={unitId} className="af-number-unit">

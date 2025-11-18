@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../form-store.ts";
-import { isQuestionNode } from "../question-store.ts";
+import { FormStore } from "../form/form-store.ts";
+import { isQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeAnswerExpression, makeVariable } from "./expression-fixtures.ts";
 
 describe("answerExpression", () => {
@@ -32,12 +32,10 @@ describe("answerExpression", () => {
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual(["Red", "Green", "Blue"]);
 
-    expect(color.answerOptions).toHaveLength(3);
-    expect(color.answerOptions.map((option) => option.valueString)).toEqual([
-      "Red",
-      "Green",
-      "Blue",
-    ]);
+    expect(color.options.entries).toHaveLength(3);
+    expect(
+      color.options.entries.map((entry) => entry.option.valueString),
+    ).toEqual(["Red", "Green", "Blue"]);
   });
 
   it("reacts when referenced answers change", () => {
@@ -89,18 +87,18 @@ describe("answerExpression", () => {
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual([]);
 
-    expect(mirror.answerOptions).toHaveLength(0);
+    expect(mirror.options.entries).toHaveLength(0);
 
     source.setAnswer(0, "Alpha");
     expect(slot?.value).toEqual(["Alpha"]);
-    expect(mirror.answerOptions.map((option) => option.valueString)).toEqual([
-      "Alpha",
-    ]);
+    expect(
+      mirror.options.entries.map((entry) => entry.option.valueString),
+    ).toEqual(["Alpha"]);
 
     source.setAnswer(0, "Beta");
     expect(slot?.value).toEqual(["Beta"]);
-    expect(mirror.answerOptions.map((option) => option.valueString)).toEqual([
-      "Beta",
-    ]);
+    expect(
+      mirror.options.entries.map((entry) => entry.option.valueString),
+    ).toEqual(["Beta"]);
   });
 });
