@@ -72,34 +72,36 @@
           "linkId": "work-email",
           "type": "string",
           "text": "Work email for study updates",
-          "extension": [        {
-            "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
-            "extension": [
-              {
-                "url": "key",
-                "valueId": "email-domain-match"
-              },
-              {
-                "url": "severity",
-                "valueCode": "error"
-              },
-              {
-                "url": "human",
-                "valueString": "Use an email address that ends with the approved domain."
-              },
-              {
-                "url": "location",
-                "valueString": "QuestionnaireResponse.item.where(linkId='contact-info')"
-              },
-              {
-                "url": "expression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "iif(%workEmail.empty() or %collegeDomain.empty(), true, %workEmail.first().lower().endsWith('@' & %collegeDomain.first().lower()))"
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/targetConstraint",
+              "extension": [
+                {
+                  "url": "key",
+                  "valueId": "email-domain-match"
+                },
+                {
+                  "url": "severity",
+                  "valueCode": "error"
+                },
+                {
+                  "url": "human",
+                  "valueString": "Use an email address that ends with the approved domain."
+                },
+                {
+                  "url": "location",
+                  "valueString": "QuestionnaireResponse.item.where(linkId='contact-info')"
+                },
+                {
+                  "url": "expression",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "iif(%workEmail.empty() or %collegeDomain.empty(), true, %workEmail.first().lower().endsWith('@' & %collegeDomain.first().lower()))"
+                  }
                 }
-              }
-            ]
-          }]
+              ]
+            }
+          ]
         },
         {
           "linkId": "organization-domain",

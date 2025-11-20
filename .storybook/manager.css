@@ -1,0 +1,19 @@
+.sidebar-header a[title] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.sidebar-header a[title]::after {
+  content: attr(title);
+  font-weight: 600;
+  font-size: 13px;
+  color: inherit;
+}
+
+.sidebar-header img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}

@@ -24,13 +24,13 @@ import answerConstraints from "./answer-constraint-examples.json" assert { type:
 import answerValueSet from "./answer-valueset.json" assert { type: "json" };
 import itemControlMatrix from "./item-control-matrix.json" assert { type: "json" };
 
-type DemoSample = {
+type Sample = {
   readonly id: string;
   readonly label: string;
   readonly questionnaire: Questionnaire;
 };
 
-export const demoSamples: readonly DemoSample[] = [
+export const samples: readonly Sample[] = [
   {
     id: "text-controls",
     label: "Basic text inputs",

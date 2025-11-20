@@ -20,8 +20,6 @@ const rollupExternal = [
 ];
 const typescriptCompilerFolder = resolve(__dirname, "node_modules/typescript");
 
-const isBuildDemo = process.env.BUILD_TARGET === "demo";
-
 function generateScopedName(
   command: string,
   className: string,
@@ -45,19 +43,24 @@ function generateScopedName(
 }
 
 export default defineConfig(({ command }) => {
-  const baseConfig = {
+  return {
     plugins: [
       react(),
       patchCssModules({
         generateSourceTypes: true,
       }),
-      dts({
-        rollupTypes: true,
-        tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
-        rollupOptions: {
-          typescriptCompilerFolder,
-        },
-      }),
+      // Skip declaration generation when building Storybook to avoid API Extractor failures.
+      ...(process.env.STORYBOOK === "true"
+        ? []
+        : [
+            dts({
+              rollupTypes: true,
+              tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+              rollupOptions: {
+                typescriptCompilerFolder,
+              },
+            }),
+          ]),
     ],
     css: {
       modules: {
@@ -68,23 +71,16 @@ export default defineConfig(({ command }) => {
       environment: "jsdom",
       setupFiles: [resolve(__dirname, "lib/__tests__/setup-tests.ts")],
     },
-  };
-
-  if (!isBuildDemo) {
-    return {
-      ...baseConfig,
-      build: {
-        lib: {
-          entry: resolve(__dirname, "lib/index.tsx"),
-          fileName: "index",
-          formats: ["es"],
-        },
-        rollupOptions: {
-          external: rollupExternal,
-        },
-        copyPublicDir: false,
+    build: {
+      lib: {
+        entry: resolve(__dirname, "lib/index.tsx"),
+        fileName: "index",
+        formats: ["es"],
       },
-    };
-  }
-  return baseConfig;
+      rollupOptions: {
+        external: rollupExternal,
+      },
+      copyPublicDir: false,
+    },
+  };
 });

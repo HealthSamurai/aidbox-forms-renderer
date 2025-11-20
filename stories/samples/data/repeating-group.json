@@ -32,9 +32,13 @@
           "type": "coding",
           "text": "Relationship",
           "answerOption": [
-            { "valueCoding": { "code": "spouse", "display": "Spouse/Partner" } },
+            {
+              "valueCoding": { "code": "spouse", "display": "Spouse/Partner" }
+            },
             { "valueCoding": { "code": "child", "display": "Child" } },
-            { "valueCoding": { "code": "parent", "display": "Parent/Guardian" } },
+            {
+              "valueCoding": { "code": "parent", "display": "Parent/Guardian" }
+            },
             { "valueCoding": { "code": "other", "display": "Other" } }
           ]
         }

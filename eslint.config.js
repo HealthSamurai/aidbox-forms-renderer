@@ -1,3 +1,4 @@
+import storybook from "eslint-plugin-storybook";
 import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -7,7 +8,7 @@ import tseslint from "typescript-eslint";
 const tsconfigRootDir = new URL("./", import.meta.url).pathname;
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "storybook-static"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -26,7 +27,7 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
-      // "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-explicit-any": "error",
     },
   },
   {
@@ -41,4 +42,5 @@ export default tseslint.config(
       "@typescript-eslint/switch-exhaustiveness-check": "error",
     },
   },
+  storybook.configs["flat/recommended"],
 );

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.base.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": false,
     "experimentalDecorators": true,
@@ -31,6 +31,5 @@
     "exactOptionalPropertyTypes": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitOverride": true
-  },
-  "include": ["demo"]
+  }
 }

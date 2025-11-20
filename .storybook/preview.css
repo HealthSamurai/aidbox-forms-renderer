@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+html {
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  color: #1a202c;
+}

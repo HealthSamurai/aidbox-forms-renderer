@@ -13,7 +13,7 @@
       "answerValueSet": "http://hl7.org/fhir/ValueSet/administrative-gender",
       "required": true
     },
-    
+
     {
       "linkId": "contact-method",
       "type": "coding",
