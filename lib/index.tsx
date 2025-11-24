@@ -1,7 +1,8 @@
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "./stores/form/form-store.ts";
 import { Form } from "./components/form/form.tsx";
-import { useMemo } from "react";
+import { FormEvent, useCallback, useEffect, useMemo } from "react";
+import { autorun } from "mobx";
 
 type RendererProps = {
   questionnaire: Questionnaire;
@@ -23,9 +24,40 @@ function Renderer({
     [questionnaire, initialResponse, terminologyServerUrl],
   );
 
-  return (
-    store && <Form store={store} onSubmit={onSubmit} onChange={onChange} />
+  useEffect(() => () => store.dispose(), [store]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+
+    const dispose = autorun(() => {
+      onChange(store.response);
+    });
+
+    return () => {
+      dispose();
+    };
+  }, [onChange, store]);
+
+  const handleValidSubmit = useCallback(() => {
+    if (onSubmit) {
+      onSubmit(store.response);
+    }
+  }, [onSubmit, store]);
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const isValid = store.validateAll();
+      if (isValid) {
+        handleValidSubmit();
+      }
+    },
+    [handleValidSubmit, store],
   );
+
+  return store && <Form store={store} onSubmit={handleSubmit} />;
 }
 
 export default Renderer;

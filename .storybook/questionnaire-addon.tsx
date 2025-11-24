@@ -1,101 +1,58 @@
 import * as React from "react";
-import {
-  addons,
-  types,
-  useStorybookApi,
-  useStorybookState,
-} from "storybook/manager-api";
-import { Button, Form } from "storybook/internal/components";
+import { addons, types, useStorybookState } from "storybook/manager-api";
+import { SyntaxHighlighter } from "storybook/internal/components";
+import type { Questionnaire } from "fhir/r5";
 
-const ADDON_ID = "aidbox/questionnaire";
-const PANEL_ID = `${ADDON_ID}/panel`;
-const ARG_KEY = "questionnaireSource";
-type TextareaStyle = NonNullable<
-  React.ComponentProps<typeof Form.Textarea>["style"]
->;
-
-function QuestionnairePanel() {
-  const api = useStorybookApi();
-  const state = useStorybookState();
-  const storyId = state.storyId;
-  const storyData = storyId ? api.getData(storyId) : null;
-
-  const storyEntry = storyData && storyData.type === "story" ? storyData : null;
-
-  const currentArg = (storyEntry?.args?.[ARG_KEY] as string | undefined) ?? "";
-  const initialArg =
-    (storyEntry?.initialArgs?.[ARG_KEY] as string | undefined) ?? currentArg;
-
-  const [value, setValue] = React.useState<string>(currentArg);
+export function QuestionnairePanel() {
+  const { storyId } = useStorybookState();
+  const [value, setValue] = React.useState("");
 
   React.useEffect(() => {
-    setValue(currentArg);
-  }, [currentArg]);
+    const channel = addons.getChannel();
 
-  const handleApply = () => {
-    if (!storyEntry) return;
-    api.updateStoryArgs(storyEntry, { [ARG_KEY]: value });
-  };
+    const handleUpdate = (payload: {
+      storyId: string;
+      questionnaire: Questionnaire;
+    }) => {
+      if (payload.storyId && storyId && payload.storyId !== storyId) {
+        return;
+      }
 
-  const handleReset = () => {
-    if (!storyEntry) return;
-    api.updateStoryArgs(storyEntry, { [ARG_KEY]: initialArg });
-    setValue(initialArg);
-  };
+      const encoded = JSON.stringify(payload.questionnaire, null, 2);
+      setValue(encoded);
+    };
 
-  const isDirty = React.useMemo(
-    () => value !== currentArg,
-    [value, currentArg],
-  );
+    channel.on(`aidbox/questionnaire/update`, handleUpdate);
+    channel.emit(`aidbox/questionnaire/request`, { storyId });
+
+    return () => {
+      channel.off(`aidbox/questionnaire/update`, handleUpdate);
+    };
+  }, [storyId]);
 
   return (
-    <div
-      style={{
-        padding: 12,
-        height: "100%",
+    <SyntaxHighlighter
+      language="json"
+      showLineNumbers
+      wrapLongLines
+      customStyle={{
+        flex: 1,
+        margin: 0,
+        maxHeight: "100%",
         boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
+        padding: "12px",
       }}
     >
-      <div style={{ display: "flex", gap: 12 }}>
-        <Button
-          type="button"
-          onClick={handleApply}
-          disabled={!isDirty}
-          title="Apply edits to the current story"
-        >
-          Apply
-        </Button>
-        <Button
-          type="button"
-          onClick={handleReset}
-          title="Reset to the story's default questionnaire"
-        >
-          Reset
-        </Button>
-      </div>
-      <Form.Textarea
-        aria-label="Questionnaire JSON"
-        value={value}
-        onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setValue(event.target.value)
-        }
-        spellCheck={false}
-        style={{ flex: 1, maxHeight: "100%" } as unknown as TextareaStyle}
-      />
-    </div>
+      {value}
+    </SyntaxHighlighter>
   );
 }
 
-addons.register(ADDON_ID, () => {
-  addons.add(PANEL_ID, {
+addons.register("aidbox/questionnaire", () => {
+  addons.add(`aidbox/questionnaire/panel`, {
     title: "Questionnaire",
     type: types.PANEL,
     render: ({ active }) =>
-      active ? <QuestionnairePanel key={PANEL_ID} /> : null,
+      active ? <QuestionnairePanel key={`aidbox/questionnaire/panel`} /> : null,
   });
 });
-
-export {};

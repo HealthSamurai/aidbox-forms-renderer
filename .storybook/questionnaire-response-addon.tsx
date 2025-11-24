@@ -1,86 +1,66 @@
 import * as React from "react";
 import { addons, types, useStorybookState } from "storybook/manager-api";
-import { STORY_CHANGED } from "storybook/internal/core-events";
-import { Form } from "storybook/internal/components";
-import {
-  QUESTIONNAIRE_RESPONSE_ADDON_ID,
-  QUESTIONNAIRE_RESPONSE_EVENT_ID,
-  QUESTIONNAIRE_RESPONSE_PANEL_ID,
-  type QuestionnaireResponseEventPayload,
-} from "./addon-ids.ts";
+import { SyntaxHighlighter } from "storybook/internal/components";
+import type { QuestionnaireResponse } from "fhir/r5";
 
-type TextareaStyle = NonNullable<
-  React.ComponentProps<typeof Form.Textarea>["style"]
->;
-
-function QuestionnaireResponsePanel() {
-  const { storyId, viewMode } = useStorybookState();
-  const [responseText, setResponseText] = React.useState("");
+export function QuestionnaireResponsePanel() {
+  const { storyId } = useStorybookState();
+  const [value, setValue] = React.useState("");
 
   React.useEffect(() => {
     const channel = addons.getChannel();
 
-    const handleUpdate = (payload: QuestionnaireResponseEventPayload) => {
+    const handleUpdate = (payload: {
+      storyId: string;
+      response: QuestionnaireResponse | undefined;
+    }) => {
       if (payload.storyId && storyId && payload.storyId !== storyId) {
         return;
       }
 
-      if (!payload.response) {
-        setResponseText("");
-        return;
+      if (payload.response) {
+        const encoded = JSON.stringify(payload.response, null, 2);
+        setValue(encoded);
+      } else {
+        setValue("");
       }
-
-      setResponseText(JSON.stringify(payload.response, null, 2));
     };
 
-    const handleStoryChange = () => setResponseText("");
-
-    channel.on(QUESTIONNAIRE_RESPONSE_EVENT_ID, handleUpdate);
-    channel.on(STORY_CHANGED, handleStoryChange);
+    channel.on("aidbox/questionnaire-response/update", handleUpdate);
+    channel.emit("aidbox/questionnaire-response/request", { storyId });
 
     return () => {
-      channel.off(QUESTIONNAIRE_RESPONSE_EVENT_ID, handleUpdate);
-      channel.off(STORY_CHANGED, handleStoryChange);
+      channel.off("aidbox/questionnaire-response/update", handleUpdate);
     };
   }, [storyId]);
 
-  const placeholder =
-    viewMode === "docs"
-      ? "QuestionnaireResponse is captured in the Canvas view."
-      : "Interact with the form to see its QuestionnaireResponse.";
-
   return (
-    <div
-      style={{
-        padding: 12,
-        height: "100%",
+    <SyntaxHighlighter
+      language="json"
+      showLineNumbers
+      wrapLongLines
+      customStyle={{
+        flex: 1,
+        margin: 0,
+        maxHeight: "100%",
         boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
+        padding: "12px",
       }}
     >
-      <Form.Textarea
-        readOnly
-        aria-label="QuestionnaireResponse JSON"
-        value={responseText}
-        placeholder={placeholder}
-        spellCheck={false}
-        style={{ flex: 1, maxHeight: "100%" } as unknown as TextareaStyle}
-      />
-    </div>
+      {value}
+    </SyntaxHighlighter>
   );
 }
 
-addons.register(QUESTIONNAIRE_RESPONSE_ADDON_ID, () => {
-  addons.add(QUESTIONNAIRE_RESPONSE_PANEL_ID, {
+addons.register("aidbox/questionnaire-response", () => {
+  addons.add(`aidbox/questionnaire-response/panel`, {
     title: "Questionnaire Response",
     type: types.PANEL,
     render: ({ active }) =>
       active ? (
-        <QuestionnaireResponsePanel key={QUESTIONNAIRE_RESPONSE_PANEL_ID} />
+        <QuestionnaireResponsePanel
+          key={`aidbox/questionnaire-response/panel`}
+        />
       ) : null,
   });
 });
-
-export {};

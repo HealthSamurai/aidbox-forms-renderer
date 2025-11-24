@@ -1,6 +1,5 @@
 import "./form.css";
 import { observer } from "mobx-react-lite";
-import { autorun } from "mobx";
 import type {
   IGroupNode,
   IPresentableNode,
@@ -9,52 +8,19 @@ import type {
 import { IForm } from "../../types.ts";
 import { NodesList } from "./node-list.tsx";
 import { Node } from "./node.tsx";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState, type FormEventHandler } from "react";
 import { Button } from "../controls/button.tsx";
-import type { QuestionnaireResponse } from "fhir/r5";
 import { isGroupNode } from "../../stores/nodes/groups/group-store.ts";
 import { isRepeatingGroupWrapper } from "../../stores/nodes/groups/repeating-group-wrapper.ts";
 
 export const Form = observer(function Form({
   store,
   onSubmit,
-  onChange,
 }: {
   store: IForm;
-  onSubmit?: ((response: QuestionnaireResponse) => void) | undefined;
-  onChange?: ((response: QuestionnaireResponse) => void) | undefined;
+  onSubmit?: FormEventHandler<HTMLFormElement> | undefined;
 }) {
   const [activePage, setActivePage] = useState(0);
-
-  useEffect(() => {
-    if (!onChange) {
-      return;
-    }
-
-    const dispose = autorun(() => {
-      if (!store.response) {
-        return;
-      }
-
-      onChange(store.response);
-    });
-
-    return () => {
-      dispose();
-    };
-  }, [onChange, store]);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const isValid = store.validateAll();
-    if (!isValid) {
-      return;
-    }
-
-    if (store.response && onSubmit) {
-      onSubmit(store.response);
-    }
-  };
 
   const issueMessages = store.issues
     .map((issue) => issue.diagnostics?.trim() || issue.details?.text?.trim())
@@ -135,7 +101,7 @@ export const Form = observer(function Form({
   ) : null;
 
   return (
-    <form className="af-form" onSubmit={handleSubmit}>
+    <form className="af-form" onSubmit={onSubmit}>
       {store.questionnaire.title || store.questionnaire.description ? (
         <header>
           {store.questionnaire.title ? (
