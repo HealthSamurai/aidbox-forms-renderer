@@ -7,7 +7,8 @@ import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 const bmiQuestionnaire: Questionnaire = {
   resourceType: "Questionnaire",
@@ -57,24 +58,30 @@ describe("calculatedExpression", () => {
     const weightStore = form.scope.lookupNode("weight");
     const bmiStore = form.scope.lookupNode("bmi");
 
-    if (
-      !isQuestionNode(heightStore) ||
-      !isQuestionNode(weightStore) ||
-      !isQuestionNode(bmiStore)
-    ) {
-      throw new Error("Expected questions");
-    }
+    assertQuestionNode(heightStore);
+    assertQuestionNode(weightStore);
+    assertQuestionNode(bmiStore);
 
     const height = heightStore;
     const weight = weightStore;
     const bmi = bmiStore;
 
-    height.setAnswer(0, 180);
-    weight.setAnswer(0, 80);
+    const heightAnswer = height.answers[0];
+    assertDefined(heightAnswer);
+    heightAnswer.setValueByUser(180);
+
+    const weightAnswer = weight.answers[0];
+    assertDefined(weightAnswer);
+    weightAnswer.setValueByUser(80);
     expect(bmi.answers[0]?.value).toBeCloseTo(24.69, 2);
 
-    bmi.setAnswer(0, 999);
-    weight.setAnswer(0, 90);
+    const bmiAnswer = bmi.answers[0];
+    assertDefined(bmiAnswer);
+    bmiAnswer.setValueByUser(999);
+
+    const weightUpdateAnswer = weight.answers[0];
+    assertDefined(weightUpdateAnswer);
+    weightUpdateAnswer.setValueByUser(90);
     expect(bmi.answers[0]?.value).toBe(999);
   });
 
@@ -100,13 +107,9 @@ describe("calculatedExpression", () => {
     const weightStore = form.scope.lookupNode("weight");
     const bmiStore = form.scope.lookupNode("bmi");
 
-    if (
-      !isQuestionNode(heightStore) ||
-      !isQuestionNode(weightStore) ||
-      !isQuestionNode(bmiStore)
-    ) {
-      throw new Error("Expected questions");
-    }
+    assertQuestionNode(heightStore);
+    assertQuestionNode(weightStore);
+    assertQuestionNode(bmiStore);
 
     const height = heightStore;
     const weight = weightStore;
@@ -114,8 +117,13 @@ describe("calculatedExpression", () => {
 
     expect(bmi.answers[0]?.value).toBe(42);
 
-    height.setAnswer(0, 180);
-    weight.setAnswer(0, 90);
+    const heightAnswer = height.answers[0];
+    assertDefined(heightAnswer);
+    heightAnswer.setValueByUser(180);
+
+    const weightAnswer = weight.answers[0];
+    assertDefined(weightAnswer);
+    weightAnswer.setValueByUser(90);
 
     expect(bmi.answers[0]?.value).toBe(42);
   });
@@ -158,16 +166,17 @@ describe("calculatedExpression", () => {
     const aStore = form.scope.lookupNode("a");
     const bStore = form.scope.lookupNode("b");
 
-    if (!isQuestionNode(aStore) || !isQuestionNode(bStore)) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(aStore);
+    assertQuestionNode(bStore);
 
     const a = aStore;
     const b = bStore;
 
     runInAction(() => {
-      a.answers[0].value = 0;
-      b.answers[0].value = 0;
+      // Seed as system writes (not user) so lifecycle stays non-manual and the
+      // calculated-expression cycle detector can flag the loop.
+      a.answers[0].setValueBySystem(0);
+      b.answers[0].setValueBySystem(0);
     });
 
     expect(a.issues.some((issue) => issue.code === "business-rule")).toBe(true);
@@ -191,9 +200,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const multiStore = form.scope.lookupNode("multi");
 
-    if (!isQuestionNode(multiStore)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(multiStore);
 
     const multi = multiStore;
 
@@ -221,9 +228,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const node = form.scope.lookupNode("result");
 
-    if (!node || !isQuestionNode(node)) {
-      throw new Error("Expected result question");
-    }
+    assertQuestionNode(node);
 
     expect(node.answers[0]?.value).toBe(10);
   });
@@ -272,19 +277,18 @@ describe("calculatedExpression", () => {
     const base = form.scope.lookupNode("base");
     const derived = form.scope.lookupNode("derived");
 
-    if (!isQuestionNode(base) || !isQuestionNode(derived)) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(base);
+    assertQuestionNode(derived);
 
     const mirror = derived.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestionNode(mirror)) {
-      throw new Error("Expected mirror descendant question");
-    }
+    assertQuestionNode(mirror);
 
-    base.setAnswer(0, 5);
+    const baseAnswer = base.answers[0];
+    assertDefined(baseAnswer);
+    baseAnswer.setValueByUser(5);
     expect(mirror.answers[0]?.value).toBe(6);
   });
 
@@ -308,9 +312,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const resultStore = form.scope.lookupNode("result");
 
-    if (!isQuestionNode(resultStore)) {
-      throw new Error("Expected result question store");
-    }
+    assertQuestionNode(resultStore);
 
     const issue = resultStore.issues[0];
     expect(issue?.code).toBe("invalid");
@@ -343,9 +345,7 @@ describe("calculatedExpression", () => {
     const form = new FormStore(questionnaire);
     const resultStore = form.scope.lookupNode("result");
 
-    if (!isQuestionNode(resultStore)) {
-      throw new Error("Expected result question store");
-    }
+    assertQuestionNode(resultStore);
 
     const issue = resultStore.issues[0];
     expect(issue?.code).toBe("invalid");
@@ -422,13 +422,9 @@ describe("calculatedExpression", () => {
     const weightStore = form.scope.lookupNode("weight");
     const bmiStore = form.scope.lookupNode("bmi");
 
-    if (
-      !isQuestionNode(heightStore) ||
-      !isQuestionNode(weightStore) ||
-      !isQuestionNode(bmiStore)
-    ) {
-      throw new Error("Expected questions");
-    }
+    assertQuestionNode(heightStore);
+    assertQuestionNode(weightStore);
+    assertQuestionNode(bmiStore);
 
     const height = heightStore;
     const weight = weightStore;
@@ -436,8 +432,13 @@ describe("calculatedExpression", () => {
 
     expect(bmi.answers[0]?.value).toBeCloseTo(27.34, 2);
 
-    height.setAnswer(0, 180);
-    weight.setAnswer(0, 90);
+    const heightAnswer = height.answers[0];
+    assertDefined(heightAnswer);
+    heightAnswer.setValueByUser(180);
+
+    const weightAnswer = weight.answers[0];
+    assertDefined(weightAnswer);
+    weightAnswer.setValueByUser(90);
 
     expect(bmi.answers[0]?.value).toBeCloseTo(27.8, 1);
   });

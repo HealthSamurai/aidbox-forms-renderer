@@ -44,6 +44,7 @@ import {
 import type { GroupControlRegistry } from "./stores/registries/group-control-registry.ts";
 import type { ComponentType, HTMLAttributes } from "react";
 import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
+import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -492,7 +493,9 @@ export interface IRepeatingGroupWrapper extends IPresentableNode {
 export interface IAnswerInstance<T extends AnswerType = AnswerType> {
   readonly key: string;
   readonly question: IQuestionNode<T>;
-  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
+  setValueBySystem(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
   readonly nodes: Array<IPresentableNode>;
   readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
@@ -557,12 +560,10 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
   readonly canAdd: boolean;
   readonly canRemove: boolean;
 
-  addAnswer(initial?: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
-  removeAnswer(index: number): void;
-  setAnswer(
-    index: number,
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): void;
+  addAnswer(
+    initial?: DataTypeToType<AnswerTypeToDataType<T>> | null,
+  ): IAnswerInstance | undefined;
+  removeAnswer(answer: IAnswerInstance<T>): void;
   markUserOverridden(): void;
 }
 
@@ -621,3 +622,7 @@ export interface TargetConstraintDefinition {
   location: string | undefined;
   requirements: string | undefined;
 }
+
+export type ValueKeyFor<T extends DataType> = PolyKeyFor<"value", T>;
+
+export type ValueCarrierFor<T extends DataType> = PolyCarrierFor<"value", T>;

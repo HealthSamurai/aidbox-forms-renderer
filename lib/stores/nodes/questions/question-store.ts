@@ -71,6 +71,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private readonly disposers: IReactionDisposer[] = [];
 
+  private lastIndex = 0;
+
   @computed
   get component(): QuestionControlDefinition["component"] | undefined {
     return this.form.questionControlRegistry.resolve(this)?.component;
@@ -99,7 +101,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (!this.applyResponseValues(responseItem?.answer)) {
       this.applyTemplateInitialValues();
     }
-    this.ensureBaselineAnswers();
+    this.setupBaselineAnswerReaction();
     this.detectInitialOverride();
     this.setupExpressionReactions();
   }
@@ -172,38 +174,25 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @action
-  addAnswer(initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null) {
-    if (this.canAdd) {
-      this.pushAnswer(initial);
-      this.markDirty();
-      this.markUserOverridden();
-    }
+  addAnswer(
+    initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
+  ): IAnswerInstance | undefined {
+    if (!this.canAdd) return undefined;
+    this.markDirty();
+    this.markUserOverridden();
+    return this.pushAnswer(initial);
   }
 
   @action
-  removeAnswer(index: number) {
+  removeAnswer(answer: IAnswerInstance<T>) {
     if (!this.canRemove) return;
+    const index = this.answers.indexOf(answer);
+    if (index < 0) return;
     const [removed] = this.answers.splice(index, 1);
     removed?.dispose();
     this.ensureBaselineAnswers();
     this.markDirty();
     this.markUserOverridden();
-  }
-
-  @action
-  setAnswer(
-    index: number,
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ) {
-    if (index === 0 && this.answers.length === 0) {
-      this.ensureBaselineAnswers();
-    }
-
-    const answer = this.answers[index];
-    if (answer) {
-      answer.value = value === "" ? null : value;
-      this.markUserOverridden();
-    }
   }
 
   @action
@@ -257,6 +246,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (index >= 0) {
       this.disposers.splice(index, 1);
     }
+  }
+
+  private setupBaselineAnswerReaction() {
+    this.trackDisposer(
+      reaction(
+        () => [this.canAdd, this.minOccurs, this.repeats, this.answers.length],
+        () => this.ensureBaselineAnswers(),
+        {
+          name: `${this.key}:ensure-baseline-answers`,
+          equals: comparer.structural,
+          fireImmediately: true,
+        },
+      ),
+    );
   }
 
   private setupExpressionReactions() {
@@ -329,10 +332,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         return;
       }
       const initialValue = values[0];
-      answer.value =
+      answer.setValueBySystem(
         initialValue && typeof initialValue === "object"
           ? structuredClone(initialValue)
-          : initialValue;
+          : initialValue,
+      );
       seeded = true;
     }
 
@@ -369,7 +373,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       this.ensureBaselineAnswers(true);
       const answer = this.answers[0];
       if (answer) {
-        answer.value = coerced;
+        answer.setValueBySystem(coerced);
       }
     }
     this.lifecycle = "expression";
@@ -419,7 +423,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         this.ensureBaselineAnswers(true);
         const answer = this.answers[0];
         if (answer) {
-          answer.value = values[0] ?? null;
+          answer.setValueBySystem(values[0] ?? null);
         }
       }
       this.lifecycle = "expression";
@@ -442,7 +446,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     values.forEach((entry, index) => {
       const answer = this.answers[index];
       if (!answer) return;
-      answer.value = entry ?? null;
+      answer.setValueBySystem(entry ?? null);
     });
   }
 
@@ -464,9 +468,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   public markUserOverridden() {
-    if (this.lifecycle !== "manual") {
-      this.lifecycle = "manual";
-    }
+    this.lifecycle = "manual";
   }
 
   @action
@@ -477,11 +479,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const answer = new AnswerInstance(
       this,
       this.scope,
-      this.answers.length,
+      `${this.key}_/_${this.lastIndex++}`,
       initial,
       responseItems,
     );
     this.answers.push(answer);
+    return answer;
   }
 
   @action
@@ -544,9 +547,17 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 }
 
-// todo: consider TType in runtime
 export function isQuestionNode<TType extends AnswerType = AnswerType>(
-  it: IPresentableNode | undefined,
+  it: IPresentableNode | undefined | null,
 ): it is IQuestionNode<TType> {
   return it instanceof QuestionStore;
+}
+
+export function assertQuestionNode<TType extends AnswerType = AnswerType>(
+  it: IPresentableNode | undefined | null,
+  message?: string,
+): asserts it is IQuestionNode<TType> {
+  if (!isQuestionNode(it)) {
+    throw new TypeError(message ?? "Expected QuestionNode instance");
+  }
 }

@@ -6,9 +6,10 @@ import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertGroupNode } from "../nodes/groups/group-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 describe("variable expressions", () => {
   it("records questionnaire-level variable name collisions on the form", () => {
@@ -51,18 +52,12 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const rootVariable = form.scope.lookupExpression("globalValue");
-
-    if (!rootVariable) {
-      throw new Error("Expected form-level variable slot");
-    }
+    assertDefined(rootVariable);
 
     expect(rootVariable.value).toEqual(["root-scope"]);
 
     const mirror = form.scope.lookupNode("mirror");
-
-    if (!mirror || !isQuestionNode(mirror)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(mirror);
 
     expect(mirror.answers[0]?.value).toBe("root-scope");
   });
@@ -110,16 +105,11 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const mirror = form.scope.lookupNode("mirror");
+    assertQuestionNode(mirror);
     const childMirror = form.scope.lookupNode("child-mirror");
+    assertQuestionNode(childMirror);
     const parentFromChild = form.scope.lookupNode("parent-from-child");
-
-    if (
-      !isQuestionNode(mirror) ||
-      !isQuestionNode(childMirror) ||
-      !isQuestionNode(parentFromChild)
-    ) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(parentFromChild);
 
     expect(mirror.answers[0]?.value).toBe("parent");
     expect(childMirror.answers[0]?.value).toBe("child");
@@ -159,19 +149,15 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-
-    if (!household || !isRepeatingGroupWrapper(household)) {
-      throw new Error("Expected repeating group store");
-    }
+    assertRepeatingGroupWrapper(household);
 
     household.addNode();
     household.addNode();
 
     const [firstNode, secondNode] = household.nodes;
 
-    if (!firstNode || !secondNode) {
-      throw new Error("Expected initial repeating group nodes");
-    }
+    assertDefined(firstNode);
+    assertDefined(secondNode);
 
     const findQuestion = (linkId: string, nodeIndex: number) => {
       const node =
@@ -181,14 +167,11 @@ describe("variable expressions", () => {
             ? secondNode
             : household.nodes[nodeIndex];
 
-      if (!node) {
-        throw new Error(`Missing node #${nodeIndex}`);
-      }
+      const resolvedNode = node;
+      assertDefined(resolvedNode);
 
-      const child = node.nodes.find((item) => item.linkId === linkId);
-      if (!child || !isQuestionNode(child)) {
-        throw new Error(`Expected question store for ${linkId}`);
-      }
+      const child = resolvedNode.nodes.find((item) => item.linkId === linkId);
+      assertQuestionNode(child);
 
       return child;
     };
@@ -201,8 +184,12 @@ describe("variable expressions", () => {
     expect(firstEcho.answers).toHaveLength(0);
     expect(secondEcho.answers).toHaveLength(0);
 
-    firstName.setAnswer(0, "Alice");
-    secondName.setAnswer(0, "Bianca");
+    const firstNameAnswer0 = firstName.answers[0];
+    assertDefined(firstNameAnswer0);
+    firstNameAnswer0.setValueByUser("Alice");
+    const secondNameAnswer0 = secondName.answers[0];
+    assertDefined(secondNameAnswer0);
+    secondNameAnswer0.setValueByUser("Bianca");
 
     expect(firstEcho.answers[0]?.value).toBe("Alice");
     expect(secondEcho.answers[0]?.value).toBe("Bianca");
@@ -210,23 +197,24 @@ describe("variable expressions", () => {
     household.addNode();
 
     const thirdNode = household.nodes[2];
-
-    if (!thirdNode) {
-      throw new Error("Expected third repeating group node");
-    }
+    assertDefined(thirdNode);
 
     const thirdName = findQuestion("name", 2);
     const thirdEcho = findQuestion("echo", 2);
 
     expect(thirdEcho.answers).toHaveLength(0);
 
-    thirdName.setAnswer(0, "Clara");
+    const thirdNameAnswer0 = thirdName.answers[0];
+    assertDefined(thirdNameAnswer0);
+    thirdNameAnswer0.setValueByUser("Clara");
 
     expect(firstEcho.answers[0]?.value).toBe("Alice");
     expect(secondEcho.answers[0]?.value).toBe("Bianca");
     expect(thirdEcho.answers[0]?.value).toBe("Clara");
 
-    firstName.setAnswer(0, "Alicia");
+    const updatedFirstAnswer0 = firstName.answers[0];
+    assertDefined(updatedFirstAnswer0);
+    updatedFirstAnswer0.setValueByUser("Alicia");
 
     expect(firstEcho.answers[0]?.value).toBe("Alicia");
     expect(secondEcho.answers[0]?.value).toBe("Bianca");
@@ -269,29 +257,21 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-
-    if (!household || !isRepeatingGroupWrapper(household)) {
-      throw new Error("Expected repeating group store");
-    }
+    assertRepeatingGroupWrapper(household);
 
     household.addNode();
     household.addNode();
 
     const [firstNode, secondNode] = household.nodes;
 
-    if (!firstNode || !secondNode) {
-      throw new Error("Expected two repeating group nodes");
-    }
+    assertDefined(firstNode);
+    assertDefined(secondNode);
 
     const findQuestion = (nodeIndex: number, linkId: string) => {
       const node = household.nodes[nodeIndex];
-      if (!node) {
-        throw new Error(`Missing node #${nodeIndex}`);
-      }
+      assertDefined(node);
       const child = node.nodes.find((item) => item.linkId === linkId);
-      if (!child || !isQuestionNode(child)) {
-        throw new Error(`Expected question store for ${linkId}`);
-      }
+      assertQuestionNode(child);
       return child;
     };
 
@@ -301,21 +281,29 @@ describe("variable expressions", () => {
     const secondCount = findQuestion(1, "resident-count");
 
     firstResidents.addAnswer();
-    firstResidents.setAnswer(0, "Alice");
+    const firstResidentsAnswer0 = firstResidents.answers[0];
+    assertDefined(firstResidentsAnswer0);
+    firstResidentsAnswer0.setValueByUser("Alice");
     firstResidents.addAnswer();
-    firstResidents.setAnswer(1, "Bob");
+    firstResidents.answers[1]!.setValueByUser("Bob");
 
     secondResidents.addAnswer();
-    secondResidents.setAnswer(0, "Charlie");
+    const secondResidentsAnswer0 = secondResidents.answers[0];
+    assertDefined(secondResidentsAnswer0);
+    secondResidentsAnswer0.setValueByUser("Charlie");
 
     const firstResidentCountSlot =
       firstNode.scope.lookupExpression("residentCount");
+    assertDefined(
+      firstResidentCountSlot,
+      "Expected residentCount variables for nodes",
+    );
     const secondResidentCountSlot =
       secondNode.scope.lookupExpression("residentCount");
-
-    if (!firstResidentCountSlot || !secondResidentCountSlot) {
-      throw new Error("Expected residentCount variables for nodes");
-    }
+    assertDefined(
+      secondResidentCountSlot,
+      "Expected residentCount variables for nodes",
+    );
 
     expect(firstResidents.answers.map((answer) => answer.value)).toEqual([
       "Alice",
@@ -328,7 +316,9 @@ describe("variable expressions", () => {
     expect(firstCount.answers[0]?.value).toBe(2);
     expect(secondCount.answers[0]?.value).toBe(1);
 
-    firstResidents.removeAnswer(1);
+    const secondResidentAnswer = firstResidents.answers[1];
+    assertDefined(secondResidentAnswer);
+    firstResidents.removeAnswer(secondResidentAnswer);
 
     expect(firstCount.answers[0]?.value).toBe(1);
     expect(secondCount.answers[0]?.value).toBe(1);
@@ -382,49 +372,41 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const families = form.scope.lookupNode("families");
-
-    if (!families || !isRepeatingGroupWrapper(families)) {
-      throw new Error("Expected repeating families group");
-    }
+    assertRepeatingGroupWrapper(families);
 
     families.addNode();
     families.addNode();
 
     const [firstFamily, secondFamily] = families.nodes;
 
-    if (!firstFamily || !secondFamily) {
-      throw new Error("Expected repeating family nodes");
-    }
+    assertDefined(firstFamily);
+    assertDefined(secondFamily);
 
     const findQuestion = (nodeIndex: number, linkId: string) => {
       const node = families.nodes[nodeIndex];
-      if (!node) {
-        throw new Error(`Missing family node #${nodeIndex}`);
-      }
+      assertDefined(node);
       const child = node.nodes.find((item) => item.linkId === linkId);
-      if (!child || !isQuestionNode(child)) {
-        throw new Error(`Expected question store for ${linkId}`);
-      }
+      assertQuestionNode(child);
       return child;
     };
 
     const findRepeatingGroup = (nodeIndex: number, linkId: string) => {
       const node = families.nodes[nodeIndex];
-      if (!node) {
-        throw new Error(`Missing family node #${nodeIndex}`);
-      }
+      assertDefined(node);
       const child = node.nodes.find((item) => item.linkId === linkId);
-      if (!child || !isRepeatingGroupWrapper(child)) {
-        throw new Error(`Expected repeating group store for ${linkId}`);
-      }
+      assertRepeatingGroupWrapper(child);
       return child;
     };
 
     const firstName = findQuestion(0, "family-name");
     const secondName = findQuestion(1, "family-name");
 
-    firstName.setAnswer(0, "Smith");
-    secondName.setAnswer(0, "Johnson");
+    const firstFamilyNameAnswer0 = firstName.answers[0];
+    assertDefined(firstFamilyNameAnswer0);
+    firstFamilyNameAnswer0.setValueByUser("Smith");
+    const secondFamilyNameAnswer0 = secondName.answers[0];
+    assertDefined(secondFamilyNameAnswer0);
+    secondFamilyNameAnswer0.setValueByUser("Johnson");
 
     const firstMembers = findRepeatingGroup(0, "members");
     const secondMembers = findRepeatingGroup(1, "members");
@@ -433,11 +415,9 @@ describe("variable expressions", () => {
     secondMembers.addNode();
 
     const firstMemberNode = firstMembers.nodes[0];
+    assertDefined(firstMemberNode);
     const secondMemberNode = secondMembers.nodes[0];
-
-    if (!firstMemberNode || !secondMemberNode) {
-      throw new Error("Expected member nodes");
-    }
+    assertDefined(secondMemberNode);
 
     const findMemberQuestion = (
       memberNodeIndex: number,
@@ -446,15 +426,9 @@ describe("variable expressions", () => {
     ) => {
       const members = familyIndex === 0 ? firstMembers : secondMembers;
       const memberNode = members.nodes[memberNodeIndex];
-      if (!memberNode) {
-        throw new Error(
-          `Missing member node #${memberNodeIndex} for family #${familyIndex}`,
-        );
-      }
+      assertDefined(memberNode);
       const child = memberNode.nodes.find((item) => item.linkId === linkId);
-      if (!child || !isQuestionNode(child)) {
-        throw new Error(`Expected question store for ${linkId}`);
-      }
+      assertQuestionNode(child);
       return child;
     };
 
@@ -463,13 +437,19 @@ describe("variable expressions", () => {
     const secondMemberName = findMemberQuestion(0, 1, "member-name");
     const secondFamilyTag = findMemberQuestion(0, 1, "family-tag");
 
-    firstMemberName.setAnswer(0, "Alice");
-    secondMemberName.setAnswer(0, "Brandon");
+    const firstMemberNameAnswer0 = firstMemberName.answers[0];
+    assertDefined(firstMemberNameAnswer0);
+    firstMemberNameAnswer0.setValueByUser("Alice");
+    const secondMemberNameAnswer0 = secondMemberName.answers[0];
+    assertDefined(secondMemberNameAnswer0);
+    secondMemberNameAnswer0.setValueByUser("Brandon");
 
     expect(firstFamilyTag.answers[0]?.value).toBe("Smith");
     expect(secondFamilyTag.answers[0]?.value).toBe("Johnson");
 
-    firstName.setAnswer(0, "Smythe");
+    const latestFirstFamilyNameAnswer0 = firstName.answers[0];
+    assertDefined(latestFirstFamilyNameAnswer0);
+    latestFirstFamilyNameAnswer0.setValueByUser("Smythe");
 
     expect(firstFamilyTag.answers[0]?.value).toBe("Smythe");
     expect(secondFamilyTag.answers[0]?.value).toBe("Johnson");
@@ -524,43 +504,30 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-
-    if (!addresses || !isRepeatingGroupWrapper(addresses)) {
-      throw new Error("Expected repeating group");
-    }
+    assertRepeatingGroupWrapper(addresses);
 
     const [firstNode, secondNode] = addresses.nodes;
 
-    if (!firstNode || !secondNode) {
-      throw new Error("Expected repeating group nodes");
-    }
+    assertDefined(firstNode);
+    assertDefined(secondNode);
 
     const firstStreet = firstNode.nodes.find(
       (child) => child.linkId === "street",
     );
+    assertQuestionNode(firstStreet);
     const secondStreet = secondNode.nodes.find(
       (child) => child.linkId === "street",
     );
-
-    if (!isQuestionNode(firstStreet) || !isQuestionNode(secondStreet)) {
-      throw new Error("Expected street questions");
-    }
+    assertQuestionNode(secondStreet);
 
     const firstCopy = firstStreet.answers[0]?.nodes.find(
       (child) => child.linkId === "street-copy",
     );
+    assertQuestionNode(firstCopy);
     const secondCopy = secondStreet.answers[0]?.nodes.find(
       (child) => child.linkId === "street-copy",
     );
-
-    if (
-      !firstCopy ||
-      !secondCopy ||
-      !isQuestionNode(firstCopy) ||
-      !isQuestionNode(secondCopy)
-    ) {
-      throw new Error("Expected descendant copy questions");
-    }
+    assertQuestionNode(secondCopy);
 
     expect(firstCopy.answers[0]?.value).toBe("Alpha");
     expect(secondCopy.answers[0]?.value).toBe("Beta");
@@ -596,18 +563,12 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const aliases = form.scope.lookupNode("aliases");
-
-    if (!aliases || !isQuestionNode(aliases)) {
-      throw new Error("Expected repeating question");
-    }
+    assertQuestionNode(aliases);
 
     expect(aliases.repeats).toBe(true);
 
     const aliasVariable = aliases.scope.lookupExpression("allAliases");
-
-    if (!aliasVariable) {
-      throw new Error("Expected allAliases variable slot");
-    }
+    assertDefined(aliasVariable);
 
     expect(aliasVariable.value).toEqual(["Alpha", "Beta"]);
   });
@@ -708,10 +669,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-
-    if (!addresses || !isRepeatingGroupWrapper(addresses)) {
-      throw new Error("Expected repeating group");
-    }
+    assertRepeatingGroupWrapper(addresses);
 
     expect(addresses.nodes.length).toBe(2);
 
@@ -720,58 +678,37 @@ describe("variable expressions", () => {
     const firstResidents = firstNode?.nodes.find(
       (child) => child.linkId === "residents",
     );
+    assertQuestionNode(firstResidents);
     const secondResidents = secondNode?.nodes.find(
       (child) => child.linkId === "residents",
     );
-
-    if (
-      !firstResidents ||
-      !secondResidents ||
-      !isQuestionNode(firstResidents) ||
-      !isQuestionNode(secondResidents)
-    ) {
-      throw new Error("Expected repeating resident questions");
-    }
+    assertQuestionNode(secondResidents);
 
     const firstCopy0 = firstResidents.answers[0]?.nodes.find(
       (child) => child.linkId === "resident-copy",
     );
+    assertQuestionNode(firstCopy0);
     const firstCopy1 = firstResidents.answers[1]?.nodes.find(
       (child) => child.linkId === "resident-copy",
     );
+    assertQuestionNode(firstCopy1);
     const secondCopy0 = secondResidents.answers[0]?.nodes.find(
       (child) => child.linkId === "resident-copy",
     );
+    assertQuestionNode(secondCopy0);
     const secondCopy1 = secondResidents.answers[1]?.nodes.find(
       (child) => child.linkId === "resident-copy",
     );
-
-    if (
-      !firstCopy0 ||
-      !firstCopy1 ||
-      !secondCopy0 ||
-      !secondCopy1 ||
-      !isQuestionNode(firstCopy0) ||
-      !isQuestionNode(firstCopy1) ||
-      !isQuestionNode(secondCopy0) ||
-      !isQuestionNode(secondCopy1)
-    ) {
-      throw new Error("Expected resident copy questions");
-    }
+    assertQuestionNode(secondCopy1);
 
     const firstCopy0Var = firstCopy0.scope.lookupExpression("residentName");
+    assertDefined(firstCopy0Var);
     const firstCopy1Var = firstCopy1.scope.lookupExpression("residentName");
+    assertDefined(firstCopy1Var);
     const secondCopy0Var = secondCopy0.scope.lookupExpression("residentName");
+    assertDefined(secondCopy0Var);
     const secondCopy1Var = secondCopy1.scope.lookupExpression("residentName");
-
-    if (
-      !firstCopy0Var ||
-      !firstCopy1Var ||
-      !secondCopy0Var ||
-      !secondCopy1Var
-    ) {
-      throw new Error("Expected residentName variables");
-    }
+    assertDefined(secondCopy1Var);
 
     expect(firstCopy0Var).not.toBe(firstCopy1Var);
     expect(firstCopy0Var).not.toBe(secondCopy0Var);
@@ -804,10 +741,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("duplicate-vars");
-
-    if (!group || !isGroupNode(group)) {
-      throw new Error("Expected group store");
-    }
+    assertGroupNode(group);
 
     const collisionIssue = group.issues.find(
       (issue) =>
@@ -834,10 +768,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const mystery = form.scope.lookupNode("mystery");
-
-    if (!mystery || !isQuestionNode(mystery)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(mystery);
 
     const missingVarIssue = mystery.issues.find(
       (issue) => issue.code === "invalid",
@@ -886,11 +817,9 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const outerMirror = form.scope.lookupNode("outer-mirror");
+    assertQuestionNode(outerMirror);
     const innerMirror = form.scope.lookupNode("inner-mirror");
-
-    if (!isQuestionNode(outerMirror) || !isQuestionNode(innerMirror)) {
-      throw new Error("Expected mirror questions");
-    }
+    assertQuestionNode(innerMirror);
 
     expect(outerMirror.answers[0]?.value).toBe("root");
     expect(innerMirror.answers[0]?.value).toBe("child");
@@ -920,14 +849,11 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const unsupported = form.scope.lookupNode("unsupported");
-
-    if (!unsupported || !isGroupNode(unsupported)) {
-      throw new Error("Expected group store");
-    }
+    assertGroupNode(unsupported);
 
     const slot = unsupported.scope.lookupExpression("unsupportedVar");
     expect(slot).toBeDefined();
-    if (!slot) return;
+    assertDefined(slot);
     void slot.value;
     expect(slot.error?.diagnostics).toContain("Failed to evaluate variable");
     expect(slot.error?.diagnostics).toContain(
@@ -954,10 +880,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const runtime = form.scope.lookupNode("runtime");
-
-    if (!runtime || !isQuestionNode(runtime)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(runtime);
 
     const issue = runtime.issues.find((entry) => entry.code === "invalid");
 
@@ -989,18 +912,13 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const cycle = form.scope.lookupNode("cycle");
-
-    if (!cycle || !isGroupNode(cycle)) {
-      throw new Error("Expected group store");
-    }
+    assertGroupNode(cycle);
 
     const scopedCycle = cycle;
     const first = scopedCycle.scope.lookupExpression("alphaVar");
+    assertDefined(first);
     const second = scopedCycle.scope.lookupExpression("betaVar");
-
-    if (!first || !second) {
-      throw new Error("Expected variable slots");
-    }
+    assertDefined(second);
     void first.value;
     void second.value;
 
@@ -1027,19 +945,15 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("indirect-cycle");
-
-    if (!group || !isGroupNode(group)) {
-      throw new Error("Expected group store");
-    }
+    assertGroupNode(group);
 
     const scopedGroup = group;
     const alpha = scopedGroup.scope.lookupExpression("alphaVar");
+    assertDefined(alpha);
     const beta = scopedGroup.scope.lookupExpression("betaVar");
+    assertDefined(beta);
     const gamma = scopedGroup.scope.lookupExpression("gammaVar");
-
-    if (!alpha || !beta || !gamma) {
-      throw new Error("Expected variable slots");
-    }
+    assertDefined(gamma);
 
     void alpha.value;
     void beta.value;
@@ -1065,10 +979,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const slot = form.scope.lookupExpression("badVar");
-
-    if (!slot) {
-      throw new Error("Expected form-level variable slot");
-    }
+    assertDefined(slot);
 
     void slot.value;
 
@@ -1080,10 +991,7 @@ describe("variable expressions", () => {
     );
 
     const mirror = form.scope.lookupNode("mirror");
-
-    if (!mirror || !isQuestionNode(mirror)) {
-      throw new Error("Expected mirror question");
-    }
+    assertQuestionNode(mirror);
 
     expect(mirror.answers[0]?.value).toBeNull();
   });

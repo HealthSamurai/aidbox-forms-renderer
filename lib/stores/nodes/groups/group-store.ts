@@ -208,7 +208,16 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 }
 
 export function isGroupNode(
-  it: IPresentableNode | undefined,
+  it: IPresentableNode | undefined | null,
 ): it is IGroupNode {
   return it instanceof GroupStore;
+}
+
+export function assertGroupNode(
+  it: IPresentableNode | undefined | null,
+  message?: string,
+): asserts it is IGroupNode {
+  if (!isGroupNode(it)) {
+    throw new TypeError(message ?? "Expected GroupNode instance");
+  }
 }

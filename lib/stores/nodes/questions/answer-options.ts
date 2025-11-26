@@ -102,7 +102,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
       return [
         {
-          key: `${this.question.key}::${index}`,
+          key: `${this.question.key}_/_${index}`,
           label,
           value,
           option,

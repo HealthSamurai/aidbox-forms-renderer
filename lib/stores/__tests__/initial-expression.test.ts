@@ -6,7 +6,9 @@ import {
   makeCalculatedExpression,
   makeInitialExpression,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertGroupNode } from "../nodes/groups/group-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 describe("initialExpression", () => {
   it("runs once when the item first becomes enabled", () => {
@@ -39,20 +41,24 @@ describe("initialExpression", () => {
     const gate = form.scope.lookupNode("gate");
     const name = form.scope.lookupNode("name");
 
-    if (!gate || !name || !isQuestionNode(gate) || !isQuestionNode(name)) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(gate);
+    assertQuestionNode(name);
 
     expect(name.isEnabled).toBe(false);
     expect(name.answers[0]?.value).toBeNull();
 
-    gate.setAnswer(0, true);
+    const gateAnswer = gate.answers[0];
+    assertDefined(gateAnswer);
+    gateAnswer.setValueByUser(true);
     expect(name.isEnabled).toBe(true);
     expect(name.answers[0]?.value).toBe("prefill");
 
-    name.setAnswer(0, "custom");
-    gate.setAnswer(0, false);
-    gate.setAnswer(0, true);
+    const nameAnswer = name.answers[0];
+    assertDefined(nameAnswer);
+    nameAnswer.setValueByUser("custom");
+
+    gateAnswer.setValueByUser(false);
+    gateAnswer.setValueByUser(true);
     expect(name.answers[0]?.value).toBe("custom");
   });
 
@@ -79,9 +85,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const history = form.scope.lookupNode("history");
 
-    if (!isQuestionNode(history)) {
-      throw new Error("Expected history question store");
-    }
+    assertQuestionNode(history);
 
     expect(history.repeats).toBe(true);
     expect(history.answers).toHaveLength(2);
@@ -120,17 +124,13 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const answer = form.scope.lookupNode("answer");
 
-    if (!isQuestionNode(answer)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(answer);
 
     const mirror = answer.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestionNode(mirror)) {
-      throw new Error("Expected mirror descendant question");
-    }
+    assertQuestionNode(mirror);
 
     expect(mirror.answers[0]?.value).toBe("value");
   });
@@ -151,9 +151,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const target = form.scope.lookupNode("target");
 
-    if (!target || !isQuestionNode(target)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(target);
 
     const issue = target.issues.find((entry) => entry.code === "invalid");
     expect(issue).toBeTruthy();
@@ -182,9 +180,7 @@ describe("initialExpression", () => {
     const form = new FormStore(questionnaire);
     const target = form.scope.lookupNode("target");
 
-    if (!target || !isQuestionNode(target)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(target);
 
     const issue = target.issues.find((entry) => entry.code === "invalid");
     expect(issue).toBeTruthy();
@@ -221,9 +217,8 @@ describe("initialExpression", () => {
       const group = form.scope.lookupNode("group");
       const child = form.scope.lookupNode("child");
 
-      if (!group || !child || !isQuestionNode(child)) {
-        throw new Error("Expected group and child question stores");
-      }
+      assertGroupNode(group);
+      assertQuestionNode(child);
 
       expect(group.readOnly).toBe(true);
       expect(child.readOnly).toBe(true);
@@ -273,17 +268,13 @@ describe("initialExpression", () => {
       const form = new FormStore(questionnaire, response);
       const parent = form.scope.lookupNode("parent");
 
-      if (!parent || !isQuestionNode(parent)) {
-        throw new Error("Expected parent question store");
-      }
+      assertQuestionNode(parent);
 
       const detail = parent.answers[0]?.nodes.find(
         (child) => child.linkId === "detail",
       );
 
-      if (!detail || !isQuestionNode(detail)) {
-        throw new Error("Expected nested detail question");
-      }
+      assertQuestionNode(detail);
 
       expect(parent.readOnly).toBe(true);
       expect(detail.readOnly).toBe(false);

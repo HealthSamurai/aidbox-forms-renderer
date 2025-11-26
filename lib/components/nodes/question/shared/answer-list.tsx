@@ -18,10 +18,9 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   return (
     <>
       <div className="af-answer-list">
-        {answers.map((answer, i) => (
+        {answers.map((answer) => (
           <Answer
             key={answer.key}
-            index={i}
             node={node}
             answer={answer}
             renderRow={renderRow}

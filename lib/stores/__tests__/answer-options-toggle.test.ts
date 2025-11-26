@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire, QuestionnaireItemAnswerOption } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeAnswerOptionToggle, makeVariable } from "./expression-fixtures.ts";
+import { assertDefined } from "../../utils.ts";
 
 const RED_CODING: QuestionnaireItemAnswerOption = {
   valueCoding: {
@@ -66,14 +67,8 @@ describe("answerOptionsToggleExpression", () => {
     const toggle = form.scope.lookupNode("toggle");
     const color = form.scope.lookupNode("color");
 
-    if (
-      !toggle ||
-      !isQuestionNode(toggle) ||
-      !color ||
-      !isQuestionNode(color)
-    ) {
-      throw new Error("Expected toggle and color question nodes");
-    }
+    assertQuestionNode(toggle);
+    assertQuestionNode(color);
 
     const getEntry = (code: string) =>
       color.options.entries.find(
@@ -83,10 +78,12 @@ describe("answerOptionsToggleExpression", () => {
     expect(getEntry("red")?.disabled).toBe(true);
     expect(getEntry("green")?.disabled).toBe(false);
 
-    toggle.setAnswer(0, true);
+    const toggleAnswer = toggle.answers[0];
+    assertDefined(toggleAnswer);
+    toggleAnswer.setValueByUser(true);
     expect(getEntry("red")?.disabled).toBe(false);
 
-    toggle.setAnswer(0, false);
+    toggleAnswer.setValueByUser(false);
     expect(getEntry("red")?.disabled).toBe(true);
   });
 
@@ -126,9 +123,7 @@ describe("answerOptionsToggleExpression", () => {
     const form = new FormStore(questionnaire);
     const color = form.scope.lookupNode("color");
 
-    if (!color || !isQuestionNode(color)) {
-      throw new Error("Expected color question node");
-    }
+    assertQuestionNode(color);
 
     const getEntry = (value: string) =>
       color.options.entries.find((entry) => entry.option.valueString === value);

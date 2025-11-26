@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertGroupNode } from "../nodes/groups/group-store.ts";
 import { makeCqfExpression, makeVariable } from "./expression-fixtures.ts";
+import { assertDefined } from "../../utils.ts";
 
 describe("fhirpath metadata", () => {
   it("attaches hidden __path__ metadata to expression snapshot items", () => {
@@ -29,8 +30,7 @@ describe("fhirpath metadata", () => {
 
     const form = new FormStore(questionnaire);
     const topItem = form.expressionResponse.item?.[0];
-    expect(topItem).toBeDefined();
-    if (!topItem) throw new Error("expected top-level item snapshot");
+    assertDefined(topItem);
 
     const topDescriptor = Object.getOwnPropertyDescriptor(topItem, "__path__");
     expect(topDescriptor?.enumerable).toBe(false);
@@ -40,10 +40,7 @@ describe("fhirpath metadata", () => {
     expect(topMeta.path).toBe("QuestionnaireResponse.item");
 
     const childItem = topItem.item?.[0];
-    expect(childItem).toBeDefined();
-    if (!childItem) {
-      throw new Error("expected nested item snapshot");
-    }
+    assertDefined(childItem);
 
     const childDescriptor = Object.getOwnPropertyDescriptor(
       childItem,
@@ -100,16 +97,17 @@ describe("dynamic item expressions", () => {
       const name = form.scope.lookupNode("name");
       const greeting = form.scope.lookupNode("greeting");
 
-      if (!isQuestionNode(name) || !isQuestionNode(greeting)) {
-        throw new Error("Expected question stores for name and greeting");
-      }
+      assertQuestionNode(name);
+      assertQuestionNode(greeting);
 
       expect(greeting.text).toBe("Hello guest");
 
-      name.setAnswer(0, "Ada");
+      const nameAnswer = name.answers[0];
+      assertDefined(nameAnswer);
+      nameAnswer.setValueByUser("Ada");
       expect(greeting.text).toBe("Hello Ada");
 
-      name.setAnswer(0, "Lin");
+      nameAnswer.setValueByUser("Lin");
       expect(greeting.text).toBe("Hello Lin");
     });
 
@@ -132,9 +130,7 @@ describe("dynamic item expressions", () => {
       const form = new FormStore(questionnaire);
       const detail = form.scope.lookupNode("detail");
 
-      if (!isQuestionNode(detail)) {
-        throw new Error("Expected question store for detail");
-      }
+      assertQuestionNode(detail);
 
       // Trigger evaluation so the slot captures the failure.
       void detail.text;
@@ -188,19 +184,20 @@ describe("dynamic item expressions", () => {
       const lock = form.scope.lookupNode("lock");
       const detail = form.scope.lookupNode("detail");
 
-      if (!isQuestionNode(lock) || !isQuestionNode(detail)) {
-        throw new Error("Expected question stores for lock and detail");
-      }
+      assertQuestionNode(lock);
+      assertQuestionNode(detail);
 
       expect(detail.readOnly).toBe(false);
       expect(detail.expressionRegistry.readOnly).toBeDefined();
       expect(detail.expressionRegistry.readOnly?.error).toBeUndefined();
 
-      lock.setAnswer(0, true);
+      const lockAnswer = lock.answers[0];
+      assertDefined(lockAnswer);
+      lockAnswer.setValueByUser(true);
       expect(detail.readOnly).toBe(true);
       expect(detail.expressionRegistry.readOnly?.error).toBeUndefined();
 
-      lock.setAnswer(0, false);
+      lockAnswer.setValueByUser(false);
       expect(detail.readOnly).toBe(false);
     });
 
@@ -242,22 +239,20 @@ describe("dynamic item expressions", () => {
       const lock = form.scope.lookupNode("lock");
       const child = form.scope.lookupNode("child");
 
-      if (
-        !isGroupNode(section) ||
-        !isQuestionNode(lock) ||
-        !isQuestionNode(child)
-      ) {
-        throw new Error("Expected group and question stores");
-      }
+      assertGroupNode(section);
+      assertQuestionNode(lock);
+      assertQuestionNode(child);
 
       expect(section.readOnly).toBe(false);
       expect(child.readOnly).toBe(false);
 
-      lock.setAnswer(0, true);
+      const lockAnswer = lock.answers[0];
+      assertDefined(lockAnswer);
+      lockAnswer.setValueByUser(true);
       expect(section.readOnly).toBe(true);
       expect(child.readOnly).toBe(true);
 
-      lock.setAnswer(0, false);
+      lockAnswer.setValueByUser(false);
       expect(section.readOnly).toBe(false);
       expect(child.readOnly).toBe(false);
     });
@@ -281,9 +276,7 @@ describe("dynamic item expressions", () => {
       const form = new FormStore(questionnaire);
       const detail = form.scope.lookupNode("detail");
 
-      if (!isQuestionNode(detail)) {
-        throw new Error("Expected detail question store");
-      }
+      assertQuestionNode(detail);
 
       expect(detail.readOnly).toBe(false);
 
@@ -336,9 +329,8 @@ describe("dynamic item expressions", () => {
       const allow = form.scope.lookupNode("allow");
       const favorite = form.scope.lookupNode("favorite");
 
-      if (!isQuestionNode(allow) || !isQuestionNode(favorite)) {
-        throw new Error("Expected question stores for allow and favorite");
-      }
+      assertQuestionNode(allow);
+      assertQuestionNode(favorite);
 
       expect(favorite.expressionRegistry.repeats).toBeDefined();
       expect(favorite.expressionRegistry.repeats?.error).toBeUndefined();
@@ -346,9 +338,13 @@ describe("dynamic item expressions", () => {
       expect(favorite.maxOccurs).toBe(1);
       expect(favorite.answers).toHaveLength(1);
 
-      favorite.setAnswer(0, "Blue");
+      const favoriteAnswer = favorite.answers[0];
+      assertDefined(favoriteAnswer);
+      favoriteAnswer.setValueByUser("Blue");
 
-      allow.setAnswer(0, true);
+      const allowAnswer = allow.answers[0];
+      assertDefined(allowAnswer);
+      allowAnswer.setValueByUser(true);
       expect(favorite.expressionRegistry.repeats?.error).toBeUndefined();
       expect(favorite.repeats).toBe(true);
       expect(favorite.maxOccurs).toBe(Number.POSITIVE_INFINITY);
@@ -356,7 +352,7 @@ describe("dynamic item expressions", () => {
       favorite.addAnswer("Green");
       expect(favorite.answers).toHaveLength(2);
 
-      allow.setAnswer(0, false);
+      allowAnswer.setValueByUser(false);
       expect(favorite.repeats).toBe(false);
       expect(favorite.maxOccurs).toBe(1);
 
@@ -389,9 +385,7 @@ describe("dynamic item expressions", () => {
       const form = new FormStore(questionnaire);
       const item = form.scope.lookupNode("item");
 
-      if (!isQuestionNode(item)) {
-        throw new Error("Expected item question store");
-      }
+      assertQuestionNode(item);
 
       expect(item.repeats).toBe(false);
 

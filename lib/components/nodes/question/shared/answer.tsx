@@ -21,7 +21,6 @@ import type {
 export type RowRenderProps<T extends AnswerType = AnswerType> = {
   value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   setValue: (v: DataTypeToType<AnswerTypeToDataType<T>> | null) => void;
-  index: number;
   inputId: string;
   labelId: string;
   list?: string | undefined;
@@ -33,16 +32,14 @@ export const Answer = observer(function Answer<T extends AnswerType>({
   node,
   renderRow,
   answer,
-  index,
 }: {
   node: IQuestionNode<T>;
   renderRow: (p: RowRenderProps<T>) => ReactElement;
   answer: IAnswerInstance<T>;
-  index: number;
 }) {
   const handleRemove = useCallback(() => {
-    node.removeAnswer(index);
-  }, [node, index]);
+    node.removeAnswer(answer);
+  }, [node, answer]);
 
   const answerErrorId =
     answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
@@ -57,8 +54,7 @@ export const Answer = observer(function Answer<T extends AnswerType>({
     <div className="af-answer">
       {renderRow({
         value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-        setValue: (value) => node.setAnswer(index, value),
-        index,
+        setValue: (value) => answer.setValueByUser(value),
         inputId: sanitizeForId(answer.key),
         labelId: getNodeLabelId(node),
         describedById,

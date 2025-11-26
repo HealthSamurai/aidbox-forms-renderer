@@ -9,7 +9,8 @@ import {
   makeMinValueExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 describe("min/max value expressions", () => {
   it("enforces a calculated minimum", () => {
@@ -27,19 +28,17 @@ describe("min/max value expressions", () => {
 
     const form = new FormStore(questionnaire);
     const score = form.scope.lookupNode("score");
-    if (!score || !isQuestionNode(score)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(score);
 
     const answer = score.answers[0];
-    if (!answer) throw new Error("Expected answer instance");
+    assertDefined(answer);
 
-    score.setAnswer(0, 5);
+    answer.setValueByUser(5);
     expect(
       answer.issues.some((issue) => issue.diagnostics?.includes("10")),
     ).toBe(true);
 
-    score.setAnswer(0, 15);
+    answer.setValueByUser(15);
     expect(answer.issues).toHaveLength(0);
   });
 
@@ -58,19 +57,17 @@ describe("min/max value expressions", () => {
 
     const form = new FormStore(questionnaire);
     const score = form.scope.lookupNode("score");
-    if (!score || !isQuestionNode(score)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(score);
 
     const answer = score.answers[0];
-    if (!answer) throw new Error("Expected answer instance");
+    assertDefined(answer);
 
-    score.setAnswer(0, 20);
+    answer.setValueByUser(20);
     expect(
       answer.issues.some((issue) => issue.diagnostics?.includes("15")),
     ).toBe(true);
 
-    score.setAnswer(0, 10);
+    answer.setValueByUser(10);
     expect(answer.issues).toHaveLength(0);
   });
 
@@ -114,22 +111,22 @@ describe("min/max value expressions", () => {
     const limit = form.scope.lookupNode("limit");
     const dose = form.scope.lookupNode("dose");
 
-    if (!isQuestionNode(limit) || !isQuestionNode(dose)) {
-      throw new Error("Expected quantity questions");
-    }
+    assertQuestionNode(limit);
+    assertQuestionNode(dose);
+
+    const limitAnswer = limit.answers[0];
+    assertDefined(limitAnswer);
 
     const doseAnswer = dose.answers[0];
-    if (!doseAnswer) {
-      throw new Error("Expected dose answer");
-    }
+    assertDefined(doseAnswer);
 
-    limit.setAnswer(0, {
+    limitAnswer.setValueByUser({
       value: 20,
       unit: "mg",
       system: "http://unitsofmeasure.org",
       code: "mg",
     });
-    dose.setAnswer(0, {
+    doseAnswer.setValueByUser({
       value: 10,
       unit: "mg",
       system: "http://unitsofmeasure.org",
@@ -141,7 +138,7 @@ describe("min/max value expressions", () => {
       ),
     ).toBe(true);
 
-    dose.setAnswer(0, {
+    doseAnswer.setValueByUser({
       value: 25,
       unit: "mg",
       system: "http://unitsofmeasure.org",
@@ -190,22 +187,22 @@ describe("min/max value expressions", () => {
     const limit = form.scope.lookupNode("limit");
     const dose = form.scope.lookupNode("dose");
 
-    if (!isQuestionNode(limit) || !isQuestionNode(dose)) {
-      throw new Error("Expected quantity questions");
-    }
+    assertQuestionNode(limit);
+    assertQuestionNode(dose);
+
+    const limitAnswer = limit.answers[0];
+    assertDefined(limitAnswer);
 
     const doseAnswer = dose.answers[0];
-    if (!doseAnswer) {
-      throw new Error("Expected dose answer");
-    }
+    assertDefined(doseAnswer);
 
-    limit.setAnswer(0, {
+    limitAnswer.setValueByUser({
       value: 50,
       unit: "mg",
       system: "http://unitsofmeasure.org",
       code: "mg",
     });
-    dose.setAnswer(0, {
+    doseAnswer.setValueByUser({
       value: 60,
       unit: "mg",
       system: "http://unitsofmeasure.org",
@@ -217,7 +214,7 @@ describe("min/max value expressions", () => {
       ),
     ).toBe(true);
 
-    dose.setAnswer(0, {
+    doseAnswer.setValueByUser({
       value: 40,
       unit: "mg",
       system: "http://unitsofmeasure.org",
@@ -255,11 +252,11 @@ describe("min/max value expressions", () => {
     const form = new FormStore(questionnaire);
     const dose = form.scope.lookupNode("dose");
 
-    if (!isQuestionNode(dose)) {
-      throw new Error("Expected quantity question");
-    }
+    assertQuestionNode(dose);
 
-    dose.setAnswer(0, {
+    const doseAnswer = dose.answers[0];
+    assertDefined(doseAnswer);
+    doseAnswer.setValueByUser({
       value: 15,
       unit: "mg",
       system: "http://unitsofmeasure.org",

@@ -32,6 +32,19 @@ export class AnswerInstance<T extends AnswerType>
   readonly question: IQuestionNode<T>;
   private readonly validator: AnswerValidator<T>;
 
+  @action.bound
+  setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void {
+    this._value = value === "" ? null : value;
+    this.question.markDirty();
+    this.question.markUserOverridden();
+  }
+
+  @action.bound
+  setValueBySystem(next: DataTypeToType<AnswerTypeToDataType<T>> | null): void {
+    this._value = next;
+    this.question.markDirty();
+  }
+
   @observable.ref
   private _value: DataTypeToType<AnswerTypeToDataType<T>> | null = null;
 
@@ -44,13 +57,13 @@ export class AnswerInstance<T extends AnswerType>
   constructor(
     question: IQuestionNode<T>,
     scope: IScope,
-    index: number,
+    key: string,
     initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {
     makeObservable(this);
 
-    this.key = question.repeats ? `${question.key}_/_${index}` : question.key;
+    this.key = key;
     this.scope = scope.extend(question.repeats);
     this.question = question;
 
@@ -125,11 +138,6 @@ export class AnswerInstance<T extends AnswerType>
 
   get value(): DataTypeToType<AnswerTypeToDataType<T>> | null {
     return this._value;
-  }
-
-  set value(next: DataTypeToType<AnswerTypeToDataType<T>> | null) {
-    this._value = next;
-    this.question.markDirty();
   }
 
   @computed({ keepAlive: true })

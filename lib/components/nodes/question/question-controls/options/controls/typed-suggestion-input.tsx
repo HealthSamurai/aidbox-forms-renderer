@@ -48,7 +48,7 @@ export function TypedSuggestionInput<T extends AnswerType>({
                   <button
                     type="button"
                     onClick={() =>
-                      rowProps.setValue(entry.value ?? (entry.label as never))
+                      rowProps.setValue(entry.value ?? entry.label)
                     }
                   >
                     {entry.label}

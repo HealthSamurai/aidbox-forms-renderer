@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { Extension, Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
-import type { IQuestionNode } from "../../types.ts";
+import { assertQuestionNode } from "../nodes/questions/question-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 const targetConstraint = (config: {
   key?: string | undefined;
@@ -42,15 +42,6 @@ const targetConstraint = (config: {
   return result;
 };
 
-const expectQuestion = (form: FormStore, linkId: string): IQuestionNode => {
-  const node = form.scope.lookupNode(linkId);
-  expect(node && isQuestionNode(node)).toBe(true);
-  if (!node || !isQuestionNode(node)) {
-    throw new Error(`Expected question node for ${linkId}`);
-  }
-  return node;
-};
-
 describe("targetConstraint extensions", () => {
   it("enforces item-level constraints on submit", () => {
     const questionnaire: Questionnaire = {
@@ -74,7 +65,8 @@ describe("targetConstraint extensions", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const question = expectQuestion(form, "nickname");
+    const question = form.scope.lookupNode("nickname");
+    assertQuestionNode(question);
 
     expect(question.issues).toHaveLength(0);
 
@@ -82,7 +74,9 @@ describe("targetConstraint extensions", () => {
     expect(question.issues.at(0)?.diagnostics).toContain("nickname");
     expect(question.issues.at(0)?.severity).toBe("error");
 
-    question.setAnswer(0, "Sam");
+    const nicknameAnswer = question.answers[0];
+    assertDefined(nicknameAnswer);
+    nicknameAnswer.setValueByUser("Sam");
 
     expect(question.hasErrors).toBe(false);
     expect(form.validateAll()).toBe(true);
@@ -110,13 +104,16 @@ describe("targetConstraint extensions", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const question = expectQuestion(form, "consent");
+    const question = form.scope.lookupNode("consent");
+    assertQuestionNode(question);
 
     expect(form.issues).toHaveLength(0);
     expect(form.validateAll()).toBe(false);
     expect(form.issues.at(0)?.diagnostics).toContain("Consent answer");
 
-    question.setAnswer(0, true);
+    const consentAnswer = question.answers[0];
+    assertDefined(consentAnswer);
+    consentAnswer.setValueByUser(true);
 
     expect(form.validateAll()).toBe(true);
     expect(form.issues).toHaveLength(0);
@@ -144,9 +141,12 @@ describe("targetConstraint extensions", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const question = expectQuestion(form, "optional-note");
+    const question = form.scope.lookupNode("optional-note");
+    assertQuestionNode(question);
 
-    question.setAnswer(0, null);
+    const optionalNoteAnswer = question.answers[0];
+    assertDefined(optionalNoteAnswer);
+    optionalNoteAnswer.setValueByUser(null);
 
     expect(question.issues.at(0)?.severity).toBe("warning");
     expect(question.issues.at(0)?.diagnostics).toContain("Consider adding");
@@ -176,14 +176,17 @@ describe("targetConstraint extensions", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const question = expectQuestion(form, "given-name");
+    const question = form.scope.lookupNode("given-name");
+    assertQuestionNode(question);
 
-    question.setAnswer(0, "maria");
+    const givenNameAnswer = question.answers[0];
+    assertDefined(givenNameAnswer);
+    givenNameAnswer.setValueByUser("maria");
 
     expect(form.validateAll()).toBe(false);
     expect(question.issues.at(0)?.diagnostics).toContain("capital letter");
 
-    question.setAnswer(0, "Maria");
+    givenNameAnswer.setValueByUser("Maria");
 
     expect(form.validateAll()).toBe(true);
     expect(question.hasErrors).toBe(false);

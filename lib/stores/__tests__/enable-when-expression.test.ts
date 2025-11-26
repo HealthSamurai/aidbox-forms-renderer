@@ -7,9 +7,16 @@ import {
   makeEnableExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
-import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
+import {
+  assertQuestionNode,
+  isQuestionNode,
+} from "../nodes/questions/question-store.ts";
+import {
+  assertRepeatingGroupWrapper,
+  isRepeatingGroupWrapper,
+} from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
+import { assertDefined } from "../../utils.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {
@@ -47,21 +54,19 @@ describe("enableWhenExpression", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (
-      !control ||
-      !dependent ||
-      !isQuestionNode(control) ||
-      !isQuestionNode(dependent)
-    ) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(control);
+    assertQuestionNode(dependent);
 
     expect(dependent.isEnabled).toBe(false);
 
-    control.setAnswer(0, 6);
+    const controlAnswer0 = control.answers[0];
+    assertDefined(controlAnswer0);
+    controlAnswer0.setValueByUser(6);
     expect(dependent.isEnabled).toBe(true);
 
-    control.setAnswer(0, 3);
+    const controlAnswerAgain = control.answers[0];
+    assertDefined(controlAnswerAgain);
+    controlAnswerAgain.setValueByUser(3);
     expect(dependent.isEnabled).toBe(false);
   });
 
@@ -109,19 +114,18 @@ describe("enableWhenExpression", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (!isQuestionNode(control) || !isQuestionNode(dependent)) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(control);
+    assertQuestionNode(dependent);
 
     const mirror = dependent.answers[0]?.nodes.find(
       (child) => child.linkId === "mirror",
     );
 
-    if (!mirror || !isQuestionNode(mirror)) {
-      throw new Error("Expected descendant mirror question");
-    }
+    assertQuestionNode(mirror);
 
-    control.setAnswer(0, true);
+    const controlAnswerFinal = control.answers[0];
+    assertDefined(controlAnswerFinal);
+    controlAnswerFinal.setValueByUser(true);
     expect(mirror.answers[0]?.value).toBe(true);
   });
 
@@ -141,9 +145,7 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestionNode(controlled)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(controlled);
 
     expect(controlled.isEnabled).toBe(false);
     const slot = controlled.expressionRegistry.enableWhen;
@@ -171,9 +173,7 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestionNode(controlled)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(controlled);
 
     expect(controlled.isEnabled).toBe(false);
     const slot = controlled.expressionRegistry.enableWhen;
@@ -201,9 +201,7 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const controlled = form.scope.lookupNode("controlled");
 
-    if (!controlled || !isQuestionNode(controlled)) {
-      throw new Error("Expected question store");
-    }
+    assertQuestionNode(controlled);
 
     expect(controlled.isEnabled).toBe(false);
     const slot = controlled.expressionRegistry.enableWhen;
@@ -241,14 +239,14 @@ describe("enableWhenExpression", () => {
     const wrapper = form.scope.lookupNode("repeating-group");
 
     expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
-    if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
+    assertRepeatingGroupWrapper(wrapper);
 
     wrapper.addNode();
     expect(wrapper.nodes.length).toBe(1);
 
     const node = wrapper.nodes.at(0);
     expect(node && isGroupNode(node)).toBe(true);
-    if (!node || !isGroupNode(node)) return;
+    assertGroupNode(node);
 
     expect(node.isEnabled).toBe(false);
     expect(node.hidden).toBe(true);
@@ -256,7 +254,7 @@ describe("enableWhenExpression", () => {
 
     const control = node.nodes.find((node) => node.linkId === "control");
     expect(control && isQuestionNode(control)).toBe(true);
-    if (!control || !isQuestionNode(control)) return;
+    assertQuestionNode(control);
 
     expect(control.isEnabled).toBe(false);
     expect(control.hidden).toBe(true);

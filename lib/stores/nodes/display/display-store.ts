@@ -64,7 +64,16 @@ export class DisplayStore
 }
 
 export function isDisplayNode(
-  it: IPresentableNode | undefined,
+  it: IPresentableNode | undefined | null,
 ): it is IDisplayNode {
   return it instanceof DisplayStore;
+}
+
+export function assertDisplayNode(
+  it: IPresentableNode | undefined | null,
+  message?: string,
+): asserts it is IDisplayNode {
+  if (!isDisplayNode(it)) {
+    throw new Error(message ?? "Expected DisplayNode instance");
+  }
 }

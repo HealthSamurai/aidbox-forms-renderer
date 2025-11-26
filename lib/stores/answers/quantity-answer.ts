@@ -233,12 +233,7 @@ export class QuantityAnswer implements IQuantityAnswer {
   private applyQuantityChange(builder: (draft: Quantity) => void) {
     const draft: Quantity = { ...(this.quantityValue ?? {}) };
     builder(draft);
-    if (isEmptyObject(draft)) {
-      this.answer.value = null;
-    } else {
-      this.answer.value = draft;
-    }
-    this.answer.question.markUserOverridden();
+    this.answer.setValueByUser(isEmptyObject(draft) ? null : draft);
   }
 
   private getCodingForKey(key: string): Coding | null {

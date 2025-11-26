@@ -4,13 +4,20 @@ import type {
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireResponse,
-  QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import {
+  assertRepeatingGroupWrapper,
+  isRepeatingGroupWrapper,
+} from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
+import {
+  assertQuestionNode,
+  isQuestionNode,
+} from "../nodes/questions/question-store.ts";
+import { assertDefined } from "../../utils.ts";
+import type { DataType, DataTypeToType, ValueCarrierFor } from "../../types.ts";
 
 describe("response generation", () => {
   it("falls back to a local Questionnaire reference when canonical URL is absent", () => {
@@ -30,9 +37,11 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("nickname");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
-    question.setAnswer(0, "Oli");
+    const nicknameAnswer = question.answers[0];
+    assertDefined(nicknameAnswer);
+    nicknameAnswer.setValueByUser("Oli");
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -71,11 +80,11 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const flag = form.scope.lookupNode("internal-flag");
     expect(flag && isQuestionNode(flag)).toBe(true);
-    if (!flag || !isQuestionNode(flag)) {
-      return;
-    }
+    assertQuestionNode(flag);
 
-    flag.setAnswer(0, true);
+    const flagAnswer = flag.answers[0];
+    assertDefined(flagAnswer);
+    flagAnswer.setValueByUser(true);
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -123,23 +132,22 @@ describe("response generation", () => {
     expect(
       toggle && extra && isQuestionNode(toggle) && isQuestionNode(extra),
     ).toBe(true);
-    if (
-      !toggle ||
-      !extra ||
-      !isQuestionNode(toggle) ||
-      !isQuestionNode(extra)
-    ) {
-      return;
-    }
+    assertQuestionNode(toggle);
+    assertQuestionNode(extra);
 
-    toggle.setAnswer(0, true);
-    extra.setAnswer(0, "Hello");
+    const toggleAnswer = toggle.answers[0];
+    assertDefined(toggleAnswer);
+    toggleAnswer.setValueByUser(true);
+
+    const extraAnswer = extra.answers[0];
+    assertDefined(extraAnswer);
+    extraAnswer.setValueByUser("Hello");
 
     expect(form.response?.item?.some((item) => item.linkId === "extra")).toBe(
       true,
     );
 
-    toggle.setAnswer(0, false);
+    toggleAnswer.setValueByUser(false);
 
     expect(extra.hidden).toBe(true);
     expect(form.response?.item?.some((item) => item.linkId === "extra")).toBe(
@@ -164,7 +172,7 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("notes");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -190,9 +198,11 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("first-name");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
-    question.setAnswer(0, "Alice");
+    const firstNameAnswer = question.answers[0];
+    assertDefined(firstNameAnswer);
+    firstNameAnswer.setValueByUser("Alice");
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -230,9 +240,11 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("ack");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
-    question.setAnswer(0, true);
+    const ackAnswer = question.answers[0];
+    assertDefined(ackAnswer);
+    ackAnswer.setValueByUser(true);
 
     expect(form.response.item).toEqual([
       { linkId: "intro", text: "Introduction" },
@@ -268,12 +280,14 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("demographics");
     expect(group && isGroupNode(group)).toBe(true);
-    if (!group || !isGroupNode(group)) return;
+    assertGroupNode(group);
     const question = group.nodes.at(0);
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
-    question.setAnswer(0, true);
+    const consentAnswer = question.answers[0];
+    assertDefined(consentAnswer);
+    consentAnswer.setValueByUser(true);
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -313,7 +327,7 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("allergies");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
     question.addAnswer("Peanuts");
     question.addAnswer("Dust");
@@ -358,7 +372,7 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
     expect(group && isRepeatingGroupWrapper(group)).toBe(true);
-    if (!group || !isRepeatingGroupWrapper(group)) return;
+    assertRepeatingGroupWrapper(group);
 
     group.addNode();
 
@@ -394,28 +408,31 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
     expect(group && isRepeatingGroupWrapper(group)).toBe(true);
-    if (!group || !isRepeatingGroupWrapper(group)) return;
+    assertRepeatingGroupWrapper(group);
 
     group.addNode();
     group.addNode();
 
     const [firstNode, secondNode] = group.nodes;
-    if (!firstNode || !secondNode) {
-      expect(firstNode).toBeDefined();
-      expect(secondNode).toBeDefined();
-      return;
-    }
+    expect(firstNode).toBeDefined();
+    expect(secondNode).toBeDefined();
+    assertDefined(firstNode);
+    assertDefined(secondNode);
 
     const firstQuestion = firstNode.nodes.at(0);
     const secondQuestion = secondNode.nodes.at(0);
     expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
     expect(secondQuestion && isQuestionNode(secondQuestion)).toBe(true);
-    if (!firstQuestion || !secondQuestion) return;
-    if (!isQuestionNode(firstQuestion) || !isQuestionNode(secondQuestion))
-      return;
+    assertQuestionNode(firstQuestion);
+    assertQuestionNode(secondQuestion);
 
-    firstQuestion.setAnswer(0, "Asthma");
-    secondQuestion.setAnswer(0, "Diabetes");
+    const firstConditionAnswer = firstQuestion.answers[0];
+    assertDefined(firstConditionAnswer);
+    firstConditionAnswer.setValueByUser("Asthma");
+
+    const secondConditionAnswer = secondQuestion.answers[0];
+    assertDefined(secondConditionAnswer);
+    secondConditionAnswer.setValueByUser("Diabetes");
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -472,17 +489,19 @@ describe("response generation", () => {
     const form = new FormStore(questionnaire);
     const question = form.scope.lookupNode("follow-up");
     expect(question && isQuestionNode(question)).toBe(true);
-    if (!question || !isQuestionNode(question)) return;
+    assertQuestionNode(question);
 
     const answer = question.answers.at(0);
     expect(answer).toBeDefined();
-    if (!answer) return;
+    assertDefined(answer);
 
     const child = answer.nodes.find((child) => child.linkId === "detail");
     expect(child && isQuestionNode(child)).toBe(true);
-    if (!child || !isQuestionNode(child)) return;
+    assertQuestionNode(child);
 
-    child.setAnswer(0, "Allergies reviewed and no issues noted.");
+    const detailAnswer = child.answers[0];
+    assertDefined(detailAnswer);
+    detailAnswer.setValueByUser("Allergies reviewed and no issues noted.");
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",
@@ -516,8 +535,8 @@ describe("response generation", () => {
     const answerMatrix: Array<{
       type: QuestionnaireItem["type"];
       build: () => {
-        value: QuestionnaireResponseItemAnswer[keyof QuestionnaireResponseItemAnswer];
-        expected: Partial<QuestionnaireResponseItemAnswer>;
+        value: DataTypeToType<DataType>;
+        expected: ValueCarrierFor<DataType>;
       };
     }> = [
       {
@@ -586,7 +605,7 @@ describe("response generation", () => {
       {
         type: "coding",
         build: () => {
-          const coding: QuestionnaireResponseItemAnswer["valueCoding"] = {
+          const coding: DataTypeToType<"Coding"> = {
             system: "http://loinc.org",
             code: "1234-5",
             display: "Mock code",
@@ -600,7 +619,7 @@ describe("response generation", () => {
       {
         type: "reference",
         build: () => {
-          const reference: QuestionnaireResponseItemAnswer["valueReference"] = {
+          const reference: DataTypeToType<"Reference"> = {
             reference: "Patient/123",
           };
           return {
@@ -612,11 +631,10 @@ describe("response generation", () => {
       {
         type: "attachment",
         build: () => {
-          const attachment: QuestionnaireResponseItemAnswer["valueAttachment"] =
-            {
-              contentType: "text/plain",
-              url: "http://files.example.org/report.txt",
-            };
+          const attachment: DataTypeToType<"Attachment"> = {
+            contentType: "text/plain",
+            url: "http://files.example.org/report.txt",
+          };
           return {
             value: attachment,
             expected: { valueAttachment: attachment },
@@ -626,7 +644,7 @@ describe("response generation", () => {
       {
         type: "quantity",
         build: () => {
-          const quantity: QuestionnaireResponseItemAnswer["valueQuantity"] = {
+          const quantity: DataTypeToType<"Quantity"> = {
             value: 5,
             unit: "mg",
           };
@@ -657,14 +675,16 @@ describe("response generation", () => {
         const form = new FormStore(questionnaire);
         const question = form.scope.lookupNode("answer");
         expect(question && isQuestionNode(question)).toBe(true);
-        if (!question || !isQuestionNode(question)) return;
+        assertQuestionNode(question);
 
-        question.setAnswer(0, value as never);
+        const answerInstance = question.answers[0];
+        assertDefined(answerInstance);
+        answerInstance.setValueByUser(value);
 
         const responseAnswer =
           form.response.item?.at(0)?.answer?.at(0) ?? undefined;
         expect(responseAnswer).toBeDefined();
-        if (!responseAnswer) return;
+        assertDefined(responseAnswer);
 
         expect(responseAnswer).toEqual(expected);
         expect(Object.keys(responseAnswer)).toEqual(Object.keys(expected));

@@ -298,13 +298,13 @@ const MatrixChoiceCell = observer(function MatrixChoiceCell({
   }
 
   const dataType = ANSWER_TYPE_TO_DATA_TYPE[question.type];
-  const selectedIndex = question.answers.findIndex((answer) => {
+  const selectedAnswer = question.answers.find((answer) => {
     if (answer.value == null) {
       return false;
     }
     return areValuesEqual(dataType, answer.value, entry.value);
   });
-  const isSelected = selectedIndex >= 0;
+  const isSelected = Boolean(selectedAnswer);
   const inputType = question.repeats ? "checkbox" : "radio";
   const disableNewSelection =
     question.readOnly ||
@@ -319,19 +319,18 @@ const MatrixChoiceCell = observer(function MatrixChoiceCell({
     }
 
     if (question.repeats) {
-      if (isSelected) {
-        question.removeAnswer(selectedIndex);
+      if (selectedAnswer) {
+        question.removeAnswer(selectedAnswer);
         return;
       }
 
-      if (!question.canAdd) {
-        return;
-      }
+      if (!question.canAdd) return;
       question.addAnswer(cloneValue(entry.value));
       return;
     }
 
-    question.setAnswer(0, cloneValue(entry.value));
+    const target = question.answers[0];
+    if (target) target.setValueByUser(cloneValue(entry.value));
   };
 
   return (

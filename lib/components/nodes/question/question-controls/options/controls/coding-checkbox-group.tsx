@@ -25,17 +25,17 @@ export const CodingCheckboxGroup = observer(function CodingCheckboxGroup({
   const labelId = getNodeLabelId(node);
   const describedBy = getNodeDescribedBy(node);
 
-  const findAnswerIndex = (option: AnswerOptionEntry<"coding">) =>
-    node.answers.findIndex(
+  const findAnswer = (option: AnswerOptionEntry<"coding">) =>
+    node.answers.find(
       (answer) =>
         answer.value && areValuesEqual("Coding", answer.value, option.value),
     );
 
   const toggleOption = (option: AnswerOptionEntry<"coding">) => {
     if (node.readOnly || isLoading) return;
-    const currentIndex = findAnswerIndex(option);
-    if (currentIndex >= 0) {
-      node.removeAnswer(currentIndex);
+    const existing = findAnswer(option);
+    if (existing) {
+      node.removeAnswer(existing);
       return;
     }
     node.addAnswer(cloneValue(option.value));
@@ -49,9 +49,8 @@ export const CodingCheckboxGroup = observer(function CodingCheckboxGroup({
     >
       {options.map((option, index) => {
         const optionId = sanitizeForId(`${node.key}-option-${index}`);
-        const answerIndex = findAnswerIndex(option);
-        const answer = answerIndex >= 0 ? node.answers[answerIndex] : null;
-        const isChecked = answerIndex >= 0;
+        const answer = findAnswer(option);
+        const isChecked = Boolean(answer);
         const disableNewSelection =
           node.readOnly ||
           isLoading ||

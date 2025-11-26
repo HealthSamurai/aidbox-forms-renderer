@@ -9,10 +9,17 @@ import type {
 } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import type { AnswerType, IQuestionNode } from "../../types.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
-import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import type { AnswerType } from "../../types.ts";
+import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
+import {
+  assertQuestionNode,
+  isQuestionNode,
+} from "../nodes/questions/question-store.ts";
+import {
+  assertRepeatingGroupWrapper,
+  isRepeatingGroupWrapper,
+} from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertDefined } from "../../utils.ts";
 
 type EnableWhenAnswer =
   | boolean
@@ -70,8 +77,6 @@ function makeCondition(
     case "attachment":
       throw new Error("enableWhen does not support attachment answers");
     default: {
-      const exhaustiveCheck: never = type;
-      void exhaustiveCheck;
       throw new Error("Unhandled type");
     }
   }
@@ -107,30 +112,10 @@ function createForm(
   const control = form.scope.lookupNode("control");
   const dependent = form.scope.lookupNode("dependent");
 
-  if (!control || !isQuestionNode(control)) {
-    throw new Error("Control item is not a question");
-  }
-  if (!dependent) {
-    throw new Error("Dependent item not found");
-  }
+  assertQuestionNode(control);
+  assertDefined(dependent);
 
   return { control, dependent };
-}
-
-function setQuestionAnswer(
-  question: IQuestionNode,
-  index: number,
-  value: EnableWhenAnswer,
-) {
-  while (question.answers.length <= index) {
-    if (!question.repeats) {
-      throw new Error(
-        "Non-repeating question cannot create additional answers",
-      );
-    }
-    question.addAnswer(null);
-  }
-  question.setAnswer(index, value as never);
 }
 
 describe("enableWhen", () => {
@@ -143,7 +128,9 @@ describe("enableWhen", () => {
       };
 
       const { control, dependent } = createForm("boolean", condition);
-      setQuestionAnswer(control, 0, true);
+      const controlAnswer = control.answers[0];
+      assertDefined(controlAnswer);
+      controlAnswer.setValueByUser(true);
 
       expect(dependent.isEnabled).toBe(false);
     });
@@ -157,7 +144,9 @@ describe("enableWhen", () => {
           answerBoolean: true,
         },
       );
-      setQuestionAnswer(controlTrue, 0, "   ");
+      const controlTrueAnswer = controlTrue.answers[0];
+      assertDefined(controlTrueAnswer);
+      controlTrueAnswer.setValueByUser("   ");
       expect(dependentTrue.isEnabled).toBe(false);
 
       const { control: controlFalse, dependent: dependentFalse } = createForm(
@@ -168,7 +157,9 @@ describe("enableWhen", () => {
           answerBoolean: false,
         },
       );
-      setQuestionAnswer(controlFalse, 0, "   ");
+      const controlFalseAnswer = controlFalse.answers[0];
+      assertDefined(controlFalseAnswer);
+      controlFalseAnswer.setValueByUser("   ");
       expect(dependentFalse.isEnabled).toBe(true);
     });
 
@@ -180,7 +171,9 @@ describe("enableWhen", () => {
       };
 
       const { control, dependent } = createForm("string", condition);
-      setQuestionAnswer(control, 0, "hello");
+      const controlAnswer = control.answers[0];
+      assertDefined(controlAnswer);
+      controlAnswer.setValueByUser("hello");
 
       expect(dependent.isEnabled).toBe(false);
     });
@@ -235,10 +228,12 @@ describe("enableWhen", () => {
         const condition = makeCondition(type, "=", match);
         const { control, dependent } = createForm(type, condition);
 
-        setQuestionAnswer(control, 0, match);
+        const firstAnswer = control.answers[0];
+        assertDefined(firstAnswer);
+        firstAnswer.setValueByUser(match);
         expect(dependent.isEnabled).toBe(true);
 
-        setQuestionAnswer(control, 0, mismatch);
+        firstAnswer.setValueByUser(mismatch);
         expect(dependent.isEnabled).toBe(false);
       },
     );
@@ -249,8 +244,13 @@ describe("enableWhen", () => {
         repeats: true,
       });
 
-      setQuestionAnswer(control, 0, "first");
-      setQuestionAnswer(control, 1, "target");
+      const firstAnswer = control.addAnswer(null);
+      assertDefined(firstAnswer);
+      firstAnswer.setValueByUser("first");
+
+      const secondAnswer = control.addAnswer(null);
+      assertDefined(secondAnswer);
+      secondAnswer.setValueByUser("target");
 
       expect(dependent.isEnabled).toBe(true);
     });
@@ -259,13 +259,15 @@ describe("enableWhen", () => {
       const condition = makeCondition("string", "!=", "match");
       const { control, dependent } = createForm("string", condition);
 
-      setQuestionAnswer(control, 0, "different");
+      const inequalityAnswer = control.answers[0];
+      assertDefined(inequalityAnswer);
+      inequalityAnswer.setValueByUser("different");
       expect(dependent.isEnabled).toBe(true);
 
-      setQuestionAnswer(control, 0, "match");
+      inequalityAnswer.setValueByUser("match");
       expect(dependent.isEnabled).toBe(false);
 
-      setQuestionAnswer(control, 0, "");
+      inequalityAnswer.setValueByUser("");
       expect(dependent.isEnabled).toBe(false);
     });
 
@@ -280,12 +282,16 @@ describe("enableWhen", () => {
         repeats: true,
       });
 
-      setQuestionAnswer(control, 0, {
+      const firstQuantity = control.addAnswer(null);
+      assertDefined(firstQuantity);
+      firstQuantity.setValueByUser({
         system: "http://unitsofmeasure.org",
         code: "mg",
         unit: "mg",
       });
-      setQuestionAnswer(control, 1, {
+      const secondQuantity = control.addAnswer(null);
+      assertDefined(secondQuantity);
+      secondQuantity.setValueByUser({
         system: "http://unitsofmeasure.org",
         code: "mg",
         unit: "mg",
@@ -415,8 +421,16 @@ describe("enableWhen", () => {
           repeats: values.length > 1,
         });
 
-        values.forEach((value, index) => {
-          setQuestionAnswer(control, index, value);
+        const [firstValue, ...additionalValues] = values;
+
+        const firstAnswer = control.answers[0] ?? control.addAnswer(null);
+        assertDefined(firstAnswer);
+        firstAnswer.setValueByUser(firstValue);
+
+        additionalValues.forEach((value) => {
+          const answer = control.addAnswer(null);
+          assertDefined(answer);
+          answer.setValueByUser(value);
         });
 
         expect(dependent.isEnabled).toBe(result);
@@ -427,7 +441,9 @@ describe("enableWhen", () => {
       const condition = makeCondition("boolean", ">", true);
       const { control, dependent } = createForm("boolean", condition);
 
-      setQuestionAnswer(control, 0, true);
+      const comparisonAnswer = control.answers[0];
+      assertDefined(comparisonAnswer);
+      comparisonAnswer.setValueByUser(true);
       expect(dependent.isEnabled).toBe(false);
     });
 
@@ -435,7 +451,9 @@ describe("enableWhen", () => {
       const condition = makeCondition("date", ">", "2024-01-01");
       const { control, dependent } = createForm("date", condition);
 
-      setQuestionAnswer(control, 0, "not-a-date");
+      const comparisonAnswer = control.answers[0];
+      assertDefined(comparisonAnswer);
+      comparisonAnswer.setValueByUser("not-a-date");
       expect(dependent.isEnabled).toBe(false);
     });
   });
@@ -468,20 +486,16 @@ describe("enableWhen", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (
-      !control ||
-      !dependent ||
-      !isQuestionNode(control) ||
-      !isQuestionNode(dependent)
-    ) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(control);
+    assertQuestionNode(dependent);
 
     expect(dependent.isEnabled).toBe(false);
     expect(form.validateAll()).toBe(true);
     expect(dependent.issues).toHaveLength(0);
 
-    control.setAnswer(0, true);
+    const controlAnswer = control.answers[0];
+    assertDefined(controlAnswer);
+    controlAnswer.setValueByUser(true);
     expect(dependent.isEnabled).toBe(true);
     expect(form.validateAll()).toBe(false);
     const diagnostics = dependent.issues.at(0)?.diagnostics ?? "";
@@ -519,17 +533,15 @@ describe("enableWhen", () => {
       const control = form.scope.lookupNode("control");
       const dependent = form.scope.lookupNode("dependent");
 
-      if (!control || !isQuestionNode(control)) {
-        throw new Error("Control item is not a question");
-      }
-      if (!dependent || !isQuestionNode(dependent)) {
-        throw new Error("Dependent item is not a question");
-      }
+      assertQuestionNode(control);
+      assertQuestionNode(dependent);
 
       expect(dependent.isEnabled).toBe(false);
       expect(dependent.hidden).toBe(true);
 
-      setQuestionAnswer(control, 0, true);
+      const controlAnswer = control.answers[0];
+      assertDefined(controlAnswer);
+      controlAnswer.setValueByUser(true);
 
       expect(dependent.isEnabled).toBe(true);
       expect(dependent.hidden).toBe(false);
@@ -565,17 +577,15 @@ describe("enableWhen", () => {
       const control = form.scope.lookupNode("control");
       const dependent = form.scope.lookupNode("dependent");
 
-      if (!control || !isQuestionNode(control)) {
-        throw new Error("Control item is not a question");
-      }
-      if (!dependent || !isQuestionNode(dependent)) {
-        throw new Error("Dependent item is not a question");
-      }
+      assertQuestionNode(control);
+      assertQuestionNode(dependent);
 
       expect(dependent.isEnabled).toBe(false);
       expect(dependent.hidden).toBe(false);
 
-      setQuestionAnswer(control, 0, true);
+      const controlAnswer = control.answers[0];
+      assertDefined(controlAnswer);
+      controlAnswer.setValueByUser(true);
 
       expect(dependent.isEnabled).toBe(true);
       expect(dependent.hidden).toBe(false);
@@ -621,27 +631,24 @@ describe("enableWhen", () => {
     const control = form.scope.lookupNode("control");
     const dependent = form.scope.lookupNode("dependent");
 
-    if (
-      !gate ||
-      !control ||
-      !dependent ||
-      !isQuestionNode(gate) ||
-      !isQuestionNode(control) ||
-      !isQuestionNode(dependent)
-    ) {
-      throw new Error("Expected question stores");
-    }
+    assertQuestionNode(gate);
+    assertQuestionNode(control);
+    assertQuestionNode(dependent);
 
     expect(control.isEnabled).toBe(false);
     expect(dependent.isEnabled).toBe(false);
 
-    gate.setAnswer(0, true);
+    const gateAnswer = gate.answers[0];
+    assertDefined(gateAnswer);
+    gateAnswer.setValueByUser(true);
     expect(control.isEnabled).toBe(true);
 
-    control.setAnswer(0, 5);
+    const controlAnswer = control.answers[0];
+    assertDefined(controlAnswer);
+    controlAnswer.setValueByUser(5);
     expect(dependent.isEnabled).toBe(true);
 
-    gate.setAnswer(0, false);
+    gateAnswer.setValueByUser(false);
     expect(control.isEnabled).toBe(false);
     expect(dependent.isEnabled).toBe(false);
   });
@@ -674,20 +681,17 @@ describe("enableWhen", () => {
 
       expect(control && isQuestionNode(control)).toBe(true);
       expect(dependent && isQuestionNode(dependent)).toBe(true);
-      if (
-        !control ||
-        !dependent ||
-        !isQuestionNode(control) ||
-        !isQuestionNode(dependent)
-      )
-        return;
+      assertQuestionNode(control);
+      assertQuestionNode(dependent);
 
       expect(dependent.isEnabled).toBe(false);
 
-      control.setAnswer(0, true);
+      const controlAnswer = control.answers[0];
+      assertDefined(controlAnswer);
+      controlAnswer.setValueByUser(true);
       expect(dependent.isEnabled).toBe(true);
 
-      control.setAnswer(0, false);
+      controlAnswer.setValueByUser(false);
       expect(dependent.isEnabled).toBe(false);
     });
 
@@ -729,21 +733,18 @@ describe("enableWhen", () => {
 
       expect(control && isQuestionNode(control)).toBe(true);
       expect(dependent && isQuestionNode(dependent)).toBe(true);
-      if (
-        !control ||
-        !dependent ||
-        !isQuestionNode(control) ||
-        !isQuestionNode(dependent)
-      )
-        return;
+      assertQuestionNode(control);
+      assertQuestionNode(dependent);
 
       expect(dependent.isEnabled).toBe(false);
 
       const child = control.answers.at(0)?.nodes.at(0);
       expect(child && isQuestionNode(child)).toBe(true);
-      if (!child || !isQuestionNode(child)) return;
+      assertQuestionNode(child);
 
-      child.setAnswer(0, "child value");
+      const childAnswer = child.answers[0];
+      assertDefined(childAnswer);
+      childAnswer.setValueByUser("child value");
       expect(dependent.isEnabled).toBe(false);
     });
 
@@ -782,24 +783,23 @@ describe("enableWhen", () => {
       expect(flag && isQuestionNode(flag)).toBe(true);
       expect(score && isQuestionNode(score)).toBe(true);
       expect(dependent).toBeDefined();
-      if (
-        !flag ||
-        !score ||
-        !dependent ||
-        !isQuestionNode(flag) ||
-        !isQuestionNode(score)
-      )
-        return;
+      assertQuestionNode(flag);
+      assertQuestionNode(score);
+      assertDefined(dependent);
 
       expect(dependent.isEnabled).toBe(false);
 
-      flag.setAnswer(0, true);
+      const flagAnswer = flag.answers[0];
+      assertDefined(flagAnswer);
+      flagAnswer.setValueByUser(true);
       expect(dependent.isEnabled).toBe(true);
 
-      flag.setAnswer(0, false);
+      flagAnswer.setValueByUser(false);
       expect(dependent.isEnabled).toBe(false);
 
-      score.setAnswer(0, 10);
+      const scoreAnswer = score.answers[0];
+      assertDefined(scoreAnswer);
+      scoreAnswer.setValueByUser(10);
       expect(dependent.isEnabled).toBe(true);
     });
 
@@ -839,23 +839,22 @@ describe("enableWhen", () => {
       expect(text && isQuestionNode(text)).toBe(true);
       expect(count && isQuestionNode(count)).toBe(true);
       expect(dependent && isQuestionNode(dependent)).toBe(true);
-      if (
-        !text ||
-        !count ||
-        !dependent ||
-        !isQuestionNode(text) ||
-        !isQuestionNode(count) ||
-        !isQuestionNode(dependent)
-      )
-        return;
+      assertQuestionNode(text);
+      assertQuestionNode(count);
+      assertQuestionNode(dependent);
 
       expect(dependent.isEnabled).toBe(false);
 
-      text.setAnswer(0, "not yet");
-      count.setAnswer(0, 5);
+      const textAnswer = text.answers[0];
+      assertDefined(textAnswer);
+      textAnswer.setValueByUser("not yet");
+
+      const countAnswer = count.answers[0];
+      assertDefined(countAnswer);
+      countAnswer.setValueByUser(5);
       expect(dependent.isEnabled).toBe(false);
 
-      text.setAnswer(0, "ok");
+      textAnswer.setValueByUser("ok");
       expect(dependent.isEnabled).toBe(true);
     });
 
@@ -895,20 +894,16 @@ describe("enableWhen", () => {
       expect(toggle && isQuestionNode(toggle)).toBe(true);
       expect(group && isGroupNode(group)).toBe(true);
       expect(child && isQuestionNode(child)).toBe(true);
-      if (
-        !toggle ||
-        !group ||
-        !child ||
-        !isQuestionNode(toggle) ||
-        !isGroupNode(group) ||
-        !isQuestionNode(child)
-      )
-        return;
+      assertQuestionNode(toggle);
+      assertGroupNode(group);
+      assertQuestionNode(child);
 
       expect(group.isEnabled).toBe(false);
       expect(child.isEnabled).toBe(false);
 
-      toggle.setAnswer(0, true);
+      const toggleAnswer = toggle.answers[0];
+      assertDefined(toggleAnswer);
+      toggleAnswer.setValueByUser(true);
       expect(group.isEnabled).toBe(true);
       expect(child.isEnabled).toBe(true);
     });
@@ -940,14 +935,17 @@ describe("enableWhen", () => {
 
       expect(text && isQuestionNode(text)).toBe(true);
       expect(dependent).toBeDefined();
-      if (!text || !dependent || !isQuestionNode(text)) return;
+      assertQuestionNode(text);
+      assertDefined(dependent);
 
       expect(dependent.isEnabled).toBe(false);
 
-      text.setAnswer(0, "show-me");
+      const textAnswer = text.answers[0];
+      assertDefined(textAnswer);
+      textAnswer.setValueByUser("show-me");
       expect(dependent.isEnabled).toBe(true);
 
-      text.setAnswer(0, "hide-me");
+      textAnswer.setValueByUser("hide-me");
       expect(dependent.isEnabled).toBe(false);
     });
   });
@@ -975,14 +973,14 @@ describe("enableWhen", () => {
       const wrapper = form.scope.lookupNode("repeating-group");
 
       expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
-      if (!wrapper || !isRepeatingGroupWrapper(wrapper)) return;
+      assertRepeatingGroupWrapper(wrapper);
 
       wrapper.addNode();
       expect(wrapper.nodes.length).toBe(1);
 
       const node = wrapper.nodes.at(0);
       expect(node && isGroupNode(node)).toBe(true);
-      if (!node || !isGroupNode(node)) return;
+      assertGroupNode(node);
 
       expect(node.isEnabled).toBe(false);
       expect(node.hidden).toBe(true);
@@ -990,7 +988,7 @@ describe("enableWhen", () => {
 
       const control = node.nodes.find((node) => node.linkId === "control");
       expect(control && isQuestionNode(control)).toBe(true);
-      if (!control || !isQuestionNode(control)) return;
+      assertQuestionNode(control);
 
       expect(control.isEnabled).toBe(false);
       expect(control.hidden).toBe(true);

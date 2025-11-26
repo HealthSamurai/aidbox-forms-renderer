@@ -48,6 +48,8 @@ export class RepeatingGroupWrapper
 
   private readonly validator: RepeatingGroupWrapperValidator;
 
+  private lastIndex = 0;
+
   constructor(
     form: IForm,
     template: QuestionnaireItem,
@@ -152,7 +154,7 @@ export class RepeatingGroupWrapper
       this.template,
       this,
       this.scope.extend(true),
-      `${this.key}_/_${this.nodes.length}`,
+      `${this.key}_/_${this.lastIndex++}`,
       responseItem,
     );
     this.nodes.push(node);
@@ -270,7 +272,16 @@ export class RepeatingGroupWrapper
 }
 
 export function isRepeatingGroupWrapper(
-  it: IPresentableNode | undefined,
+  it: IPresentableNode | undefined | null,
 ): it is IRepeatingGroupWrapper {
   return it instanceof RepeatingGroupWrapper;
+}
+
+export function assertRepeatingGroupWrapper(
+  it: IPresentableNode | undefined | null,
+  message?: string,
+): asserts it is IRepeatingGroupWrapper {
+  if (!isRepeatingGroupWrapper(it)) {
+    throw new Error(message ?? "Expected RepeatingGroupWrapper instance");
+  }
 }

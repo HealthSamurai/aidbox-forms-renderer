@@ -1,12 +1,11 @@
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../../types.ts";
-import type { RowRenderProps } from "../../shared/answer.tsx";
 import { AnswerList } from "../../shared/answer-list.tsx";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import {
+  type AnswerRowRenderer,
   createStringAnswerRenderer,
   createTextAnswerRenderer,
-  type AnswerRowRenderer,
 } from "../answer-renderers.tsx";
 import type { StringLikeAnswerType } from "./option-control-helpers.ts";
 import { OptionsOrStringField } from "./controls/options-or-string-field.tsx";
@@ -27,24 +26,27 @@ export const OptionsOrStringQuestionControl = observer(
     const typedRenderInput =
       renderInput as AnswerRowRenderer<StringLikeAnswerType>;
 
-    const renderRow = (rowProps: RowRenderProps<StringLikeAnswerType>) => (
-      <OptionsOrStringField
-        node={node}
-        rowProps={rowProps}
-        options={node.options.entries}
-        renderInput={typedRenderInput}
-        getValueForKey={(key) => node.options.getValueForKey(key)}
-        getKeyForValue={(value) => node.options.getKeyForValue(value)}
-        customOptionKey={CUSTOM_STRING_KEY}
-        isLoading={isLoading}
-      />
-    );
-
     return (
       <QuestionScaffold
         node={node}
         showOptionsStatus
-        answers={<AnswerList node={node} renderRow={renderRow} />}
+        answers={
+          <AnswerList
+            node={node}
+            renderRow={(rowProps) => (
+              <OptionsOrStringField
+                node={node}
+                rowProps={rowProps}
+                options={node.options.entries}
+                renderInput={typedRenderInput}
+                getValueForKey={(key) => node.options.getValueForKey(key)}
+                getKeyForValue={(value) => node.options.getKeyForValue(value)}
+                customOptionKey={CUSTOM_STRING_KEY}
+                isLoading={isLoading}
+              />
+            )}
+          />
+        }
       />
     );
   },

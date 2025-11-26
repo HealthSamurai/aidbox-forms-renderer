@@ -2,21 +2,22 @@ import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import { isRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
-import { isGroupNode } from "../nodes/groups/group-store.ts";
-import { isQuestionNode } from "../nodes/questions/question-store.ts";
+import {
+  assertRepeatingGroupWrapper,
+  isRepeatingGroupWrapper,
+} from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
+import {
+  assertQuestionNode,
+  isQuestionNode,
+} from "../nodes/questions/question-store.ts";
 import {
   makeCqfExpression,
   makeMaxOccursExpression,
   makeMinOccursExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import type {
-  AnswerType,
-  IAnswerInstance,
-  IPresentableNode,
-  IQuestionNode,
-} from "../../types.ts";
+import { assertDefined } from "../../utils.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -108,28 +109,6 @@ const maxSizeExtension = (value: number) => ({
   valueDecimal: value,
 });
 
-const expectQuestionNode = <T extends AnswerType = AnswerType>(
-  node: IPresentableNode | undefined,
-): IQuestionNode<T> => {
-  expect(node && isQuestionNode(node)).toBe(true);
-  if (!node || !isQuestionNode(node)) {
-    throw new Error("Expected question node");
-  }
-  return node as IQuestionNode<T>;
-};
-
-const expectAnswerInstance = <T extends AnswerType = AnswerType>(
-  question: IQuestionNode<T>,
-  index = 0,
-): IAnswerInstance<T> => {
-  const answer = question.answers[index];
-  expect(answer).toBeDefined();
-  if (!answer) {
-    throw new Error("Expected answer instance");
-  }
-  return answer as IAnswerInstance<T>;
-};
-
 describe("validation", () => {
   describe("question", () => {
     it("defers validation until submit for untouched required questions", () => {
@@ -147,7 +126,8 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("first-name"));
+      const question = form.scope.lookupNode("first-name");
+      assertQuestionNode(question);
 
       expect(question.hasErrors).toBe(false);
       expect(question.issues).toHaveLength(0);
@@ -156,10 +136,14 @@ describe("validation", () => {
       expect(question.hasErrors).toBe(true);
       expect(question.issues.at(0)?.diagnostics).toMatch(/required/i);
 
-      question.setAnswer(0, null);
+      const answer1 = question.answers[0];
+      assertDefined(answer1);
+      answer1.setValueByUser(null);
       expect(question.issues).toHaveLength(1);
 
-      question.setAnswer(0, "Alice");
+      const answer2 = question.answers[0];
+      assertDefined(answer2);
+      answer2.setValueByUser("Alice");
       expect(form.validateAll()).toBe(true);
       expect(question.hasErrors).toBe(false);
     });
@@ -206,22 +190,27 @@ describe("validation", () => {
       const gate = form.scope.lookupNode("gate");
       const target = form.scope.lookupNode("target");
 
-      if (!isQuestionNode(gate) || !isQuestionNode(target)) {
-        throw new Error("Expected gate and target question stores");
-      }
+      assertQuestionNode(gate);
+      assertQuestionNode(target);
 
       expect(target.minOccurs).toBe(1);
       expect(target.canRemove).toBe(false);
+      expect(target.answers).toHaveLength(1);
 
-      gate.setAnswer(0, true);
+      const answer3 = gate.answers[0];
+      assertDefined(answer3);
+      answer3.setValueByUser(true);
       expect(target.minOccurs).toBe(2);
       expect(target.canRemove).toBe(false);
+      expect(target.answers).toHaveLength(2);
 
       target.addAnswer("extra");
-      expect(target.answers).toHaveLength(2);
-      expect(target.canRemove).toBe(false);
+      expect(target.answers).toHaveLength(3);
+      expect(target.canRemove).toBe(true);
 
-      gate.setAnswer(0, false);
+      const answer4 = gate.answers[0];
+      assertDefined(answer4);
+      answer4.setValueByUser(false);
       expect(target.minOccurs).toBe(1);
       expect(target.canRemove).toBe(true);
     });
@@ -264,9 +253,8 @@ describe("validation", () => {
       const gate = form.scope.lookupNode("gate");
       const target = form.scope.lookupNode("target");
 
-      if (!isQuestionNode(gate) || !isQuestionNode(target)) {
-        throw new Error("Expected gate and target question stores");
-      }
+      assertQuestionNode(gate);
+      assertQuestionNode(target);
 
       expect(target.expressionRegistry.maxOccurs).toBeDefined();
       expect(target.expressionRegistry.maxOccurs?.error).toBeUndefined();
@@ -278,7 +266,9 @@ describe("validation", () => {
       expect(target.answers).toHaveLength(3);
       expect(target.canAdd).toBe(false);
 
-      gate.setAnswer(0, true);
+      const answer5 = gate.answers[0];
+      assertDefined(answer5);
+      answer5.setValueByUser(true);
       expect(target.maxOccurs).toBe(1);
       expect(target.canAdd).toBe(false);
 
@@ -286,12 +276,19 @@ describe("validation", () => {
       target.addAnswer("fourth");
       expect(target.answers.length).toBe(before);
 
-      target.removeAnswer(2);
-      target.removeAnswer(1);
+      const thirdAnswer = target.answers[2];
+      assertDefined(thirdAnswer);
+      target.removeAnswer(thirdAnswer);
+
+      const secondAnswer = target.answers[1];
+      assertDefined(secondAnswer);
+      target.removeAnswer(secondAnswer);
       expect(target.answers).toHaveLength(1);
       expect(target.canAdd).toBe(false);
 
-      gate.setAnswer(0, false);
+      const answer6 = gate.answers[0];
+      assertDefined(answer6);
+      answer6.setValueByUser(false);
       expect(target.maxOccurs).toBe(3);
       expect(target.canAdd).toBe(true);
     });
@@ -312,24 +309,27 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("symptom"));
+      const question = form.scope.lookupNode("symptom");
+      assertQuestionNode(question);
 
       expect(form.validateAll()).toBe(false);
       expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
 
-      question.setAnswer(0, "Cough");
+      const answer7 = question.answers[0];
+      assertDefined(answer7);
+      answer7.setValueByUser("Cough");
       expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
 
-      question.setAnswer(1, "Fever");
+      question.answers[1]!.setValueByUser("Fever");
       expect(question.hasErrors).toBe(false);
 
       question.addAnswer();
-      question.setAnswer(2, "Fatigue");
+      question.answers[2]!.setValueByUser("Fatigue");
       expect(question.canAdd).toBe(false);
       expect(question.hasErrors).toBe(false);
 
-      question.setAnswer(1, null);
-      question.setAnswer(2, null);
+      question.answers[1]!.setValueByUser(null);
+      question.answers[2]!.setValueByUser(null);
       expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
     });
 
@@ -350,9 +350,8 @@ describe("validation", () => {
 
       const form = new FormStore(questionnaire);
       expect(form.validateAll()).toBe(true);
-      const question = expectQuestionNode(
-        form.scope.lookupNode("readonly-question"),
-      );
+      const question = form.scope.lookupNode("readonly-question");
+      assertQuestionNode(question);
       expect(question.hasErrors).toBe(false);
     });
 
@@ -391,14 +390,15 @@ describe("validation", () => {
       const gate = form.scope.lookupNode("gate");
       const detail = form.scope.lookupNode("detail");
 
-      if (!isQuestionNode(gate) || !isQuestionNode(detail)) {
-        throw new Error("Expected gate and detail questions");
-      }
+      assertQuestionNode(gate);
+      assertQuestionNode(detail);
 
       expect(form.validateAll()).toBe(true);
       expect(detail.required).toBe(false);
 
-      gate.setAnswer(0, true);
+      const answer8 = gate.answers[0];
+      assertDefined(answer8);
+      answer8.setValueByUser(true);
       expect(detail.required).toBe(true);
       expect(form.validateAll()).toBe(false);
 
@@ -406,7 +406,9 @@ describe("validation", () => {
         true,
       );
 
-      detail.setAnswer(0, "value");
+      const answer9 = detail.answers[0];
+      assertDefined(answer9);
+      answer9.setValueByUser("value");
       expect(form.validateAll()).toBe(true);
     });
   });
@@ -427,19 +429,27 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("notes"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("notes");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, "Too long");
+      const tooLongAnswer = question.answers[0];
+      assertDefined(tooLongAnswer);
+      tooLongAnswer.setValueByUser("Too long");
       const longIssues = answer.issues ?? [];
       expect(longIssues).toHaveLength(1);
       expect(longIssues[0]?.diagnostics).toMatch(/maximum length/i);
 
-      question.setAnswer(0, "   ");
+      const spacesAnswer = question.answers[0];
+      assertDefined(spacesAnswer);
+      spacesAnswer.setValueByUser("   ");
       expect(question.hasErrors).toBe(false);
       expect(answer.issues).toHaveLength(0);
 
-      question.setAnswer(0, "short");
+      const shortAnswer = question.answers[0];
+      assertDefined(shortAnswer);
+      shortAnswer.setValueByUser("short");
       expect(question.hasErrors).toBe(false);
     });
 
@@ -458,19 +468,27 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("age"));
-      const answer = expectAnswerInstance(question);
-      question.setAnswer(0, -1);
+      const question = form.scope.lookupNode("age");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
+      const ageAnswerMin = question.answers[0];
+      assertDefined(ageAnswerMin);
+      ageAnswerMin.setValueByUser(-1);
       const minIssues = answer.issues ?? [];
       expect(minIssues).toHaveLength(1);
       expect(minIssues[0]?.diagnostics).toMatch(/greater than or equal to/i);
 
-      question.setAnswer(0, 130);
+      const ageAnswerMax = question.answers[0];
+      assertDefined(ageAnswerMax);
+      ageAnswerMax.setValueByUser(130);
       const maxIssues = answer.issues ?? [];
       expect(maxIssues).toHaveLength(1);
       expect(maxIssues[0]?.diagnostics).toMatch(/less than or equal to/i);
 
-      question.setAnswer(0, 35);
+      const ageAnswerOk = question.answers[0];
+      assertDefined(ageAnswerOk);
+      ageAnswerOk.setValueByUser(35);
       expect(question.hasErrors).toBe(false);
     });
 
@@ -498,29 +516,45 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const birth = expectQuestionNode(form.scope.lookupNode("birth"));
-      const checkIn = expectQuestionNode(form.scope.lookupNode("check-in"));
-      const birthAnswer = expectAnswerInstance(birth);
-      const checkInAnswer = expectAnswerInstance(checkIn);
+      const birth = form.scope.lookupNode("birth");
+      assertQuestionNode(birth);
+      const checkIn = form.scope.lookupNode("check-in");
+      assertQuestionNode(checkIn);
+      const birthAnswer = birth.answers[0];
+      assertDefined(birthAnswer);
+      const checkInAnswer = checkIn.answers[0];
+      assertDefined(checkInAnswer);
 
-      birth.setAnswer(0, "1999-12-31");
+      const birthAnswer0a = birth.answers[0];
+      assertDefined(birthAnswer0a);
+      birthAnswer0a.setValueByUser("1999-12-31");
       expect(birthAnswer.issues.at(0)?.diagnostics).toMatch(/not be earlier/i);
 
-      birth.setAnswer(0, "2021-01-01");
+      const birthAnswer0b = birth.answers[0];
+      assertDefined(birthAnswer0b);
+      birthAnswer0b.setValueByUser("2021-01-01");
       expect(birthAnswer.issues.at(0)?.diagnostics).toMatch(/not be later/i);
 
-      birth.setAnswer(0, "2010-05-05");
+      const birthAnswer0c = birth.answers[0];
+      assertDefined(birthAnswer0c);
+      birthAnswer0c.setValueByUser("2010-05-05");
       expect(birth.hasErrors).toBe(false);
 
-      checkIn.setAnswer(0, "2023-12-31T23:59:59Z");
+      const checkInAnswer0a = checkIn.answers[0];
+      assertDefined(checkInAnswer0a);
+      checkInAnswer0a.setValueByUser("2023-12-31T23:59:59Z");
       expect(checkInAnswer.issues.at(0)?.diagnostics).toMatch(
         /not be earlier/i,
       );
 
-      checkIn.setAnswer(0, "2025-01-01T00:00:00Z");
+      const checkInAnswer0b = checkIn.answers[0];
+      assertDefined(checkInAnswer0b);
+      checkInAnswer0b.setValueByUser("2025-01-01T00:00:00Z");
       expect(checkInAnswer.issues.at(0)?.diagnostics).toMatch(/not be later/i);
 
-      checkIn.setAnswer(0, "2024-06-01T12:00:00Z");
+      const checkInAnswer0c = checkIn.answers[0];
+      assertDefined(checkInAnswer0c);
+      checkInAnswer0c.setValueByUser("2024-06-01T12:00:00Z");
       expect(checkIn.hasErrors).toBe(false);
     });
 
@@ -542,20 +576,28 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("weight"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("weight");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, { value: 5, unit: "kg" });
+      const weightAnswer0 = question.answers[0];
+      assertDefined(weightAnswer0);
+      weightAnswer0.setValueByUser({ value: 5, unit: "kg" });
       expect(answer.issues.at(0)?.diagnostics).toMatch(
         /greater than or equal to/i,
       );
 
-      question.setAnswer(0, { value: 250, unit: "kg" });
+      const weightAnswer0b = question.answers[0];
+      assertDefined(weightAnswer0b);
+      weightAnswer0b.setValueByUser({ value: 250, unit: "kg" });
       expect(answer.issues.at(0)?.diagnostics).toMatch(
         /less than or equal to/i,
       );
 
-      question.setAnswer(0, { value: 75, unit: "kg" });
+      const weightAnswer0c = question.answers[0];
+      assertDefined(weightAnswer0c);
+      weightAnswer0c.setValueByUser({ value: 75, unit: "kg" });
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -575,14 +617,20 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("nickname"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("nickname");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, "Jo");
+      const answer10 = question.answers[0];
+      assertDefined(answer10);
+      answer10.setValueByUser("Jo");
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/at least 3/i);
 
-      question.setAnswer(0, "Joan");
+      const answer11 = question.answers[0];
+      assertDefined(answer11);
+      answer11.setValueByUser("Joan");
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -602,8 +650,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("passcode"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("passcode");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       expect(form.validateAll()).toBe(true);
       expect(answer.issues).toHaveLength(0);
@@ -624,14 +674,20 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("amount"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("amount");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, 12.345);
+      const answer12 = question.answers[0];
+      assertDefined(answer12);
+      answer12.setValueByUser(12.345);
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/decimal place/i);
 
-      question.setAnswer(0, 12.34);
+      const answer13 = question.answers[0];
+      assertDefined(answer13);
+      answer13.setValueByUser(12.34);
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -650,8 +706,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("priority"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("priority");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       expect(form.validateAll()).toBe(true);
       expect(answer.issues).toHaveLength(0);
@@ -675,8 +733,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("dose"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("dose");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const mgQuantity = (value: number) => ({
         value,
@@ -685,21 +745,31 @@ describe("validation", () => {
         code: "mg",
       });
 
-      question.setAnswer(0, mgQuantity(5));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mgQuantity(5));
+      }
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to/i),
         ),
       ).toBe(true);
 
-      question.setAnswer(0, mgQuantity(30));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mgQuantity(30));
+      }
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/less than or equal to/i),
         ),
       ).toBe(true);
 
-      question.setAnswer(0, {
+      const answer14 = question.answers[0];
+      assertDefined(answer14);
+      answer14.setValueByUser({
         value: 15,
         unit: "g",
         system: "http://unitsofmeasure.org",
@@ -716,7 +786,9 @@ describe("validation", () => {
         ),
       ).toBe(true);
 
-      question.setAnswer(0, {
+      const answer15 = question.answers[0];
+      assertDefined(answer15);
+      answer15.setValueByUser({
         value: 15,
         unit: "mgplus",
         system: "http://example.com/unit-system",
@@ -733,7 +805,11 @@ describe("validation", () => {
         ),
       ).toBe(true);
 
-      question.setAnswer(0, mgQuantity(15));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mgQuantity(15));
+      }
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -763,8 +839,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("dose"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("dose");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const mgQuantity = (value: number) => ({
         value,
@@ -773,10 +851,18 @@ describe("validation", () => {
         code: "mg",
       });
 
-      question.setAnswer(0, mgQuantity(12));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mgQuantity(12));
+      }
       expect(answer.issues).toHaveLength(0);
 
-      question.setAnswer(0, mgQuantity(8));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mgQuantity(8));
+      }
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 10/),
@@ -799,8 +885,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("fluid"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("fluid");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const registry = question.expressionRegistry;
 
@@ -825,14 +913,22 @@ describe("validation", () => {
         code: "ml",
       });
 
-      question.setAnswer(0, mlQuantity(15));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mlQuantity(15));
+      }
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 20/),
         ),
       ).toBe(true);
 
-      question.setAnswer(0, mlQuantity(22));
+      {
+        const answer = question.answers[0];
+        assertDefined(answer);
+        answer.setValueByUser(mlQuantity(22));
+      }
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -851,8 +947,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("score"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("score");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
@@ -862,10 +960,14 @@ describe("validation", () => {
         },
       });
 
-      question.setAnswer(0, 3);
+      const answer16 = question.answers[0];
+      assertDefined(answer16);
+      answer16.setValueByUser(3);
       expect(answer.issues).toHaveLength(0);
 
-      question.setAnswer(0, 12);
+      const answer17 = question.answers[0];
+      assertDefined(answer17);
+      answer17.setValueByUser(12);
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -884,8 +986,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("score"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("score");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
@@ -895,14 +999,18 @@ describe("validation", () => {
         },
       });
 
-      question.setAnswer(0, 20);
+      const answer18 = question.answers[0];
+      assertDefined(answer18);
+      answer18.setValueByUser(20);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 25/),
         ),
       ).toBe(true);
 
-      question.setAnswer(0, 30);
+      const answer19 = question.answers[0];
+      assertDefined(answer19);
+      answer19.setValueByUser(30);
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -921,8 +1029,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("score"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("score");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
       const registry = question.expressionRegistry;
       Object.defineProperty(registry, "minValue", {
@@ -932,10 +1042,14 @@ describe("validation", () => {
         },
       });
 
-      question.setAnswer(0, 5);
+      const answer20 = question.answers[0];
+      assertDefined(answer20);
+      answer20.setValueByUser(5);
       expect(answer.issues).toHaveLength(0);
 
-      question.setAnswer(0, 45);
+      const answer21 = question.answers[0];
+      assertDefined(answer21);
+      answer21.setValueByUser(45);
       expect(answer.issues).toHaveLength(0);
     });
 
@@ -958,10 +1072,14 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("photo"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("photo");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, {
+      const answer22 = question.answers[0];
+      assertDefined(answer22);
+      answer22.setValueByUser({
         contentType: "image/gif",
         size: "200",
       });
@@ -971,7 +1089,9 @@ describe("validation", () => {
         ),
       ).toBe(true);
 
-      question.setAnswer(0, {
+      const answer23 = question.answers[0];
+      assertDefined(answer23);
+      answer23.setValueByUser({
         contentType: "image/png",
         size: "1024",
       });
@@ -981,7 +1101,9 @@ describe("validation", () => {
         ),
       ).toBe(true);
 
-      question.setAnswer(0, {
+      const answer24 = question.answers[0];
+      assertDefined(answer24);
+      answer24.setValueByUser({
         contentType: "image/jpeg",
         size: "256",
       });
@@ -1004,8 +1126,10 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("passcode"));
-      const passcodeAnswer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("passcode");
+      assertQuestionNode(question);
+      const passcodeAnswer = question.answers[0];
+      assertDefined(passcodeAnswer);
 
       expect(form.validateAll()).toBe(true);
       expect(passcodeAnswer.issues).toHaveLength(0);
@@ -1026,14 +1150,20 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("amount"));
-      const answer = expectAnswerInstance(question);
+      const question = form.scope.lookupNode("amount");
+      assertQuestionNode(question);
+      const answer = question.answers[0];
+      assertDefined(answer);
 
-      question.setAnswer(0, 12.345);
+      const answer25 = question.answers[0];
+      assertDefined(answer25);
+      answer25.setValueByUser(12.345);
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/decimal place/i);
 
-      question.setAnswer(0, 12.34);
+      const answer26 = question.answers[0];
+      assertDefined(answer26);
+      answer26.setValueByUser(12.34);
       expect(answer.issues).toHaveLength(0);
     });
   });
@@ -1065,7 +1195,7 @@ describe("validation", () => {
       const form = new FormStore(questionnaire);
       const group = form.scope.lookupNode("family-history");
       expect(group && isRepeatingGroupWrapper(group)).toBe(true);
-      if (!group || !isRepeatingGroupWrapper(group)) return;
+      assertRepeatingGroupWrapper(group);
 
       // Submit with empty answers
       expect(form.validateAll()).toBe(false);
@@ -1074,13 +1204,15 @@ describe("validation", () => {
 
       const firstNode = group.nodes.at(0);
       expect(firstNode).toBeDefined();
-      if (!firstNode) return;
+      assertDefined(firstNode);
 
       const question = firstNode.nodes.at(0);
       expect(question && isQuestionNode(question)).toBe(true);
-      if (!question || !isQuestionNode(question)) return;
+      assertQuestionNode(question);
 
-      question.setAnswer(0, "Diabetes");
+      const answer27 = question.answers[0];
+      assertDefined(answer27);
+      answer27.setValueByUser("Diabetes");
       expect(group.issues).toHaveLength(0);
       expect(form.validateAll()).toBe(true);
     });
@@ -1111,15 +1243,17 @@ describe("validation", () => {
       const form = new FormStore(questionnaire);
       const group = form.scope.lookupNode("lifestyle");
       expect(group && isGroupNode(group)).toBe(true);
-      if (!group || !isGroupNode(group)) return;
+      assertGroupNode(group);
 
       expect(form.validateAll()).toBe(false);
       expect(group.issues.at(0)?.diagnostics).toMatch(/At least one answer/);
 
       const child = group.nodes.at(0);
       expect(child && isQuestionNode(child)).toBe(true);
-      if (!child || !isQuestionNode(child)) return;
-      child.setAnswer(0, "Runs daily");
+      assertQuestionNode(child);
+      const answer28 = child.answers[0];
+      assertDefined(answer28);
+      answer28.setValueByUser("Runs daily");
 
       expect(form.validateAll()).toBe(true);
       expect(group.hasErrors).toBe(false);
@@ -1142,12 +1276,15 @@ describe("validation", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const question = expectQuestionNode(form.scope.lookupNode("email"));
+      const question = form.scope.lookupNode("email");
+      assertQuestionNode(question);
 
       expect(form.validateAll()).toBe(false);
       expect(form.isSubmitAttempted).toBe(true);
 
-      question.setAnswer(0, "user@example.com");
+      const answer29 = question.answers[0];
+      assertDefined(answer29);
+      answer29.setValueByUser("user@example.com");
       expect(form.validateAll()).toBe(true);
       expect(form.isSubmitAttempted).toBe(false);
       expect(question.hasErrors).toBe(false);

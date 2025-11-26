@@ -70,6 +70,7 @@ export default defineConfig(({ command }) => {
     test: {
       environment: "jsdom",
       setupFiles: [resolve(__dirname, "lib/__tests__/setup-tests.ts")],
+      silent: "passed-only",
     },
     build: {
       lib: {

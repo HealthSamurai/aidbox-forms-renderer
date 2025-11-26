@@ -5,12 +5,14 @@ import {
   DataTypeToSuffix,
   DataTypeToType,
   IAnswerInstance,
+  IGroupNode,
   IPresentableNode,
   IQuestionNode,
-  IGroupNode,
   ITEM_CONTROLS,
-  OperationOutcomeIssueCode,
   ItemControl,
+  OperationOutcomeIssueCode,
+  ValueCarrierFor,
+  ValueKeyFor,
 } from "./types.ts";
 import {
   Attachment,
@@ -76,6 +78,15 @@ export function dedupe<T>(values: readonly T[]): T[] {
     }
   });
   return result;
+}
+
+export function assertDefined<T>(
+  value: T | null | undefined,
+  message?: string,
+): asserts value is T {
+  if (value === null || value === undefined) {
+    throw new TypeError(message ?? "Value must not be null or undefined");
+  }
 }
 
 export function hasHttpStatus(error: unknown): error is { status: number } {
@@ -695,9 +706,6 @@ export function extractExtensionsValues<T extends DataType>(
     .map((extension) => getValue(extension, type))
     .filter((value): value is DataTypeToType<T> => value != null);
 }
-
-type ValueKeyFor<T extends DataType> = PolyKeyFor<"value", T>;
-type ValueCarrierFor<T extends DataType> = PolyCarrierFor<"value", T>;
 
 export function asAnswerFragment<T extends DataType>(
   type: T,

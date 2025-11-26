@@ -5,7 +5,6 @@ import type { ChangeEvent } from "react";
 import type { Questionnaire } from "fhir/r5";
 
 import { Answer } from "../answer.tsx";
-import type { RowRenderProps } from "../answer.tsx";
 import type { IAnswerInstance, IQuestionNode } from "../../../../../types.ts";
 import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
@@ -49,18 +48,16 @@ describe("Answer", () => {
       <Answer
         node={question}
         answer={answer}
-        index={0}
-        renderRow={(props: RowRenderProps<"string">) => {
-          const { inputId, labelId, describedById, value, setValue } = props;
-          return createElement("input", {
+        renderRow={({ inputId, labelId, describedById, value, setValue }) =>
+          createElement("input", {
             id: inputId,
             "aria-labelledby": labelId,
             "aria-describedby": describedById ?? undefined,
             value: value ?? "",
             onChange: (event: ChangeEvent<HTMLInputElement>) =>
               setValue(event.currentTarget.value),
-          });
-        }}
+          })
+        }
       />,
     );
 
@@ -92,18 +89,16 @@ describe("Answer", () => {
       <Answer
         node={question}
         answer={answer}
-        index={0}
-        renderRow={(props: RowRenderProps<"string">) => {
-          const { inputId, labelId, describedById, value, setValue } = props;
-          return createElement("input", {
+        renderRow={({ inputId, labelId, describedById, value, setValue }) =>
+          createElement("input", {
             id: inputId,
             "aria-labelledby": labelId,
             "aria-describedby": describedById ?? undefined,
             value: value ?? "",
             onChange: (event: ChangeEvent<HTMLInputElement>) =>
               setValue(event.currentTarget.value),
-          });
-        }}
+          })
+        }
       />,
     );
 
