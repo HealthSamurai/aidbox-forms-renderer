@@ -7,7 +7,7 @@ import {
   INode,
   IGroupNode,
   IPresentableNode,
-  IRepeatingGroupWrapper,
+  IGroupWrapper,
   IScope,
   IValueSetExpander,
   QuestionControlDefinition,
@@ -41,10 +41,7 @@ import {
 } from "../nodes/questions/question-store.ts";
 import { isGroupNode, GroupStore } from "../nodes/groups/group-store.ts";
 import { DisplayStore } from "../nodes/display/display-store.ts";
-import {
-  isRepeatingGroupWrapper,
-  RepeatingGroupWrapper,
-} from "../nodes/groups/repeating-group-wrapper.ts";
+import { isGroupWrapper, GroupWrapper } from "../nodes/groups/group-wrapper.ts";
 import { EvaluationCoordinator } from "../expressions/evaluation-coordinator.ts";
 import { Scope } from "../expressions/scope.ts";
 import { BaseExpressionRegistry } from "../expressions/base-expression-registry.ts";
@@ -172,7 +169,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       case "group":
         if (item.repeats) {
           // todo: handle dynamic repeats changes
-          const store = new RepeatingGroupWrapper(
+          const store = new GroupWrapper(
             this,
             item,
             parentStore,
@@ -301,7 +298,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   }
 
   private getChildNodes(node: IPresentableNode): IPresentableNode[] {
-    if (isRepeatingGroupWrapper(node)) {
+    if (isGroupWrapper(node)) {
       return node.nodes.flatMap((node) => node.nodes);
     }
     if (isGroupNode(node)) {
@@ -410,6 +407,6 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
 function isGroupControlNode(
   node: IPresentableNode,
-): node is IGroupNode | IRepeatingGroupWrapper {
-  return isGroupNode(node) || isRepeatingGroupWrapper(node);
+): node is IGroupNode | IGroupWrapper {
+  return isGroupNode(node) || isGroupWrapper(node);
 }

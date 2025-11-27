@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type {
   IGroupNode,
   IPresentableNode,
-  IRepeatingGroupWrapper,
+  IGroupWrapper,
 } from "../../types.ts";
 import { IForm } from "../../types.ts";
 import { NodesList } from "./node-list.tsx";
@@ -11,7 +11,7 @@ import { Node } from "./node.tsx";
 import { useEffect, useState, type FormEventHandler } from "react";
 import { Button } from "../controls/button.tsx";
 import { isGroupNode } from "../../stores/nodes/groups/group-store.ts";
-import { isRepeatingGroupWrapper } from "../../stores/nodes/groups/repeating-group-wrapper.ts";
+import { isGroupWrapper } from "../../stores/nodes/groups/group-wrapper.ts";
 
 export const Form = observer(function Form({
   store,
@@ -40,7 +40,7 @@ export const Form = observer(function Form({
     (node) => !headerSet.has(node) && !footerSet.has(node),
   );
   const pageNodes = nonHeaderFooterNodes.filter(
-    (node): node is IGroupNode | IRepeatingGroupWrapper =>
+    (node): node is IGroupNode | IGroupWrapper =>
       isGroupControlNode(node) && node.control === "page",
   );
   const pageSet = new Set<IPresentableNode>(pageNodes);
@@ -155,6 +155,6 @@ export const Form = observer(function Form({
 
 function isGroupControlNode(
   node: IPresentableNode,
-): node is IGroupNode | IRepeatingGroupWrapper {
-  return isGroupNode(node) || isRepeatingGroupWrapper(node);
+): node is IGroupNode | IGroupWrapper {
+  return isGroupNode(node) || isGroupWrapper(node);
 }

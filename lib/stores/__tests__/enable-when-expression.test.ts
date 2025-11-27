@@ -12,9 +12,9 @@ import {
   isQuestionNode,
 } from "../nodes/questions/question-store.ts";
 import {
-  assertRepeatingGroupWrapper,
-  isRepeatingGroupWrapper,
-} from "../nodes/groups/repeating-group-wrapper.ts";
+  assertGroupWrapper,
+  isGroupWrapper,
+} from "../nodes/groups/group-wrapper.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
 import { assertDefined } from "../../utils.ts";
 
@@ -238,8 +238,8 @@ describe("enableWhenExpression", () => {
     const form = new FormStore(questionnaire);
     const wrapper = form.scope.lookupNode("repeating-group");
 
-    expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
-    assertRepeatingGroupWrapper(wrapper);
+    expect(wrapper && isGroupWrapper(wrapper)).toBe(true);
+    assertGroupWrapper(wrapper);
 
     wrapper.addNode();
     expect(wrapper.nodes.length).toBe(1);

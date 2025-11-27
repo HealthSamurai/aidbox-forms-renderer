@@ -7,9 +7,9 @@ import {
   isQuestionNode,
 } from "../nodes/questions/question-store.ts";
 import {
-  assertRepeatingGroupWrapper,
-  isRepeatingGroupWrapper,
-} from "../nodes/groups/repeating-group-wrapper.ts";
+  assertGroupWrapper,
+  isGroupWrapper,
+} from "../nodes/groups/group-wrapper.ts";
 import { EXT } from "../../utils.ts";
 
 describe("preferredTerminologyServer resolution", () => {
@@ -154,8 +154,8 @@ describe("preferredTerminologyServer resolution", () => {
 
     const form = new FormStore(questionnaire);
     const wrapper = form.scope.lookupNode("repeating-group");
-    expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
-    assertRepeatingGroupWrapper(wrapper);
+    expect(wrapper && isGroupWrapper(wrapper)).toBe(true);
+    assertGroupWrapper(wrapper);
 
     const node = wrapper.nodes[0];
     expect(node).toBeDefined();
@@ -241,8 +241,8 @@ describe("preferredTerminologyServer resolution", () => {
 
     const form = new FormStore(questionnaire);
     const wrapper = form.scope.lookupNode("rg");
-    expect(wrapper && isRepeatingGroupWrapper(wrapper)).toBe(true);
-    assertRepeatingGroupWrapper(wrapper);
+    expect(wrapper && isGroupWrapper(wrapper)).toBe(true);
+    assertGroupWrapper(wrapper);
 
     const node = wrapper.nodes[0];
     const question = node?.nodes.find((node) => node.linkId === "rg-question");

@@ -6,7 +6,7 @@ import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { assertRepeatingGroupWrapper } from "../nodes/groups/repeating-group-wrapper.ts";
+import { assertGroupWrapper } from "../nodes/groups/group-wrapper.ts";
 import { assertGroupNode } from "../nodes/groups/group-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { assertDefined } from "../../utils.ts";
@@ -149,7 +149,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-    assertRepeatingGroupWrapper(household);
+    assertGroupWrapper(household);
 
     household.addNode();
     household.addNode();
@@ -257,7 +257,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-    assertRepeatingGroupWrapper(household);
+    assertGroupWrapper(household);
 
     household.addNode();
     household.addNode();
@@ -372,7 +372,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const families = form.scope.lookupNode("families");
-    assertRepeatingGroupWrapper(families);
+    assertGroupWrapper(families);
 
     families.addNode();
     families.addNode();
@@ -390,11 +390,11 @@ describe("variable expressions", () => {
       return child;
     };
 
-    const findRepeatingGroup = (nodeIndex: number, linkId: string) => {
+    const findGroupWrapper = (nodeIndex: number, linkId: string) => {
       const node = families.nodes[nodeIndex];
       assertDefined(node);
       const child = node.nodes.find((item) => item.linkId === linkId);
-      assertRepeatingGroupWrapper(child);
+      assertGroupWrapper(child);
       return child;
     };
 
@@ -408,8 +408,8 @@ describe("variable expressions", () => {
     assertDefined(secondFamilyNameAnswer0);
     secondFamilyNameAnswer0.setValueByUser("Johnson");
 
-    const firstMembers = findRepeatingGroup(0, "members");
-    const secondMembers = findRepeatingGroup(1, "members");
+    const firstMembers = findGroupWrapper(0, "members");
+    const secondMembers = findGroupWrapper(1, "members");
 
     firstMembers.addNode();
     secondMembers.addNode();
@@ -504,7 +504,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-    assertRepeatingGroupWrapper(addresses);
+    assertGroupWrapper(addresses);
 
     const [firstNode, secondNode] = addresses.nodes;
 
@@ -669,7 +669,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-    assertRepeatingGroupWrapper(addresses);
+    assertGroupWrapper(addresses);
 
     expect(addresses.nodes.length).toBe(2);
 

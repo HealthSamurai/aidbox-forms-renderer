@@ -23,7 +23,7 @@ import {
 import { GroupValidator } from "../../validation/group-validator.ts";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-import { isRepeatingGroupWrapper } from "./repeating-group-wrapper.ts";
+import { isGroupWrapper } from "./group-wrapper.ts";
 
 export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   readonly expressionRegistry: NodeExpressionRegistry;
@@ -72,8 +72,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
   @computed
   get component(): GroupControlDefinition["groupComponent"] | undefined {
-    return this.form.groupControlRegistry.resolveNonRepeating(this)
-      ?.groupComponent;
+    return this.form.groupControlRegistry.resolveGroup(this)?.groupComponent;
   }
 
   @computed.struct
@@ -158,7 +157,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     if (control === "tab-container") {
       this.nodes.forEach((child) => {
-        if (!isGroupNode(child) && !isRepeatingGroupWrapper(child)) {
+        if (!isGroupNode(child) && !isGroupWrapper(child)) {
           this.form.reportRenderingIssue(
             makeIssue(
               "structure",
@@ -181,7 +180,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     if (control === "grid") {
       this.nodes.forEach((child) => {
-        if (!isGroupNode(child) && !isRepeatingGroupWrapper(child)) {
+        if (!isGroupNode(child) && !isGroupWrapper(child)) {
           this.form.reportRenderingIssue(
             makeIssue(
               "structure",

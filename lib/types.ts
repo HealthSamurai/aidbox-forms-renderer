@@ -452,12 +452,12 @@ export type GroupControlProps = {
   node: IGroupNode;
 };
 
-export type RepeatingGroupControlProps = {
-  wrapper: IRepeatingGroupWrapper;
+export type GroupWrapperControlProps = {
+  wrapper: IGroupWrapper;
 };
 
 export type GroupControlMatcher = (
-  target: IGroupNode | IRepeatingGroupWrapper,
+  target: IGroupNode | IGroupWrapper,
 ) => boolean;
 
 export interface GroupControlDefinition {
@@ -465,7 +465,7 @@ export interface GroupControlDefinition {
   priority: number;
   matcher: GroupControlMatcher;
   groupComponent?: ComponentType<GroupControlProps>;
-  wrapperComponent?: ComponentType<RepeatingGroupControlProps>;
+  wrapperComponent?: ComponentType<GroupWrapperControlProps>;
 }
 
 export interface IGroupNode extends IActualNode {
@@ -477,7 +477,7 @@ export interface IGroupNode extends IActualNode {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IDisplayNode extends IActualNode {}
 
-export interface IRepeatingGroupWrapper extends IPresentableNode {
+export interface IGroupWrapper extends IPresentableNode {
   readonly nodes: Array<IGroupNode>;
   readonly visibleNodes: Array<IGroupNode>;
   readonly canAdd: boolean;
@@ -570,7 +570,7 @@ export interface IQuestionNode<T extends AnswerType = AnswerType>
 export type INode =
   | IDisplayNode
   | IGroupNode
-  | IRepeatingGroupWrapper
+  | IGroupWrapper
   | IGroupNode
   | IQuestionNode;
 
