@@ -1,21 +1,18 @@
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
+import { OptionCheckboxGroup } from "../components/option-checkbox-group.tsx";
 import { QuestionScaffold } from "../question-scaffold.tsx";
-import { CodingCheckboxGroup } from "../components/coding-checkbox-group.tsx";
 
-export const CheckboxCodingQuestionControl = observer(
-  function CheckboxCodingQuestionControl({
-    node,
-  }: {
-    node: IQuestionNode<"coding">;
-  }) {
+export const CheckboxListQuestionControl = observer(
+  function CheckboxListQuestionControl({ node }: { node: IQuestionNode }) {
     const isLoading = node.options.loading;
+
     return (
       <QuestionScaffold
         node={node}
         showOptionsStatus
         answers={
-          <CodingCheckboxGroup
+          <OptionCheckboxGroup
             node={node}
             options={node.options.entries}
             isLoading={isLoading}

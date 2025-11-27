@@ -1,37 +1,41 @@
 import "./coding-checkbox-group.css";
 import "./option-status.css";
 import { observer } from "mobx-react-lite";
-import type { IQuestionNode } from "../../../../types.ts";
-import type { AnswerOptionEntry } from "../../../../types.ts";
-import { NodesList } from "../../../form/node-list.tsx";
-import { AnswerErrors } from "../answer-errors.tsx";
+import type {
+  AnswerOptionEntry,
+  AnswerType,
+  IQuestionNode,
+} from "../../../../types.ts";
 import {
+  ANSWER_TYPE_TO_DATA_TYPE,
   areValuesEqual,
   cloneValue,
   getNodeDescribedBy,
   getNodeLabelId,
   sanitizeForId,
 } from "../../../../utils.ts";
+import { AnswerErrors } from "../answer-errors.tsx";
 
-export const CodingCheckboxGroup = observer(function CodingCheckboxGroup({
-  node,
-  options,
-  isLoading = false,
-}: {
-  node: IQuestionNode<"coding">;
-  options: ReadonlyArray<AnswerOptionEntry<"coding">>;
+type OptionCheckboxGroupProps<T extends AnswerType> = {
+  node: IQuestionNode<T>;
+  options: ReadonlyArray<AnswerOptionEntry<T>>;
   isLoading?: boolean;
-}) {
+};
+
+export const OptionCheckboxGroup = observer(function OptionCheckboxGroup<
+  T extends AnswerType,
+>({ node, options, isLoading = false }: OptionCheckboxGroupProps<T>) {
   const labelId = getNodeLabelId(node);
   const describedBy = getNodeDescribedBy(node);
+  const dataType = ANSWER_TYPE_TO_DATA_TYPE[node.type];
 
-  const findAnswer = (option: AnswerOptionEntry<"coding">) =>
+  const findAnswer = (option: AnswerOptionEntry<T>) =>
     node.answers.find(
       (answer) =>
-        answer.value && areValuesEqual("Coding", answer.value, option.value),
+        answer.value && areValuesEqual(dataType, answer.value, option.value),
     );
 
-  const toggleOption = (option: AnswerOptionEntry<"coding">) => {
+  const toggleOption = (option: AnswerOptionEntry<T>) => {
     if (node.readOnly || isLoading) return;
     const existing = findAnswer(option);
     if (existing) {
@@ -69,11 +73,6 @@ export const CodingCheckboxGroup = observer(function CodingCheckboxGroup({
               />
               <span id={optionId}>{option.label}</span>
             </label>
-            {answer && answer.nodes.length > 0 && (
-              <div className="af-checkbox-option__children">
-                <NodesList nodes={answer.nodes} />
-              </div>
-            )}
             {answer && <AnswerErrors answer={answer} />}
           </div>
         );

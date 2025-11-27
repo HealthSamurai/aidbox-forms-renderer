@@ -22,9 +22,9 @@ import { OptionsOrTypeHybridQuestionControl } from "../../components/nodes/quest
 import { RadioQuestionControl } from "../../components/nodes/question/controls/radio-question-control.tsx";
 import { AutocompleteQuestionControl } from "../../components/nodes/question/controls/autocomplete-question-control.tsx";
 import { SelectQuestionControl } from "../../components/nodes/question/controls/select-question-control.tsx";
-import { CheckboxCodingQuestionControl } from "../../components/nodes/question/controls/checkbox-coding-question-control.tsx";
 import { SliderQuestionControl } from "../../components/nodes/question/controls/slider-question-control.tsx";
 import { SpinnerQuestionControl } from "../../components/nodes/question/controls/spinner-question-control.tsx";
+import { CheckboxListQuestionControl } from "../../components/nodes/question/controls/checkbox-list-question-control.tsx";
 import { UnsupportedQuestionControl } from "../../components/nodes/question/controls/unsupported-question-control.tsx";
 
 type StringLikeType = Extract<AnswerType, "string" | "text">;
@@ -47,6 +47,33 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     component: OptionsOrStringQuestionControl,
   } as QuestionControlDefinition,
   {
+    name: "options-radio-single",
+    priority: 95,
+    matcher: (node): node is IQuestionNode =>
+      hasOptions(node) && usesListControl(node) && !node.repeats,
+    component: RadioQuestionControl,
+  } as QuestionControlDefinition,
+  {
+    name: "options-radio-repeating-with-children",
+    priority: 95,
+    matcher: (node): node is IQuestionNode =>
+      hasOptions(node) &&
+      usesListControl(node) &&
+      node.repeats &&
+      questionHasChildren(node),
+    component: RadioQuestionControl,
+  } as QuestionControlDefinition,
+  {
+    name: "options-checkbox-repeating",
+    priority: 95,
+    matcher: (node): node is IQuestionNode =>
+      hasOptions(node) &&
+      usesListControl(node) &&
+      node.repeats &&
+      !questionHasChildren(node),
+    component: CheckboxListQuestionControl,
+  } as QuestionControlDefinition,
+  {
     name: "numeric-slider-control",
     priority: 90,
     matcher: (node): node is IQuestionNode<NumericType> =>
@@ -59,22 +86,6 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     matcher: (node): node is IQuestionNode<NumericType> =>
       isNumeric(node) && node.control === "spinner",
     component: SpinnerQuestionControl,
-  } as QuestionControlDefinition,
-  {
-    name: "options-radio-control",
-    priority: 90,
-    matcher: (node): node is IQuestionNode =>
-      hasOptions(node) && node.control === "radio-button" && !node.repeats,
-    component: RadioQuestionControl,
-  } as QuestionControlDefinition,
-  {
-    name: "options-checkbox-coding",
-    priority: 90,
-    matcher: (node): node is IQuestionNode<"coding"> =>
-      hasOptions(node) &&
-      node.type === "coding" &&
-      node.control === "check-box",
-    component: CheckboxCodingQuestionControl,
   } as QuestionControlDefinition,
   {
     name: "options-autocomplete",
@@ -202,13 +213,19 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
 ] as QuestionControlDefinition[];
 
 function hasOptions(node: IQuestionNode) {
-  if (node.template.answerOption && node.template.answerOption.length > 0) {
-    return true;
-  }
-  if (node.template.answerValueSet) {
-    return true;
-  }
-  return node.options.entries.length > 0;
+  return !!(
+    node.template.answerOption?.length ||
+    node.expressionRegistry.answer ||
+    node.template.answerValueSet
+  );
+}
+
+function usesListControl(node: IQuestionNode) {
+  return node.control === "radio-button" || node.control === "check-box";
+}
+
+function questionHasChildren(node: IQuestionNode) {
+  return Array.isArray(node.template.item) && node.template.item.length > 0;
 }
 
 function isStringLike(
