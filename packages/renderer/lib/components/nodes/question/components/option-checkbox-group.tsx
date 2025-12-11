@@ -1,4 +1,3 @@
-import "./coding-checkbox-group.css";
 import "./option-status.css";
 import { observer } from "mobx-react-lite";
 import type {

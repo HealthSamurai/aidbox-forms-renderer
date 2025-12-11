@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -32,5 +36,3 @@ jobs:
 
       - name: Publish to npm
         run: pnpm -r publish --filter @aidbox-forms/renderer --filter @aidbox-forms/hs-ui --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
