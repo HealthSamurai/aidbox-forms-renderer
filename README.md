@@ -8,6 +8,7 @@ import {
   type Questionnaire,
   type QuestionnaireResponse,
 } from "@aidbox-forms/renderer";
+import { theme } from "@aidbox-forms/hs-theme";
 import { useState } from "react";
 
 const questionnaire: Questionnaire = {
@@ -27,9 +28,18 @@ export function IntakeForm() {
       initialResponse={response ?? undefined}
       onChange={setResponse}
       onSubmit={setResponse}
+      theme={theme}
     />
   );
 }
+```
+
+To swap to the NHS look and feel, import from `@aidbox-forms/nshuk-theme`:
+
+```tsx
+import { theme } from "@aidbox-forms/nshuk-theme";
+
+<Renderer questionnaire={questionnaire} theme={theme} />;
 ```
 
 Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle), `npm test`, `npm run lint`.
@@ -58,7 +68,7 @@ Focus: Establish baseline FHIR Questionnaire support and base rendering logic.
   - [x] Enable `readOnly`, `initial` behavior
   - [x] Support FHIR `enableWhen` conditions and nested groups
   - [ ] Render `item.control` and `item.control.displayCategory` extensions (basic)
-- [ ] \*_Questionnaire Navigation & Layout__\*_
+- [ ] \*_Questionnaire Navigation & Layout\_\_\*_
   - [x] Implement group hierarchy rendering
   - [ ] Respect `hidden` and `displayCategory` controls
   - [ ] Add label localization and prefix rendering

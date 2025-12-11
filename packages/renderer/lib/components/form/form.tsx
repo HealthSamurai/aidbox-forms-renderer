@@ -9,7 +9,7 @@ import { IForm } from "../../types.ts";
 import { NodesList } from "./node-list.tsx";
 import { Node } from "./node.tsx";
 import { useEffect, useState, type FormEventHandler } from "react";
-import { Button } from "../controls/button.tsx";
+import { useTheme } from "../../ui/theme.tsx";
 import { isGroupNode } from "../../stores/nodes/groups/group-store.ts";
 import { isGroupWrapper } from "../../stores/nodes/groups/group-wrapper.ts";
 
@@ -20,6 +20,8 @@ export const Form = observer(function Form({
   store: IForm;
   onSubmit?: FormEventHandler<HTMLFormElement> | undefined;
 }) {
+  const kit = useTheme();
+  const { Button } = kit;
   const [activePage, setActivePage] = useState(0);
 
   const issueMessages = store.issues

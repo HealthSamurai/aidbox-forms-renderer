@@ -53,7 +53,7 @@ export default defineConfig(({ command }) => {
         generateSourceTypes: true,
       }),
       // Skip declaration generation when building Storybook to avoid API Extractor failures.
-      ...(process.env.STORYBOOK === "true"
+      ...(process.env["STORYBOOK"] === "true"
         ? []
         : [
             dts({

@@ -1,0 +1,40 @@
+{
+  "name": "@aidbox-forms/hs-theme",
+  "version": "0.0.2-pre-alpha",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b ./tsconfig.lib.json && vite build",
+    "dev": "echo \"@aidbox-forms/hs-theme: no dev server defined\"",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json",
+    "test": "echo \"@aidbox-forms/hs-theme: no tests defined\""
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aidbox-forms/theme": "workspace:*",
+    "classnames": "^2.5.1"
+  }
+}

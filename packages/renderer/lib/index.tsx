@@ -3,6 +3,8 @@ import { FormStore } from "./stores/form/form-store.ts";
 import { Form } from "./components/form/form.tsx";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { autorun } from "mobx";
+import type { Theme } from "@aidbox-forms/theme";
+import { ThemeProvider } from "./ui/theme.tsx";
 
 type RendererProps = {
   questionnaire: Questionnaire;
@@ -10,6 +12,7 @@ type RendererProps = {
   onChange?: ((response: QuestionnaireResponse) => void) | undefined;
   onSubmit?: ((response: QuestionnaireResponse) => void) | undefined;
   terminologyServerUrl?: string | undefined;
+  theme?: Theme | undefined;
 };
 
 function Renderer({
@@ -18,6 +21,7 @@ function Renderer({
   onSubmit,
   onChange,
   terminologyServerUrl,
+  theme,
 }: RendererProps) {
   const store = useMemo(
     () => new FormStore(questionnaire, initialResponse, terminologyServerUrl),
@@ -57,10 +61,13 @@ function Renderer({
     [handleValidSubmit, store],
   );
 
-  return store && <Form store={store} onSubmit={handleSubmit} />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Form store={store} onSubmit={handleSubmit} />
+    </ThemeProvider>
+  );
 }
 
 export default Renderer;
 export type { IValueSetExpander } from "./types.ts";
 export { ValueSetExpander } from "./stores/services/valueset-expander.ts";
-export { HsUiDemo } from "./components/hs-ui-demo.tsx";

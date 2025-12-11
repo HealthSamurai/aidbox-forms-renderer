@@ -1,8 +1,8 @@
 import "./group-wrapper-scaffold-item.css";
 import { observer } from "mobx-react-lite";
 import { IGroupNode, IGroupWrapper } from "../../../types.ts";
-import { Button } from "../../controls/button.tsx";
 import { NodeErrors } from "../../form/node-errors.tsx";
+import { useTheme } from "../../../ui/theme.tsx";
 
 export const GroupWrapperScaffoldItem = observer(
   function GroupWrapperScaffoldItem({
@@ -12,6 +12,7 @@ export const GroupWrapperScaffoldItem = observer(
     wrapper: IGroupWrapper;
     node: IGroupNode;
   }) {
+    const { Button } = useTheme();
     const ControlComponent = node.component;
 
     return ControlComponent ? (

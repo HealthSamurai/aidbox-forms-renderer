@@ -1,1 +1,7 @@
-// visual indicator that a question is required.
+export function RequiredFlag() {
+  return (
+    <span aria-hidden className="af-required">
+      *
+    </span>
+  );
+}

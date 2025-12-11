@@ -11,9 +11,9 @@ import { isQuestionNode } from "../../../../stores/nodes/questions/question-stor
 import { Node } from "../../../form/node.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { NodesList } from "../../../form/node-list.tsx";
-import { Button } from "../../../controls/button.tsx";
 import { GroupWrapperScaffold } from "../group-wrapper-scaffold.tsx";
 import { QuestionnaireItem } from "fhir/r5";
+import { useTheme } from "../../../../ui/theme.tsx";
 
 export const GTableControl = function GTableControl({
   wrapper,
@@ -30,6 +30,7 @@ const RepeatingGroupMatrix = observer(function RepeatingGroupMatrix({
 }: {
   wrapper: IGroupWrapper;
 }) {
+  const { Button } = useTheme();
   const columns = buildColumnSpecs(wrapper.template, wrapper.visibleNodes);
   const actionColumn = wrapper.canRemove ? 1 : 0;
   return (

@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import type { ReactNode } from "react";
 import type { IGroupWrapper } from "../../../types.ts";
 import { NodeText } from "../../form/node-text.tsx";
-import { Button } from "../../controls/button.tsx";
 import { GroupWrapperScaffoldItem } from "./group-wrapper-scaffold-item.tsx";
+import { useTheme } from "../../../ui/theme.tsx";
 
 export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper,
@@ -13,6 +13,7 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper: IGroupWrapper;
   children?: ReactNode;
 }) {
+  const { Button } = useTheme();
   return (
     <fieldset className="af-group" data-linkid={wrapper.linkId}>
       {wrapper.template.text ? <NodeText as="legend" node={wrapper} /> : null}
