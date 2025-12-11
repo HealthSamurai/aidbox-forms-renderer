@@ -4,8 +4,8 @@ import dts from "vite-plugin-dts";
 import { patchCssModules } from "vite-css-modules";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import pkg from "./package.json";
 import crypto from "node:crypto";
+import pkg from "./package.json";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const peerDependencies = Object.keys(pkg.peerDependencies);
@@ -18,7 +18,10 @@ const rollupExternal = [
   "react/jsx-runtime",
   ...subpathMatchers,
 ];
-const typescriptCompilerFolder = resolve(__dirname, "node_modules/typescript");
+const typescriptCompilerFolder = resolve(
+  __dirname,
+  "../../node_modules/typescript",
+);
 
 function generateScopedName(
   command: string,

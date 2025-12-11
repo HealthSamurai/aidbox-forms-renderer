@@ -8,7 +8,7 @@ import tseslint from "typescript-eslint";
 const tsconfigRootDir = new URL("./", import.meta.url).pathname;
 
 export default tseslint.config(
-  { ignores: ["dist", "storybook-static"] },
+  { ignores: ["**/dist/**", "**/storybook-static/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -31,10 +31,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ["lib/**/*.{ts,tsx}"],
+    files: ["packages/renderer/lib/**/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.lib.json"],
+        project: ["./packages/renderer/tsconfig.lib.json"],
         tsconfigRootDir,
       },
     },
