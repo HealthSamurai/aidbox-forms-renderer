@@ -1,6 +1,7 @@
 {
   "name": "@aidbox-forms/nshuk-theme",
-  "version": "0.0.2-pre-alpha",
+  "version": "0.0.3-pre-alpha",
+  "description": "NHS-styled theme for Aidbox Forms Renderer",
   "private": false,
   "type": "module",
   "license": "MIT",

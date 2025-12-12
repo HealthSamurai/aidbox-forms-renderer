@@ -1,6 +1,7 @@
 {
   "name": "@aidbox-forms/site",
-  "version": "0.0.0",
+  "version": "0.0.3-pre-alpha",
+  "description": "Storybook site for Aidbox Forms Renderer",
   "private": true,
   "type": "module",
   "scripts": {

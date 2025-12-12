@@ -1,6 +1,7 @@
 {
   "name": "@aidbox-forms/theme",
-  "version": "0.0.2-pre-alpha",
+  "version": "0.0.3-pre-alpha",
+  "description": "Base UI contract for Aidbox Forms Renderer themes",
   "private": false,
   "type": "module",
   "license": "MIT",

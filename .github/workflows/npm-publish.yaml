@@ -19,7 +19,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.9.0
+          version: 10.25.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,4 +37,4 @@ jobs:
       - name: Publish to npm
         env:
           NPM_CONFIG_PROVENANCE: true
-        run: pnpm -r publish --filter @aidbox-forms/renderer --filter @aidbox-forms/hs-ui --filter @aidbox-forms/nshuk-theme --access public --no-git-checks
+        run: pnpm -r publish --filter @aidbox-forms/renderer --filter @aidbox-forms/theme --filter @aidbox-forms/hs-theme --filter @aidbox-forms/nshuk-theme --access public --no-git-checks

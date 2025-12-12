@@ -14,13 +14,13 @@ importers:
   .:
     devDependencies:
       '@eslint/js':
-        specifier: ^9.38.0
+        specifier: ^9.39.1
         version: 9.39.1
       '@types/node':
-        specifier: ^24.9.2
+        specifier: ^24.10.3
         version: 24.10.3
       eslint:
-        specifier: ^9.38.0
+        specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
       eslint-plugin-react-hooks:
         specifier: ^7.0.1
@@ -29,25 +29,25 @@ importers:
         specifier: ^0.4.24
         version: 0.4.24(eslint@9.39.1(jiti@2.6.1))
       eslint-plugin-storybook:
-        specifier: ^10.0.8
-        version: 10.1.6(eslint@9.39.1(jiti@2.6.1))(storybook@10.1.7(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)
+        specifier: ^10.1.7
+        version: 10.1.7(eslint@9.39.1(jiti@2.6.1))(storybook@10.1.7(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)
       globals:
-        specifier: ^16.4.0
+        specifier: ^16.5.0
         version: 16.5.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: ^16.2.6
+        specifier: ^16.2.7
         version: 16.2.7
       prettier:
-        specifier: ^3.6.2
+        specifier: ^3.7.4
         version: 3.7.4
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
       typescript-eslint:
-        specifier: ^8.46.2
+        specifier: ^8.49.0
         version: 8.49.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
 
   packages/renderer:
@@ -1733,11 +1733,11 @@ packages:
     peerDependencies:
       eslint: '>=8.40'
 
-  eslint-plugin-storybook@10.1.6:
-    resolution: {integrity: sha512-EHMJ2cWmww3cOhB0bNonbqsm1MG7163em+uJEfuAvgBftsCaul7dGGq8izTKxurF/nospYUTYEB3bIJRStP0BQ==}
+  eslint-plugin-storybook@10.1.7:
+    resolution: {integrity: sha512-rJNg0arpGyxlRyYdFd9XS7KQtH0K+NMp78vEXotcAR2pk+eo5sZoGJRW41Lf9k+lW6i4CHbJUhh6XGzITTiSeg==}
     peerDependencies:
       eslint: '>=8'
-      storybook: ^10.1.6
+      storybook: ^10.1.7
 
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
@@ -4369,7 +4369,7 @@ snapshots:
     dependencies:
       eslint: 9.39.1(jiti@2.6.1)
 
-  eslint-plugin-storybook@10.1.6(eslint@9.39.1(jiti@2.6.1))(storybook@10.1.7(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3):
+  eslint-plugin-storybook@10.1.7(eslint@9.39.1(jiti@2.6.1))(storybook@10.1.7(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3):
     dependencies:
       '@typescript-eslint/utils': 8.49.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.1(jiti@2.6.1)

@@ -1,6 +1,7 @@
 {
   "name": "@aidbox-forms/renderer",
-  "version": "0.0.2-pre-alpha",
+  "version": "0.0.3-pre-alpha",
+  "description": "Aidbox Forms Renderer for FHIR R5 Questionnaires",
   "type": "module",
   "license": "MIT",
   "repository": {
