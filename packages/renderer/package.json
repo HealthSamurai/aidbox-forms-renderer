@@ -24,21 +24,39 @@
     "dev": "vite",
     "build": "tsc -b ./tsconfig.lib.json && vite build",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.storybook.json",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json",
     "lint-staged": "lint-staged",
     "format": "prettier --write .",
     "test": "vitest",
-    "preview": "vite preview",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "@aidbox-forms/theme": "workspace:*",
+    "@types/fhir": "^0.0.41",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "fhir": "^4.12.0",
+    "jsdom": "^27.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.12",
+    "vite-css-modules": "^1.11.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "@aidbox-forms/hs-theme": "workspace:*",
+    "@lhncbc/ucum-lhc": "^7.1.3",
+    "classnames": "^2.5.1",
     "fhirpath": "^4.6.0",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
+    "mobx-utils": "^6.1.1",
     "react": ">=18",
     "react-dom": ">=18",
     "@aidbox-forms/nshuk-theme": "workspace:*"
@@ -47,13 +65,5 @@
     "@aidbox-forms/nshuk-theme": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@aidbox-forms/theme": "workspace:*",
-    "@aidbox-forms/hs-theme": "workspace:*",
-    "@lhncbc/ucum-lhc": "^7.1.3",
-    "classnames": "^2.5.1",
-    "mobx-utils": "^6.1.1",
-    "nanoid": "^5.1.6"
   }
 }

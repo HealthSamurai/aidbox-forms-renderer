@@ -1,8 +1,20 @@
-import type { IForm } from "../lib/types.ts";
 import { useEffect } from "react";
 import { addons } from "storybook/preview-api";
 import { autorun } from "mobx";
 import type { Questionnaire } from "fhir/r5";
+import type { IForm } from "@aidbox-forms/renderer/types.ts";
+import type { Theme } from "@aidbox-forms/theme";
+import { theme as hsTheme } from "@aidbox-forms/hs-theme";
+import { theme as nshukTheme } from "@aidbox-forms/nshuk-theme";
+
+export type ThemeId = "hs" | "nshuk";
+
+export function resolveTheme(theme: ThemeId | undefined): Theme {
+  if (theme === "nshuk") {
+    return nshukTheme;
+  }
+  return hsTheme;
+}
 
 export function useQuestionnaireResponseBroadcaster(
   form: IForm,

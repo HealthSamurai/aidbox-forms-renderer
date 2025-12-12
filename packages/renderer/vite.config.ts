@@ -52,18 +52,13 @@ export default defineConfig(({ command }) => {
       patchCssModules({
         generateSourceTypes: true,
       }),
-      // Skip declaration generation when building Storybook to avoid API Extractor failures.
-      ...(process.env["STORYBOOK"] === "true"
-        ? []
-        : [
-            dts({
-              rollupTypes: true,
-              tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
-              rollupOptions: {
-                typescriptCompilerFolder,
-              },
-            }),
-          ]),
+      dts({
+        rollupTypes: true,
+        tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+        rollupOptions: {
+          typescriptCompilerFolder,
+        },
+      }),
     ],
     css: {
       modules: {

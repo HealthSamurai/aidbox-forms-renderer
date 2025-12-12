@@ -29,19 +29,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Storybook
-        run: pnpm --filter @aidbox-forms/renderer build-storybook
-        env:
-          STORYBOOK: "true"
+        run: pnpm --filter @aidbox-forms/site build
 
       - name: Add GitHub ribbon to built files
         run: |
           # Add GitHub fork ribbon CSS to the head
-          sed -i 's|</head>|    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />\n  </head>|' packages/renderer/storybook-static/index.html
+          sed -i 's|</head>|    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />\n  </head>|' site/storybook-static/index.html
 
           # Add GitHub fork ribbon HTML to the body
-          sed -i 's|<body>|<body>\n    <a class="github-fork-ribbon" href="https://github.com/HealthSamurai/aidbox-forms-renderer" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>|' packages/renderer/storybook-static/index.html
+          sed -i 's|<body>|<body>\n    <a class="github-fork-ribbon" href="https://github.com/HealthSamurai/aidbox-forms-renderer" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>|' site/storybook-static/index.html
 
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: packages/renderer/storybook-static
+          folder: site/storybook-static

@@ -2,11 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { Questionnaire } from "fhir/r5";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 
-import { Form } from "../../lib/components/form/form.tsx";
-import { FormStore } from "../../lib/stores/form/form-store.ts";
+import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
+import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
+import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,
+  resolveTheme,
+  type ThemeId,
 } from "../helpers.tsx";
 import answerConstraint from "./samples/answer-constraint-examples.json" with { type: "json" };
 import answerExpression from "./samples/answer-expression.json" with { type: "json" };
@@ -34,11 +37,13 @@ import validation from "./samples/validation.json" with { type: "json" };
 
 type PlaygroundArgs = {
   questionnaire: Questionnaire;
+  theme: ThemeId;
 };
 
 function Renderer({
   questionnaire,
   storyId,
+  theme,
 }: PlaygroundArgs & { storyId: string }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
 
@@ -56,9 +61,11 @@ function Renderer({
   useEffect(() => () => store.dispose(), [store]);
 
   return (
-    <div style={{ padding: 16 }}>
-      <Form store={store} onSubmit={handleSubmit} />
-    </div>
+    <ThemeProvider theme={resolveTheme(theme)}>
+      <div style={{ padding: 16 }}>
+        <Form store={store} onSubmit={handleSubmit} />
+      </div>
+    </ThemeProvider>
   );
 }
 
@@ -68,6 +75,17 @@ const meta = {
     layout: "fullscreen",
   },
   argTypes: {
+    theme: {
+      name: "Theme",
+      options: ["hs", "nshuk"],
+      control: {
+        type: "select",
+        labels: {
+          hs: "Health Samurai",
+          nshuk: "National Health Service",
+        },
+      },
+    },
     questionnaire: {
       control: { type: "object" },
       description: "Input questionnaire",
@@ -83,7 +101,7 @@ function makeStory(
 ): StoryObj<PlaygroundArgs> {
   return {
     name: label,
-    args: { questionnaire },
+    args: { questionnaire, theme: "hs" },
     render: (args, context) => <Renderer {...args} storyId={context.id} />,
   };
 }

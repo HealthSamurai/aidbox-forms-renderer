@@ -1,0 +1,42 @@
+diff --git a/index.d.ts b/index.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..73738182492cf7427ca3157d13ee47047de8f05f
+--- /dev/null
++++ b/index.d.ts
+@@ -0,0 +1,24 @@
++declare module "@lhncbc/ucum-lhc" {
++  export type ConvertStatus = "succeeded" | "failed" | "error" | string;
++
++  export interface ConvertUnitOptions {
++    suggest?: boolean;
++    molecularWeight?: number;
++    charge?: number;
++  }
++
++  export interface ConvertUnitResult {
++    status: ConvertStatus;
++    toVal: number | null;
++    msg: string[];
++  }
++
++  export class UcumLhcUtils {
++    convertUnitTo(
++      fromUnitCode: string,
++      fromValue: number | string,
++      toUnitCode: string,
++      options?: ConvertUnitOptions,
++    ): ConvertUnitResult;
++  }
++}
+diff --git a/package.json b/package.json
+index 2e02415ef578cd34a182ae018a5278f76bb3df72..37edb8b0ea54bf45546a261184dfcba2a451b349 100644
+--- a/package.json
++++ b/package.json
+@@ -7,6 +7,7 @@
+   "directories": {
+     "test": "test"
+   },
++  "types": "index.d.ts",
+   "files": [
+     "browser-dist/ucum-lhc.min.*",
+     "source-cjs/*",

@@ -37,4 +37,4 @@ jobs:
       - name: Publish to npm
         env:
           NPM_CONFIG_PROVENANCE: true
-        run: pnpm -r publish --filter @aidbox-forms/renderer --filter @aidbox-forms/hs-ui --access public --no-git-checks
+        run: pnpm -r publish --filter @aidbox-forms/renderer --filter @aidbox-forms/hs-ui --filter @aidbox-forms/nshuk-theme --access public --no-git-checks

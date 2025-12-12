@@ -1,4 +1,3 @@
-import "../../lib/components/form/form.css";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
   Extension,
@@ -12,22 +11,26 @@ import type {
   DataTypeToType,
   IPresentableNode,
   QuestionItemControl,
-} from "../../lib/types.ts";
+} from "@aidbox-forms/renderer/types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   asAnswerFragment,
   EXT,
   ITEM_CONTROL_SYSTEM,
-} from "../../lib/utils.ts";
+} from "@aidbox-forms/renderer/utils.ts";
+import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
+import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
+import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
 import { useEffect, useMemo } from "react";
-import { FormStore } from "../../lib/stores/form/form-store.ts";
-import { Node } from "../../lib/components/form/node.tsx";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,
+  resolveTheme,
+  type ThemeId,
 } from "../helpers.tsx";
 
 type PlaygroundArgs = {
+  theme: ThemeId;
   itemControl: QuestionItemControl | "none";
   repeats: boolean;
   hasAnswerOptions: boolean;
@@ -35,6 +38,17 @@ type PlaygroundArgs = {
 };
 
 const playgroundArgTypes = {
+  theme: {
+    name: "Theme",
+    options: ["hs", "nshuk"],
+    control: {
+      type: "select",
+      labels: {
+        hs: "Health Samurai",
+        nshuk: "National Health Service",
+      },
+    },
+  },
   itemControl: {
     name: "Item control",
     options: [
@@ -185,9 +199,11 @@ function buildQuestionnaire<T extends AnswerType>({
 function Renderer({
   questionnaire,
   storyId,
+  theme,
 }: {
   questionnaire: Questionnaire;
   storyId: string;
+  theme: ThemeId;
 }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
   useEffect(() => () => store.dispose(), [store]);
@@ -202,9 +218,11 @@ function Renderer({
   }
 
   return (
-    <div className="af-form" style={{ maxWidth: 760 }}>
-      <Node node={node as IPresentableNode} />
-    </div>
+    <ThemeProvider theme={resolveTheme(theme)}>
+      <div className="af-form" style={{ maxWidth: 760 }}>
+        <Node node={node as IPresentableNode} />
+      </div>
+    </ThemeProvider>
   );
 }
 
@@ -351,6 +369,7 @@ const meta: Meta<PlaygroundArgs> = {
   },
   argTypes: playgroundArgTypes,
   args: {
+    theme: "hs",
     itemControl: "none",
     repeats: false,
     answerConstraint: "optionsOnly",
@@ -373,7 +392,13 @@ function makeStory<T extends AnswerType>(
         ...args,
       });
 
-      return <Renderer questionnaire={questionnaire} storyId={context.id} />;
+      return (
+        <Renderer
+          questionnaire={questionnaire}
+          storyId={context.id}
+          theme={args.theme}
+        />
+      );
     },
   };
 }

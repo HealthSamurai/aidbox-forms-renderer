@@ -31,7 +31,15 @@
     "react-dom": ">=18"
   },
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.12",
+    "vite-css-modules": "^1.11.1",
+    "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
     "@aidbox-forms/theme": "workspace:*",

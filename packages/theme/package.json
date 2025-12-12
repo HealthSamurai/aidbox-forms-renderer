@@ -28,7 +28,12 @@
     "test": "echo \"@aidbox-forms/theme: no tests defined\""
   },
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "@types/react": "^19.2.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.12",
+    "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
     "react": ">=18",
