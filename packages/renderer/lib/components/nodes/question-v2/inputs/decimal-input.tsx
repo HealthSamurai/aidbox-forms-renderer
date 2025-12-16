@@ -23,9 +23,9 @@ export function DecimalInput({
   unitLabel,
   list,
 }: DecimalInputProps) {
-  const { NumberInput } = useTheme();
+  const { NumberInput: ThemedNumberInput } = useTheme();
   return (
-    <NumberInput
+    <ThemedNumberInput
       id={inputId}
       list={list}
       ariaLabelledBy={labelId}

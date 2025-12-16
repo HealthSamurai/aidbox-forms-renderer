@@ -19,9 +19,9 @@ export function UrlInput({
   placeholder,
   disabled,
 }: UrlInputProps) {
-  const { TextInput } = useTheme();
+  const { TextInput: ThemedTextInput } = useTheme();
   return (
-    <TextInput
+    <ThemedTextInput
       id={inputId}
       type="url"
       ariaLabelledBy={labelId}

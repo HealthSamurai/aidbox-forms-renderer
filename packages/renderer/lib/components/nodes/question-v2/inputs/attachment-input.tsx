@@ -1,7 +1,6 @@
-import "./attachment-input.css";
-import classNames from "classnames";
 import { useRef } from "react";
 import type { Attachment } from "fhir/r5";
+import type { AttachmentInputProps as ThemeAttachmentInputProps } from "@aidbox-forms/theme";
 import {
   prepareAttachmentFromFile,
   pruneAttachment,
@@ -25,10 +24,10 @@ export function AttachmentInput({
   describedById,
   disabled,
 }: AttachmentInputProps) {
-  const { Button } = useTheme();
+  const { AttachmentInput: ThemedAttachmentInput } = useTheme();
   const attachment = value ?? {};
-  const hasAttachment = value != null;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  type ThemeAttachment = ThemeAttachmentInputProps["value"];
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -69,11 +68,13 @@ export function AttachmentInput({
   const displayLabel =
     attachment.title ?? attachment.url ?? "Attachment selected";
 
+  const inputIdentifier = `${inputId ?? "attachment"}-file`;
+
   return (
-    <div>
+    <>
       <input
         ref={fileInputRef}
-        id={`${inputId ?? "attachment"}-file`}
+        id={inputIdentifier}
         type="file"
         onChange={(event) => {
           void handleFileChange(event);
@@ -81,40 +82,20 @@ export function AttachmentInput({
         disabled={disabled}
         aria-labelledby={labelId}
         aria-describedby={describedById}
-        className={classNames("af-attachment-input", {
-          "af-attachment-input--hidden": hasAttachment,
-        })}
+        style={{ display: "none" }}
       />
-      {hasAttachment ? (
-        <div
-          role="group"
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
-          className="af-attachment-summary"
-        >
-          <span className="af-attachment-summary__label">
-            {displayLabel}
-            {sizeKb !== undefined ? ` (${sizeKb} KB)` : ""}
-          </span>
-          {!disabled ? (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleTriggerFilePicker}
-            >
-              Change file
-            </Button>
-          ) : null}
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleClearFile}
-            disabled={disabled}
-          >
-            Clear attachment
-          </Button>
-        </div>
-      ) : null}
-    </div>
+      <ThemedAttachmentInput
+        inputId={inputIdentifier}
+        labelId={labelId}
+        describedById={describedById}
+        disabled={disabled}
+        filename={displayLabel}
+        sizeLabel={sizeKb !== undefined ? `${sizeKb} KB` : undefined}
+        value={value as ThemeAttachment}
+        onPickFile={handleTriggerFilePicker}
+        onClear={handleClearFile}
+        onChange={(next) => onChange(next as Attachment | null)}
+      />
+    </>
   );
 }

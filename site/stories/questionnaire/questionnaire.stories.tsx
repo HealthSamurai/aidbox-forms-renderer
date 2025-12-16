@@ -4,12 +4,9 @@ import { FormEvent, useCallback, useEffect, useMemo } from "react";
 
 import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
 import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
-import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,
-  resolveTheme,
-  type ThemeId,
 } from "../helpers.tsx";
 import answerConstraint from "./samples/answer-constraint-examples.json" with { type: "json" };
 import answerExpression from "./samples/answer-expression.json" with { type: "json" };
@@ -42,8 +39,7 @@ type PlaygroundArgs = {
 function Renderer({
   questionnaire,
   storyId,
-  theme,
-}: PlaygroundArgs & { storyId: string; theme: ThemeId }) {
+}: PlaygroundArgs & { storyId: string }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
 
   const handleSubmit = useCallback(
@@ -60,11 +56,9 @@ function Renderer({
   useEffect(() => () => store.dispose(), [store]);
 
   return (
-    <ThemeProvider theme={resolveTheme(theme)}>
-      <div style={{ padding: 16 }}>
-        <Form store={store} onSubmit={handleSubmit} />
-      </div>
-    </ThemeProvider>
+    <div style={{ padding: 16 }}>
+      <Form store={store} onSubmit={handleSubmit} />
+    </div>
   );
 }
 
@@ -91,9 +85,7 @@ function makeStory(
     name: label,
     args: { questionnaire },
     render: (args, context) => {
-      const theme = (context.globals.theme as ThemeId | undefined) ?? "hs";
-
-      return <Renderer {...args} storyId={context.id} theme={theme} />;
+      return <Renderer {...args} storyId={context.id} />;
     },
   };
 }

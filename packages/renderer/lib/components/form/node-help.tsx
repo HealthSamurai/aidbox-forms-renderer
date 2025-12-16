@@ -1,9 +1,11 @@
-import "./node-help.css";
 import { observer } from "mobx-react-lite";
 import { INode } from "../../types.ts";
 import { getNodeHelpId } from "../../utils.ts";
+import { useTheme } from "../../ui/theme.tsx";
 
 export const NodeHelp = observer(function NodeHelp({ node }: { node: INode }) {
+  const { NodeHelp: ThemedNodeHelp } = useTheme();
+
   if (!node.help) {
     return null;
   }
@@ -11,21 +13,10 @@ export const NodeHelp = observer(function NodeHelp({ node }: { node: INode }) {
   const helpId = getNodeHelpId(node);
 
   return (
-    <>
-      <button
-        type="button"
-        className="af-help"
-        aria-describedby={helpId}
-        aria-label="More information"
-      >
-        ?
-      </button>
-      <div className="af-help-tooltip" role="tooltip" aria-hidden="true">
-        {node.help}
-      </div>
-      <span id={helpId} className="af-help-sr">
-        {node.help}
-      </span>
-    </>
+    <ThemedNodeHelp
+      id={helpId}
+      content={node.help}
+      ariaLabel="More information"
+    />
   );
 });

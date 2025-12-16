@@ -1,5 +1,4 @@
-import type { ReactElement } from "react";
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType, ReactElement } from "react";
 
 export type OptionsOrStringFieldProps<TValue = unknown> = {
   options: ReadonlyArray<{
@@ -21,4 +20,4 @@ export type OptionsOrStringFieldProps<TValue = unknown> = {
 };
 
 export type OptionsOrStringFieldComponent =
-  ComponentLike<OptionsOrStringFieldProps>;
+  ComponentType<OptionsOrStringFieldProps>;

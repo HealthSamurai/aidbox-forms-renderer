@@ -1,4 +1,3 @@
-import "./group-wrapper-scaffold-item.css";
 import { observer } from "mobx-react-lite";
 import { IGroupNode, IGroupWrapper } from "../../../types.ts";
 import { NodeErrors } from "../../form/node-errors.tsx";
@@ -12,17 +11,15 @@ export const GroupWrapperScaffoldItem = observer(
     wrapper: IGroupWrapper;
     node: IGroupNode;
   }) {
-    const { Button } = useTheme();
+    const { Button, GroupItem } = useTheme();
     const ControlComponent = node.component;
 
     return ControlComponent ? (
-      <section className="af-group-node">
-        <div className="af-group-node-children">
-          <ControlComponent node={node} />
-        </div>
-        <NodeErrors node={node} />
-        {wrapper.canRemove ? (
-          <div className="af-group-node-toolbar">
+      <GroupItem
+        control={<ControlComponent node={node} />}
+        errors={<NodeErrors node={node} />}
+        toolbar={
+          wrapper.canRemove ? (
             <Button
               type="button"
               variant="danger"
@@ -31,9 +28,9 @@ export const GroupWrapperScaffoldItem = observer(
             >
               Remove section
             </Button>
-          </div>
-        ) : null}
-      </section>
+          ) : null
+        }
+      />
     ) : null;
   },
 );

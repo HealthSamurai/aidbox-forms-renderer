@@ -1,18 +1,6 @@
 import { styled } from "@linaria/react";
 import { useId } from "react";
-
-export type SliderInputProps = {
-  value: number | null;
-  onChange: (value: number | null) => void;
-  min?: number | undefined;
-  max?: number | undefined;
-  step?: number | undefined;
-  disabled?: boolean | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-  lowerLabel?: string | undefined;
-  upperLabel?: string | undefined;
-};
+import type { SliderInputProps } from "@aidbox-forms/theme";
 
 export function SliderInput({
   value,
@@ -25,6 +13,7 @@ export function SliderInput({
   ariaDescribedBy,
   lowerLabel,
   upperLabel,
+  unitLabel,
 }: SliderInputProps) {
   const generatedId = useId();
   const sliderMin = typeof min === "number" ? min : 0;
@@ -34,6 +23,11 @@ export function SliderInput({
     sliderMin,
     sliderMax,
   );
+  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const describedBy = [ariaDescribedBy, unitId]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
 
   return (
     <SliderShell data-disabled={disabled ? "true" : "false"}>
@@ -51,9 +45,12 @@ export function SliderInput({
           }}
           disabled={disabled}
           aria-labelledby={ariaLabelledBy}
-          aria-describedby={ariaDescribedBy}
+          aria-describedby={describedBy.length > 0 ? describedBy : undefined}
         />
-        <SliderValue aria-hidden="true">{value ?? "—"}</SliderValue>
+        <ValueWrap aria-hidden="true">
+          <SliderValue>{value ?? "—"}</SliderValue>
+          {unitLabel ? <Unit id={unitId}>{unitLabel}</Unit> : null}
+        </ValueWrap>
       </SliderTrack>
       <SliderLabels aria-hidden="true">
         <span>{lowerLabel ?? sliderMin}</span>
@@ -81,6 +78,12 @@ const SliderTrack = styled.div`
   gap: 0.75rem;
 `;
 
+const ValueWrap = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+`;
+
 const SliderValue = styled.div`
   min-width: 2rem;
   text-align: right;
@@ -91,4 +94,9 @@ const SliderLabels = styled.div`
   justify-content: space-between;
   font-size: 0.875rem;
   color: #4a5568;
+`;
+
+const Unit = styled.span`
+  color: #4a5568;
+  font-size: 0.875rem;
 `;

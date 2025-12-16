@@ -1,13 +1,15 @@
-import "./node-errors.css";
 import { observer } from "mobx-react-lite";
 import { INode } from "../../types.ts";
 import { getNodeErrorId } from "../../utils.ts";
+import { useTheme } from "../../ui/theme.tsx";
 
 export const NodeErrors = observer(function NodeErrors({
   node,
 }: {
   node: INode;
 }) {
+  const { NodeErrors: ThemedNodeErrors } = useTheme();
+
   if (!node.hasErrors) return null;
 
   const messages = node.issues
@@ -18,11 +20,5 @@ export const NodeErrors = observer(function NodeErrors({
     return null;
   }
 
-  return (
-    <ul id={getNodeErrorId(node)} className="af-node-errors" role="alert">
-      {messages.map((message, index) => (
-        <li key={index}>{message}</li>
-      ))}
-    </ul>
-  );
+  return <ThemedNodeErrors id={getNodeErrorId(node)} messages={messages} />;
 });

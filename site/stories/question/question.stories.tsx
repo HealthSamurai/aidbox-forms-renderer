@@ -20,13 +20,10 @@ import {
 } from "@aidbox-forms/renderer/utils.ts";
 import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
 import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
-import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
 import { useEffect, useMemo } from "react";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,
-  resolveTheme,
-  type ThemeId,
 } from "../helpers.tsx";
 
 type PlaygroundArgs = {
@@ -187,11 +184,9 @@ function buildQuestionnaire<T extends AnswerType>({
 function Renderer({
   questionnaire,
   storyId,
-  theme,
 }: {
   questionnaire: Questionnaire;
   storyId: string;
-  theme: ThemeId;
 }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
   useEffect(() => () => store.dispose(), [store]);
@@ -206,11 +201,9 @@ function Renderer({
   }
 
   return (
-    <ThemeProvider theme={resolveTheme(theme)}>
-      <div className="af-form" style={{ maxWidth: 760 }}>
-        <Node node={node as IPresentableNode} />
-      </div>
-    </ThemeProvider>
+    <div className="af-form" style={{ maxWidth: 760 }}>
+      <Node node={node as IPresentableNode} />
+    </div>
   );
 }
 
@@ -379,15 +372,7 @@ function makeStory<T extends AnswerType>(
         ...args,
       });
 
-      const theme = (context.globals["theme"] as ThemeId | undefined) ?? "hs";
-
-      return (
-        <Renderer
-          questionnaire={questionnaire}
-          storyId={context.id}
-          theme={theme}
-        />
-      );
+      return <Renderer questionnaire={questionnaire} storyId={context.id} />;
     },
   };
 }

@@ -37,7 +37,18 @@ const config: StorybookConfig = {
       ...pathAliases,
     };
 
-    config.plugins = [...(config.plugins ?? []), linaria()];
+    config.plugins = [
+      ...(config.plugins ?? []),
+      linaria({
+        include: ["**/*.{ts,tsx,js,jsx}"],
+        exclude: ["**/dist/**", "**/node_modules/**"],
+        babelOptions: {
+          parserOpts: {
+            plugins: ["typescript", "jsx", "importAssertions"],
+          },
+        },
+      }),
+    ];
 
     return config;
   },

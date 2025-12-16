@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type TextAreaProps = {
   id?: string | undefined;
@@ -10,4 +10,4 @@ export type TextAreaProps = {
   ariaDescribedBy?: string | undefined;
 };
 
-export type TextAreaComponent = ComponentLike<TextAreaProps>;
+export type TextAreaComponent = ComponentType<TextAreaProps>;

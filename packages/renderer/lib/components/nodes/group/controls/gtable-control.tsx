@@ -1,5 +1,3 @@
-import "./gtable-control.css";
-import { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import type {
   IGroupNode,
@@ -9,11 +7,10 @@ import type {
 } from "../../../../types.ts";
 import { isQuestionNode } from "../../../../stores/nodes/questions/question-store.ts";
 import { Node } from "../../../form/node.tsx";
-import { NodeErrors } from "../../../form/node-errors.tsx";
-import { NodesList } from "../../../form/node-list.tsx";
 import { GroupWrapperScaffold } from "../group-wrapper-scaffold.tsx";
 import { QuestionnaireItem } from "fhir/r5";
 import { useTheme } from "../../../../ui/theme.tsx";
+import type { GridTableProps } from "@aidbox-forms/theme";
 
 export const GTableControl = function GTableControl({
   wrapper,
@@ -30,79 +27,72 @@ const RepeatingGroupMatrix = observer(function RepeatingGroupMatrix({
 }: {
   wrapper: IGroupWrapper;
 }) {
-  const { Button } = useTheme();
+  const { Button, GridTable, EmptyState } = useTheme();
   const columns = buildColumnSpecs(wrapper.template, wrapper.visibleNodes);
-  const actionColumn = wrapper.canRemove ? 1 : 0;
+
+  const rows = wrapper.visibleNodes.map((node, index) => {
+    const cells = columns.map((column) => {
+      const question = node.nodes.find(
+        (child): child is IQuestionNode =>
+          isQuestionNode(child) && child.linkId === column.linkId,
+      );
+
+      const content = question ? <Node node={question} /> : "—";
+
+      return { key: `${node.key}-${column.linkId}`, content };
+    });
+
+    if (wrapper.canRemove) {
+      cells.push({
+        key: `${node.key}-actions`,
+        content: (
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => wrapper.removeNode(node)}
+            disabled={!wrapper.canRemove}
+          >
+            Remove
+          </Button>
+        ),
+      });
+    }
+
+    return {
+      key: node.key,
+      label: getNodeLabel(node.template, index),
+      cells,
+    };
+  });
+
+  const gridColumns: GridTableProps["columns"] = [
+    { key: "node", label: "Node" },
+    ...columns.map((column) => ({ key: column.linkId, label: column.label })),
+  ];
+
+  if (wrapper.canRemove) {
+    gridColumns.push({ key: "actions", label: "Actions" });
+  }
+
+  if (rows.length === 0) {
+    return (
+      <GridTable
+        columns={gridColumns}
+        rows={[{ key: "empty", label: "Node", cells: [] }]}
+        empty={<EmptyState>No nodes yet.</EmptyState>}
+      />
+    );
+  }
+
   return (
-    <div className="af-repeating-gtable">
-      <table className="af-repeating-gtable__table">
-        <thead>
-          <tr>
-            <th scope="col">Node</th>
-            {columns.map((column) => (
-              <th key={column.linkId} scope="col">
-                {column.label}
-              </th>
-            ))}
-            {wrapper.canRemove ? (
-              <th scope="col" className="sr-only">
-                Actions
-              </th>
-            ) : null}
-          </tr>
-        </thead>
-        <tbody>
-          {wrapper.visibleNodes.length === 0 ? (
-            <tr>
-              <td
-                className="af-empty"
-                colSpan={columns.length + 1 + actionColumn}
-              >
-                No nodes yet.
-              </td>
-            </tr>
-          ) : (
-            wrapper.visibleNodes.map((node, index) => {
-              const detailsNeeded = hasGroupDetails(node);
-              return (
-                <Fragment key={node.key}>
-                  <tr>
-                    <th scope="row">{getNodeLabel(node.template, index)}</th>
-                    {columns.map((column) => (
-                      <td key={`${node.key}-${column.linkId}`}>
-                        <RepeatingGroupMatrixCell
-                          node={node}
-                          linkId={column.linkId}
-                        />
-                      </td>
-                    ))}
-                    {wrapper.canRemove ? (
-                      <td className="af-repeating-gtable__actions">
-                        <Button
-                          type="button"
-                          variant="danger"
-                          onClick={() => wrapper.removeNode(node)}
-                          disabled={!wrapper.canRemove}
-                        >
-                          Remove
-                        </Button>
-                      </td>
-                    ) : null}
-                  </tr>
-                  {detailsNeeded ? (
-                    <tr className="af-repeating-gtable__details-row">
-                      <td colSpan={columns.length + 1 + actionColumn}>
-                        <NodeDetails node={node} />
-                      </td>
-                    </tr>
-                  ) : null}
-                </Fragment>
-              );
-            })
-          )}
-        </tbody>
-      </table>
-    </div>
+    <GridTable
+      columns={gridColumns}
+      rows={rows.map((row) => ({
+        key: row.key,
+        label: row.label,
+        cells: row.cells,
+      }))}
+    />
   );
 });
 
@@ -144,59 +134,7 @@ function buildColumnSpecs(
   return columns;
 }
 
-const RepeatingGroupMatrixCell = observer(function RepeatingGroupMatrixCell({
-  node,
-  linkId,
-}: {
-  node: IGroupNode;
-  linkId: string;
-}) {
-  const question = node.nodes.find(
-    (child): child is IQuestionNode =>
-      isQuestionNode(child) && child.linkId === linkId,
-  );
-
-  if (!question) {
-    return (
-      <div className="af-repeating-gtable__cell af-repeating-gtable__cell--empty">
-        —
-      </div>
-    );
-  }
-
-  return (
-    <div className="af-repeating-gtable__cell">
-      <Node node={question} />
-    </div>
-  );
-});
-
 function getNodeLabel(template: QuestionnaireItem, index: number): string {
   const base = template.text ?? "Entry";
   return `${base} #${index + 1}`;
-}
-
-const NodeDetails = observer(function NodeDetails({
-  node,
-}: {
-  node: IGroupNode;
-}) {
-  const ancillaryNodes = node.nodes.filter((node) => !isQuestionNode(node));
-  if (!node.hasErrors && ancillaryNodes.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="af-repeating-gtable__details">
-      <NodeErrors node={node} />
-      {ancillaryNodes.length > 0 ? <NodesList nodes={ancillaryNodes} /> : null}
-    </div>
-  );
-});
-
-function hasGroupDetails(node: IGroupNode): boolean {
-  if (node.hasErrors) {
-    return true;
-  }
-  return node.nodes.some((child) => !isQuestionNode(child));
 }

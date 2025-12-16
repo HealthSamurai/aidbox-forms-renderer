@@ -1,56 +1,55 @@
-import "./grid-table.css";
 import { observer } from "mobx-react-lite";
 import type { IGroupNode, IQuestionNode } from "../../../../types.ts";
 import { Node } from "../../../form/node.tsx";
 import { isQuestionNode } from "../../../../stores/nodes/questions/question-store.ts";
+import { useTheme } from "../../../../ui/theme.tsx";
 
 export const GroupGridTable = observer(function GroupGridTable({
   rows,
 }: {
   rows: IGroupNode[];
 }) {
+  const { GridTable, EmptyState } = useTheme();
   if (rows.length === 0) {
-    return <p className="af-grid-table__empty">No grid rows to display.</p>;
+    return <EmptyState>No grid rows to display.</EmptyState>;
   }
 
   const visibleRows = rows.filter((row) => !row.hidden);
   if (visibleRows.length === 0) {
-    return (
-      <p className="af-grid-table__empty">All rows are currently hidden.</p>
-    );
+    return <EmptyState>All rows are currently hidden.</EmptyState>;
   }
 
   const columns = buildColumns(visibleRows);
   if (columns.length === 0) {
-    return (
-      <p className="af-grid-table__empty">
-        Grid rows have no questions to render.
-      </p>
-    );
+    return <EmptyState>Grid rows have no questions to render.</EmptyState>;
   }
 
+  const rowsData = visibleRows.map((row) => {
+    const questions = getRowQuestions(row);
+    const questionMap = new Map<string, IQuestionNode>(
+      questions.map((question) => [question.linkId, question]),
+    );
+    const label = row.text ?? row.linkId ?? "Row";
+
+    return {
+      key: row.key,
+      label,
+      cells: columns.map((column) => {
+        const question = questionMap.get(column.linkId);
+        const content = question ? <Node node={question} /> : "—";
+        return { key: `${row.key}-${column.linkId}`, content };
+      }),
+    };
+  });
+
   return (
-    <div className="af-grid-table">
-      <table className="af-grid-table__table">
-        <thead>
-          <tr>
-            <th scope="col" className="af-grid-table__row-header">
-              Row
-            </th>
-            {columns.map((column) => (
-              <th key={column.linkId} scope="col">
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {visibleRows.map((row) => (
-            <GridTableRow key={row.key} row={row} columns={columns} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <GridTable
+      columns={columns.map((column) => ({
+        key: column.linkId,
+        label: column.label,
+      }))}
+      rows={rowsData}
+    />
   );
 });
 
@@ -58,44 +57,6 @@ type GridColumn = {
   linkId: string;
   label: string;
 };
-
-const GridTableRow = observer(function GridTableRow({
-  row,
-  columns,
-}: {
-  row: IGroupNode;
-  columns: GridColumn[];
-}) {
-  const questions = getRowQuestions(row);
-  const questionMap = new Map<string, IQuestionNode>(
-    questions.map((question) => [question.linkId, question]),
-  );
-  const label = row.text ?? row.linkId ?? "Row";
-
-  return (
-    <tr>
-      <th scope="row" className="af-grid-table__row-label">
-        {label}
-      </th>
-      {columns.map((column) => {
-        const question = questionMap.get(column.linkId);
-        return (
-          <td key={`${row.key}-${column.linkId}`}>
-            {question ? (
-              <div className="af-grid-table__cell">
-                <Node node={question} />
-              </div>
-            ) : (
-              <div className="af-grid-table__cell af-grid-table__cell--empty">
-                —
-              </div>
-            )}
-          </td>
-        );
-      })}
-    </tr>
-  );
-});
 
 function buildColumns(rows: IGroupNode[]): GridColumn[] {
   const seen = new Set<string>();

@@ -1,33 +1,30 @@
-import "./group-scaffold.css";
 import type { ReactNode } from "react";
 import type { IGroupNode } from "../../../types.ts";
-import { NodeText } from "../../form/node-text.tsx";
+import { getNodeLabelParts } from "../../form/node-text.tsx";
 import { NodeErrors } from "../../form/node-errors.tsx";
+import { useTheme } from "../../../ui/theme.tsx";
 
 type GroupScaffoldProps = {
   node: IGroupNode;
-  className: string;
   dataControl?: string | null | undefined;
   children: ReactNode;
 };
 
 export function GroupScaffold({
   node,
-  className,
   dataControl,
   children,
 }: GroupScaffoldProps) {
+  const { GroupContainer, NodesContainer } = useTheme();
+  const { labelText } = getNodeLabelParts(node);
   return (
-    <div className="flex flex-col gap-2">
-      <fieldset
-        className={className}
-        data-linkid={node.linkId}
-        data-item-control={dataControl}
-      >
-        {node.template.text ? <NodeText as="legend" node={node} /> : null}
-        <div className="af-group-children">{children}</div>
-      </fieldset>
+    <GroupContainer
+      linkId={node.linkId}
+      dataControl={dataControl ?? undefined}
+      legend={node.template.text ? labelText : null}
+    >
+      <NodesContainer>{children}</NodesContainer>
       <NodeErrors node={node} />
-    </div>
+    </GroupContainer>
   );
 }

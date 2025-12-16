@@ -19,9 +19,9 @@ export function TimeQuestionInput({
   placeholder,
   disabled,
 }: TimeQuestionInputProps) {
-  const { TimeInput: UiTimeInput } = useTheme();
+  const { TimeInput: ThemedTimeInput } = useTheme();
   return (
-    <UiTimeInput
+    <ThemedTimeInput
       id={inputId}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}

@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type NumberInputProps = {
   id?: string | undefined;
@@ -13,4 +13,4 @@ export type NumberInputProps = {
   list?: string | undefined;
 };
 
-export type NumberInputComponent = ComponentLike<NumberInputProps>;
+export type NumberInputComponent = ComponentType<NumberInputProps>;

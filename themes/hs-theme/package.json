@@ -50,6 +50,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@aidbox-forms/theme": "workspace:*"
+    "@aidbox-forms/theme": "workspace:*",
+    "classnames": "^2.5.1"
   }
 }

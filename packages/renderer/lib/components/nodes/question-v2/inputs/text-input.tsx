@@ -19,9 +19,9 @@ export function TextInput({
   placeholder,
   disabled,
 }: TextInputProps) {
-  const { TextArea } = useTheme();
+  const { TextArea: ThemedTextArea } = useTheme();
   return (
-    <TextArea
+    <ThemedTextArea
       id={inputId}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}

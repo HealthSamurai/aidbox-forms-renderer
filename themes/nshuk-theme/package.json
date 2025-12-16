@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@aidbox-forms/theme": "workspace:*",
+    "classnames": "^2.5.1",
     "nhsuk-frontend": "^10.2.2"
   }
 }

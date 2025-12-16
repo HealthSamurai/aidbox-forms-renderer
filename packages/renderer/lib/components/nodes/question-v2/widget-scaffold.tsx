@@ -1,9 +1,8 @@
-import "./widget-scaffold.css";
-import classNames from "classnames";
 import type { ReactNode } from "react";
 import type { IQuestionNode } from "../../../types.ts";
 import { NodeHeader } from "../../form/node-header.tsx";
 import { QuestionErrors } from "./validation/question-errors.tsx";
+import { useTheme } from "../../../ui/theme.tsx";
 
 export type WidgetScaffoldProps = {
   node: IQuestionNode;
@@ -22,28 +21,26 @@ export function WidgetScaffold({
   afterBody,
   showOptionsStatus,
 }: WidgetScaffoldProps) {
+  const { NodeWrapper } = useTheme();
   return (
-    <div className={classNames("af-node", className)} data-linkid={node.linkId}>
+    <NodeWrapper linkId={node.linkId} className={className}>
       <NodeHeader node={node} />
       {showOptionsStatus ? <QuestionOptionsStatus node={node} /> : null}
       {beforeBody}
       {body}
       {afterBody}
       <QuestionErrors node={node} />
-    </div>
+    </NodeWrapper>
   );
 }
 
 function QuestionOptionsStatus({ node }: { node: IQuestionNode }) {
+  const { OptionsStatus } = useTheme();
   if (node.options.loading) {
-    return <div className="af-loading">Loading options…</div>;
+    return <OptionsStatus loading error={undefined} />;
   }
   if (node.options.error) {
-    return (
-      <div className="af-error">
-        Failed to load options: {node.options.error}
-      </div>
-    );
+    return <OptionsStatus loading={false} error={node.options.error} />;
   }
   return null;
 }

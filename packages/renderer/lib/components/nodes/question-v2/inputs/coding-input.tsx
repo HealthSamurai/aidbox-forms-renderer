@@ -18,7 +18,7 @@ export function CodingInput({
   describedById,
   disabled,
 }: CodingInputProps) {
-  const { TextInput } = useTheme();
+  const { CodingInput: ThemedCodingInput } = useTheme();
   const coding = value ?? {};
   const handleChange = (field: keyof Coding, nextValue: string) => {
     const draft: Coding = {
@@ -29,36 +29,18 @@ export function CodingInput({
   };
 
   return (
-    <div className="af-coding-input">
-      <TextInput
-        id={inputId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
-        value={coding.system ?? ""}
-        onChange={(next) => handleChange("system", next)}
-        disabled={disabled}
-        placeholder="System (e.g. http://loinc.org)"
-        withFormGroup={false}
-      />
-      <TextInput
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
-        value={coding.code ?? ""}
-        onChange={(next) => handleChange("code", next)}
-        disabled={disabled}
-        placeholder="Code"
-        withFormGroup={false}
-      />
-      <TextInput
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
-        value={coding.display ?? ""}
-        onChange={(next) => handleChange("display", next)}
-        disabled={disabled}
-        placeholder="Display"
-        withFormGroup={false}
-      />
-    </div>
+    <ThemedCodingInput
+      inputId={inputId}
+      labelId={labelId}
+      describedById={describedById}
+      system={coding.system ?? ""}
+      code={coding.code ?? ""}
+      display={coding.display ?? ""}
+      onChangeSystem={(next) => handleChange("system", next)}
+      onChangeCode={(next) => handleChange("code", next)}
+      onChangeDisplay={(next) => handleChange("display", next)}
+      disabled={disabled}
+    />
   );
 }
 

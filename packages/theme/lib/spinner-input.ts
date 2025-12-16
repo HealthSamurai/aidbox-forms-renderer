@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type SpinnerInputProps = {
   value: number | null;
@@ -10,6 +10,7 @@ export type SpinnerInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
+  unitLabel?: string | undefined;
 };
 
-export type SpinnerInputComponent = ComponentLike<SpinnerInputProps>;
+export type SpinnerInputComponent = ComponentType<SpinnerInputProps>;

@@ -8,7 +8,7 @@ export const DefaultControl = observer(function DefaultControl({
 }: GroupControlProps) {
   const visibleNodes = node.nodes.filter((child) => !child.hidden);
   return (
-    <GroupScaffold node={node} className="af-group">
+    <GroupScaffold node={node}>
       <NodesList nodes={visibleNodes} />
     </GroupScaffold>
   );

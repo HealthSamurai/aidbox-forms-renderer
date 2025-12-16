@@ -1,4 +1,3 @@
-import "./table-control.css";
 import { observer } from "mobx-react-lite";
 import type {
   IPresentableNode,
@@ -9,23 +8,21 @@ import { NodesList } from "../../../form/node-list.tsx";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { ChoiceMatrixTable } from "../components/choice-matrix.tsx";
 import { isQuestionNode } from "../../../../stores/nodes/questions/question-store.ts";
+import { useTheme } from "../../../../ui/theme.tsx";
 
 export const TableControl = observer(function TableControl({
   node,
 }: GroupControlProps) {
+  const { GroupExtras } = useTheme();
   const visibleNodes = node.nodes.filter((child) => !child.hidden);
   const { questions, others } = partitionNodes(visibleNodes);
   return (
-    <GroupScaffold
-      node={node}
-      className="af-group af-group--table"
-      dataControl="table"
-    >
+    <GroupScaffold node={node} dataControl="table">
       <ChoiceMatrixTable questions={questions} />
       {others.length > 0 ? (
-        <div className="af-group-table__extras">
+        <GroupExtras>
           <NodesList nodes={others} />
-        </div>
+        </GroupExtras>
       ) : null}
     </GroupScaffold>
   );

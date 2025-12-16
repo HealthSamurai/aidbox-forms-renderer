@@ -1,4 +1,3 @@
-import "./table-control.css";
 import { observer } from "mobx-react-lite";
 import type {
   IPresentableNode,
@@ -9,23 +8,21 @@ import { NodesList } from "../../../form/node-list.tsx";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { ChoiceMatrixHorizontalTable } from "../components/choice-matrix.tsx";
 import { isQuestionNode } from "../../../../stores/nodes/questions/question-store.ts";
+import { useTheme } from "../../../../ui/theme.tsx";
 
 export const HTableControl = observer(function HTableControl({
   node,
 }: GroupControlProps) {
+  const { GroupExtras } = useTheme();
   const visibleNodes = node.nodes.filter((child) => !child.hidden);
   const { questions, others } = partitionNodes(visibleNodes);
   return (
-    <GroupScaffold
-      node={node}
-      className="af-group af-group--htable"
-      dataControl="htable"
-    >
+    <GroupScaffold node={node} dataControl="htable">
       <ChoiceMatrixHorizontalTable questions={questions} />
       {others.length > 0 ? (
-        <div className="af-group-table__extras">
+        <GroupExtras>
           <NodesList nodes={others} />
-        </div>
+        </GroupExtras>
       ) : null}
     </GroupScaffold>
   );

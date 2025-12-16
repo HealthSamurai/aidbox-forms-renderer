@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType, ReactNode } from "react";
 
 export type OptionCheckboxGroupProps<TValue = unknown> = {
   options: ReadonlyArray<{
@@ -19,4 +18,4 @@ export type OptionCheckboxGroupProps<TValue = unknown> = {
 };
 
 export type OptionCheckboxGroupComponent =
-  ComponentLike<OptionCheckboxGroupProps>;
+  ComponentType<OptionCheckboxGroupProps>;

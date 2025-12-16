@@ -17,8 +17,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.js"
-    },
-    "./style.css": "./dist/index.css"
+    }
   },
   "scripts": {
     "prepublishOnly": "pnpm run build",
@@ -46,7 +45,6 @@
     "react-dom": "^19.2.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.12",
-    "vite-css-modules": "^1.11.1",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   },

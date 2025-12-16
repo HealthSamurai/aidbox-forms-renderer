@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type OptionAutocompleteFieldProps<TValue = unknown> = {
   options: ReadonlyArray<{ key: string; label: string; value: TValue }>;
@@ -14,4 +14,4 @@ export type OptionAutocompleteFieldProps<TValue = unknown> = {
 };
 
 export type OptionAutocompleteFieldComponent =
-  ComponentLike<OptionAutocompleteFieldProps>;
+  ComponentType<OptionAutocompleteFieldProps>;

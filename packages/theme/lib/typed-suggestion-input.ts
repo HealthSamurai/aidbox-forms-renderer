@@ -1,5 +1,4 @@
-import type { ReactElement } from "react";
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType, ReactElement } from "react";
 
 export type TypedSuggestionInputProps<TValue = unknown> = {
   renderInput: () => ReactElement;
@@ -11,4 +10,4 @@ export type TypedSuggestionInputProps<TValue = unknown> = {
 };
 
 export type TypedSuggestionInputComponent =
-  ComponentLike<TypedSuggestionInputProps>;
+  ComponentType<TypedSuggestionInputProps>;

@@ -7,9 +7,9 @@ export function UnsupportedWidget({ node }: QuestionControlProps) {
       node={node}
       className="af-unsupported"
       body={
-        <div>
+        <>
           Unsupported type: <code>{node.type}</code>
-        </div>
+        </>
       }
     />
   );

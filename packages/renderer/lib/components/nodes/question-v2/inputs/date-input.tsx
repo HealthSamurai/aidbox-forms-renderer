@@ -19,9 +19,9 @@ export function DateQuestionInput({
   placeholder,
   disabled,
 }: DateInputProps) {
-  const { DateInput: UiDateInput } = useTheme();
+  const { DateInput: ThemedDateInput } = useTheme();
   return (
-    <UiDateInput
+    <ThemedDateInput
       id={inputId}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}

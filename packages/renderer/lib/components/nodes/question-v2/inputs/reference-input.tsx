@@ -20,7 +20,7 @@ export function ReferenceInput({
   placeholder,
   disabled,
 }: ReferenceInputProps) {
-  const { TextInput } = useTheme();
+  const { ReferenceInput: ThemedReferenceInput } = useTheme();
   const reference = value ?? {};
   const setField = (field: keyof Reference, nextValue: string) => {
     const draft: Reference = {
@@ -31,27 +31,18 @@ export function ReferenceInput({
   };
 
   return (
-    <div className="af-reference-input">
-      <TextInput
-        id={inputId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
-        value={reference.reference ?? ""}
-        onChange={(next) => setField("reference", next)}
-        disabled={disabled}
-        placeholder={placeholder ?? "Resource/type/id"}
-        withFormGroup={false}
-      />
-      <TextInput
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
-        value={reference.display ?? ""}
-        onChange={(next) => setField("display", next)}
-        disabled={disabled}
-        placeholder="Display label"
-        withFormGroup={false}
-      />
-    </div>
+    <ThemedReferenceInput
+      inputId={inputId}
+      labelId={labelId}
+      describedById={describedById}
+      reference={reference.reference ?? ""}
+      display={reference.display ?? ""}
+      onChangeReference={(next) => setField("reference", next)}
+      onChangeDisplay={(next) => setField("display", next)}
+      disabled={disabled}
+      referencePlaceholder={placeholder ?? "Resource/type/id"}
+      displayPlaceholder="Display label"
+    />
   );
 }
 

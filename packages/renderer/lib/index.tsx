@@ -69,5 +69,3 @@ function Renderer({
 }
 
 export default Renderer;
-export type { IValueSetExpander } from "./types.ts";
-export { ValueSetExpander } from "./stores/services/valueset-expander.ts";

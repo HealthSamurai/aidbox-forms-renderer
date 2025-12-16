@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type SliderInputProps = {
   value: number | null;
@@ -11,6 +11,7 @@ export type SliderInputProps = {
   ariaDescribedBy?: string | undefined;
   lowerLabel?: string | undefined;
   upperLabel?: string | undefined;
+  unitLabel?: string | undefined;
 };
 
-export type SliderInputComponent = ComponentLike<SliderInputProps>;
+export type SliderInputComponent = ComponentType<SliderInputProps>;

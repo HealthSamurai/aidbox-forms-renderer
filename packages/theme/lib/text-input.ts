@@ -1,5 +1,4 @@
-import type { HTMLAttributes } from "react";
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType, HTMLAttributes } from "react";
 
 export type TextInputProps = {
   id?: string | undefined;
@@ -17,4 +16,4 @@ export type TextInputProps = {
   withFormGroup?: boolean | undefined;
 };
 
-export type TextInputComponent = ComponentLike<TextInputProps>;
+export type TextInputComponent = ComponentType<TextInputProps>;

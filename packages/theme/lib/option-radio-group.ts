@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type OptionRadioGroupProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
@@ -13,4 +13,4 @@ export type OptionRadioGroupProps = {
   isLoading?: boolean;
 };
 
-export type OptionRadioGroupComponent = ComponentLike<OptionRadioGroupProps>;
+export type OptionRadioGroupComponent = ComponentType<OptionRadioGroupProps>;

@@ -20,13 +20,13 @@ export function QuantityInput({
   disabled,
   list,
 }: QuantityInputProps) {
-  const { QuantityInput: QuantityControl } = useTheme();
+  const { QuantityInput: ThemedQuantityInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitKey;
 
   return (
-    <QuantityControl
+    <ThemedQuantityInput
       inputId={inputId}
       list={list}
       disabled={disabled}

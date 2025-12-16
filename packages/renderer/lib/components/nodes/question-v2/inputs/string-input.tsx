@@ -24,9 +24,9 @@ export function StringInput({
   list,
   inputMode,
 }: StringInputProps) {
-  const { TextInput } = useTheme();
+  const { TextInput: ThemedTextInput } = useTheme();
   return (
-    <TextInput
+    <ThemedTextInput
       id={inputId}
       list={list}
       ariaLabelledBy={labelId}

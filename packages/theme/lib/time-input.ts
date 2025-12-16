@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type TimeInputProps = {
   id?: string | undefined;
@@ -10,4 +10,4 @@ export type TimeInputProps = {
   ariaDescribedBy?: string | undefined;
 };
 
-export type TimeInputComponent = ComponentLike<TimeInputProps>;
+export type TimeInputComponent = ComponentType<TimeInputProps>;

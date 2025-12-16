@@ -1,16 +1,6 @@
 import { styled } from "@linaria/react";
-
-export type SpinnerInputProps = {
-  value: number | null;
-  onChange: (value: number | null) => void;
-  min?: number | undefined;
-  max?: number | undefined;
-  step?: number | undefined;
-  disabled?: boolean | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-  placeholder?: string | undefined;
-};
+import { useId } from "react";
+import type { SpinnerInputProps } from "@aidbox-forms/theme";
 
 export function SpinnerInput({
   value,
@@ -22,7 +12,15 @@ export function SpinnerInput({
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
+  unitLabel,
 }: SpinnerInputProps) {
+  const generatedId = useId();
+  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const describedBy = [ariaDescribedBy, unitId]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
   const handleAdjust = (direction: 1 | -1) => {
     if (disabled) return;
     const current = value ?? 0;
@@ -38,7 +36,7 @@ export function SpinnerInput({
     onChange(next);
   };
 
-  return (
+  const control = (
     <Spinner data-disabled={disabled ? "true" : "false"}>
       <SpinnerButton
         type="button"
@@ -65,7 +63,7 @@ export function SpinnerInput({
         step={step}
         disabled={disabled}
         aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
+        aria-describedby={describedBy.length > 0 ? describedBy : undefined}
         placeholder={placeholder}
       />
       <SpinnerButton
@@ -78,7 +76,24 @@ export function SpinnerInput({
       </SpinnerButton>
     </Spinner>
   );
+
+  if (!unitLabel) {
+    return control;
+  }
+
+  return (
+    <SpinnerShell>
+      {control}
+      <Unit id={unitId}>{unitLabel}</Unit>
+    </SpinnerShell>
+  );
 }
+
+const SpinnerShell = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
 
 const Spinner = styled.div`
   display: inline-flex;
@@ -104,4 +119,9 @@ const SpinnerField = styled.input`
   border: none;
   padding: 0.5rem 0.75rem;
   width: 5rem;
+`;
+
+const Unit = styled.span`
+  color: #4a5568;
+  font-size: 0.9rem;
 `;

@@ -32,6 +32,7 @@ export default defineConfig(() => {
       dts({
         rollupTypes: true,
         tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+        pathsToAliases: true,
         rollupOptions: {
           typescriptCompilerFolder,
         },

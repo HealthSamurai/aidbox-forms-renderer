@@ -1,4 +1,3 @@
-import "./form.css";
 import { observer } from "mobx-react-lite";
 import type {
   IGroupNode,
@@ -20,8 +19,18 @@ export const Form = observer(function Form({
   store: IForm;
   onSubmit?: FormEventHandler<HTMLFormElement> | undefined;
 }) {
-  const kit = useTheme();
-  const { Button } = kit;
+  const {
+    Button,
+    FormShell,
+    FormHeader,
+    FormErrors,
+    NodesContainer,
+    FormSection,
+    PageStatus,
+    PageNavigation,
+    EmptyState,
+    FormActions,
+  } = useTheme();
   const [activePage, setActivePage] = useState(0);
 
   const issueMessages = store.issues
@@ -67,65 +76,47 @@ export const Form = observer(function Form({
   }, [activePage, pageCount]);
 
   const renderPageSection = showPaged ? (
-    <section className="af-page-section">
-      <div className="af-page-status" aria-live="polite">
-        Page {pageCount === 0 ? 0 : clampedPageIndex + 1} of{" "}
-        {Math.max(pageCount, 1)}
-      </div>
+    <FormSection variant="default">
+      <PageStatus
+        current={pageCount === 0 ? 0 : clampedPageIndex + 1}
+        total={Math.max(pageCount, 1)}
+      />
       {currentPage ? (
         <Node node={currentPage} />
       ) : (
-        <p className="af-empty">No pages currently enabled.</p>
+        <EmptyState>No pages currently enabled.</EmptyState>
       )}
-      <div className="af-page-navigation">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => setActivePage((index) => Math.max(index - 1, 0))}
-          disabled={clampedPageIndex === 0 || pageCount === 0}
-        >
-          Previous
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() =>
-            setActivePage((index) =>
-              pageCount === 0 ? 0 : Math.min(index + 1, pageCount - 1),
-            )
-          }
-          disabled={pageCount === 0 || clampedPageIndex >= pageCount - 1}
-        >
-          Next
-        </Button>
-      </div>
-    </section>
+      <PageNavigation
+        current={clampedPageIndex + 1}
+        total={Math.max(pageCount, 1)}
+        onPrev={() => setActivePage((index) => Math.max(index - 1, 0))}
+        onNext={() =>
+          setActivePage((index) =>
+            pageCount === 0 ? 0 : Math.min(index + 1, pageCount - 1),
+          )
+        }
+        disablePrev={clampedPageIndex === 0 || pageCount === 0}
+        disableNext={pageCount === 0 || clampedPageIndex >= pageCount - 1}
+      />
+    </FormSection>
   ) : null;
 
   return (
-    <form className="af-form" onSubmit={onSubmit}>
+    <FormShell onSubmit={onSubmit}>
       {store.questionnaire.title || store.questionnaire.description ? (
-        <header>
-          {store.questionnaire.title ? (
-            <h1 className="af-title">{store.questionnaire.title}</h1>
-          ) : null}
-          {store.questionnaire.description ? (
-            <p className="af-description">{store.questionnaire.description}</p>
-          ) : null}
-        </header>
+        <FormHeader
+          title={store.questionnaire.title}
+          description={store.questionnaire.description}
+        />
       ) : null}
       {issueMessages.length > 0 ? (
-        <ul className="af-form-errors" role="alert">
-          {issueMessages.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
+        <FormErrors messages={issueMessages} />
       ) : null}
-      <div className="af-nodes">
+      <NodesContainer>
         {visibleHeaderNodes.length > 0 ? (
-          <section className="af-form-header-block">
+          <FormSection variant="header">
             <NodesList nodes={visibleHeaderNodes} />
-          </section>
+          </FormSection>
         ) : null}
         {showPaged ? (
           <>
@@ -137,21 +128,21 @@ export const Form = observer(function Form({
         ) : store.nodes.length > 0 ? (
           <NodesList nodes={nonHeaderFooterNodes} />
         ) : (
-          <p className="af-empty">No nodes to display.</p>
+          <EmptyState>No nodes to display.</EmptyState>
         )}
         {visibleFooterNodes.length > 0 ? (
-          <section className="af-form-footer-block">
+          <FormSection variant="footer">
             <NodesList nodes={visibleFooterNodes} />
-          </section>
+          </FormSection>
         ) : null}
-      </div>
-      <div className="af-actions">
+      </NodesContainer>
+      <FormActions>
         <Button type="submit">Submit</Button>
         <Button type="button" variant="secondary" onClick={() => store.reset()}>
           Reset
         </Button>
-      </div>
-    </form>
+      </FormActions>
+    </FormShell>
   );
 });
 

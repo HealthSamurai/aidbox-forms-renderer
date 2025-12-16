@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type OptionSelectFieldProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
@@ -12,4 +12,4 @@ export type OptionSelectFieldProps = {
   isLoading?: boolean;
 };
 
-export type OptionSelectFieldComponent = ComponentLike<OptionSelectFieldProps>;
+export type OptionSelectFieldComponent = ComponentType<OptionSelectFieldProps>;

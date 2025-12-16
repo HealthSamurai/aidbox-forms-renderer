@@ -24,6 +24,7 @@ export const DropdownControl = observer(function DropdownControl<
     OptionsOrStringField,
     OptionAutocompleteField,
     TypedSuggestionInput,
+    OpenChoiceField,
   } = useTheme();
   const isLoading = node.options.loading;
 
@@ -118,8 +119,8 @@ export const DropdownControl = observer(function DropdownControl<
             rowProps,
           );
           return (
-            <div className="af-open-choice">
-              <div className="af-open-choice__select">
+            <OpenChoiceField
+              select={
                 <OptionSelectField
                   options={hybridNode.options.entries}
                   selectValue={selectValue}
@@ -138,11 +139,9 @@ export const DropdownControl = observer(function DropdownControl<
                   readOnly={hybridNode.readOnly}
                   isLoading={isLoading}
                 />
-              </div>
-              <div className="af-open-choice__input">
-                {typedRenderInput(rowProps)}
-              </div>
-            </div>
+              }
+              input={typedRenderInput(rowProps)}
+            />
           );
         }}
       />

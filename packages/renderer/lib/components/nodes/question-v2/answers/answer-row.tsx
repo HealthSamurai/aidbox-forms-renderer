@@ -1,4 +1,3 @@
-import "./answer.css";
 import type { ReactElement } from "react";
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
@@ -42,7 +41,7 @@ export const AnswerRow = observer(function AnswerRow<T extends AnswerType>({
   renderRow: (p: RowRenderProps<T>) => ReactElement;
   answer: IAnswerInstance<T>;
 }) {
-  const { Button } = useTheme();
+  const { Button, AnswerRow: ThemedAnswerRow } = useTheme();
   const handleRemove = useCallback(() => {
     node.removeAnswer(answer);
   }, [node, answer]);
@@ -57,8 +56,8 @@ export const AnswerRow = observer(function AnswerRow<T extends AnswerType>({
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
   return (
-    <div className="af-answer">
-      {renderRow({
+    <ThemedAnswerRow
+      control={renderRow({
         value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
         setValue: (value) => answer.setValueByUser(value),
         inputId: sanitizeForId(answer.key),
@@ -66,8 +65,8 @@ export const AnswerRow = observer(function AnswerRow<T extends AnswerType>({
         describedById,
         answer: answer as IAnswerInstance<T>,
       })}
-      {node.repeats && (
-        <div className="af-answer-toolbar">
+      toolbar={
+        node.repeats ? (
           <Button
             type="button"
             variant="danger"
@@ -76,14 +75,14 @@ export const AnswerRow = observer(function AnswerRow<T extends AnswerType>({
           >
             Remove
           </Button>
-        </div>
-      )}
-      {!!answer.nodes?.length && (
-        <div className="af-answer-children">
-          <NodesList nodes={answer.nodes} />
-        </div>
-      )}
-      <AnswerErrors answer={answer} />
-    </div>
+        ) : undefined
+      }
+      children={
+        <>
+          {!!answer.nodes?.length && <NodesList nodes={answer.nodes} />}
+          <AnswerErrors answer={answer} />
+        </>
+      }
+    />
   );
 });

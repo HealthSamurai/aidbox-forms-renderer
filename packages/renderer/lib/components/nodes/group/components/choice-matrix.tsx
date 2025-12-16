@@ -1,5 +1,5 @@
-import "./choice-matrix.css";
-import { Fragment, useMemo } from "react";
+import { useMemo } from "react";
+import type { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
 import type {
   AnswerOptionEntry,
@@ -21,6 +21,8 @@ import { NodeFlyover } from "../../../form/node-flyover.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { NodesList } from "../../../form/node-list.tsx";
 import { AnswerErrors } from "../../question-v2/validation/answer-errors.tsx";
+import { useTheme } from "../../../../ui/theme.tsx";
+import { getNodeLabelParts } from "../../../form/node-text.tsx";
 
 export type ChoiceMatrixProps = {
   questions: IQuestionNode[];
@@ -29,98 +31,82 @@ export type ChoiceMatrixProps = {
 export const ChoiceMatrixTable = observer(function ChoiceMatrixTable({
   questions,
 }: ChoiceMatrixProps) {
+  const { ChoiceMatrix, EmptyState } = useTheme();
   const model = useMemo(() => buildMatrixModel(questions), [questions]);
 
   if (questions.length === 0) {
-    return (
-      <p className="af-choice-matrix__empty">No choice questions available.</p>
-    );
+    return <EmptyState>No choice questions available.</EmptyState>;
   }
 
   if (model.columns.length === 0) {
     return (
-      <p className="af-choice-matrix__empty">
-        No answer options available for table layout.
-      </p>
+      <EmptyState>No answer options available for table layout.</EmptyState>
     );
   }
 
+  const rows = model.rows.map((row) => {
+    const labelId = getNodeLabelId(row.question);
+    const describedBy = getNodeDescribedBy(row.question);
+    const inputName = sanitizeForId(`${row.question.key}-matrix`);
+    const detailContentNeeded = hasMatrixDetails(row.question);
+    return {
+      key: row.question.key,
+      header: <MatrixRowHeader question={row.question} />,
+      loading: row.question.options.loading,
+      cells: model.columns.map((column) => {
+        const entry = row.optionMap.get(column.key);
+        const cell = buildMatrixCell({
+          question: row.question,
+          entry,
+          inputName,
+          columnHeaderId: column.headerId,
+          rowHeaderId: labelId,
+          describedById: describedBy,
+        });
+        return {
+          key: `${row.question.key}-${column.key}`,
+          content: cell.content,
+          selected: cell.selected,
+          disabled: cell.disabled,
+        };
+      }),
+      details: detailContentNeeded ? (
+        <MatrixQuestionDetails question={row.question} />
+      ) : null,
+    };
+  });
+
   return (
-    <div className="af-choice-matrix">
-      <table className="af-choice-matrix__table">
-        <thead>
-          <tr>
-            <th scope="col" className="af-choice-matrix__question-header">
-              Question
-            </th>
-            {model.columns.map((column) => (
-              <th key={column.key} id={column.headerId} scope="col">
-                <span>{column.label}</span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {model.rows.map((row) => {
-            const labelId = getNodeLabelId(row.question);
-            const describedBy = getNodeDescribedBy(row.question);
-            const detailContentNeeded = hasMatrixDetails(row.question);
-            return (
-              <Fragment key={row.question.key}>
-                <tr data-loading={row.question.options.loading || undefined}>
-                  <th scope="row" id={labelId}>
-                    <MatrixRowHeader question={row.question} />
-                  </th>
-                  {model.columns.map((column) => {
-                    return (
-                      <td key={`${row.question.key}-${column.key}`}>
-                        <MatrixChoiceCell
-                          question={row.question}
-                          entry={row.optionMap.get(column.key)}
-                          inputName={sanitizeForId(
-                            `${row.question.key}-matrix`,
-                          )}
-                          columnHeaderId={column.headerId}
-                          rowHeaderId={labelId}
-                          describedById={describedBy}
-                        />
-                      </td>
-                    );
-                  })}
-                </tr>
-                {detailContentNeeded ? (
-                  <tr className="af-choice-matrix__details-row">
-                    <td colSpan={model.columns.length + 1}>
-                      <MatrixQuestionDetails question={row.question} />
-                    </td>
-                  </tr>
-                ) : null}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <ChoiceMatrix
+      orientation="vertical"
+      columns={model.columns.map((column) => ({
+        key: column.key,
+        headerId: column.headerId,
+        label: column.label,
+      }))}
+      rows={rows}
+    />
   );
 });
 
 export const ChoiceMatrixHorizontalTable = observer(
   function ChoiceMatrixHorizontalTable({ questions }: ChoiceMatrixProps) {
+    const { ChoiceMatrix, EmptyState } = useTheme();
     const model = useMemo(() => buildMatrixModel(questions), [questions]);
 
     if (questions.length === 0) {
       return (
-        <p className="af-choice-matrix__empty">
+        <EmptyState>
           No choice questions available for horizontal table.
-        </p>
+        </EmptyState>
       );
     }
 
     if (model.columns.length === 0) {
       return (
-        <p className="af-choice-matrix__empty">
+        <EmptyState>
           No answer options available for horizontal table layout.
-        </p>
+        </EmptyState>
       );
     }
 
@@ -128,61 +114,48 @@ export const ChoiceMatrixHorizontalTable = observer(
       hasMatrixDetails(question),
     );
 
+    const rows = model.columns.map((column) => ({
+      key: column.key,
+      header: column.label,
+      cells: model.rows.map((row) => {
+        const describedBy = getNodeDescribedBy(row.question);
+        const cell = buildMatrixCell({
+          question: row.question,
+          entry: row.optionMap.get(column.key),
+          inputName: sanitizeForId(`${row.question.key}-matrix`),
+          columnHeaderId: getNodeLabelId(row.question),
+          rowHeaderId: column.headerId,
+          describedById: describedBy,
+        });
+        return {
+          key: `${row.question.key}-${column.key}`,
+          content: cell.content,
+          selected: cell.selected,
+          disabled: cell.disabled,
+        };
+      }),
+    }));
+
+    const detailsGrid = detailsPresent
+      ? model.rows.map((row) => (
+          <MatrixQuestionDetails
+            key={`${row.question.key}-details`}
+            question={row.question}
+          />
+        ))
+      : undefined;
+
     return (
-      <div className="af-choice-matrix af-choice-matrix--horizontal">
-        <table className="af-choice-matrix__table">
-          <thead>
-            <tr>
-              <th scope="col">Answer option</th>
-              {model.rows.map((row) => (
-                <th
-                  key={row.question.key}
-                  id={getNodeLabelId(row.question)}
-                  scope="col"
-                >
-                  <MatrixRowHeader question={row.question} />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {model.columns.map((column) => (
-              <tr key={column.key}>
-                <th scope="row" id={column.headerId}>
-                  {column.label}
-                </th>
-                {model.rows.map((row) => {
-                  const describedBy = getNodeDescribedBy(row.question);
-                  const describedByProps = describedBy
-                    ? { describedById: describedBy }
-                    : {};
-                  return (
-                    <td key={`${row.question.key}-${column.key}`}>
-                      <MatrixChoiceCell
-                        question={row.question}
-                        entry={row.optionMap.get(column.key)}
-                        inputName={sanitizeForId(`${row.question.key}-matrix`)}
-                        columnHeaderId={getNodeLabelId(row.question)}
-                        rowHeaderId={column.headerId}
-                        {...describedByProps}
-                      />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {detailsPresent ? (
-          <div className="af-choice-matrix__details-grid">
-            {model.rows.map((row) => (
-              <div key={`${row.question.key}-details`}>
-                <MatrixQuestionDetails question={row.question} />
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
+      <ChoiceMatrix
+        orientation="horizontal"
+        columns={model.rows.map((row) => ({
+          key: row.question.key,
+          headerId: getNodeLabelId(row.question),
+          label: <MatrixRowHeader question={row.question} />,
+        }))}
+        rows={rows}
+        detailsGrid={detailsGrid}
+      />
     );
   },
 );
@@ -252,29 +225,27 @@ const MatrixRowHeader = observer(function MatrixRowHeader({
 }: {
   question: IQuestionNode;
 }) {
+  const { NodeHeader } = useTheme();
+  const { labelText, labelId } = getNodeLabelParts(question);
   return (
-    <div className="af-choice-matrix__row-header">
-      <div className="af-choice-matrix__row-title">
-        {question.prefix ? (
-          <span className="af-prefix">{question.prefix} </span>
-        ) : null}
-        <span>{question.text ?? question.linkId}</span>
-        {question.required ? (
-          <span className="af-required" aria-hidden="true">
-            *
-          </span>
-        ) : null}
-      </div>
-      <div className="af-choice-matrix__row-tools">
-        <NodeHelp node={question} />
-        <NodeLegal node={question} />
-        <NodeFlyover node={question} />
-      </div>
-    </div>
+    <NodeHeader
+      label={labelText}
+      labelId={labelId}
+      required={question.required}
+      help={<NodeHelp node={question} />}
+      legal={<NodeLegal node={question} />}
+      flyover={<NodeFlyover node={question} />}
+    />
   );
 });
 
-const MatrixChoiceCell = observer(function MatrixChoiceCell({
+type MatrixCellView = {
+  content: ReactNode;
+  selected: boolean;
+  disabled: boolean;
+};
+
+function buildMatrixCell({
   question,
   entry,
   inputName,
@@ -288,13 +259,13 @@ const MatrixChoiceCell = observer(function MatrixChoiceCell({
   columnHeaderId: string;
   rowHeaderId: string;
   describedById?: string | undefined;
-}) {
+}): MatrixCellView {
   if (!entry) {
-    return (
-      <div className="af-choice-matrix__cell af-choice-matrix__cell--empty">
-        —
-      </div>
-    );
+    return {
+      content: "—",
+      selected: false,
+      disabled: false,
+    };
   }
 
   const dataType = ANSWER_TYPE_TO_DATA_TYPE[question.type];
@@ -333,35 +304,33 @@ const MatrixChoiceCell = observer(function MatrixChoiceCell({
     if (target) target.setValueByUser(cloneValue(entry.value));
   };
 
-  return (
-    <div
-      className="af-choice-matrix__cell"
-      data-selected={isSelected || undefined}
-      data-disabled={(disableNewSelection && !isSelected) || undefined}
-    >
-      <label className="af-choice-matrix__control">
-        <input
-          type={inputType}
-          id={inputId}
-          name={inputName}
-          checked={isSelected}
-          disabled={disableNewSelection && !isSelected}
-          aria-labelledby={`${rowHeaderId} ${columnHeaderId}`}
-          aria-describedby={describedById}
-          onChange={toggleSelection}
-        />
-        <span className="af-choice-matrix__mark" aria-hidden="true" />
-        <span className="sr-only">{entry.label}</span>
-      </label>
-    </div>
-  );
-});
+  const ariaLabel = entry.label;
+
+  return {
+    content: (
+      <input
+        type={inputType}
+        id={inputId}
+        name={inputName}
+        checked={isSelected}
+        disabled={disableNewSelection && !isSelected}
+        aria-labelledby={`${rowHeaderId} ${columnHeaderId}`}
+        aria-describedby={describedById}
+        aria-label={ariaLabel}
+        onChange={toggleSelection}
+      />
+    ),
+    selected: isSelected,
+    disabled: disableNewSelection && !isSelected,
+  };
+}
 
 const MatrixQuestionDetails = observer(function MatrixQuestionDetails({
   question,
 }: {
   question: IQuestionNode;
 }) {
+  const { NodesContainer, OptionsStatus } = useTheme();
   const showStatus =
     question.options.loading || Boolean(question.options.error);
   const answers = getVisibleAnswers(question);
@@ -377,58 +346,32 @@ const MatrixQuestionDetails = observer(function MatrixQuestionDetails({
     return null;
   }
 
-  return (
-    <div className="af-choice-matrix__details">
-      {showStatus ? <MatrixOptionStatus question={question} /> : null}
-      <NodeErrors node={question} />
-      {answers.map((answer) =>
-        answer.nodes.length > 0 ? (
-          <div
-            key={`${answer.key}-children`}
-            className="af-choice-matrix__answer-children"
-          >
-            <NodesList nodes={answer.nodes} />
-          </div>
-        ) : null,
-      )}
-      {answers.map((answer) =>
-        answer.issues.length > 0 ? (
-          <AnswerErrors key={`${answer.key}-errors`} answer={answer} />
-        ) : null,
-      )}
-    </div>
-  );
-});
+  const details = [
+    showStatus ? (
+      <OptionsStatus
+        key={`${question.key}-status`}
+        loading={question.options.loading}
+        error={question.options.error ?? undefined}
+      />
+    ) : null,
+    <NodeErrors key={`${question.key}-errors`} node={question} />,
+    ...answers
+      .filter((answer) => answer.nodes.length > 0)
+      .map((answer) => (
+        <NodesList key={`${answer.key}-children`} nodes={answer.nodes} />
+      )),
+    ...answers
+      .filter((answer) => answer.issues.length > 0)
+      .map((answer) => (
+        <AnswerErrors key={`${answer.key}-issues`} answer={answer} />
+      )),
+  ].filter(Boolean);
 
-const MatrixOptionStatus = observer(function MatrixOptionStatus({
-  question,
-}: {
-  question: IQuestionNode;
-}) {
-  if (question.options.loading) {
-    return (
-      <div
-        className="af-choice-matrix__status"
-        role="status"
-        aria-live="polite"
-      >
-        Loading options…
-      </div>
-    );
+  if (details.length === 0) {
+    return null;
   }
 
-  if (question.options.error) {
-    return (
-      <div
-        className="af-choice-matrix__status af-choice-matrix__status--error"
-        role="alert"
-      >
-        Failed to load options: {question.options.error}
-      </div>
-    );
-  }
-
-  return null;
+  return <NodesContainer>{details}</NodesContainer>;
 });
 
 function hasMatrixDetails(question: IQuestionNode): boolean {

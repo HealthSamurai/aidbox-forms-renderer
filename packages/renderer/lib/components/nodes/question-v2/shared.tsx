@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import type { AnswerType, IQuestionNode } from "../../../types.ts";
 import type { RowRenderProps } from "./answers/answer-row.tsx";
 import { StringInput } from "./inputs/string-input.tsx";
@@ -12,22 +11,6 @@ import { UrlInput } from "./inputs/url-input.tsx";
 import { QuantityInput } from "./inputs/quantity-input.tsx";
 import { CodingInput } from "./inputs/coding-input.tsx";
 import { ReferenceInput } from "./inputs/reference-input.tsx";
-
-export function withInlineUnit(
-  unitLabel: string | undefined,
-  control: ReactElement,
-) {
-  return (
-    <div className="af-numeric-control">
-      {control}
-      {unitLabel && (
-        <span className="af-number-inline-unit" aria-hidden="true">
-          {unitLabel}
-        </span>
-      )}
-    </div>
-  );
-}
 
 export type StringLikeAnswerType = Extract<AnswerType, "string" | "text">;
 export type DatalistAnswerType = Extract<

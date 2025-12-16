@@ -1,4 +1,4 @@
-import type { ComponentLike } from "./component-like.ts";
+import type { ComponentType } from "react";
 
 export type QuantityUnitOption = {
   key: string;
@@ -23,4 +23,4 @@ export type QuantityInputProps = {
   disabled?: boolean | undefined;
 };
 
-export type QuantityInputComponent = ComponentLike<QuantityInputProps>;
+export type QuantityInputComponent = ComponentType<QuantityInputProps>;

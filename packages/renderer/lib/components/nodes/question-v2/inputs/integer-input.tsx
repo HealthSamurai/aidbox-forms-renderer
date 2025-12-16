@@ -23,9 +23,9 @@ export function IntegerInput({
   unitLabel,
   list,
 }: IntegerInputProps) {
-  const { NumberInput } = useTheme();
+  const { NumberInput: ThemedNumberInput } = useTheme();
   return (
-    <NumberInput
+    <ThemedNumberInput
       id={inputId}
       list={list}
       ariaLabelledBy={labelId}

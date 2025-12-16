@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { SliderInputProps } from "@aidbox-forms/theme";
 
 export function SliderInput({
@@ -11,11 +12,15 @@ export function SliderInput({
   ariaDescribedBy,
   lowerLabel,
   upperLabel,
+  unitLabel,
 }: SliderInputProps) {
+  const generatedId = useId();
+  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const hintId =
+    lowerLabel || upperLabel ? `${generatedId}-range-hint` : undefined;
   const describedBy =
-    ariaDescribedBy && ariaDescribedBy.trim().length > 0
-      ? ariaDescribedBy
-      : undefined;
+    [ariaDescribedBy, unitId, hintId].filter(Boolean).join(" ").trim() ||
+    undefined;
 
   return (
     <div className="nhsuk-form-group">
@@ -34,8 +39,13 @@ export function SliderInput({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy}
       />
+      {unitLabel ? (
+        <div className="nhsuk-hint" id={unitId}>
+          {unitLabel}
+        </div>
+      ) : null}
       {(lowerLabel || upperLabel) && (
-        <div className="nhsuk-hint">
+        <div className="nhsuk-hint" id={hintId}>
           {lowerLabel ?? ""} {upperLabel ? `— ${upperLabel}` : ""}
         </div>
       )}

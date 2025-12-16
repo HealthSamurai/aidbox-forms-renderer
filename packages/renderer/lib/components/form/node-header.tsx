@@ -1,29 +1,28 @@
-import "./node-header.css";
-import { NodeText } from "./node-text.tsx";
+import { getNodeLabelParts } from "./node-text.tsx";
 import { INode } from "../../types.ts";
 import { observer } from "mobx-react-lite";
 import { NodeHelp } from "./node-help.tsx";
 import { NodeFlyover } from "./node-flyover.tsx";
 import { NodeLegal } from "./node-legal.tsx";
+import { useTheme } from "../../ui/theme.tsx";
 
 export const NodeHeader = observer(function NodeHeader({
   node,
 }: {
   node: INode;
 }) {
+  const { NodeHeader: ThemedNodeHeader } = useTheme();
+  const { labelText, labelId, htmlFor } = getNodeLabelParts(node);
+
   return (
-    <div className="af-node-header">
-      <div className="af-node-header__label">
-        <NodeText node={node} as="label" />
-        {node.required && (
-          <span aria-hidden className="af-required">
-            *
-          </span>
-        )}
-        <NodeHelp node={node} />
-        <NodeLegal node={node} />
-        <NodeFlyover node={node} />
-      </div>
-    </div>
+    <ThemedNodeHeader
+      label={labelText}
+      labelId={labelId}
+      htmlFor={htmlFor}
+      required={node.required}
+      help={<NodeHelp node={node} />}
+      legal={<NodeLegal node={node} />}
+      flyover={<NodeFlyover node={node} />}
+    />
   );
 });

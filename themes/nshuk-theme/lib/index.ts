@@ -21,11 +21,48 @@ import { OptionAutocompleteField } from "./components/option-autocomplete-field.
 import { OptionRadioGroup } from "./components/option-radio-group.tsx";
 import { OptionCheckboxGroup } from "./components/option-checkbox-group.tsx";
 import { TypedSuggestionInput } from "./components/typed-suggestion-input.tsx";
+import { CodingInput } from "./components/coding-input.tsx";
+import { ReferenceInput } from "./components/reference-input.tsx";
+import { NodeErrors } from "./components/node-errors.tsx";
+import { NodeHeader } from "./components/node-header.tsx";
+import { NodeWrapper } from "./components/node-wrapper.tsx";
+import { OptionsStatus } from "./components/options-status.tsx";
+import { NodeHelp } from "./components/node-help.tsx";
+import { NodeLegal } from "./components/node-legal.tsx";
+import { NodeFlyover } from "./components/node-flyover.tsx";
+import { AnswerList } from "./components/answer-list.tsx";
+import { AnswerRow } from "./components/answer-row.tsx";
+import { FormShell } from "./components/form-shell.tsx";
+import { FormHeader } from "./components/form-header.tsx";
+import { FormErrors } from "./components/form-errors.tsx";
+import { NodesContainer } from "./components/nodes-container.tsx";
+import { FormSection } from "./components/form-section.tsx";
+import { PageStatus } from "./components/page-status.tsx";
+import { PageNavigation } from "./components/page-navigation.tsx";
+import { EmptyState } from "./components/empty-state.tsx";
+import { FormActions } from "./components/form-actions.tsx";
+import { GroupWrapper } from "./components/group-wrapper.tsx";
+import { GroupItem } from "./components/group-item.tsx";
+import { GroupContainer } from "./components/group-container.tsx";
+import { GroupExtras } from "./components/group-extras.tsx";
+import { ChoiceMatrix } from "./components/choice-matrix.tsx";
+import { GridTable } from "./components/grid-table.tsx";
+import { AttachmentInput } from "./components/attachment-input.tsx";
+import { OpenChoiceField } from "./components/open-choice.tsx";
+import { TabContainer } from "./components/tab-container.tsx";
+import { DisplayNode } from "./components/display-node.tsx";
 import "./global.css";
 
 export type { Theme, QuantityInputProps, QuantityUnitOption };
 export type { TextInputProps, TextAreaProps, NumberInputProps };
 export { Button, TextInput, TextArea, NumberInput };
+export {
+  CodingInput,
+  ReferenceInput,
+  OpenChoiceField,
+  TabContainer,
+  DisplayNode,
+};
 
 const passthrough: Theme = {
   Button,
@@ -44,6 +81,36 @@ const passthrough: Theme = {
   OptionRadioGroup,
   OptionCheckboxGroup,
   TypedSuggestionInput,
+  CodingInput,
+  ReferenceInput,
+  NodeErrors,
+  NodeHeader,
+  NodeWrapper,
+  OptionsStatus,
+  NodeHelp,
+  NodeLegal,
+  NodeFlyover,
+  AnswerList,
+  AnswerRow,
+  FormShell,
+  FormHeader,
+  FormErrors,
+  NodesContainer,
+  FormSection,
+  PageStatus,
+  PageNavigation,
+  EmptyState,
+  FormActions,
+  GroupWrapper,
+  GroupItem,
+  GroupContainer,
+  GroupExtras,
+  ChoiceMatrix,
+  GridTable,
+  AttachmentInput,
+  OpenChoiceField,
+  TabContainer,
+  DisplayNode,
 };
 
 export const theme: Theme = passthrough;
