@@ -37,14 +37,13 @@ import validation from "./samples/validation.json" with { type: "json" };
 
 type PlaygroundArgs = {
   questionnaire: Questionnaire;
-  theme: ThemeId;
 };
 
 function Renderer({
   questionnaire,
   storyId,
   theme,
-}: PlaygroundArgs & { storyId: string }) {
+}: PlaygroundArgs & { storyId: string; theme: ThemeId }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
 
   const handleSubmit = useCallback(
@@ -75,17 +74,6 @@ const meta = {
     layout: "fullscreen",
   },
   argTypes: {
-    theme: {
-      name: "Theme",
-      options: ["hs", "nshuk"],
-      control: {
-        type: "select",
-        labels: {
-          hs: "Health Samurai",
-          nshuk: "National Health Service",
-        },
-      },
-    },
     questionnaire: {
       control: { type: "object" },
       description: "Input questionnaire",
@@ -101,8 +89,12 @@ function makeStory(
 ): StoryObj<PlaygroundArgs> {
   return {
     name: label,
-    args: { questionnaire, theme: "hs" },
-    render: (args, context) => <Renderer {...args} storyId={context.id} />,
+    args: { questionnaire },
+    render: (args, context) => {
+      const theme = (context.globals.theme as ThemeId | undefined) ?? "hs";
+
+      return <Renderer {...args} storyId={context.id} theme={theme} />;
+    },
   };
 }
 

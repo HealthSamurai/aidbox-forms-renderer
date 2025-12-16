@@ -30,7 +30,6 @@ import {
 } from "../helpers.tsx";
 
 type PlaygroundArgs = {
-  theme: ThemeId;
   itemControl: QuestionItemControl | "none";
   repeats: boolean;
   hasAnswerOptions: boolean;
@@ -38,17 +37,6 @@ type PlaygroundArgs = {
 };
 
 const playgroundArgTypes = {
-  theme: {
-    name: "Theme",
-    options: ["hs", "nshuk"],
-    control: {
-      type: "select",
-      labels: {
-        hs: "Health Samurai",
-        nshuk: "National Health Service",
-      },
-    },
-  },
   itemControl: {
     name: "Item control",
     options: [
@@ -369,7 +357,6 @@ const meta: Meta<PlaygroundArgs> = {
   },
   argTypes: playgroundArgTypes,
   args: {
-    theme: "hs",
     itemControl: "none",
     repeats: false,
     answerConstraint: "optionsOnly",
@@ -392,11 +379,13 @@ function makeStory<T extends AnswerType>(
         ...args,
       });
 
+      const theme = (context.globals["theme"] as ThemeId | undefined) ?? "hs";
+
       return (
         <Renderer
           questionnaire={questionnaire}
           storyId={context.id}
-          theme={args.theme}
+          theme={theme}
         />
       );
     },
