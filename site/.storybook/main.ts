@@ -1,6 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import linaria from "@wyw-in-js/vite";
 import tsconfig from "../../tsconfig.base.json" with { type: "json" };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,6 +36,8 @@ const config: StorybookConfig = {
       ...(config.resolve.alias ?? {}),
       ...pathAliases,
     };
+
+    config.plugins = [...(config.plugins ?? []), linaria()];
 
     return config;
   },

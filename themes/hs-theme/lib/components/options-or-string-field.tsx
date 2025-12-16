@@ -1,5 +1,6 @@
-import "./option-status.css";
-import "./text-input.css";
+import { styled } from "@linaria/react";
+import { optionStatusClass } from "./option-status.ts";
+import { inputClass } from "./tokens.ts";
 import type { ReactElement } from "react";
 
 type OptionsOrStringFieldProps<TValue> = {
@@ -35,11 +36,11 @@ export function OptionsOrStringField<TValue>({
   isLoading = false,
 }: OptionsOrStringFieldProps<TValue>) {
   return (
-    <div className="af-open-choice">
-      <div className="af-open-choice__select">
-        <select
+    <OpenChoice>
+      <div>
+        <Select
           id={`${inputId}-select`}
-          className="af-input"
+          className={inputClass}
           value={selectValue}
           onChange={(event) => {
             const key = event.target.value;
@@ -61,14 +62,24 @@ export function OptionsOrStringField<TValue>({
               {entry.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
-      <div className="af-open-choice__input">{renderInput()}</div>
+      <div>{renderInput()}</div>
       {isLoading ? (
-        <div className="af-option-status" role="status" aria-live="polite">
+        <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
-    </div>
+    </OpenChoice>
   );
 }
+
+const OpenChoice = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const Select = styled.select`
+  width: 100%;
+`;

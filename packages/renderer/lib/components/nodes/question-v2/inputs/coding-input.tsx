@@ -38,6 +38,7 @@ export function CodingInput({
         onChange={(next) => handleChange("system", next)}
         disabled={disabled}
         placeholder="System (e.g. http://loinc.org)"
+        withFormGroup={false}
       />
       <TextInput
         ariaLabelledBy={labelId}
@@ -46,6 +47,7 @@ export function CodingInput({
         onChange={(next) => handleChange("code", next)}
         disabled={disabled}
         placeholder="Code"
+        withFormGroup={false}
       />
       <TextInput
         ariaLabelledBy={labelId}
@@ -54,6 +56,7 @@ export function CodingInput({
         onChange={(next) => handleChange("display", next)}
         disabled={disabled}
         placeholder="Display"
+        withFormGroup={false}
       />
     </div>
   );

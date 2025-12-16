@@ -1,4 +1,4 @@
-import "./text-input.css";
+import { inputClass } from "./tokens.ts";
 
 export function DateTimeInput({
   id,
@@ -20,7 +20,7 @@ export function DateTimeInput({
   return (
     <input
       id={id}
-      className="af-input"
+      className={inputClass}
       type="datetime-local"
       value={value}
       onChange={(e) => onChange(e.target.value)}

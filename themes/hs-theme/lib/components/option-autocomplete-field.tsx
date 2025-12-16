@@ -1,8 +1,7 @@
-import "./option-autocomplete-field.css";
-import "./option-status.css";
-import "./text-input.css";
-import classNames from "classnames";
+import { styled } from "@linaria/react";
 import { useEffect, useMemo, useState } from "react";
+import { optionStatusClass } from "./option-status.ts";
+import { inputClass } from "./tokens.ts";
 
 export type OptionAutocompleteFieldProps<TValue> = {
   options: ReadonlyArray<{ key: string; label: string; value: TValue }>;
@@ -53,21 +52,11 @@ export function OptionAutocompleteField<TValue>({
   }, [options, query]);
 
   return (
-    <div
-      className={classNames(
-        "af-option-autocomplete",
-        `af-option-autocomplete--${mode}`,
-        "af-autocomplete",
-      )}
-      data-loading={isLoading ? "true" : undefined}
-    >
-      <div
-        className="af-option-autocomplete__field"
-        aria-busy={isLoading || undefined}
-      >
-        <input
+    <Autocomplete data-loading={isLoading ? "true" : undefined}>
+      <Field aria-busy={isLoading || undefined}>
+        <SearchInput
           id={inputId}
-          className="af-input"
+          className={inputClass}
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -78,42 +67,99 @@ export function OptionAutocompleteField<TValue>({
             mode === "lookup" ? "Search directory" : "Type to search"
           }
         />
-        {isLoading ? (
-          <div className="af-option-autocomplete__spinner" aria-hidden="true">
-            …
-          </div>
-        ) : null}
+        {isLoading ? <Spinner aria-hidden="true">…</Spinner> : null}
         {query && !readOnly && (
-          <button
+          <ClearButton
             type="button"
             onClick={() => onSelect("")}
             aria-label="Clear selection"
           >
             Clear
-          </button>
+          </ClearButton>
         )}
-      </div>
+      </Field>
       {isLoading ? (
-        <div className="af-option-status" role="status" aria-live="polite">
+        <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
       {!readOnly && !isLoading && filtered.length > 0 && (
-        <ul className="af-option-autocomplete__options">
+        <Options>
           {filtered.map((entry) => (
-            <li key={entry.key}>
-              <button
+            <OptionItem key={entry.key}>
+              <OptionButton
                 type="button"
                 onClick={() => {
                   onSelect(entry.key);
                 }}
               >
                 {entry.label}
-              </button>
-            </li>
+              </OptionButton>
+            </OptionItem>
           ))}
-        </ul>
+        </Options>
       )}
-    </div>
+    </Autocomplete>
   );
 }
+
+const Autocomplete = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const Field = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+`;
+
+const Spinner = styled.div`
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #4a5568;
+`;
+
+const ClearButton = styled.button`
+  border: none;
+  background: #edf2f7;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+`;
+
+const Options = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  max-height: 12rem;
+  overflow: auto;
+`;
+
+const OptionItem = styled.li`
+  & + & {
+    border-top: 1px solid #e2e8f0;
+  }
+`;
+
+const OptionButton = styled.button`
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background: #edf2f7;
+  }
+`;

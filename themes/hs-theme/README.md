@@ -8,6 +8,12 @@ Health Samurai–styled theme for Aidbox Forms Renderer.
 pnpm add @aidbox-forms/hs-theme
 ```
 
+Include the compiled CSS:
+
+```ts
+import "@aidbox-forms/hs-theme/style.css";
+```
+
 ## Usage
 
 ```tsx

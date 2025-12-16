@@ -1,6 +1,6 @@
-import "./typed-suggestion-input.css";
-import "./option-status.css";
+import { styled } from "@linaria/react";
 import { ReactElement, useMemo } from "react";
+import { optionStatusClass } from "./option-status.ts";
 
 export type TypedSuggestionInputProps<TValue> = {
   renderInput: () => ReactElement;
@@ -33,33 +33,33 @@ export function TypedSuggestionInput<TValue>({
   }, [options, query]);
 
   return (
-    <div className="af-typed-input">
+    <TypedInput>
       {renderInput()}
       {!readOnly && (
-        <div className="af-typed-input__suggestions">
+        <Suggestions>
           {isLoading ? (
-            <div className="af-option-status" role="status" aria-live="polite">
+            <div className={optionStatusClass} role="status" aria-live="polite">
               Loading options…
             </div>
           ) : filtered.length > 0 ? (
-            <ul>
+            <SuggestionsList>
               {filtered.map((entry) => (
-                <li key={entry.key}>
-                  <button
+                <SuggestionItem key={entry.key}>
+                  <SuggestionButton
                     type="button"
                     onClick={() => onSelect(entry.value ?? entry.label)}
                   >
                     {entry.label}
-                  </button>
-                </li>
+                  </SuggestionButton>
+                </SuggestionItem>
               ))}
-            </ul>
+            </SuggestionsList>
           ) : options.length > 0 ? (
-            <div className="af-typed-input__empty">No matching options</div>
+            <EmptyState>No matching options</EmptyState>
           ) : null}
-        </div>
+        </Suggestions>
       )}
-    </div>
+    </TypedInput>
   );
 }
 
@@ -78,3 +78,49 @@ function normalizeValue(value: unknown): string {
   }
   return "";
 }
+
+const TypedInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const Suggestions = styled.div`
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  background: #fff;
+  max-height: 10rem;
+  overflow: auto;
+`;
+
+const SuggestionsList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+`;
+
+const SuggestionItem = styled.li`
+  & + & {
+    border-top: 1px solid #e2e8f0;
+  }
+`;
+
+const SuggestionButton = styled.button`
+  width: 100%;
+  text-align: left;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background: #edf2f7;
+  }
+`;
+
+const EmptyState = styled.div`
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+`;

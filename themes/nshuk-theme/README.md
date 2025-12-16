@@ -8,6 +8,12 @@
 pnpm add @aidbox-forms/nshuk-theme
 ```
 
+Include the compiled CSS:
+
+```ts
+import "@aidbox-forms/nshuk-theme/style.css";
+```
+
 ## Usage
 
 ```tsx

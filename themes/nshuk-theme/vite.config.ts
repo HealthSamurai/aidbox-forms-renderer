@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
-import { patchCssModules } from "vite-css-modules";
-import { basename, dirname, resolve } from "node:path";
+import linaria from "@wyw-in-js/vite";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import crypto from "node:crypto";
 import pkg from "./package.json";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,34 +28,12 @@ const typescriptCompilerFolder = resolve(
   "../../node_modules/typescript",
 );
 
-function generateScopedName(
-  command: string,
-  className: string,
-  file: string,
-): string {
-  const fileName = basename(file.split("?", 2)[0], ".module.css")
-    .replace(/([a-z])([A-Z])/g, "$1_$2")
-    .toLowerCase();
-
-  if (command === "build") {
-    const hash = crypto
-      .createHash("sha1")
-      .update(`${fileName}_${className}`)
-      .digest("hex")
-      .substring(0, 6);
-
-    return `nshuk_${hash}`;
-  } else {
-    return `${fileName}_${className}`;
-  }
-}
-
-export default defineConfig(({ command }) => {
+export default defineConfig(() => {
   return {
     plugins: [
       react(),
-      patchCssModules({
-        generateSourceTypes: true,
+      linaria({
+        include: ["lib/**/*.{ts,tsx}"],
       }),
       dts({
         rollupTypes: true,
@@ -66,11 +43,6 @@ export default defineConfig(({ command }) => {
         },
       }),
     ],
-    css: {
-      modules: {
-        generateScopedName: generateScopedName.bind(null, command),
-      },
-    },
     build: {
       lib: {
         entry: resolve(__dirname, "lib/index.ts"),

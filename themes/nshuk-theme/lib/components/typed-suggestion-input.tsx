@@ -20,8 +20,8 @@ export function TypedSuggestionInput<T>({
 
   return (
     <div aria-busy={isLoading || undefined}>
-      <div style={{ marginBottom: "0.5rem" }}>
-        {renderInput()}
+      <div style={{ marginBottom: "0.5rem" }}>{renderInput()}</div>
+      <div className="nhsuk-form-group" style={{ marginBottom: "0.5rem" }}>
         <input
           className="nhsuk-input"
           type="search"

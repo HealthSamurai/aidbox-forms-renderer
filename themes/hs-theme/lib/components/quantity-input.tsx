@@ -1,5 +1,5 @@
-import "./quantity-input.css";
-import "./text-input.css";
+import { styled } from "@linaria/react";
+import { inputClass } from "./tokens.ts";
 
 export type QuantityUnitOption = {
   key: string;
@@ -43,12 +43,12 @@ export function QuantityInput({
   const describedBy = ariaDescribedBy ?? undefined;
 
   return (
-    <div className="af-quantity-input">
-      <div className="af-quantity-input__value">
+    <QuantityWrapper>
+      <ValueSlot>
         <input
           id={inputId}
           list={list}
-          className="af-input"
+          className={inputClass}
           type="number"
           value={value ?? ""}
           step="any"
@@ -58,11 +58,11 @@ export function QuantityInput({
           aria-describedby={describedBy}
           placeholder={placeholder}
         />
-      </div>
-      <div className="af-quantity-input__unit">
+      </ValueSlot>
+      <UnitSlot>
         {isUnitFreeForm ? (
           <input
-            className="af-input"
+            className={inputClass}
             type="text"
             value={unitValue}
             onChange={(event) => onChangeFreeTextUnit(event.target.value)}
@@ -73,7 +73,7 @@ export function QuantityInput({
           />
         ) : (
           <select
-            className="af-input"
+            className={inputClass}
             value={unitValue}
             onChange={(event) => onSelectUnit(event.target.value)}
             disabled={disabled}
@@ -92,7 +92,20 @@ export function QuantityInput({
             ))}
           </select>
         )}
-      </div>
-    </div>
+      </UnitSlot>
+    </QuantityWrapper>
   );
 }
+
+const QuantityWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const ValueSlot = styled.div`
+  flex: 2 1 0;
+`;
+
+const UnitSlot = styled.div`
+  flex: 1 1 0;
+`;

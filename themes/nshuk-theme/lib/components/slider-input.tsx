@@ -12,8 +12,13 @@ export function SliderInput({
   lowerLabel,
   upperLabel,
 }: SliderInputProps) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <div>
+    <div className="nhsuk-form-group">
       <input
         className="nhsuk-input"
         type="range"
@@ -27,7 +32,7 @@ export function SliderInput({
         max={max}
         step={step}
         aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
+        aria-describedby={describedBy}
       />
       {(lowerLabel || upperLabel) && (
         <div className="nhsuk-hint">

@@ -1,5 +1,5 @@
-import "./text-input.css";
 import type { HTMLAttributes } from "react";
+import { inputClass } from "./tokens.ts";
 
 export function TextInput({
   id,
@@ -28,7 +28,7 @@ export function TextInput({
     <input
       id={id}
       list={list}
-      className="af-input"
+      className={inputClass}
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}

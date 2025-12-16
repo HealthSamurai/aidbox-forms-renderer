@@ -9,17 +9,24 @@ export function TimeInput({
   ariaLabelledBy,
   ariaDescribedBy,
 }: TimeInputProps) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <input
-      id={id}
-      className="nhsuk-input"
-      type="time"
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      disabled={disabled}
-      placeholder={placeholder}
-      aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-    />
+    <div className="nhsuk-form-group">
+      <input
+        id={id}
+        className="nhsuk-input"
+        type="time"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        disabled={disabled}
+        placeholder={placeholder}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={describedBy}
+      />
+    </div>
   );
 }

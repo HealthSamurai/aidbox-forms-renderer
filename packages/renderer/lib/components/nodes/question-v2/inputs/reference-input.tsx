@@ -40,6 +40,7 @@ export function ReferenceInput({
         onChange={(next) => setField("reference", next)}
         disabled={disabled}
         placeholder={placeholder ?? "Resource/type/id"}
+        withFormGroup={false}
       />
       <TextInput
         ariaLabelledBy={labelId}
@@ -48,6 +49,7 @@ export function ReferenceInput({
         onChange={(next) => setField("display", next)}
         disabled={disabled}
         placeholder="Display label"
+        withFormGroup={false}
       />
     </div>
   );

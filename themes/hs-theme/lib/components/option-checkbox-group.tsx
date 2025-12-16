@@ -1,5 +1,5 @@
-import "./option-status.css";
-import "./text-input.css";
+import { styled } from "@linaria/react";
+import { optionStatusClass } from "./option-status.ts";
 import type { ReactNode } from "react";
 
 type OptionEntry<TValue> = {
@@ -33,8 +33,7 @@ export function OptionCheckboxGroup<TValue>({
   renderErrors,
 }: OptionCheckboxGroupProps<TValue>) {
   return (
-    <div
-      className="af-checkbox-control"
+    <CheckboxControl
       data-readonly={readOnly}
       aria-busy={isLoading || undefined}
     >
@@ -45,8 +44,8 @@ export function OptionCheckboxGroup<TValue>({
           readOnly || isLoading || (!isChecked && option.disabled);
 
         return (
-          <div className="af-checkbox-option" key={option.key}>
-            <label className="af-checkbox-option__label">
+          <CheckboxOption key={option.key}>
+            <CheckboxLabel>
               <input
                 type="checkbox"
                 name={inputName}
@@ -57,16 +56,34 @@ export function OptionCheckboxGroup<TValue>({
                 onChange={() => onToggle(option.key)}
               />
               <span id={optionId}>{option.label}</span>
-            </label>
+            </CheckboxLabel>
             {renderErrors ? renderErrors(option.key) : null}
-          </div>
+          </CheckboxOption>
         );
       })}
       {isLoading ? (
-        <div className="af-option-status" role="status" aria-live="polite">
+        <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
-    </div>
+    </CheckboxControl>
   );
 }
+
+const CheckboxControl = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const CheckboxOption = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const CheckboxLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+`;

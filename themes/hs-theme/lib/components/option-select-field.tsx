@@ -1,5 +1,5 @@
-import "./option-status.css";
-import "./text-input.css";
+import { optionStatusClass } from "./option-status.ts";
+import { inputClass } from "./tokens.ts";
 
 type OptionSelectFieldProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
@@ -25,13 +25,10 @@ export function OptionSelectField({
   isLoading = false,
 }: OptionSelectFieldProps) {
   return (
-    <div
-      className="af-option-select"
-      data-loading={isLoading ? "true" : undefined}
-    >
+    <div data-loading={isLoading ? "true" : undefined}>
       <select
         id={inputId}
-        className="af-input"
+        className={inputClass}
         value={selectValue}
         onChange={(event) => onChange(event.target.value)}
         disabled={readOnly}
@@ -52,7 +49,7 @@ export function OptionSelectField({
         ))}
       </select>
       {isLoading ? (
-        <div className="af-option-status" role="status" aria-live="polite">
+        <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}

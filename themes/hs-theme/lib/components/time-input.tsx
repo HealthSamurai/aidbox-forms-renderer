@@ -1,4 +1,4 @@
-import "./text-input.css";
+import { inputClass } from "./tokens.ts";
 
 export function TimeInput({
   id,
@@ -20,7 +20,7 @@ export function TimeInput({
   return (
     <input
       id={id}
-      className="af-input"
+      className={inputClass}
       type="time"
       value={value}
       onChange={(e) => onChange(e.target.value)}

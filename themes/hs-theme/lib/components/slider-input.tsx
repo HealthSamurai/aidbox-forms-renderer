@@ -1,5 +1,5 @@
+import { styled } from "@linaria/react";
 import { useId } from "react";
-import "./slider-input.css";
 
 export type SliderInputProps = {
   value: number | null;
@@ -36,8 +36,8 @@ export function SliderInput({
   );
 
   return (
-    <div className="af-slider" data-disabled={disabled ? "true" : "false"}>
-      <div className="af-slider-track">
+    <SliderShell data-disabled={disabled ? "true" : "false"}>
+      <SliderTrack>
         <input
           id={generatedId}
           type="range"
@@ -53,15 +53,13 @@ export function SliderInput({
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         />
-        <div className="af-slider-value" aria-hidden="true">
-          {value ?? "—"}
-        </div>
-      </div>
-      <div className="af-slider-labels" aria-hidden="true">
+        <SliderValue aria-hidden="true">{value ?? "—"}</SliderValue>
+      </SliderTrack>
+      <SliderLabels aria-hidden="true">
         <span>{lowerLabel ?? sliderMin}</span>
         <span>{upperLabel ?? sliderMax}</span>
-      </div>
-    </div>
+      </SliderLabels>
+    </SliderShell>
   );
 }
 
@@ -70,3 +68,27 @@ function clamp(value: number, min: number, max: number) {
   if (value > max) return max;
   return value;
 }
+
+const SliderShell = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const SliderTrack = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const SliderValue = styled.div`
+  min-width: 2rem;
+  text-align: right;
+`;
+
+const SliderLabels = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #4a5568;
+`;

@@ -1,4 +1,4 @@
-import "./spinner-input.css";
+import { styled } from "@linaria/react";
 
 export type SpinnerInputProps = {
   value: number | null;
@@ -39,19 +39,17 @@ export function SpinnerInput({
   };
 
   return (
-    <div className="af-spinner" data-disabled={disabled ? "true" : "false"}>
-      <button
+    <Spinner data-disabled={disabled ? "true" : "false"}>
+      <SpinnerButton
         type="button"
-        className="af-spinner-btn"
         onClick={() => handleAdjust(-1)}
         disabled={disabled}
         aria-label="Decrease value"
       >
         –
-      </button>
-      <input
+      </SpinnerButton>
+      <SpinnerField
         type="number"
-        className="af-spinner-input"
         value={value ?? ""}
         onChange={(event) => {
           const next = event.target.value;
@@ -70,15 +68,40 @@ export function SpinnerInput({
         aria-describedby={ariaDescribedBy}
         placeholder={placeholder}
       />
-      <button
+      <SpinnerButton
         type="button"
-        className="af-spinner-btn"
         onClick={() => handleAdjust(1)}
         disabled={disabled}
         aria-label="Increase value"
       >
         +
-      </button>
-    </div>
+      </SpinnerButton>
+    </Spinner>
   );
 }
+
+const Spinner = styled.div`
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  overflow: hidden;
+`;
+
+const SpinnerButton = styled.button`
+  background: #edf2f7;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+const SpinnerField = styled.input`
+  border: none;
+  padding: 0.5rem 0.75rem;
+  width: 5rem;
+`;

@@ -1,6 +1,4 @@
-import "./number-input.css";
-import "./text-input.css";
-import classNames from "classnames";
+import { styled } from "@linaria/react";
 import { useId } from "react";
 
 export function NumberInput({
@@ -35,42 +33,60 @@ export function NumberInput({
   const describedBy =
     describedByValues.length > 0 ? describedByValues.join(" ") : undefined;
 
-  const input = (
-    <input
-      id={inputId}
-      list={list}
-      className="af-input af-number-input-field"
-      type="number"
-      value={value ?? ""}
-      onChange={(e) => {
-        const t = e.target.value;
-        onChange(t === "" ? null : Number(t));
-      }}
-      disabled={disabled}
-      placeholder={placeholder}
-      step={step}
-      aria-labelledby={ariaLabelledBy}
-      aria-describedby={describedBy}
-    />
-  );
-
+  const solo = !unitLabel;
   return (
-    <div
-      className="af-number-input"
-      data-has-unit={unitLabel ? "true" : "false"}
-    >
-      <div
-        className={classNames("af-number-input-frame", {
-          "af-number-input-frame--solo": !unitLabel,
-        })}
-      >
-        {input}
-        {unitLabel && (
-          <span id={unitId} className="af-number-unit">
+    <NumberInputShell data-has-unit={unitLabel ? "true" : "false"}>
+      <Frame $solo={solo}>
+        <Field
+          id={inputId}
+          list={list}
+          type="number"
+          value={value ?? ""}
+          onChange={(e) => {
+            const t = e.target.value;
+            onChange(t === "" ? null : Number(t));
+          }}
+          disabled={disabled}
+          placeholder={placeholder}
+          step={step}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={describedBy}
+          $solo={solo}
+        />
+        {unitLabel ? (
+          <Unit id={unitId} aria-hidden="true">
             {unitLabel}
-          </span>
-        )}
-      </div>
-    </div>
+          </Unit>
+        ) : null}
+      </Frame>
+    </NumberInputShell>
   );
 }
+
+const NumberInputShell = styled.div`
+  display: inline-flex;
+  align-items: stretch;
+`;
+
+const Frame = styled.div<{ $solo: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  ${({ $solo }) => ($solo ? "width: 100%;" : "")}
+`;
+
+const Field = styled.input<{ $solo: boolean }>`
+  border: none;
+  outline: none;
+  padding: 0.5rem 0.75rem;
+  min-width: 6rem;
+  ${({ $solo }) => ($solo ? "width: 100%;" : "")}
+`;
+
+const Unit = styled.span`
+  padding: 0.5rem 0.75rem;
+  background: #edf2f7;
+  border-left: 1px solid #cbd5e0;
+`;

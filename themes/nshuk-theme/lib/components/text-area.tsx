@@ -17,16 +17,23 @@ export function TextArea({
   ariaLabelledBy,
   ariaDescribedBy,
 }: TextAreaProps) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <textarea
-      id={id}
-      className="nhsuk-textarea"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-      placeholder={placeholder}
-      aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-    />
+    <div className="nhsuk-form-group">
+      <textarea
+        id={id}
+        className="nhsuk-textarea"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        placeholder={placeholder}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={describedBy}
+      />
+    </div>
   );
 }

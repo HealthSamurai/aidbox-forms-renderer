@@ -9,17 +9,24 @@ export function DateInput({
   ariaLabelledBy,
   ariaDescribedBy,
 }: DateInputProps) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <input
-      id={id}
-      className="nhsuk-input"
-      type="date"
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      disabled={disabled}
-      placeholder={placeholder}
-      aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-    />
+    <div className="nhsuk-form-group">
+      <input
+        id={id}
+        className="nhsuk-input"
+        type="date"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        disabled={disabled}
+        placeholder={placeholder}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={describedBy}
+      />
+    </div>
   );
 }

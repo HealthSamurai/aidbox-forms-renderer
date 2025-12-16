@@ -1,4 +1,5 @@
-import "./option-status.css";
+import { styled } from "@linaria/react";
+import { optionStatusClass } from "./option-status.ts";
 
 export type OptionRadioGroupProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
@@ -27,15 +28,14 @@ export function OptionRadioGroup({
 }: OptionRadioGroupProps) {
   return (
     <>
-      <div
+      <RadioGroup
         role="radiogroup"
         aria-labelledby={labelId}
         aria-describedby={describedById}
-        className="af-radio-group"
         aria-busy={isLoading || undefined}
       >
         {legacyOptionLabel && legacyOptionKey ? (
-          <label className="af-radio-option">
+          <RadioOption>
             <input
               type="radio"
               name={inputId}
@@ -45,10 +45,10 @@ export function OptionRadioGroup({
               readOnly
             />
             {legacyOptionLabel}
-          </label>
+          </RadioOption>
         ) : null}
         {options.map((entry) => (
-          <label key={entry.key} className="af-radio-option">
+          <RadioOption key={entry.key}>
             <input
               type="radio"
               name={inputId}
@@ -58,14 +58,26 @@ export function OptionRadioGroup({
               onChange={(event) => onChange(event.target.value)}
             />
             {entry.label}
-          </label>
+          </RadioOption>
         ))}
-      </div>
+      </RadioGroup>
       {isLoading ? (
-        <div className="af-option-status" role="status" aria-live="polite">
+        <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
     </>
   );
 }
+
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const RadioOption = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
