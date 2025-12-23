@@ -3,20 +3,20 @@ import type {
   IQuestionNode,
   QuestionControlDefinition,
 } from "../../types.ts";
-import { StringWidget } from "../../components/nodes/question-v2/widgets/string-widget.tsx";
-import { NumberWidget } from "../../components/nodes/question-v2/widgets/number-widget.tsx";
-import { DecimalWidget } from "../../components/nodes/question-v2/widgets/decimal-widget.tsx";
-import { DateWidget } from "../../components/nodes/question-v2/widgets/date-widget.tsx";
-import { DateTimeWidget } from "../../components/nodes/question-v2/widgets/datetime-widget.tsx";
-import { TimeWidget } from "../../components/nodes/question-v2/widgets/time-widget.tsx";
-import { QuantityWidget } from "../../components/nodes/question-v2/widgets/quantity-widget.tsx";
-import { CodingWidget } from "../../components/nodes/question-v2/widgets/coding-widget.tsx";
-import { ReferenceWidget } from "../../components/nodes/question-v2/widgets/reference-widget.tsx";
-import { AttachmentWidget } from "../../components/nodes/question-v2/widgets/attachment-widget.tsx";
-import { OptionListWidget } from "../../components/nodes/question-v2/widgets/option-list-widget.tsx";
-import { DropdownWidget } from "../../components/nodes/question-v2/widgets/dropdown-widget.tsx";
-import { LookupWidget } from "../../components/nodes/question-v2/widgets/lookup-widget.tsx";
-import { UnsupportedWidget } from "../../components/nodes/question-v2/widgets/unsupported-widget.tsx";
+import { StringWidget } from "../../components/nodes/question/widgets/string-widget.tsx";
+import { NumberWidget } from "../../components/nodes/question/widgets/number-widget.tsx";
+import { DecimalWidget } from "../../components/nodes/question/widgets/decimal-widget.tsx";
+import { DateWidget } from "../../components/nodes/question/widgets/date-widget.tsx";
+import { DateTimeWidget } from "../../components/nodes/question/widgets/datetime-widget.tsx";
+import { TimeWidget } from "../../components/nodes/question/widgets/time-widget.tsx";
+import { QuantityWidget } from "../../components/nodes/question/widgets/quantity-widget.tsx";
+import { CodingWidget } from "../../components/nodes/question/widgets/coding-widget.tsx";
+import { ReferenceWidget } from "../../components/nodes/question/widgets/reference-widget.tsx";
+import { AttachmentWidget } from "../../components/nodes/question/widgets/attachment-widget.tsx";
+import { OptionListWidget } from "../../components/nodes/question/widgets/option-list-widget.tsx";
+import { DropdownWidget } from "../../components/nodes/question/widgets/dropdown-widget.tsx";
+import { LookupWidget } from "../../components/nodes/question/widgets/lookup-widget.tsx";
+import { UnsupportedWidget } from "../../components/nodes/question/widgets/unsupported-widget.tsx";
 
 type StringLikeType = Extract<AnswerType, "string" | "text">;
 type DatalistType = Extract<

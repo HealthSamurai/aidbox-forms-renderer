@@ -20,7 +20,7 @@ import { NodeLegal } from "../../../form/node-legal.tsx";
 import { NodeFlyover } from "../../../form/node-flyover.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { NodesList } from "../../../form/node-list.tsx";
-import { AnswerErrors } from "../../question-v2/validation/answer-errors.tsx";
+import { AnswerErrors } from "../../question/validation/answer-errors.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeLabelParts } from "../../../form/node-text.tsx";
 

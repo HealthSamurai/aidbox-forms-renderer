@@ -106,7 +106,7 @@
 ### Suggested component file layout (relative to `lib/components/nodes/question/`, one component per file)
 
 ```
-lib/components/nodes/question-v2/
+lib/components/nodes/question/
 ├─ widget-scaffold.tsx           # can reuse form/node-header, node-help, node-legal, node-flyover
 ├─ widgets/                      # registry lives in `lib/stores/registries/question-control-registry.ts`
 │  ├─ string-widget.tsx
