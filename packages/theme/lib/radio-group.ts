@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type RadioGroupProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
@@ -11,6 +11,8 @@ export type RadioGroupProps = {
   describedById: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
+  after?: ReactNode;
+  afterInset?: boolean;
 };
 
 export type RadioGroupComponent = ComponentType<RadioGroupProps>;

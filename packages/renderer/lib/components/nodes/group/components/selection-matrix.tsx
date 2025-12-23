@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
+import type { SelectionMatrixControl } from "@aidbox-forms/theme";
 import type {
   AnswerOptionEntry,
   AnswerType,
@@ -65,9 +65,7 @@ export const SelectionMatrixTable = observer(function SelectionMatrixTable({
         });
         return {
           key: `${row.question.key}-${column.key}`,
-          content: cell.content,
-          selected: cell.selected,
-          disabled: cell.disabled,
+          ...cell,
         };
       }),
       details: detailContentNeeded ? (
@@ -129,9 +127,7 @@ export const SelectionMatrixHorizontalTable = observer(
         });
         return {
           key: `${row.question.key}-${column.key}`,
-          content: cell.content,
-          selected: cell.selected,
-          disabled: cell.disabled,
+          ...cell,
         };
       }),
     }));
@@ -240,7 +236,8 @@ const MatrixRowHeader = observer(function MatrixRowHeader({
 });
 
 type MatrixCellView = {
-  content: ReactNode;
+  control?: SelectionMatrixControl;
+  placeholder?: string;
   selected: boolean;
   disabled: boolean;
 };
@@ -262,7 +259,7 @@ function buildMatrixCell({
 }): MatrixCellView {
   if (!entry) {
     return {
-      content: "—",
+      placeholder: "—",
       selected: false,
       disabled: false,
     };
@@ -283,6 +280,7 @@ function buildMatrixCell({
     (!isSelected && (entry.disabled || (question.repeats && !question.canAdd)));
 
   const inputId = sanitizeForId(`${inputName}-${entry.key}`);
+  const labelledBy = [rowHeaderId, columnHeaderId].filter(Boolean).join(" ");
 
   const toggleSelection = () => {
     if (disableNewSelection && !isSelected) {
@@ -305,23 +303,22 @@ function buildMatrixCell({
   };
 
   const ariaLabel = entry.label;
+  const isDisabled = disableNewSelection && !isSelected;
 
   return {
-    content: (
-      <input
-        type={inputType}
-        id={inputId}
-        name={inputName}
-        checked={isSelected}
-        disabled={disableNewSelection && !isSelected}
-        aria-labelledby={`${rowHeaderId} ${columnHeaderId}`}
-        aria-describedby={describedById}
-        aria-label={ariaLabel}
-        onChange={toggleSelection}
-      />
-    ),
+    control: {
+      id: inputId,
+      name: inputName,
+      type: inputType,
+      checked: isSelected,
+      disabled: isDisabled,
+      onChange: toggleSelection,
+      labelledBy,
+      describedBy: describedById,
+      ariaLabel,
+    },
     selected: isSelected,
-    disabled: disableNewSelection && !isSelected,
+    disabled: isDisabled,
   };
 }
 

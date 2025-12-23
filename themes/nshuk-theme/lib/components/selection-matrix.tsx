@@ -57,13 +57,33 @@ export function SelectionMatrix({
                 <td
                   key={cell.key}
                   className={classNames("nhsuk-table__cell", {
-                    "nhsuk-u-bg-light-grey": cell.selected,
-                    "nhsuk-u-secondary-text": cell.disabled,
+                    "nhsuk-u-bg-light-grey":
+                      cell.selected ?? cell.control?.checked,
+                    "nhsuk-u-secondary-text":
+                      cell.disabled ?? cell.control?.disabled,
                   })}
-                  data-selected={cell.selected || undefined}
-                  data-disabled={cell.disabled || undefined}
+                  data-selected={
+                    (cell.selected ?? cell.control?.checked) || undefined
+                  }
+                  data-disabled={
+                    (cell.disabled ?? cell.control?.disabled) || undefined
+                  }
                 >
-                  {cell.content}
+                  {cell.control ? (
+                    <input
+                      id={cell.control.id}
+                      name={cell.control.name}
+                      type={cell.control.type}
+                      checked={cell.control.checked}
+                      disabled={cell.control.disabled}
+                      onChange={cell.control.onChange}
+                      aria-labelledby={cell.control.labelledBy}
+                      aria-describedby={cell.control.describedBy}
+                      aria-label={cell.control.ariaLabel}
+                    />
+                  ) : (
+                    (cell.placeholder ?? "—")
+                  )}
                 </td>
               ))}
             </tr>

@@ -10,7 +10,7 @@ export type AttachmentInputProps = {
   disabled?: boolean | undefined;
   sizeLabel?: string | undefined;
   filename?: string | undefined;
-  onPickFile?: (() => void) | undefined;
+  onFileSelect?: ((file: File) => void) | undefined;
   onClear?: (() => void) | undefined;
 };
 

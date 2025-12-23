@@ -1,4 +1,5 @@
 import { styled } from "@linaria/react";
+import type { ReactNode } from "react";
 import { optionStatusClass } from "./option-status.ts";
 
 export type RadioGroupProps = {
@@ -16,6 +17,8 @@ export type RadioGroupProps = {
   describedById: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
+  after?: ReactNode;
+  afterInset?: boolean;
 };
 
 export function RadioGroup({
@@ -29,6 +32,8 @@ export function RadioGroup({
   describedById,
   readOnly,
   isLoading = false,
+  after,
+  afterInset = false,
 }: RadioGroupProps) {
   return (
     <>
@@ -74,6 +79,11 @@ export function RadioGroup({
           Loading options…
         </div>
       ) : null}
+      {after ? (
+        <AfterContainer data-inset={afterInset ? "true" : undefined}>
+          {after}
+        </AfterContainer>
+      ) : null}
     </>
   );
 }
@@ -94,4 +104,12 @@ const RadioLabel = styled.label`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+`;
+
+const AfterContainer = styled.div`
+  margin-top: 0.5rem;
+
+  &[data-inset="true"] {
+    margin-left: 1.5rem;
+  }
 `;

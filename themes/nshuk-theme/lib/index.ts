@@ -20,6 +20,7 @@ import { SelectOrStringField } from "./components/select-or-string-field.tsx";
 import { AutocompleteField } from "./components/autocomplete-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
+import { MultiSelectField } from "./components/multi-select-field.tsx";
 import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
@@ -51,6 +52,7 @@ import { AttachmentInput } from "./components/attachment-input.tsx";
 import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayNode } from "./components/display-node.tsx";
+import { Link } from "./components/link.tsx";
 import "./global.css";
 
 export type { Theme, QuantityInputProps, QuantityUnitOption };
@@ -62,6 +64,7 @@ export {
   SelectOrInputField,
   TabContainer,
   DisplayNode,
+  Link,
 };
 
 const passthrough: Theme = {
@@ -80,6 +83,7 @@ const passthrough: Theme = {
   AutocompleteField,
   RadioGroup,
   CheckboxGroup,
+  MultiSelectField,
   TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
@@ -111,6 +115,7 @@ const passthrough: Theme = {
   SelectOrInputField,
   TabContainer,
   DisplayNode,
+  Link,
 };
 
 export const theme: Theme = passthrough;

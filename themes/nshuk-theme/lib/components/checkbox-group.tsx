@@ -10,6 +10,8 @@ export function CheckboxGroup<T>({
   readOnly,
   isLoading,
   renderErrors,
+  after,
+  afterInset = false,
 }: CheckboxGroupProps<T>) {
   return (
     <div
@@ -46,6 +48,11 @@ export function CheckboxGroup<T>({
       {isLoading ? (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
+        </div>
+      ) : null}
+      {after ? (
+        <div className={afterInset ? "nhsuk-u-padding-left-4" : undefined}>
+          {after}
         </div>
       ) : null}
     </div>

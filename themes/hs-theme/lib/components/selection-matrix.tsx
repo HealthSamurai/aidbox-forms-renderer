@@ -43,10 +43,28 @@ export function SelectionMatrix({
                 {cells.map((cell) => (
                   <Cell
                     key={cell.key}
-                    data-selected={cell.selected || undefined}
-                    data-disabled={cell.disabled || undefined}
+                    data-selected={
+                      (cell.selected ?? cell.control?.checked) || undefined
+                    }
+                    data-disabled={
+                      (cell.disabled ?? cell.control?.disabled) || undefined
+                    }
                   >
-                    {cell.content}
+                    {cell.control ? (
+                      <input
+                        id={cell.control.id}
+                        name={cell.control.name}
+                        type={cell.control.type}
+                        checked={cell.control.checked}
+                        disabled={cell.control.disabled}
+                        onChange={cell.control.onChange}
+                        aria-labelledby={cell.control.labelledBy}
+                        aria-describedby={cell.control.describedBy}
+                        aria-label={cell.control.ariaLabel}
+                      />
+                    ) : (
+                      (cell.placeholder ?? "—")
+                    )}
                   </Cell>
                 ))}
               </Row>

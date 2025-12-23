@@ -1,6 +1,6 @@
 import type { AttachmentInputProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
-import classNames from "classnames";
+import { useRef, type ChangeEvent } from "react";
 
 export function AttachmentInput({
   inputId,
@@ -9,21 +9,36 @@ export function AttachmentInput({
   disabled,
   filename,
   sizeLabel,
-  onPickFile,
+  onFileSelect,
   onClear,
 }: AttachmentInputProps) {
   const hasAttachment = Boolean(filename);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handlePickFile = () => {
+    if (disabled) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    if (!file) return;
+    try {
+      onFileSelect?.(file);
+    } finally {
+      event.currentTarget.value = "";
+    }
+  };
 
   return (
     <Wrapper>
       <HiddenInput
+        ref={fileInputRef}
         id={inputId}
+        type="file"
+        onChange={handleFileChange}
         aria-labelledby={labelId}
         aria-describedby={describedById}
-        className={classNames({
-          "af-attachment-input": true,
-          "af-attachment-input--hidden": hasAttachment,
-        })}
         disabled={disabled}
       />
       {hasAttachment ? (
@@ -37,7 +52,7 @@ export function AttachmentInput({
             {sizeLabel ? ` (${sizeLabel})` : ""}
           </Label>
           {!disabled ? (
-            <Action type="button" onClick={onPickFile}>
+            <Action type="button" onClick={handlePickFile}>
               Change file
             </Action>
           ) : null}
@@ -46,7 +61,7 @@ export function AttachmentInput({
           </Action>
         </Summary>
       ) : (
-        <Action type="button" onClick={onPickFile} disabled={disabled}>
+        <Action type="button" onClick={handlePickFile} disabled={disabled}>
           Choose file
         </Action>
       )}

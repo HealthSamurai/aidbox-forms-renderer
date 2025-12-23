@@ -14,6 +14,7 @@ import type { SelectOrStringFieldProps } from "./select-or-string-field.ts";
 import type { AutocompleteFieldProps } from "./autocomplete-field.ts";
 import type { RadioGroupProps } from "./radio-group.ts";
 import type { CheckboxGroupProps } from "./checkbox-group.ts";
+import type { MultiSelectFieldProps } from "./multi-select-field.ts";
 import type { TypedAutocompleteInputProps } from "./typed-autocomplete-input.ts";
 import type { CodingInputProps } from "./coding-input.ts";
 import type { ReferenceInputProps } from "./reference-input.ts";
@@ -45,6 +46,7 @@ import type { AttachmentInputProps } from "./attachment-input.ts";
 import type { DisplayNodeProps } from "./display-node.ts";
 import type { SelectOrInputFieldProps } from "./select-or-input-field.ts";
 import type { TabContainerProps } from "./tab-container.ts";
+import type { LinkProps } from "./link.ts";
 
 export * from "./button.ts";
 export * from "./text-input.ts";
@@ -62,6 +64,7 @@ export * from "./select-or-string-field.ts";
 export * from "./autocomplete-field.ts";
 export * from "./radio-group.ts";
 export * from "./checkbox-group.ts";
+export * from "./multi-select-field.ts";
 export * from "./typed-autocomplete-input.ts";
 export * from "./coding-input.ts";
 export * from "./reference-input.ts";
@@ -93,6 +96,7 @@ export * from "./attachment-input.ts";
 export * from "./display-node.ts";
 export * from "./select-or-input-field.ts";
 export * from "./tab-container.ts";
+export * from "./link.ts";
 
 export type Theme = {
   Button: ComponentType<ButtonProps>;
@@ -110,6 +114,7 @@ export type Theme = {
   AutocompleteField: ComponentType<AutocompleteFieldProps>;
   RadioGroup: ComponentType<RadioGroupProps>;
   CheckboxGroup: ComponentType<CheckboxGroupProps>;
+  MultiSelectField: ComponentType<MultiSelectFieldProps>;
   TypedAutocompleteInput: ComponentType<TypedAutocompleteInputProps>;
   CodingInput: ComponentType<CodingInputProps>;
   ReferenceInput: ComponentType<ReferenceInputProps>;
@@ -141,4 +146,5 @@ export type Theme = {
   DisplayNode: ComponentType<DisplayNodeProps>;
   SelectOrInputField: ComponentType<SelectOrInputFieldProps>;
   TabContainer: ComponentType<TabContainerProps>;
+  Link: ComponentType<LinkProps>;
 };

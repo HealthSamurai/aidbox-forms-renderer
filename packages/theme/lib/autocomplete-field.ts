@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type AutocompleteFieldProps<TValue = unknown> = {
   options: ReadonlyArray<{ key: string; label: string; value: TValue }>;
@@ -11,6 +11,9 @@ export type AutocompleteFieldProps<TValue = unknown> = {
   readOnly: boolean;
   mode: "autocomplete" | "lookup";
   isLoading?: boolean;
+  onClear?: (() => void) | undefined;
+  clearLabel?: string | undefined;
+  valueDisplay?: ReactNode;
 };
 
 export type AutocompleteFieldComponent = ComponentType<AutocompleteFieldProps>;

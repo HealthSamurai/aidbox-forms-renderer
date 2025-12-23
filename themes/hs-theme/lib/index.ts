@@ -18,6 +18,7 @@ export { SelectOrStringField } from "./components/select-or-string-field.tsx";
 export { AutocompleteField } from "./components/autocomplete-field.tsx";
 export { RadioGroup } from "./components/radio-group.tsx";
 export { CheckboxGroup } from "./components/checkbox-group.tsx";
+export { MultiSelectField } from "./components/multi-select-field.tsx";
 export { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 export { CodingInput } from "./components/coding-input.tsx";
 export { ReferenceInput } from "./components/reference-input.tsx";
@@ -49,6 +50,7 @@ export { AttachmentInput } from "./components/attachment-input.tsx";
 export { SelectOrInputField } from "./components/select-or-input-field.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
 export { DisplayNode } from "./components/display-node.tsx";
+export { Link } from "./components/link.tsx";
 
 import { Button } from "./components/button.tsx";
 import { TextInput } from "./components/text-input.tsx";
@@ -65,6 +67,7 @@ import { SelectOrStringField } from "./components/select-or-string-field.tsx";
 import { AutocompleteField } from "./components/autocomplete-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
+import { MultiSelectField } from "./components/multi-select-field.tsx";
 import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
@@ -96,6 +99,7 @@ import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
 import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
+import { Link } from "./components/link.tsx";
 import type { Theme } from "@aidbox-forms/theme";
 
 export const theme: Theme = {
@@ -114,6 +118,7 @@ export const theme: Theme = {
   AutocompleteField,
   RadioGroup,
   CheckboxGroup,
+  MultiSelectField,
   TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
@@ -145,4 +150,5 @@ export const theme: Theme = {
   DisplayNode,
   SelectOrInputField,
   TabContainer,
+  Link,
 };

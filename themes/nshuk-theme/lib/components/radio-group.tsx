@@ -11,6 +11,8 @@ export function RadioGroup({
   describedById,
   readOnly,
   isLoading,
+  after,
+  afterInset = false,
 }: RadioGroupProps) {
   const makeInputId = (key: string) =>
     inputId ? `${inputId}-${key}` : undefined;
@@ -73,6 +75,11 @@ export function RadioGroup({
       {isLoading ? (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
+        </div>
+      ) : null}
+      {after ? (
+        <div className={afterInset ? "nhsuk-u-padding-left-4" : undefined}>
+          {after}
         </div>
       ) : null}
     </div>

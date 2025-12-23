@@ -10,6 +10,8 @@ export type SelectFieldProps = {
   describedById: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
+  onClear?: (() => void) | undefined;
+  clearLabel?: string | undefined;
 };
 
 export type SelectFieldComponent = ComponentType<SelectFieldProps>;

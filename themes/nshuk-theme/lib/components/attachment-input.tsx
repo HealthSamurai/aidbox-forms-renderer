@@ -1,4 +1,5 @@
 import type { AttachmentInputProps } from "@aidbox-forms/theme";
+import { useRef, type ChangeEvent } from "react";
 
 export function AttachmentInput({
   inputId,
@@ -7,14 +8,31 @@ export function AttachmentInput({
   disabled,
   filename,
   sizeLabel,
-  onPickFile,
+  onFileSelect,
   onClear,
 }: AttachmentInputProps) {
   const hasAttachment = Boolean(filename);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handlePickFile = () => {
+    if (disabled) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    if (!file) return;
+    try {
+      onFileSelect?.(file);
+    } finally {
+      event.currentTarget.value = "";
+    }
+  };
 
   return (
     <div className="nhsuk-form-group">
       <input
+        ref={fileInputRef}
         id={inputId}
         aria-labelledby={labelId}
         aria-describedby={describedById}
@@ -22,6 +40,7 @@ export function AttachmentInput({
         disabled={disabled}
         type="file"
         style={{ display: "none" }}
+        onChange={handleFileChange}
       />
       {hasAttachment ? (
         <div
@@ -39,7 +58,7 @@ export function AttachmentInput({
               <button
                 className="nhsuk-button nhsuk-button--secondary"
                 type="button"
-                onClick={onPickFile}
+                onClick={handlePickFile}
               >
                 Change file
               </button>
@@ -58,7 +77,7 @@ export function AttachmentInput({
         <button
           className="nhsuk-button nhsuk-button--secondary"
           type="button"
-          onClick={onPickFile}
+          onClick={handlePickFile}
           disabled={disabled}
         >
           Choose file
