@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { StringInput } from "../fhir/string/StringInput.tsx";
 import { TextInput } from "../fhir/text/TextInput.tsx";
 import { UrlInput } from "../fhir/url/UrlInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const StringWidget = observer(function StringWidget({
+export const StringRenderer = observer(function StringRenderer({
   node,
 }: {
   node: IQuestionNode<"string" | "text" | "url">;
@@ -60,7 +60,7 @@ export const StringWidget = observer(function StringWidget({
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

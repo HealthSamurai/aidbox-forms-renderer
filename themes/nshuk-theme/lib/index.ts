@@ -51,7 +51,7 @@ import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
 import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
-import { DisplayNode } from "./components/display-node.tsx";
+import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { Link } from "./components/link.tsx";
 import "./global.css";
 
@@ -63,7 +63,7 @@ export {
   ReferenceInput,
   SelectOrInputField,
   TabContainer,
-  DisplayNode,
+  DisplayRenderer,
   Link,
 };
 
@@ -114,7 +114,7 @@ const passthrough: Theme = {
   AttachmentInput,
   SelectOrInputField,
   TabContainer,
-  DisplayNode,
+  DisplayRenderer,
   Link,
 };
 

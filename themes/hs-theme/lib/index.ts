@@ -49,7 +49,7 @@ export { GridTable } from "./components/grid-table.tsx";
 export { AttachmentInput } from "./components/attachment-input.tsx";
 export { SelectOrInputField } from "./components/select-or-input-field.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
-export { DisplayNode } from "./components/display-node.tsx";
+export { DisplayRenderer } from "./components/display-renderer.tsx";
 export { Link } from "./components/link.tsx";
 
 import { Button } from "./components/button.tsx";
@@ -87,7 +87,7 @@ import { PageStatus } from "./components/page-status.tsx";
 import { PageNavigation } from "./components/page-navigation.tsx";
 import { EmptyState } from "./components/empty-state.tsx";
 import { FormActions } from "./components/form-actions.tsx";
-import { DisplayNode } from "./components/display-node.tsx";
+import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import { AnswerRow } from "./components/answer-row.tsx";
 import { RepeatingGroupList } from "./components/repeating-group-list.tsx";
@@ -147,7 +147,7 @@ export const theme: Theme = {
   SelectionMatrix,
   GridTable,
   AttachmentInput,
-  DisplayNode,
+  DisplayRenderer,
   SelectOrInputField,
   TabContainer,
   Link,

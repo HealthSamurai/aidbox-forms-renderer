@@ -9,21 +9,23 @@ const variantClassMap: Record<NonNullable<ButtonProps["variant"]>, string> = {
 
 export function Button({
   variant = "primary",
-  className,
+  type,
+  onClick,
+  disabled,
   children,
-  ...rest
 }: ButtonProps) {
   const resolvedVariant = variant ?? "primary";
-  const classes = [
-    "nhsuk-button",
-    variantClassMap[resolvedVariant],
-    className ?? "",
-  ]
+  const classes = ["nhsuk-button", variantClassMap[resolvedVariant]]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <button {...rest} className={classes}>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={classes}
+    >
       {children}
     </button>
   );

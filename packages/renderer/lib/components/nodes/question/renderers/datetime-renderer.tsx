@@ -1,19 +1,19 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { DateInput } from "../fhir/date/DateInput.tsx";
+import { DateTimeInput } from "../fhir/dateTime/DateTimeInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const DateWidget = observer(function DateWidget({
+export const DateTimeRenderer = observer(function DateTimeRenderer({
   node,
 }: {
-  node: IQuestionNode<"date">;
+  node: IQuestionNode<"dateTime">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<"date"> => {
+  const renderRow = useMemo((): AnswerRowRenderer<"dateTime"> => {
     return (rowProps) => (
-      <DateInput
+      <DateTimeInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -26,7 +26,7 @@ export const DateWidget = observer(function DateWidget({
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

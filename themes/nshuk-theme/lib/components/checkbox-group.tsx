@@ -11,7 +11,6 @@ export function CheckboxGroup<T>({
   isLoading,
   renderErrors,
   after,
-  afterInset = false,
 }: CheckboxGroupProps<T>) {
   return (
     <div
@@ -50,11 +49,7 @@ export function CheckboxGroup<T>({
           Loading options…
         </div>
       ) : null}
-      {after ? (
-        <div className={afterInset ? "nhsuk-u-padding-left-4" : undefined}>
-          {after}
-        </div>
-      ) : null}
+      {after ? <div>{after}</div> : null}
     </div>
   );
 }

@@ -1,9 +1,9 @@
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import type { QuestionControlProps } from "../../../../types.ts";
 
-export function UnsupportedWidget({ node }: QuestionControlProps) {
+export function UnsupportedRenderer({ node }: QuestionControlProps) {
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       className="af-unsupported"
       body={`Unsupported type: ${node.type}`}

@@ -1,10 +1,6 @@
 import { styled } from "@linaria/react";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "danger" | "success";
-  children?: ReactNode;
-};
+import type { ButtonProps } from "@aidbox-forms/theme";
+export type { ButtonProps } from "@aidbox-forms/theme";
 
 const ButtonRoot = styled.button<{
   $variant: NonNullable<ButtonProps["variant"]>;
@@ -56,12 +52,18 @@ const ButtonRoot = styled.button<{
 
 export function Button({
   variant = "primary",
-  className,
+  type,
+  onClick,
+  disabled,
   children,
-  ...rest
 }: ButtonProps) {
   return (
-    <ButtonRoot {...rest} className={className} $variant={variant}>
+    <ButtonRoot
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      $variant={variant}
+    >
       {children}
     </ButtonRoot>
   );

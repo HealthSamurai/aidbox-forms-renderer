@@ -1,31 +1,28 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { IntegerInput } from "../fhir/integer/IntegerInput.tsx";
+import { DecimalInput } from "../fhir/decimal/DecimalInput.tsx";
 import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 
-export const NumberWidget = observer(function NumberWidget({
+export const DecimalRenderer = observer(function DecimalRenderer({
   node,
 }: {
-  node: IQuestionNode<"integer">;
+  node: IQuestionNode<"decimal">;
 }) {
   const { SliderInput, SpinnerInput } = useTheme();
   const bounds = getNumericBounds(node.template);
-  const sliderStep =
-    getSliderStepValue(node.template) ?? (node.type === "integer" ? 1 : 0.1);
+  const sliderStep = getSliderStepValue(node.template) ?? 0.1;
 
-  const renderRow = useMemo((): AnswerRowRenderer<"integer"> => {
+  const renderRow = useMemo((): AnswerRowRenderer<"decimal"> => {
     if (node.control === "slider") {
       return (rowProps) => (
         <SliderInput
           value={rowProps.value ?? null}
-          onChange={(next: number | null) =>
-            rowProps.setValue(next != null ? Math.round(next) : null)
-          }
+          onChange={rowProps.setValue}
           min={bounds.min}
           max={bounds.max}
           step={sliderStep}
@@ -43,9 +40,7 @@ export const NumberWidget = observer(function NumberWidget({
       return (rowProps) => (
         <SpinnerInput
           value={rowProps.value ?? null}
-          onChange={(next: number | null) =>
-            rowProps.setValue(next != null ? Math.round(next) : null)
-          }
+          onChange={rowProps.setValue}
           min={bounds.min}
           max={bounds.max}
           step={sliderStep}
@@ -59,7 +54,7 @@ export const NumberWidget = observer(function NumberWidget({
     }
 
     return (rowProps) => (
-      <IntegerInput
+      <DecimalInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -74,7 +69,7 @@ export const NumberWidget = observer(function NumberWidget({
   }, [SliderInput, SpinnerInput, bounds.max, bounds.min, node, sliderStep]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

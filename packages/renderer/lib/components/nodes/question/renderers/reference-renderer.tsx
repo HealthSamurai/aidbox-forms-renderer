@@ -1,32 +1,32 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { TimeInput } from "../fhir/time/TimeInput.tsx";
+import { ReferenceInput } from "../fhir/reference/ReferenceInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const TimeWidget = observer(function TimeWidget({
+export const ReferenceRenderer = observer(function ReferenceRenderer({
   node,
 }: {
-  node: IQuestionNode<"time">;
+  node: IQuestionNode<"reference">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<"time"> => {
+  const renderRow = useMemo((): AnswerRowRenderer<"reference"> => {
     return (rowProps) => (
-      <TimeInput
+      <ReferenceInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        placeholder={node.placeholder}
-        value={rowProps.value ?? ""}
+        value={rowProps.value ?? null}
         onChange={rowProps.setValue}
         disabled={node.readOnly}
+        placeholder={node.placeholder}
       />
     );
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

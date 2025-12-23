@@ -1,32 +1,32 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { QuantityInput } from "../fhir/quantity/QuantityInput.tsx";
+import { DateInput } from "../fhir/date/DateInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const QuantityWidget = observer(function QuantityWidget({
+export const DateRenderer = observer(function DateRenderer({
   node,
 }: {
-  node: IQuestionNode<"quantity">;
+  node: IQuestionNode<"date">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<"quantity"> => {
+  const renderRow = useMemo((): AnswerRowRenderer<"date"> => {
     return (rowProps) => (
-      <QuantityInput
-        answer={rowProps.answer}
+      <DateInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
         placeholder={node.placeholder}
+        value={rowProps.value ?? ""}
+        onChange={rowProps.setValue}
         disabled={node.readOnly}
-        list={rowProps.list}
       />
     );
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

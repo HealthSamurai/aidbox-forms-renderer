@@ -13,9 +13,6 @@ export function CodingInput({
   labelId,
   describedById,
   disabled,
-  systemPlaceholder = "System (e.g. http://loinc.org)",
-  codePlaceholder = "Code",
-  displayPlaceholder = "Display",
 }: CodingInputProps) {
   const systemId = inputId;
   const codeId = inputId ? `${inputId}-code` : undefined;
@@ -30,7 +27,7 @@ export function CodingInput({
         value={system}
         onChange={onChangeSystem}
         disabled={disabled}
-        placeholder={systemPlaceholder}
+        placeholder="System (e.g. http://loinc.org)"
       />
       <TextInput
         id={codeId}
@@ -39,7 +36,7 @@ export function CodingInput({
         value={code}
         onChange={onChangeCode}
         disabled={disabled}
-        placeholder={codePlaceholder}
+        placeholder="Code"
       />
       <TextInput
         id={displayId}
@@ -48,7 +45,7 @@ export function CodingInput({
         value={display}
         onChange={onChangeDisplay}
         disabled={disabled}
-        placeholder={displayPlaceholder}
+        placeholder="Display"
       />
     </Fields>
   );

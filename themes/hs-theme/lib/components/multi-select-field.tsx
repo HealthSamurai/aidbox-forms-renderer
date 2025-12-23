@@ -20,7 +20,6 @@ export function MultiSelectField({
   actions,
   dialog,
   selectPlaceholder,
-  searchPlaceholder,
 }: MultiSelectFieldProps) {
   const [lookupOpen, setLookupOpen] = useState(false);
 
@@ -29,7 +28,7 @@ export function MultiSelectField({
     onSelectOption(key);
   };
 
-  const renderOptionList = () => {
+  const renderOptions = () => {
     if (!showOptions) return null;
 
     if (mode === "select") {
@@ -86,10 +85,7 @@ export function MultiSelectField({
         aria-labelledby={labelId}
         aria-describedby={describedById}
         disabled={readOnly || isLoading}
-        placeholder={
-          searchPlaceholder ??
-          (mode === "lookup" ? "Search directory" : "Type to search")
-        }
+        placeholder={mode === "lookup" ? "Search directory" : "Type to search"}
       />
     );
 
@@ -169,7 +165,7 @@ export function MultiSelectField({
         </div>
       ) : null}
       <ActionsRow>
-        {renderOptionList()}
+        {renderOptions()}
         {actions}
       </ActionsRow>
     </Stack>

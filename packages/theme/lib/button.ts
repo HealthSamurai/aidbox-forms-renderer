@@ -1,8 +1,11 @@
-import type { ButtonHTMLAttributes, ComponentType, ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type ButtonProps = {
+  type?: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "danger" | "success";
+  onClick?: (() => void) | undefined;
+  disabled?: boolean | undefined;
   children?: ReactNode;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
+};
 
 export type ButtonComponent = ComponentType<ButtonProps>;

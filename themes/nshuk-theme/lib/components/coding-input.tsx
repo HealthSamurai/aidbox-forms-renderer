@@ -12,9 +12,6 @@ export function CodingInput({
   labelId,
   describedById,
   disabled,
-  systemPlaceholder = "System (e.g. http://loinc.org)",
-  codePlaceholder = "Code",
-  displayPlaceholder = "Display",
 }: CodingInputProps) {
   const codeId = inputId ? `${inputId}-code` : undefined;
   const displayId = inputId ? `${inputId}-display` : undefined;
@@ -30,8 +27,7 @@ export function CodingInput({
             value={system}
             onChange={onChangeSystem}
             disabled={disabled}
-            placeholder={systemPlaceholder}
-            withFormGroup={false}
+            placeholder="System (e.g. http://loinc.org)"
           />
         </div>
         <div className="nhsuk-grid-column-one-third">
@@ -42,8 +38,7 @@ export function CodingInput({
             value={code}
             onChange={onChangeCode}
             disabled={disabled}
-            placeholder={codePlaceholder}
-            withFormGroup={false}
+            placeholder="Code"
           />
         </div>
         <div className="nhsuk-grid-column-one-third">
@@ -54,8 +49,7 @@ export function CodingInput({
             value={display}
             onChange={onChangeDisplay}
             disabled={disabled}
-            placeholder={displayPlaceholder}
-            withFormGroup={false}
+            placeholder="Display"
           />
         </div>
       </div>

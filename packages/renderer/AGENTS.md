@@ -63,23 +63,23 @@
 
 ### Question Components Anatomy
 
-- Widget registry picks a widget based on question store properties (`type`, `repeats`, `hasChildren`, options hints, extensions, enablement flags).
-- Widget is a React component that receives a `QuestionStore`, chooses a body rendering strategy, and wraps its body with `WidgetScaffold`; the concrete body it supplies is what differentiates one widget from another.
-- WidgetScaffold
+- Renderer registry picks a renderer based on question store properties (`type`, `repeats`, `hasChildren`, options hints, extensions, enablement flags).
+- Renderer is a React component that receives a `QuestionStore`, chooses a body rendering strategy, and wraps its body with `QuestionScaffold`; the concrete body it supplies is what differentiates one renderer from another.
+- QuestionScaffold
   - Header: label text, required flag, tooltips (help, legal, flyover).
-  - Body: provided by the widget.
+  - Body: provided by the renderer.
   - Footer: question-level validation errors (not per-answer).
 - Body strategies
-  - AnswerList path: used when the item has children or when the control cannot manage multiple answers at once. `AnswerList` handles add/remove, min/max occurs, renders one control per `AnswerInstance` (control is supplied by the widget/registry, not chosen by `AnswerList`), and places nested child nodes under each answer row.
+  - AnswerList path: used when the item has children or when the control cannot manage multiple answers at once. `AnswerList` handles add/remove, min/max occurs, renders one control per `AnswerInstance` (control is supplied by the renderer/registry, not chosen by `AnswerList`), and places nested child nodes under each answer row.
   - Single multi-answer control: used when there are no children and the control can manage all answers itself (e.g., checkbox list, multi-select chips, tokenized autocomplete/lookup); it enforces min/max occurs internally and renders answer-level errors inline.
 - Control components
   - Questionnaire-aware; manage answers array, min/max, and render answer-level validation errors.
   - May delegate value editing to InputComponents when a simple value editor is sufficient.
   - Not responsible for rendering nested child nodes.
-- Option-list controls: `OptionListControl`, `DropdownControl`, `LookupControl`
+- List-select controls: `ListSelectControl`, `DropdownControl`, `LookupControl`
   - has `repeats: boolean` property to distinguish single-answer vs. multi-answer variants
-  - `OptionListControl` renders either single-select radio-button list, or multi-select checkbox list
-  - Checkbox variant of `OptionListControl` may embed `DropdownControl` in tokenized multi-select mode (no preset options) to implement the “Specify others” flow for `optionsOrString`/`optionsOrType`, honoring min/max and per-chip validation.
+  - `ListSelectControl` renders either single-select radio-button list, or multi-select checkbox list
+  - Checkbox variant of `ListSelectControl` may embed `DropdownControl` in tokenized multi-select mode (no preset options) to implement the “Specify others” flow for `optionsOrString`/`optionsOrType`, honoring min/max and per-chip validation.
   - `DropdownControl` renders single-select or multi-select dropdown/autocomplete
   - `LookupControl` same as `DropdownControl` but opens a modal dialog instead of inline dropdown
   - For `type=reference`, perform lookup/autocomplete based on reference resource hints (e.g., `questionnaire-referenceResource`) and may use `sdc-questionnaire-lookupQuestionnaire` to create/select a target.
@@ -107,26 +107,26 @@
 
 ```
 lib/components/nodes/question/
-├─ widget-scaffold.tsx           # can reuse form/node-header, node-help, node-legal, node-flyover
-├─ widgets/                      # registry lives in `lib/stores/registries/question-control-registry.ts`
-│  ├─ string-widget.tsx
-│  ├─ number-widget.tsx
-│  ├─ decimal-widget.tsx
-│  ├─ date-widget.tsx
-│  ├─ datetime-widget.tsx
-│  ├─ time-widget.tsx
-│  ├─ quantity-widget.tsx
-│  ├─ reference-widget.tsx
-│  ├─ coding-widget.tsx
-│  ├─ attachment-widget.tsx
-│  ├─ option-list-widget.tsx   # radio/checkbox rendering
-│  ├─ dropdown-widget.tsx      # select/autocomplete rendering
-│  └─ lookup-widget.tsx        # modal lookup rendering
+├─ question-scaffold.tsx         # can reuse form/node-header, node-help, node-legal, node-flyover
+├─ renderers/                    # registry lives in `lib/stores/registries/question-control-registry.ts`
+│  ├─ string-renderer.tsx
+│  ├─ number-renderer.tsx
+│  ├─ decimal-renderer.tsx
+│  ├─ date-renderer.tsx
+│  ├─ datetime-renderer.tsx
+│  ├─ time-renderer.tsx
+│  ├─ quantity-renderer.tsx
+│  ├─ reference-renderer.tsx
+│  ├─ coding-renderer.tsx
+│  ├─ attachment-renderer.tsx
+│  ├─ list-select-renderer.tsx   # radio/checkbox rendering
+│  ├─ dropdown-renderer.tsx      # select/autocomplete rendering
+│  └─ lookup-renderer.tsx        # modal lookup rendering
 ├─ answers/
 │  ├─ answer-list.tsx
 │  └─ answer-row.tsx
 ├─ controls/
-│  ├─ option-list-control.tsx     # toggles radio vs checkbox based on props
+│  ├─ list-select-control.tsx     # toggles radio vs checkbox based on props
 │  ├─ dropdown-control.tsx        # inline dropdown/autocomplete (single & multi)
 │  └─ lookup-control.tsx          # modal-based dropdown
 ├─ inputs/                        # adapters from stores to base controls
@@ -169,8 +169,8 @@ Component composition examples:
 Non-repeating text, no children
 
 ```
-QuestionWidget
-└─ WidgetScaffold
+QuestionRenderer
+└─ QuestionScaffold
    ├─ Header
    ├─ Body: Control(TextControl single-answer)
    │   └─ InputComponent(TextInput)
@@ -180,8 +180,8 @@ QuestionWidget
 Repeating choice with children (radio layout)
 
 ```
-QuestionWidget
-└─ WidgetScaffold
+QuestionRenderer
+└─ QuestionScaffold
    ├─ Header
    ├─ Body: AnswerList
    │   ├─ AnswerRow 1
@@ -195,8 +195,8 @@ QuestionWidget
 Repeating choice without children using multi-answer control
 
 ```
-QuestionWidget
-└─ WidgetScaffold
+QuestionRenderer
+└─ QuestionScaffold
    ├─ Header
    ├─ Body: Control(CheckboxList multi-answer)
    │   ├─ Checkbox options (+ Specify others chip editor)

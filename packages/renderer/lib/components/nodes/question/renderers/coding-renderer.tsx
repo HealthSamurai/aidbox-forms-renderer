@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { CodingInput } from "../fhir/coding/CodingInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const CodingWidget = observer(function CodingWidget({
+export const CodingRenderer = observer(function CodingRenderer({
   node,
 }: {
   node: IQuestionNode<"coding">;
@@ -25,7 +25,7 @@ export const CodingWidget = observer(function CodingWidget({
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       body={<AnswerList node={node} renderRow={renderRow} />}
     />

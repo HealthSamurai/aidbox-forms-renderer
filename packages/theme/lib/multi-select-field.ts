@@ -33,7 +33,6 @@ export type MultiSelectFieldProps = {
   actions?: ReactNode;
   dialog?: MultiSelectDialog;
   selectPlaceholder?: string | undefined;
-  searchPlaceholder?: string | undefined;
 };
 
 export type MultiSelectFieldComponent = ComponentType<MultiSelectFieldProps>;

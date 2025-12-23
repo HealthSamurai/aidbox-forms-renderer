@@ -1,33 +1,33 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { ReferenceInput } from "../fhir/reference/ReferenceInput.tsx";
+import { AttachmentInput } from "../fhir/attachment/AttachmentInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
-export const ReferenceWidget = observer(function ReferenceWidget({
+export const AttachmentRenderer = observer(function AttachmentRenderer({
   node,
 }: {
-  node: IQuestionNode<"reference">;
+  node: IQuestionNode<"attachment">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<"reference"> => {
+  const renderRow = useMemo((): AnswerRowRenderer<"attachment"> => {
     return (rowProps) => (
-      <ReferenceInput
+      <AttachmentInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
         value={rowProps.value ?? null}
         onChange={rowProps.setValue}
         disabled={node.readOnly}
-        placeholder={node.placeholder}
       />
     );
   }, [node]);
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
+      className="af-node-attachment"
       body={<AnswerList node={node} renderRow={renderRow} />}
     />
   );

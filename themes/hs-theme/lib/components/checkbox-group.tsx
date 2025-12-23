@@ -20,7 +20,6 @@ export type CheckboxGroupProps<TValue> = {
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;
   after?: ReactNode;
-  afterInset?: boolean;
 };
 
 export function CheckboxGroup<TValue>({
@@ -34,7 +33,6 @@ export function CheckboxGroup<TValue>({
   isLoading = false,
   renderErrors,
   after,
-  afterInset = false,
 }: CheckboxGroupProps<TValue>) {
   return (
     <CheckboxControl
@@ -69,11 +67,7 @@ export function CheckboxGroup<TValue>({
           Loading options…
         </div>
       ) : null}
-      {after ? (
-        <AfterContainer data-inset={afterInset ? "true" : undefined}>
-          {after}
-        </AfterContainer>
-      ) : null}
+      {after ? <AfterContainer>{after}</AfterContainer> : null}
     </CheckboxControl>
   );
 }
@@ -98,8 +92,4 @@ const CheckboxLabel = styled.label`
 
 const AfterContainer = styled.div`
   margin-top: 0.5rem;
-
-  &[data-inset="true"] {
-    margin-left: 1.5rem;
-  }
 `;

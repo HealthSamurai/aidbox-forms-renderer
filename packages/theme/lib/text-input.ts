@@ -11,9 +11,6 @@ export type TextInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
-  prefix?: string | undefined;
-  suffix?: string | undefined;
-  withFormGroup?: boolean | undefined;
 };
 
 export type TextInputComponent = ComponentType<TextInputProps>;

@@ -1,7 +1,7 @@
 import { styled } from "@linaria/react";
-import type { DisplayNodeProps } from "@aidbox-forms/theme";
+import type { DisplayRendererProps } from "@aidbox-forms/theme";
 
-export function DisplayNode({ linkId, content }: DisplayNodeProps) {
+export function DisplayRenderer({ linkId, content }: DisplayRendererProps) {
   return <Wrapper data-linkid={linkId}>{content}</Wrapper>;
 }
 

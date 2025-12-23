@@ -3,20 +3,20 @@ import type {
   IQuestionNode,
   QuestionControlDefinition,
 } from "../../types.ts";
-import { StringWidget } from "../../components/nodes/question/widgets/string-widget.tsx";
-import { NumberWidget } from "../../components/nodes/question/widgets/number-widget.tsx";
-import { DecimalWidget } from "../../components/nodes/question/widgets/decimal-widget.tsx";
-import { DateWidget } from "../../components/nodes/question/widgets/date-widget.tsx";
-import { DateTimeWidget } from "../../components/nodes/question/widgets/datetime-widget.tsx";
-import { TimeWidget } from "../../components/nodes/question/widgets/time-widget.tsx";
-import { QuantityWidget } from "../../components/nodes/question/widgets/quantity-widget.tsx";
-import { CodingWidget } from "../../components/nodes/question/widgets/coding-widget.tsx";
-import { ReferenceWidget } from "../../components/nodes/question/widgets/reference-widget.tsx";
-import { AttachmentWidget } from "../../components/nodes/question/widgets/attachment-widget.tsx";
-import { OptionListWidget } from "../../components/nodes/question/widgets/option-list-widget.tsx";
-import { DropdownWidget } from "../../components/nodes/question/widgets/dropdown-widget.tsx";
-import { LookupWidget } from "../../components/nodes/question/widgets/lookup-widget.tsx";
-import { UnsupportedWidget } from "../../components/nodes/question/widgets/unsupported-widget.tsx";
+import { StringRenderer } from "../../components/nodes/question/renderers/string-renderer.tsx";
+import { NumberRenderer } from "../../components/nodes/question/renderers/number-renderer.tsx";
+import { DecimalRenderer } from "../../components/nodes/question/renderers/decimal-renderer.tsx";
+import { DateRenderer } from "../../components/nodes/question/renderers/date-renderer.tsx";
+import { DateTimeRenderer } from "../../components/nodes/question/renderers/datetime-renderer.tsx";
+import { TimeRenderer } from "../../components/nodes/question/renderers/time-renderer.tsx";
+import { QuantityRenderer } from "../../components/nodes/question/renderers/quantity-renderer.tsx";
+import { CodingRenderer } from "../../components/nodes/question/renderers/coding-renderer.tsx";
+import { ReferenceRenderer } from "../../components/nodes/question/renderers/reference-renderer.tsx";
+import { AttachmentRenderer } from "../../components/nodes/question/renderers/attachment-renderer.tsx";
+import { ListSelectRenderer } from "../../components/nodes/question/renderers/list-select-renderer.tsx";
+import { DropdownRenderer } from "../../components/nodes/question/renderers/dropdown-renderer.tsx";
+import { LookupRenderer } from "../../components/nodes/question/renderers/lookup-renderer.tsx";
+import { UnsupportedRenderer } from "../../components/nodes/question/renderers/unsupported-renderer.tsx";
 
 type StringLikeType = Extract<AnswerType, "string" | "text">;
 type DatalistType = Extract<
@@ -34,7 +34,7 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     priority: 110,
     matcher: (node): node is IQuestionNode<StringLikeType> =>
       isStringLike(node) && node.options.constraint === "optionsOrString",
-    component: DropdownWidget,
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-or-type-datalist",
@@ -43,7 +43,7 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
       node.options.constraint === "optionsOrType" &&
       isDatalistType(node) &&
       hasOptions(node),
-    component: DropdownWidget,
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-or-type-hybrid",
@@ -52,125 +52,125 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
       node.options.constraint === "optionsOrType" &&
       isHybridType(node) &&
       hasOptions(node),
-    component: DropdownWidget,
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-list-control",
     priority: 95,
     matcher: (node): node is IQuestionNode =>
       hasOptions(node) && usesListControl(node),
-    component: OptionListWidget,
+    component: ListSelectRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-lookup",
     priority: 90,
     matcher: (node): node is IQuestionNode =>
       hasOptions(node) && node.control === "lookup",
-    component: LookupWidget,
+    component: LookupRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-autocomplete",
     priority: 85,
     matcher: (node): node is IQuestionNode =>
       hasOptions(node) && node.control === "autocomplete",
-    component: DropdownWidget,
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-select",
     priority: 80,
     matcher: (node): node is IQuestionNode => hasOptions(node),
-    component: DropdownWidget,
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "boolean-primitive",
     priority: 20,
     matcher: (node): node is IQuestionNode<"boolean"> =>
       node.type === "boolean",
-    component: OptionListWidget,
+    component: ListSelectRenderer,
   } as QuestionControlDefinition,
   {
     name: "string-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"string"> => node.type === "string",
-    component: StringWidget,
+    component: StringRenderer,
   } as QuestionControlDefinition,
   {
     name: "text-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"text"> => node.type === "text",
-    component: StringWidget,
+    component: StringRenderer,
   } as QuestionControlDefinition,
   {
     name: "url-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"url"> => node.type === "url",
-    component: StringWidget,
+    component: StringRenderer,
   } as QuestionControlDefinition,
   {
     name: "integer-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"integer"> =>
       node.type === "integer",
-    component: NumberWidget,
+    component: NumberRenderer,
   } as QuestionControlDefinition,
   {
     name: "decimal-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"decimal"> =>
       node.type === "decimal",
-    component: DecimalWidget,
+    component: DecimalRenderer,
   } as QuestionControlDefinition,
   {
     name: "date-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"date"> => node.type === "date",
-    component: DateWidget,
+    component: DateRenderer,
   } as QuestionControlDefinition,
   {
     name: "dateTime-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"dateTime"> =>
       node.type === "dateTime",
-    component: DateTimeWidget,
+    component: DateTimeRenderer,
   } as QuestionControlDefinition,
   {
     name: "time-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"time"> => node.type === "time",
-    component: TimeWidget,
+    component: TimeRenderer,
   } as QuestionControlDefinition,
   {
     name: "quantity-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"quantity"> =>
       node.type === "quantity",
-    component: QuantityWidget,
+    component: QuantityRenderer,
   } as QuestionControlDefinition,
   {
     name: "coding-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"coding"> => node.type === "coding",
-    component: CodingWidget,
+    component: CodingRenderer,
   } as QuestionControlDefinition,
   {
     name: "reference-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"reference"> =>
       node.type === "reference",
-    component: ReferenceWidget,
+    component: ReferenceRenderer,
   } as QuestionControlDefinition,
   {
     name: "attachment-primitive",
     priority: 10,
     matcher: (node): node is IQuestionNode<"attachment"> =>
       node.type === "attachment",
-    component: AttachmentWidget,
+    component: AttachmentRenderer,
   } as QuestionControlDefinition,
   {
     name: "unsupported-question",
     priority: Number.NEGATIVE_INFINITY,
     matcher: (_node): _node is IQuestionNode => true,
-    component: UnsupportedWidget,
+    component: UnsupportedRenderer,
   } as QuestionControlDefinition,
 ] as QuestionControlDefinition[];
 

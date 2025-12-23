@@ -27,7 +27,6 @@ export function ReferenceInput({
             onChange={onChangeReference}
             disabled={disabled}
             placeholder={referencePlaceholder}
-            withFormGroup={false}
           />
         </div>
         <div className="nhsuk-grid-column-two-thirds">
@@ -39,7 +38,6 @@ export function ReferenceInput({
             onChange={onChangeDisplay}
             disabled={disabled}
             placeholder={displayPlaceholder}
-            withFormGroup={false}
           />
         </div>
       </div>

@@ -2,13 +2,11 @@ import { styled } from "@linaria/react";
 import type { SelectOrInputFieldProps } from "@aidbox-forms/theme";
 
 export function SelectOrInputField({
-  select,
   input,
   inputFooter,
 }: SelectOrInputFieldProps) {
   return (
     <Shell>
-      {select ? <SelectSlot>{select}</SelectSlot> : null}
       {input ? (
         <InputSlot>
           {input}
@@ -24,11 +22,6 @@ const Shell = styled.div`
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: flex-start;
-`;
-
-const SelectSlot = styled.div`
-  flex: 1 1 12rem;
-  min-width: 12rem;
 `;
 
 const InputSlot = styled.div`

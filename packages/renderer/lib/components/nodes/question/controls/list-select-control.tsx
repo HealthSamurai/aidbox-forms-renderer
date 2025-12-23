@@ -49,7 +49,7 @@ const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
   },
 ];
 
-export const OptionListControl = observer(function OptionListControl<
+export const ListSelectControl = observer(function ListSelectControl<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   const { CheckboxGroup } = useTheme();

@@ -3,12 +3,12 @@ import { getNodeLabelParts } from "../../form/node-text.tsx";
 import { IDisplayNode } from "../../../types.ts";
 import { useTheme } from "../../../ui/theme.tsx";
 
-export const DisplayNode = observer(function DisplayNode({
+export const DisplayRenderer = observer(function DisplayRenderer({
   node,
 }: {
   node: IDisplayNode;
 }) {
-  const { DisplayNode: ThemedDisplayNode } = useTheme();
+  const { DisplayRenderer: ThemedDisplayRenderer } = useTheme();
   const { labelText } = getNodeLabelParts(node);
-  return <ThemedDisplayNode linkId={node.linkId} content={labelText} />;
+  return <ThemedDisplayRenderer linkId={node.linkId} content={labelText} />;
 });

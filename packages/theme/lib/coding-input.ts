@@ -11,9 +11,6 @@ export type CodingInputProps = {
   labelId?: string | undefined;
   describedById?: string | undefined;
   disabled?: boolean | undefined;
-  systemPlaceholder?: string | undefined;
-  codePlaceholder?: string | undefined;
-  displayPlaceholder?: string | undefined;
 };
 
 export type CodingInputComponent = ComponentType<CodingInputProps>;

@@ -4,31 +4,25 @@ import { NodeHeader } from "../../form/node-header.tsx";
 import { QuestionErrors } from "./validation/question-errors.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
 
-export type WidgetScaffoldProps = {
+export type QuestionScaffoldProps = {
   node: IQuestionNode;
   className?: string;
-  beforeBody?: ReactNode;
   body: ReactNode;
-  afterBody?: ReactNode;
   showOptionsState?: boolean;
 };
 
-export function WidgetScaffold({
+export function QuestionScaffold({
   node,
   className,
-  beforeBody,
   body,
-  afterBody,
   showOptionsState,
-}: WidgetScaffoldProps) {
+}: QuestionScaffoldProps) {
   const { NodeWrapper } = useTheme();
   return (
     <NodeWrapper linkId={node.linkId} className={className}>
       <NodeHeader node={node} />
       {showOptionsState ? <QuestionOptionsState node={node} /> : null}
-      {beforeBody}
       {body}
-      {afterBody}
       <QuestionErrors node={node} />
     </NodeWrapper>
   );

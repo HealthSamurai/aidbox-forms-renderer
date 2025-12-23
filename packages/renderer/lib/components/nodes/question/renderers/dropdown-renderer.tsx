@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
-import { WidgetScaffold } from "../widget-scaffold.tsx";
+import { QuestionScaffold } from "../question-scaffold.tsx";
 import { DropdownControl } from "../controls/dropdown-control.tsx";
 
-export const DropdownWidget = observer(function DropdownWidget<
+export const DropdownRenderer = observer(function DropdownRenderer<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   const mode =
@@ -14,7 +14,7 @@ export const DropdownWidget = observer(function DropdownWidget<
         : "select";
 
   return (
-    <WidgetScaffold
+    <QuestionScaffold
       node={node}
       showOptionsState
       body={<DropdownControl node={node} mode={mode} />}

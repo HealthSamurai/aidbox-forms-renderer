@@ -16,7 +16,6 @@ export type CheckboxGroupProps<TValue = unknown> = {
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;
   after?: ReactNode;
-  afterInset?: boolean;
 };
 
 export type CheckboxGroupComponent = ComponentType<CheckboxGroupProps>;

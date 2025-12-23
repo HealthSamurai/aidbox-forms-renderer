@@ -11,9 +11,6 @@ export type TextInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
-  prefix?: string | undefined;
-  suffix?: string | undefined;
-  withFormGroup?: boolean | undefined;
 };
 
 export function TextInput({
@@ -27,16 +24,13 @@ export function TextInput({
   ariaDescribedBy,
   inputMode,
   list,
-  prefix,
-  suffix,
-  withFormGroup = true,
 }: TextInputProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy
       : undefined;
 
-  const input = (
+  return (
     <input
       id={id}
       list={list}
@@ -51,29 +45,4 @@ export function TextInput({
       inputMode={inputMode}
     />
   );
-
-  const wrappedInput =
-    prefix || suffix ? (
-      <div className="nhsuk-input__wrapper">
-        {prefix ? (
-          <div className="nhsuk-input__prefix" aria-hidden="true">
-            {prefix}
-          </div>
-        ) : null}
-        {input}
-        {suffix ? (
-          <div className="nhsuk-input__suffix" aria-hidden="true">
-            {suffix}
-          </div>
-        ) : null}
-      </div>
-    ) : (
-      input
-    );
-
-  if (!withFormGroup) {
-    return wrappedInput;
-  }
-
-  return <div className="nhsuk-form-group">{wrappedInput}</div>;
 }
