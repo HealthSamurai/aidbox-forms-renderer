@@ -28,7 +28,7 @@ export const ReferenceRenderer = observer(function ReferenceRenderer({
   return (
     <QuestionScaffold
       node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
+      children={<AnswerList node={node} renderRow={renderRow} />}
     />
   );
 });

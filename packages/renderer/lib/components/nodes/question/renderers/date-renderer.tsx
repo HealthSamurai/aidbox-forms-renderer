@@ -26,9 +26,8 @@ export const DateRenderer = observer(function DateRenderer({
   }, [node]);
 
   return (
-    <QuestionScaffold
-      node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
-    />
+    <QuestionScaffold node={node}>
+      <AnswerList node={node} renderRow={renderRow} />
+    </QuestionScaffold>
   );
 });

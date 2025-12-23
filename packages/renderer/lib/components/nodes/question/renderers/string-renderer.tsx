@@ -62,7 +62,7 @@ export const StringRenderer = observer(function StringRenderer({
   return (
     <QuestionScaffold
       node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
+      children={<AnswerList node={node} renderRow={renderRow} />}
     />
   );
 });

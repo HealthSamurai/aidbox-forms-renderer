@@ -17,7 +17,7 @@ export const DropdownRenderer = observer(function DropdownRenderer<
     <QuestionScaffold
       node={node}
       showOptionsState
-      body={<DropdownControl node={node} mode={mode} />}
+      children={<DropdownControl node={node} mode={mode} />}
     />
   );
 });

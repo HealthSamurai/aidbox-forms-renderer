@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { IGroupNode } from "../../../types.ts";
-import { getNodeLabelParts } from "../../form/node-text.tsx";
+import { NodeHeader } from "../../form/node-header.tsx";
 import { NodeErrors } from "../../form/node-errors.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
 
@@ -15,16 +15,16 @@ export function GroupScaffold({
   dataControl,
   children,
 }: GroupScaffoldProps) {
-  const { GroupBody, NodeList } = useTheme();
-  const { labelText } = getNodeLabelParts(node);
+  const { GroupScaffold: ThemedGroupScaffold, NodeList } = useTheme();
+  const header = node.template.text ? <NodeHeader node={node} /> : null;
   return (
-    <GroupBody
+    <ThemedGroupScaffold
       linkId={node.linkId}
       dataControl={dataControl ?? undefined}
-      legend={node.template.text ? labelText : null}
+      header={header}
     >
       <NodeList>{children}</NodeList>
       <NodeErrors node={node} />
-    </GroupBody>
+    </ThemedGroupScaffold>
   );
 }

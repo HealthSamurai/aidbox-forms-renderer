@@ -6,7 +6,7 @@ import { Node } from "../../../form/node.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 
-export const TabContainerControl = observer(function TabContainerControl({
+export const TabContainerRenderer = observer(function TabContainerRenderer({
   node,
 }: GroupControlProps) {
   const { TabContainer } = useTheme();

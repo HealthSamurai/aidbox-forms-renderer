@@ -28,7 +28,7 @@ export const QuantityRenderer = observer(function QuantityRenderer({
   return (
     <QuestionScaffold
       node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
+      children={<AnswerList node={node} renderRow={renderRow} />}
     />
   );
 });

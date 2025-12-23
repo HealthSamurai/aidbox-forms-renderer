@@ -10,7 +10,7 @@ export const ListSelectRenderer = observer(function ListSelectRenderer<
     <QuestionScaffold
       node={node}
       showOptionsState
-      body={<ListSelectControl node={node} />}
+      children={<ListSelectControl node={node} />}
     />
   );
 });

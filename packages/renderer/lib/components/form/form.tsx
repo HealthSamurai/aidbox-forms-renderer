@@ -21,7 +21,7 @@ export const Form = observer(function Form({
 }) {
   const {
     Button,
-    FormShell,
+    Form: ThemedForm,
     FormHeader,
     FormErrors,
     NodeList,
@@ -102,7 +102,7 @@ export const Form = observer(function Form({
   ) : null;
 
   return (
-    <FormShell onSubmit={onSubmit}>
+    <ThemedForm onSubmit={onSubmit}>
       {store.questionnaire.title || store.questionnaire.description ? (
         <FormHeader
           title={store.questionnaire.title}
@@ -142,7 +142,7 @@ export const Form = observer(function Form({
           Reset
         </Button>
       </FormActions>
-    </FormShell>
+    </ThemedForm>
   );
 });
 

@@ -8,7 +8,7 @@ export const NodeErrors = observer(function NodeErrors({
 }: {
   node: INode;
 }) {
-  const { NodeErrors: ThemedNodeErrors } = useTheme();
+  const { Errors: ThemedErrors } = useTheme();
 
   if (!node.hasErrors) return null;
 
@@ -20,5 +20,5 @@ export const NodeErrors = observer(function NodeErrors({
     return null;
   }
 
-  return <ThemedNodeErrors id={getNodeErrorId(node)} messages={messages} />;
+  return <ThemedErrors id={getNodeErrorId(node)} messages={messages} />;
 });

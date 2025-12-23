@@ -10,7 +10,7 @@ export const LookupRenderer = observer(function LookupRenderer<
     <QuestionScaffold
       node={node}
       showOptionsState
-      body={<LookupControl node={node} />}
+      children={<LookupControl node={node} />}
     />
   );
 });

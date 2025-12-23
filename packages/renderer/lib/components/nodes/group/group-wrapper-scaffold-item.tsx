@@ -11,12 +11,12 @@ export const GroupWrapperScaffoldItem = observer(
     wrapper: IGroupWrapper;
     node: IGroupNode;
   }) {
-    const { Button, GroupHeader } = useTheme();
+    const { Button, GroupWrapperScaffoldItem: ThemedGroupWrapperScaffoldItem } =
+      useTheme();
     const ControlComponent = node.component;
 
     return ControlComponent ? (
-      <GroupHeader
-        control={<ControlComponent node={node} />}
+      <ThemedGroupWrapperScaffoldItem
         errors={<NodeErrors node={node} />}
         toolbar={
           wrapper.canRemove ? (
@@ -30,7 +30,9 @@ export const GroupWrapperScaffoldItem = observer(
             </Button>
           ) : null
         }
-      />
+      >
+        <ControlComponent node={node} />
+      </ThemedGroupWrapperScaffoldItem>
     ) : null;
   },
 );

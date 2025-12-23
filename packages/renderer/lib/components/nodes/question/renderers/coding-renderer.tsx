@@ -25,9 +25,8 @@ export const CodingRenderer = observer(function CodingRenderer({
   }, [node]);
 
   return (
-    <QuestionScaffold
-      node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
-    />
+    <QuestionScaffold node={node}>
+      <AnswerList node={node} renderRow={renderRow} />
+    </QuestionScaffold>
   );
 });

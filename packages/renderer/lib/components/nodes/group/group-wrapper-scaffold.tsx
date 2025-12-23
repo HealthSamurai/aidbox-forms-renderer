@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import type { ReactNode } from "react";
 import type { IGroupWrapper } from "../../../types.ts";
-import { getNodeLabelParts } from "../../form/node-text.tsx";
+import { NodeHeader } from "../../form/node-header.tsx";
 import { GroupWrapperScaffoldItem } from "./group-wrapper-scaffold-item.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
 
@@ -12,12 +12,13 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper: IGroupWrapper;
   children?: ReactNode;
 }) {
-  const { Button, RepeatingGroupList } = useTheme();
-  const { labelText } = getNodeLabelParts(wrapper);
+  const { Button, GroupWrapperScaffold: ThemedGroupWrapperScaffold } =
+    useTheme();
+  const header = wrapper.template.text ? <NodeHeader node={wrapper} /> : null;
   return (
-    <RepeatingGroupList
+    <ThemedGroupWrapperScaffold
       linkId={wrapper.linkId}
-      legend={wrapper.template.text ? labelText : null}
+      header={header}
       items={
         children ??
         wrapper.visibleNodes.map((node) => (

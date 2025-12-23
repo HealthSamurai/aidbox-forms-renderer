@@ -27,8 +27,7 @@ export const AttachmentRenderer = observer(function AttachmentRenderer({
   return (
     <QuestionScaffold
       node={node}
-      className="af-node-attachment"
-      body={<AnswerList node={node} renderRow={renderRow} />}
+      children={<AnswerList node={node} renderRow={renderRow} />}
     />
   );
 });

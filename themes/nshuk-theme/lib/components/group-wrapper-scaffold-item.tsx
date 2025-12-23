@@ -1,6 +1,10 @@
-import type { GroupHeaderProps } from "@aidbox-forms/theme";
+import type { GroupWrapperScaffoldItemProps } from "@aidbox-forms/theme";
 
-export function GroupHeader({ control, errors, toolbar }: GroupHeaderProps) {
+export function GroupWrapperScaffoldItem({
+  children,
+  errors,
+  toolbar,
+}: GroupWrapperScaffoldItemProps) {
   return (
     <div
       className="nhsuk-form-group"
@@ -10,7 +14,7 @@ export function GroupHeader({ control, errors, toolbar }: GroupHeaderProps) {
         marginTop: "1rem",
       }}
     >
-      <div className="nhsuk-form-group__control">{control}</div>
+      <div className="nhsuk-form-group__control">{children}</div>
       {errors}
       {toolbar ? (
         <div className="nhsuk-button-group nhsuk-u-margin-top-2">{toolbar}</div>

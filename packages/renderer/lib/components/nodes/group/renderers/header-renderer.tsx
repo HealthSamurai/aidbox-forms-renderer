@@ -3,12 +3,12 @@ import type { GroupControlProps } from "../../../../types.ts";
 import { NodesList } from "../../../form/node-list.tsx";
 import { GroupScaffold } from "../group-scaffold.tsx";
 
-export const FooterControl = observer(function FooterControl({
+export const HeaderRenderer = observer(function HeaderRenderer({
   node,
 }: GroupControlProps) {
   const visibleNodes = node.nodes.filter((child) => !child.hidden);
   return (
-    <GroupScaffold node={node} dataControl="footer">
+    <GroupScaffold node={node} dataControl="header">
       <NodesList nodes={visibleNodes} />
     </GroupScaffold>
   );

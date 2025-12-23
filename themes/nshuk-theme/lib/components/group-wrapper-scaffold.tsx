@@ -1,12 +1,12 @@
-import type { RepeatingGroupListProps } from "@aidbox-forms/theme";
+import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
 import classNames from "classnames";
 
-export function RepeatingGroupList({
+export function GroupWrapperScaffold({
   linkId,
-  legend,
+  header,
   items,
   toolbar,
-}: RepeatingGroupListProps) {
+}: GroupWrapperScaffoldProps) {
   return (
     <fieldset
       className={classNames(
@@ -20,11 +20,7 @@ export function RepeatingGroupList({
         borderRadius: "4px",
       }}
     >
-      {legend ? (
-        <legend className="nhsuk-fieldset__legend nhsuk-fieldset__legend--m">
-          {legend}
-        </legend>
-      ) : null}
+      {header ? <div className="nhsuk-u-margin-bottom-2">{header}</div> : null}
       <div className="nhsuk-fieldset__content nhsuk-u-margin-top-2">
         {items}
       </div>

@@ -3,15 +3,15 @@ import type {
   IGroupNode,
   IGroupWrapper,
 } from "../../types.ts";
-import { DefaultControl } from "../../components/nodes/group/controls/default-control.tsx";
-import { FooterControl } from "../../components/nodes/group/controls/footer-control.tsx";
-import { GridControl } from "../../components/nodes/group/controls/grid-control.tsx";
-import { HeaderControl } from "../../components/nodes/group/controls/header-control.tsx";
-import { HTableControl } from "../../components/nodes/group/controls/htable-control.tsx";
-import { PageControl } from "../../components/nodes/group/controls/page-control.tsx";
-import { TabContainerControl } from "../../components/nodes/group/controls/tab-container-control.tsx";
-import { TableControl } from "../../components/nodes/group/controls/table-control.tsx";
-import { GTableControl } from "../../components/nodes/group/controls/gtable-control.tsx";
+import { DefaultRenderer } from "../../components/nodes/group/renderers/default-renderer.tsx";
+import { FooterRenderer } from "../../components/nodes/group/renderers/footer-renderer.tsx";
+import { GridRenderer } from "../../components/nodes/group/renderers/grid-renderer.tsx";
+import { HeaderRenderer } from "../../components/nodes/group/renderers/header-renderer.tsx";
+import { HorizontalTableRenderer } from "../../components/nodes/group/renderers/horizontal-table-renderer.tsx";
+import { PageRenderer } from "../../components/nodes/group/renderers/page-renderer.tsx";
+import { TabContainerRenderer } from "../../components/nodes/group/renderers/tab-container-renderer.tsx";
+import { VerticalTableRenderer } from "../../components/nodes/group/renderers/vertical-table-renderer.tsx";
+import { GTableRenderer } from "../../components/nodes/group/renderers/gtable-renderer.tsx";
 import { GroupWrapperScaffold } from "../../components/nodes/group/group-wrapper-scaffold.tsx";
 
 export class GroupControlRegistry {
@@ -44,69 +44,69 @@ export const defaultGroupControlDefinitions: GroupControlDefinition[] = [
     name: "group-tab-container",
     priority: 100,
     matcher: (node) => node.control === "tab-container",
-    groupComponent: TabContainerControl,
+    groupComponent: TabContainerRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-page",
     priority: 10,
     matcher: (node) => node.control === "page",
-    groupComponent: PageControl,
+    groupComponent: PageRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-header",
     priority: 10,
     matcher: (node) => node.control === "header",
-    groupComponent: HeaderControl,
+    groupComponent: HeaderRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-footer",
     priority: 10,
     matcher: (node) => node.control === "footer",
-    groupComponent: FooterControl,
+    groupComponent: FooterRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-grid",
     priority: 10,
     matcher: (node) => node.control === "grid",
-    groupComponent: GridControl,
+    groupComponent: GridRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-gtable",
     priority: 10,
     matcher: (node) => node.control === "gtable",
-    wrapperComponent: GTableControl,
+    wrapperComponent: GTableRenderer,
   },
   {
     name: "group-htable",
     priority: 10,
     matcher: (node) => node.control === "htable",
-    groupComponent: HTableControl,
+    groupComponent: HorizontalTableRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-table",
     priority: 10,
     matcher: (node) => node.control === "table",
-    groupComponent: TableControl,
+    groupComponent: VerticalTableRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-list",
     priority: 10,
     matcher: (node) => node.control === "list",
-    groupComponent: DefaultControl,
+    groupComponent: DefaultRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-default",
     priority: Number.NEGATIVE_INFINITY,
     matcher: () => true,
-    groupComponent: DefaultControl,
+    groupComponent: DefaultRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
 ];

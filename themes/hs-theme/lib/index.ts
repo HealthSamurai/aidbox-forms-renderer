@@ -22,16 +22,16 @@ export { MultiSelectField } from "./components/multi-select-field.tsx";
 export { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 export { CodingInput } from "./components/coding-input.tsx";
 export { ReferenceInput } from "./components/reference-input.tsx";
-export { NodeErrors } from "./components/node-errors.tsx";
+export { Errors } from "./components/errors.tsx";
 export { NodeHeader } from "./components/node-header.tsx";
-export { NodeWrapper } from "./components/node-wrapper.tsx";
+export { QuestionScaffold } from "./components/question-scaffold.tsx";
 export { OptionsState } from "./components/options-state.tsx";
 export { NodeHelp } from "./components/node-help.tsx";
 export { NodeLegal } from "./components/node-legal.tsx";
 export { NodeFlyover } from "./components/node-flyover.tsx";
 export { AnswerList } from "./components/answer-list.tsx";
 export { AnswerRow } from "./components/answer-row.tsx";
-export { FormShell } from "./components/form-shell.tsx";
+export { Form } from "./components/form.tsx";
 export { FormHeader } from "./components/form-header.tsx";
 export { FormErrors } from "./components/form-errors.tsx";
 export { NodeList } from "./components/node-list.tsx";
@@ -40,9 +40,9 @@ export { PageStatus } from "./components/page-status.tsx";
 export { PageNavigation } from "./components/page-navigation.tsx";
 export { EmptyState } from "./components/empty-state.tsx";
 export { FormActions } from "./components/form-actions.tsx";
-export { RepeatingGroupList } from "./components/repeating-group-list.tsx";
-export { GroupHeader } from "./components/group-header.tsx";
-export { GroupBody } from "./components/group-body.tsx";
+export { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
+export { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
+export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { GroupActions } from "./components/group-actions.tsx";
 export { SelectionMatrix } from "./components/selection-matrix.tsx";
 export { GridTable } from "./components/grid-table.tsx";
@@ -71,14 +71,14 @@ import { MultiSelectField } from "./components/multi-select-field.tsx";
 import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
-import { NodeErrors } from "./components/node-errors.tsx";
+import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
-import { NodeWrapper } from "./components/node-wrapper.tsx";
+import { QuestionScaffold } from "./components/question-scaffold.tsx";
 import { OptionsState } from "./components/options-state.tsx";
 import { NodeHelp } from "./components/node-help.tsx";
 import { NodeLegal } from "./components/node-legal.tsx";
 import { NodeFlyover } from "./components/node-flyover.tsx";
-import { FormShell } from "./components/form-shell.tsx";
+import { Form } from "./components/form.tsx";
 import { FormHeader } from "./components/form-header.tsx";
 import { FormErrors } from "./components/form-errors.tsx";
 import { NodeList } from "./components/node-list.tsx";
@@ -90,9 +90,9 @@ import { FormActions } from "./components/form-actions.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import { AnswerRow } from "./components/answer-row.tsx";
-import { RepeatingGroupList } from "./components/repeating-group-list.tsx";
-import { GroupHeader } from "./components/group-header.tsx";
-import { GroupBody } from "./components/group-body.tsx";
+import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
+import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
+import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { SelectionMatrix } from "./components/selection-matrix.tsx";
 import { GridTable } from "./components/grid-table.tsx";
@@ -122,14 +122,14 @@ export const theme: Theme = {
   TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
-  NodeErrors,
+  Errors,
   NodeHeader,
-  NodeWrapper,
+  QuestionScaffold,
   OptionsState,
   NodeHelp,
   NodeLegal,
   NodeFlyover,
-  FormShell,
+  Form,
   FormHeader,
   FormErrors,
   NodeList,
@@ -140,9 +140,9 @@ export const theme: Theme = {
   FormActions,
   AnswerList,
   AnswerRow,
-  RepeatingGroupList,
-  GroupHeader,
-  GroupBody,
+  GroupWrapperScaffold,
+  GroupWrapperScaffoldItem,
+  GroupScaffold,
   GroupActions,
   SelectionMatrix,
   GridTable,

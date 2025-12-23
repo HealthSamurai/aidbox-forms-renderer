@@ -55,22 +55,23 @@ flowchart TD
   end
 
   Node -->|display| DisplayRenderer
-  Node -->|group| GroupControl
+  Node -->|group| GroupRenderer
   Node -->|group wrapper| GroupWrapperScaffold
   Node -->|question| QuestionRenderer
 
   subgraph Groups
-    GroupControl --> GroupScaffold
+    GroupRenderer --> GroupScaffold
+    GroupScaffold --> NodeHeader
     GroupScaffold --> NodesList
     GroupScaffold --> NodeErrors
-    GroupControl --> DefaultControl
-    GroupControl --> HeaderControl
-    GroupControl --> FooterControl
-    GroupControl --> PageControl
-    GroupControl --> GridControl --> GroupGridTable
-    GroupControl --> TableControl --> SelectionMatrixTable
-    GroupControl --> HTableControl --> SelectionMatrixHorizontalTable
-    GroupControl --> TabContainerControl
+    GroupRenderer --> DefaultRenderer
+    GroupRenderer --> HeaderRenderer
+    GroupRenderer --> FooterRenderer
+    GroupRenderer --> PageRenderer
+    GroupRenderer --> GridRenderer
+    GroupRenderer --> VerticalTableRenderer --> SelectionMatrixTable
+    GroupRenderer --> HorizontalTableRenderer --> SelectionMatrixHorizontalTable
+    GroupRenderer --> TabContainerRenderer
     GroupWrapperScaffold --> GroupWrapperScaffoldItem
     GroupWrapperScaffold --> RepeatingGroupMatrix
   end
@@ -110,7 +111,7 @@ flowchart LR
     AnswerRow
     SelectionMatrixTable
     SelectionMatrixHorizontalTable
-    GroupGridTable
+    GridRenderer
     MultiSelectControl
     DropdownControl
     ListSelectControl
@@ -119,7 +120,7 @@ flowchart LR
   end
 
   subgraph Theme
-    FormShell
+    FormTheme["Form (theme)"]
     FormHeader
     FormErrors
     NodeListTheme["NodeList (theme)"]
@@ -129,13 +130,13 @@ flowchart LR
     FormActions
     Button
     DisplayRendererTheme["DisplayRenderer (theme)"]
-    NodeWrapper
+    QuestionScaffoldTheme["QuestionScaffold (theme)"]
     NodeHeaderTheme["NodeHeader (theme)"]
     OptionsState
-    NodeErrorsTheme["NodeErrors (theme)"]
-    GroupBody
-    GroupHeader
-    RepeatingGroupList
+    ErrorsTheme["Errors (theme)"]
+    GroupScaffoldTheme["GroupScaffold (theme)"]
+    GroupWrapperScaffoldItemTheme["GroupWrapperScaffoldItem (theme)"]
+    GroupWrapperScaffoldTheme["GroupWrapperScaffold (theme)"]
     GridTable
     SelectionMatrix
     AnswerListTheme["AnswerList (theme)"]
@@ -149,7 +150,7 @@ flowchart LR
     AttachmentInput
   end
 
-  Form --> FormShell
+  Form --> FormTheme
   Form --> FormHeader
   Form --> FormErrors
   Form --> NodeListTheme
@@ -160,24 +161,25 @@ flowchart LR
   Form --> Button
 
   DisplayRenderer --> DisplayRendererTheme
-  QuestionScaffold --> NodeWrapper
+  QuestionScaffold --> QuestionScaffoldTheme
   QuestionScaffold --> NodeHeaderTheme
   QuestionScaffold --> OptionsState
-  QuestionScaffold --> NodeErrorsTheme
-  GroupScaffold --> GroupBody
+  QuestionScaffold --> ErrorsTheme
+  GroupScaffold --> GroupScaffoldTheme
+  GroupScaffold --> NodeHeaderTheme
   GroupScaffold --> NodeListTheme
-  GroupScaffold --> NodeErrorsTheme
-  GroupWrapperScaffold --> RepeatingGroupList
+  GroupScaffold --> ErrorsTheme
+  GroupWrapperScaffold --> GroupWrapperScaffoldTheme
   GroupWrapperScaffold --> Button
-  GroupWrapperScaffoldItem --> GroupHeader
+  GroupWrapperScaffoldItem --> GroupWrapperScaffoldItemTheme
 
   AnswerList --> AnswerListTheme
   AnswerList --> Button
   AnswerRow --> AnswerRowTheme
   AnswerRow --> Button
-  AnswerRow --> NodeErrorsTheme
+  AnswerRow --> ErrorsTheme
 
-  GroupGridTable --> GridTable
+  GridRenderer --> GridTable
   SelectionMatrixTable --> SelectionMatrix
   SelectionMatrixHorizontalTable --> SelectionMatrix
 
@@ -301,11 +303,11 @@ flowchart TD
 
   QuestionRenderer --> QuestionScaffold
   QuestionScaffold --> Header["Header\nlabel, required, help/legal/flyover"]
-  QuestionScaffold --> Body["Body (chosen by renderer)"]
+  QuestionScaffold --> Children["Children (chosen by renderer)"]
   QuestionScaffold --> Footer["Footer\nquestion-level errors"]
 
-  Body --> AnswerListPath["AnswerList path\n(when children or control cannot\nmanage multi-answer)"]
-  Body --> SingleControlPath["Single multi-answer control\n(when no children and control manages\nall answers + min/max + errors)"]
+  Children --> AnswerListPath["AnswerList path\n(when children or control cannot\nmanage multi-answer)"]
+  Children --> SingleControlPath["Single multi-answer control\n(when no children and control manages\nall answers + min/max + errors)"]
 
   AnswerListPath --> AnswerList
   AnswerList --> AnswerRow

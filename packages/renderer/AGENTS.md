@@ -64,12 +64,12 @@
 ### Question Components Anatomy
 
 - Renderer registry picks a renderer based on question store properties (`type`, `repeats`, `hasChildren`, options hints, extensions, enablement flags).
-- Renderer is a React component that receives a `QuestionStore`, chooses a body rendering strategy, and wraps its body with `QuestionScaffold`; the concrete body it supplies is what differentiates one renderer from another.
+- Renderer is a React component that receives a `QuestionStore`, chooses a rendering strategy, and wraps its children with `QuestionScaffold`; the concrete children it supplies are what differentiate one renderer from another.
 - QuestionScaffold
   - Header: label text, required flag, tooltips (help, legal, flyover).
-  - Body: provided by the renderer.
+  - Children: provided by the renderer.
   - Footer: question-level validation errors (not per-answer).
-- Body strategies
+- Children strategies
   - AnswerList path: used when the item has children or when the control cannot manage multiple answers at once. `AnswerList` handles add/remove, min/max occurs, renders one control per `AnswerInstance` (control is supplied by the renderer/registry, not chosen by `AnswerList`), and places nested child nodes under each answer row.
   - Single multi-answer control: used when there are no children and the control can manage all answers itself (e.g., checkbox list, multi-select chips, tokenized autocomplete/lookup); it enforces min/max occurs internally and renders answer-level errors inline.
 - Control components
@@ -172,7 +172,7 @@ Non-repeating text, no children
 QuestionRenderer
 └─ QuestionScaffold
    ├─ Header
-   ├─ Body: Control(TextControl single-answer)
+   ├─ Children: Control(TextControl single-answer)
    │   └─ InputComponent(TextInput)
    └─ Footer
 ```
@@ -183,7 +183,7 @@ Repeating choice with children (radio layout)
 QuestionRenderer
 └─ QuestionScaffold
    ├─ Header
-   ├─ Body: AnswerList
+   ├─ Children: AnswerList
    │   ├─ AnswerRow 1
    │   │   └─ Control(RadioListRow)
    │   │       └─ Option group (+ Specify other input)
@@ -198,7 +198,7 @@ Repeating choice without children using multi-answer control
 QuestionRenderer
 └─ QuestionScaffold
    ├─ Header
-   ├─ Body: Control(CheckboxList multi-answer)
+   ├─ Children: Control(CheckboxList multi-answer)
    │   ├─ Checkbox options (+ Specify others chip editor)
    │   └─ Answer-level errors
    └─ Footer

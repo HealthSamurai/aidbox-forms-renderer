@@ -1,12 +1,12 @@
-import type { GroupBodyProps } from "@aidbox-forms/theme";
+import type { GroupScaffoldProps } from "@aidbox-forms/theme";
 import classNames from "classnames";
 
-export function GroupBody({
+export function GroupScaffold({
   linkId,
-  legend,
+  header,
   children,
   dataControl,
-}: GroupBodyProps) {
+}: GroupScaffoldProps) {
   return (
     <fieldset
       className={classNames(
@@ -22,11 +22,7 @@ export function GroupBody({
         borderRadius: "4px",
       }}
     >
-      {legend ? (
-        <legend className="nhsuk-fieldset__legend nhsuk-fieldset__legend--m">
-          {legend}
-        </legend>
-      ) : null}
+      {header ? <div className="nhsuk-u-margin-bottom-2">{header}</div> : null}
       <div className="nhsuk-fieldset__content nhsuk-u-margin-top-2">
         {children}
       </div>

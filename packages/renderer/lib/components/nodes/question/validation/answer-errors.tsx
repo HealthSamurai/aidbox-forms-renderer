@@ -8,7 +8,7 @@ export const AnswerErrors = observer(function AnswerErrors({
 }: {
   answer: IAnswerInstance;
 }) {
-  const { NodeErrors } = useTheme();
+  const { Errors: ThemedErrors } = useTheme();
 
   if (answer.issues.length === 0) {
     return null;
@@ -22,5 +22,5 @@ export const AnswerErrors = observer(function AnswerErrors({
     return null;
   }
 
-  return <NodeErrors id={getAnswerErrorId(answer)} messages={messages} />;
+  return <ThemedErrors id={getAnswerErrorId(answer)} messages={messages} />;
 });

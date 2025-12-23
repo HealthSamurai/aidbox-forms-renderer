@@ -1,4 +1,4 @@
-import type { GroupBodyProps } from "@aidbox-forms/theme";
+import type { GroupScaffoldProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
 const backgrounds: Record<string, string | undefined> = {
@@ -7,12 +7,12 @@ const backgrounds: Record<string, string | undefined> = {
   page: "#ffffff",
 };
 
-export function GroupBody({
+export function GroupScaffold({
   linkId,
-  legend,
+  header,
   children,
   dataControl,
-}: GroupBodyProps) {
+}: GroupScaffoldProps) {
   const background = backgrounds[dataControl ?? ""] ?? "#ffffff";
   return (
     <Container
@@ -22,7 +22,7 @@ export function GroupBody({
       $variant={dataControl ?? ""}
       style={{ background }}
     >
-      {legend ? <Legend>{legend}</Legend> : null}
+      {header ? <Header>{header}</Header> : null}
       <Content>{children}</Content>
     </Container>
   );
@@ -37,9 +37,7 @@ const Container = styled.fieldset<{ $variant: string }>`
     props.$variant === "page" ? "0 2px 6px rgba(0, 0, 0, 0.05)" : "none"};
 `;
 
-const Legend = styled.legend`
-  font-weight: 600;
-  padding: 0 0.25rem;
+const Header = styled.div`
   margin-bottom: 0.5rem;
 `;
 

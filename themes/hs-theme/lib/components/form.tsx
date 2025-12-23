@@ -1,7 +1,7 @@
-import type { FormShellProps } from "@aidbox-forms/theme";
+import type { FormProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
-export function FormShell({ onSubmit, children }: FormShellProps) {
+export function Form({ onSubmit, children }: FormProps) {
   return <FormElement onSubmit={onSubmit}>{children}</FormElement>;
 }
 

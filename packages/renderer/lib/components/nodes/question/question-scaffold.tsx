@@ -6,25 +6,23 @@ import { useTheme } from "../../../ui/theme.tsx";
 
 export type QuestionScaffoldProps = {
   node: IQuestionNode;
-  className?: string;
-  body: ReactNode;
+  children: ReactNode;
   showOptionsState?: boolean;
 };
 
 export function QuestionScaffold({
   node,
-  className,
-  body,
+  children,
   showOptionsState,
 }: QuestionScaffoldProps) {
-  const { NodeWrapper } = useTheme();
+  const { QuestionScaffold: ThemedQuestionScaffold } = useTheme();
+  const header = <NodeHeader node={node} />;
   return (
-    <NodeWrapper linkId={node.linkId} className={className}>
-      <NodeHeader node={node} />
+    <ThemedQuestionScaffold linkId={node.linkId} header={header}>
       {showOptionsState ? <QuestionOptionsState node={node} /> : null}
-      {body}
+      {children}
       <QuestionErrors node={node} />
-    </NodeWrapper>
+    </ThemedQuestionScaffold>
   );
 }
 

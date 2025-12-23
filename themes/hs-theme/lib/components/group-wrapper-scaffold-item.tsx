@@ -1,10 +1,14 @@
-import type { GroupHeaderProps } from "@aidbox-forms/theme";
+import type { GroupWrapperScaffoldItemProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
-export function GroupHeader({ control, errors, toolbar }: GroupHeaderProps) {
+export function GroupWrapperScaffoldItem({
+  children,
+  errors,
+  toolbar,
+}: GroupWrapperScaffoldItemProps) {
   return (
     <Item>
-      <Content>{control}</Content>
+      <Content>{children}</Content>
       {errors}
       {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
     </Item>

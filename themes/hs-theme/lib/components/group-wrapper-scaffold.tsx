@@ -1,15 +1,15 @@
-import type { RepeatingGroupListProps } from "@aidbox-forms/theme";
+import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
-export function RepeatingGroupList({
+export function GroupWrapperScaffold({
   linkId,
-  legend,
+  header,
   items,
   toolbar,
-}: RepeatingGroupListProps) {
+}: GroupWrapperScaffoldProps) {
   return (
     <Container data-linkid={linkId}>
-      {legend ? <Legend>{legend}</Legend> : null}
+      {header ? <Header>{header}</Header> : null}
       <Items>{items}</Items>
       {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
     </Container>
@@ -22,9 +22,8 @@ const Container = styled.fieldset`
   padding: 1rem;
 `;
 
-const Legend = styled.legend`
-  padding: 0 0.25rem;
-  font-weight: 600;
+const Header = styled.div`
+  margin-bottom: 0.5rem;
 `;
 
 const Items = styled.div`

@@ -71,7 +71,7 @@ export const DecimalRenderer = observer(function DecimalRenderer({
   return (
     <QuestionScaffold
       node={node}
-      body={<AnswerList node={node} renderRow={renderRow} />}
+      children={<AnswerList node={node} renderRow={renderRow} />}
     />
   );
 });

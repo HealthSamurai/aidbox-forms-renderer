@@ -12,7 +12,7 @@ import { QuestionnaireItem } from "fhir/r5";
 import { useTheme } from "../../../../ui/theme.tsx";
 import type { GridTableProps } from "@aidbox-forms/theme";
 
-export const GTableControl = function GTableControl({
+export const GTableRenderer = function GTableRenderer({
   wrapper,
 }: GroupWrapperControlProps) {
   return (

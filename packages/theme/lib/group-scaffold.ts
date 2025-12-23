@@ -1,10 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type GroupBodyProps = {
+export type GroupScaffoldProps = {
   linkId: string;
-  legend?: ReactNode;
+  header?: ReactNode;
   children: ReactNode;
   dataControl?: string | null | undefined;
 };
 
-export type GroupBodyComponent = ComponentType<GroupBodyProps>;
+export type GroupScaffoldComponent = ComponentType<GroupScaffoldProps>;
