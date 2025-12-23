@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { WidgetScaffold } from "../widget-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { DecimalInput } from "../inputs/decimal-input.tsx";
+import { DecimalInput } from "../fhir/decimal/DecimalInput.tsx";
 import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";

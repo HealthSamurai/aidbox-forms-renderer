@@ -1,15 +1,16 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import type {
   AnswerOptionEntry,
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
-  IQuestionNode,
   IAnswerInstance,
+  IQuestionNode,
 } from "../../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
+  answerHasContent,
   areValuesEqual,
   cloneValue,
 } from "../../../../utils.ts";
@@ -17,6 +18,12 @@ import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
+import type { RowRenderProps } from "../answers/answer-row.tsx";
+import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
+import {
+  MultiSelectControl,
+  type CustomKind,
+} from "./multi-select-control.tsx";
 
 const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
   {
@@ -45,7 +52,7 @@ const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
 export const OptionListControl = observer(function OptionListControl<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
-  const { OptionRadioGroup, OptionCheckboxGroup } = useTheme();
+  const { CheckboxGroup } = useTheme();
   const hasChildren =
     Array.isArray(node.template.item) && node.template.item.length > 0;
   const useCheckboxes = node.repeats && !hasChildren;
@@ -59,105 +66,254 @@ export const OptionListControl = observer(function OptionListControl<
     [isBooleanFallback, node.options.entries],
   );
   const isLoading = node.options.loading;
+  const customKind = getCustomKind(node);
+  const allowCustom = customKind !== "none";
+  const [customActive, setCustomActive] = useState(false);
 
   if (useCheckboxes) {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[node.type];
     const selectedKeys = new Set<string>();
     const answerByKey = new Map<string, IAnswerInstance<T>>();
+    const matchedAnswerKeys = new Set<string>();
+
     options.forEach((option) => {
       const match = findAnswer(option, dataType, node);
       if (match) {
         selectedKeys.add(option.key);
         answerByKey.set(option.key, match);
+        matchedAnswerKeys.add(match.key);
       }
     });
-    const uiOptions = options.map((option) => ({
-      ...option,
-      disabled:
-        option.disabled || (!selectedKeys.has(option.key) && !node.canAdd),
-    }));
+
+    const nonOptionAnswers = node.answers.filter(
+      (answer) => !matchedAnswerKeys.has(answer.key),
+    );
+    const customAnswers = nonOptionAnswers.filter(answerHasContent);
+    const availableAnswers = nonOptionAnswers.filter(
+      (answer) => answer.value == null,
+    );
+    const canAddSelection =
+      !node.readOnly && (node.canAdd || availableAnswers.length > 0);
+    const hasCustomAnswers = allowCustom && customAnswers.length > 0;
+    const isCustomActive = allowCustom && (customActive || hasCustomAnswers);
+    const specifyOthersKey = `${node.key}::__specify_others__`;
+
+    if (isCustomActive) {
+      selectedKeys.add(specifyOthersKey);
+    }
+
+    const uiOptions = options.map((option) => {
+      const isSelected = selectedKeys.has(option.key);
+      return {
+        key: option.key,
+        label: option.label,
+        value: option.value,
+        disabled:
+          option.disabled ||
+          (!isSelected && !canAddSelection) ||
+          (isSelected && !node.canRemove),
+      };
+    });
+
+    if (allowCustom) {
+      uiOptions.push({
+        key: specifyOthersKey,
+        label: "Specify others",
+        value: null as unknown as AnswerOptionEntry<T>["value"],
+        disabled:
+          (!isCustomActive && !canAddSelection) ||
+          (isCustomActive && !node.canRemove),
+      });
+    }
+
     return (
-      <OptionCheckboxGroup
-        options={uiOptions}
-        selectedKeys={selectedKeys}
-        onToggle={(key) => {
-          const option = options.find((entry) => entry.key === key);
-          if (!option) return;
-          const existing = answerByKey.get(key);
-          if (existing) {
-            node.removeAnswer(existing);
-            return;
-          }
-          const next =
-            option.value === undefined
-              ? null
-              : (cloneValue(option.value) as DataTypeToType<
-                  AnswerTypeToDataType<T>
-                >);
-          node.addAnswer(next);
-        }}
-        inputName={node.key}
-        labelId={getNodeLabelId(node)}
-        describedById={getNodeDescribedBy(node)}
-        readOnly={node.readOnly}
-        isLoading={isLoading}
-        renderErrors={(key) => {
-          const answer = answerByKey.get(key);
-          return answer ? <AnswerErrors answer={answer} /> : null;
-        }}
-      />
+      <div>
+        <CheckboxGroup
+          options={uiOptions}
+          selectedKeys={selectedKeys}
+          onToggle={(key) => {
+            if (allowCustom && key === specifyOthersKey) {
+              if (isCustomActive) {
+                if (!node.canRemove) return;
+                nonOptionAnswers.forEach((answer) => node.removeAnswer(answer));
+                setCustomActive(false);
+                return;
+              }
+              if (!canAddSelection) return;
+              setCustomActive(true);
+              return;
+            }
+
+            const option = options.find((entry) => entry.key === key);
+            if (!option) return;
+            const existing = answerByKey.get(key);
+            if (existing) {
+              if (!node.canRemove) return;
+              node.removeAnswer(existing);
+              return;
+            }
+            if (!canAddSelection) return;
+            const next =
+              option.value === undefined
+                ? null
+                : (cloneValue(option.value) as DataTypeToType<
+                    AnswerTypeToDataType<T>
+                  >);
+            const slot = availableAnswers[0];
+            if (slot) {
+              slot.setValueByUser(next);
+              return;
+            }
+            node.addAnswer(next);
+          }}
+          inputName={node.key}
+          labelId={getNodeLabelId(node)}
+          describedById={getNodeDescribedBy(node)}
+          readOnly={node.readOnly}
+          isLoading={isLoading}
+          renderErrors={(key) => {
+            const answer = answerByKey.get(key);
+            return answer ? <AnswerErrors answer={answer} /> : null;
+          }}
+        />
+        {allowCustom && isCustomActive ? (
+          <MultiSelectControl
+            node={node}
+            options={options}
+            displayOptions={[]}
+            mode="autocomplete"
+            customKind={customKind}
+            showOptions
+            showSelectedOptions={false}
+          />
+        ) : null}
+      </div>
     );
   }
-
-  const dataType = ANSWER_TYPE_TO_DATA_TYPE[node.type];
 
   return (
     <AnswerList
       node={node}
-      renderRow={(rowProps) => {
-        const selectKey = isBooleanFallback
-          ? getKeyForValueFromEntries(options, dataType, rowProps.value)
-          : node.options.getKeyForValue(rowProps.value);
-
-        const legacyOption =
-          !isBooleanFallback && selectKey === "" && rowProps.value != null
-            ? node.options.getLegacyEntryForValue(
-                rowProps.answer.key,
-                rowProps.value,
-              )
-            : null;
-
-        const selectValue = selectKey || legacyOption?.key || "";
-
-        return (
-          <OptionRadioGroup
-            options={options}
-            selectValue={selectValue}
-            legacyOptionLabel={legacyOption?.label}
-            legacyOptionKey={legacyOption?.key}
-            onChange={(key) => {
-              if (isBooleanFallback) {
-                const nextValue = key
-                  ? getValueForKeyFromEntries(options, key)
-                  : null;
-                rowProps.setValue(nextValue);
-                return;
-              }
-
-              const nextValue = key ? node.options.getValueForKey(key) : null;
-              rowProps.setValue(nextValue);
-            }}
-            inputId={rowProps.inputId}
-            labelId={rowProps.labelId}
-            describedById={rowProps.describedById}
-            readOnly={node.readOnly}
-            isLoading={isLoading}
-          />
-        );
-      }}
+      renderRow={(rowProps) => (
+        <OptionRadioRow
+          node={node}
+          rowProps={rowProps}
+          options={options}
+          isBooleanFallback={isBooleanFallback}
+          isLoading={isLoading}
+          customKind={customKind}
+        />
+      )}
     />
   );
 });
+
+const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
+  node,
+  rowProps,
+  options,
+  isBooleanFallback,
+  isLoading,
+  customKind,
+}: {
+  node: IQuestionNode<T>;
+  rowProps: RowRenderProps<T>;
+  options: ReadonlyArray<AnswerOptionEntry<T>>;
+  isBooleanFallback: boolean;
+  isLoading: boolean;
+  customKind: CustomKind;
+}) {
+  const { RadioGroup } = useTheme();
+  const [forceCustom, setForceCustom] = useState(false);
+  const allowCustom = customKind !== "none";
+  const dataType = ANSWER_TYPE_TO_DATA_TYPE[node.type];
+  const specifyOtherKey = `${node.key}::__specify_other__`;
+
+  const baseOptions = options.map((option) => ({
+    key: option.key,
+    label: option.label,
+    disabled: option.disabled,
+  }));
+  const radioOptions = allowCustom
+    ? [...baseOptions, { key: specifyOtherKey, label: "Specify other" }]
+    : baseOptions;
+
+  const selectKey = isBooleanFallback
+    ? getKeyForValueFromEntries(options, dataType, rowProps.value)
+    : node.options.getKeyForValue(rowProps.value);
+
+  const isCustomValue =
+    allowCustom && selectKey === "" && rowProps.value != null;
+  const isCustomActive = isCustomValue || forceCustom;
+
+  const legacyOption =
+    !allowCustom &&
+    !isBooleanFallback &&
+    selectKey === "" &&
+    rowProps.value != null
+      ? node.options.getLegacyEntryForValue(rowProps.answer.key, rowProps.value)
+      : null;
+
+  const selectValue = isCustomActive
+    ? specifyOtherKey
+    : selectKey || legacyOption?.key || "";
+
+  useEffect(() => {
+    if (!allowCustom) return;
+    if (selectKey && forceCustom) {
+      setForceCustom(false);
+    }
+  }, [allowCustom, forceCustom, selectKey]);
+
+  const customInput =
+    allowCustom && isCustomActive
+      ? getAnswerInputRenderer(node)(rowProps)
+      : null;
+
+  return (
+    <div>
+      <RadioGroup
+        options={radioOptions}
+        selectValue={selectValue}
+        legacyOptionLabel={legacyOption?.label}
+        legacyOptionKey={legacyOption?.key}
+        onChange={(key) => {
+          if (allowCustom && key === specifyOtherKey) {
+            setForceCustom(true);
+            if (!isCustomValue) {
+              rowProps.setValue(null);
+            }
+            return;
+          }
+          setForceCustom(false);
+          if (isBooleanFallback) {
+            const nextValue = key
+              ? getValueForKeyFromEntries(options, key)
+              : null;
+            rowProps.setValue(nextValue);
+            return;
+          }
+          const nextValue = key ? node.options.getValueForKey(key) : null;
+          rowProps.setValue(nextValue);
+        }}
+        inputId={rowProps.inputId}
+        labelId={rowProps.labelId}
+        describedById={rowProps.describedById}
+        readOnly={node.readOnly}
+        isLoading={isLoading}
+      />
+      {customInput ? (
+        <div style={{ paddingLeft: "1.5rem" }}>{customInput}</div>
+      ) : null}
+    </div>
+  );
+});
+
+function getCustomKind(node: IQuestionNode): CustomKind {
+  if (node.options.constraint === "optionsOrString") return "string";
+  if (node.options.constraint === "optionsOrType") return "type";
+  return "none";
+}
 
 function findAnswer<T extends AnswerType>(
   option: AnswerOptionEntry<T>,

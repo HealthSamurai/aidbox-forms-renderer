@@ -1,0 +1,20 @@
+import type { ComponentType, ReactNode } from "react";
+
+export type CheckboxGroupProps<TValue = unknown> = {
+  options: ReadonlyArray<{
+    key: string;
+    label: string;
+    value: TValue;
+    disabled?: boolean;
+  }>;
+  selectedKeys: Set<string>;
+  onToggle: (key: string) => void;
+  inputName: string;
+  labelId: string;
+  describedById?: string | undefined;
+  readOnly?: boolean;
+  isLoading?: boolean;
+  renderErrors?: (key: string) => ReactNode;
+};
+
+export type CheckboxGroupComponent = ComponentType<CheckboxGroupProps>;

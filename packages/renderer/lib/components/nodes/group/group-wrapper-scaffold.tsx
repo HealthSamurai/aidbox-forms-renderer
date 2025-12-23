@@ -12,10 +12,10 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper: IGroupWrapper;
   children?: ReactNode;
 }) {
-  const { Button, GroupWrapper } = useTheme();
+  const { Button, RepeatingGroupList } = useTheme();
   const { labelText } = getNodeLabelParts(wrapper);
   return (
-    <GroupWrapper
+    <RepeatingGroupList
       linkId={wrapper.linkId}
       legend={wrapper.template.text ? labelText : null}
       items={

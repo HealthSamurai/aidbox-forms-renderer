@@ -9,7 +9,7 @@ export const OptionListWidget = observer(function OptionListWidget<
   return (
     <WidgetScaffold
       node={node}
-      showOptionsStatus
+      showOptionsState
       body={<OptionListControl node={node} />}
     />
   );

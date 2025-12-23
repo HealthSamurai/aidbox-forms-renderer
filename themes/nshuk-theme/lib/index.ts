@@ -15,18 +15,18 @@ import { DateTimeInput } from "./components/date-time-input.tsx";
 import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
-import { OptionSelectField } from "./components/option-select-field.tsx";
-import { OptionsOrStringField } from "./components/options-or-string-field.tsx";
-import { OptionAutocompleteField } from "./components/option-autocomplete-field.tsx";
-import { OptionRadioGroup } from "./components/option-radio-group.tsx";
-import { OptionCheckboxGroup } from "./components/option-checkbox-group.tsx";
-import { TypedSuggestionInput } from "./components/typed-suggestion-input.tsx";
+import { SelectField } from "./components/select-field.tsx";
+import { SelectOrStringField } from "./components/select-or-string-field.tsx";
+import { AutocompleteField } from "./components/autocomplete-field.tsx";
+import { RadioGroup } from "./components/radio-group.tsx";
+import { CheckboxGroup } from "./components/checkbox-group.tsx";
+import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
 import { NodeErrors } from "./components/node-errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { NodeWrapper } from "./components/node-wrapper.tsx";
-import { OptionsStatus } from "./components/options-status.tsx";
+import { OptionsState } from "./components/options-state.tsx";
 import { NodeHelp } from "./components/node-help.tsx";
 import { NodeLegal } from "./components/node-legal.tsx";
 import { NodeFlyover } from "./components/node-flyover.tsx";
@@ -35,20 +35,20 @@ import { AnswerRow } from "./components/answer-row.tsx";
 import { FormShell } from "./components/form-shell.tsx";
 import { FormHeader } from "./components/form-header.tsx";
 import { FormErrors } from "./components/form-errors.tsx";
-import { NodesContainer } from "./components/nodes-container.tsx";
+import { NodeList } from "./components/node-list.tsx";
 import { FormSection } from "./components/form-section.tsx";
 import { PageStatus } from "./components/page-status.tsx";
 import { PageNavigation } from "./components/page-navigation.tsx";
 import { EmptyState } from "./components/empty-state.tsx";
 import { FormActions } from "./components/form-actions.tsx";
-import { GroupWrapper } from "./components/group-wrapper.tsx";
-import { GroupItem } from "./components/group-item.tsx";
-import { GroupContainer } from "./components/group-container.tsx";
-import { GroupExtras } from "./components/group-extras.tsx";
-import { ChoiceMatrix } from "./components/choice-matrix.tsx";
+import { RepeatingGroupList } from "./components/repeating-group-list.tsx";
+import { GroupHeader } from "./components/group-header.tsx";
+import { GroupBody } from "./components/group-body.tsx";
+import { GroupActions } from "./components/group-actions.tsx";
+import { SelectionMatrix } from "./components/selection-matrix.tsx";
 import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
-import { OpenChoiceField } from "./components/open-choice.tsx";
+import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayNode } from "./components/display-node.tsx";
 import "./global.css";
@@ -59,7 +59,7 @@ export { Button, TextInput, TextArea, NumberInput };
 export {
   CodingInput,
   ReferenceInput,
-  OpenChoiceField,
+  SelectOrInputField,
   TabContainer,
   DisplayNode,
 };
@@ -75,18 +75,18 @@ const passthrough: Theme = {
   TimeInput,
   SliderInput,
   SpinnerInput,
-  OptionSelectField,
-  OptionsOrStringField,
-  OptionAutocompleteField,
-  OptionRadioGroup,
-  OptionCheckboxGroup,
-  TypedSuggestionInput,
+  SelectField,
+  SelectOrStringField,
+  AutocompleteField,
+  RadioGroup,
+  CheckboxGroup,
+  TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
   NodeErrors,
   NodeHeader,
   NodeWrapper,
-  OptionsStatus,
+  OptionsState,
   NodeHelp,
   NodeLegal,
   NodeFlyover,
@@ -95,20 +95,20 @@ const passthrough: Theme = {
   FormShell,
   FormHeader,
   FormErrors,
-  NodesContainer,
+  NodeList,
   FormSection,
   PageStatus,
   PageNavigation,
   EmptyState,
   FormActions,
-  GroupWrapper,
-  GroupItem,
-  GroupContainer,
-  GroupExtras,
-  ChoiceMatrix,
+  RepeatingGroupList,
+  GroupHeader,
+  GroupBody,
+  GroupActions,
+  SelectionMatrix,
   GridTable,
   AttachmentInput,
-  OpenChoiceField,
+  SelectOrInputField,
   TabContainer,
   DisplayNode,
 };
@@ -123,23 +123,19 @@ export type DateTimeInputProps = ComponentProps<
 export type TimeInputProps = ComponentProps<typeof passthrough.TimeInput>;
 export type SliderInputProps = ComponentProps<typeof passthrough.SliderInput>;
 export type SpinnerInputProps = ComponentProps<typeof passthrough.SpinnerInput>;
-export type OptionSelectFieldProps = ComponentProps<
-  typeof passthrough.OptionSelectField
+export type SelectFieldProps = ComponentProps<typeof passthrough.SelectField>;
+export type SelectOrStringFieldProps = ComponentProps<
+  typeof passthrough.SelectOrStringField
 >;
-export type OptionsOrStringFieldProps = ComponentProps<
-  typeof passthrough.OptionsOrStringField
+export type AutocompleteFieldProps = ComponentProps<
+  typeof passthrough.AutocompleteField
 >;
-export type OptionAutocompleteFieldProps = ComponentProps<
-  typeof passthrough.OptionAutocompleteField
+export type RadioGroupProps = ComponentProps<typeof passthrough.RadioGroup>;
+export type CheckboxGroupProps = ComponentProps<
+  typeof passthrough.CheckboxGroup
 >;
-export type OptionRadioGroupProps = ComponentProps<
-  typeof passthrough.OptionRadioGroup
->;
-export type OptionCheckboxGroupProps = ComponentProps<
-  typeof passthrough.OptionCheckboxGroup
->;
-export type TypedSuggestionInputProps = ComponentProps<
-  typeof passthrough.TypedSuggestionInput
+export type TypedAutocompleteInputProps = ComponentProps<
+  typeof passthrough.TypedAutocompleteInput
 >;
 
 export default theme;

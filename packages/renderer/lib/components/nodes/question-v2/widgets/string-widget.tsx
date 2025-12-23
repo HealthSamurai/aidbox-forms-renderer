@@ -3,9 +3,9 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { WidgetScaffold } from "../widget-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { StringInput } from "../inputs/string-input.tsx";
-import { TextInput } from "../inputs/text-input.tsx";
-import { UrlInput } from "../inputs/url-input.tsx";
+import { StringInput } from "../fhir/string/StringInput.tsx";
+import { TextInput } from "../fhir/text/TextInput.tsx";
+import { UrlInput } from "../fhir/url/UrlInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const StringWidget = observer(function StringWidget({

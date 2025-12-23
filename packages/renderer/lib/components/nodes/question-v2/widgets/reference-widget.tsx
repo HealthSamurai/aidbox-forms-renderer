@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { WidgetScaffold } from "../widget-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { ReferenceInput } from "../inputs/reference-input.tsx";
+import { ReferenceInput } from "../fhir/reference/ReferenceInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const ReferenceWidget = observer(function ReferenceWidget({

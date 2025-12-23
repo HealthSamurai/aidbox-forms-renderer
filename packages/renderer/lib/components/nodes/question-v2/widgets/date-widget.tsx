@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { WidgetScaffold } from "../widget-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { DateQuestionInput } from "../inputs/date-input.tsx";
+import { DateInput } from "../fhir/date/DateInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const DateWidget = observer(function DateWidget({
@@ -13,7 +13,7 @@ export const DateWidget = observer(function DateWidget({
 }) {
   const renderRow = useMemo((): AnswerRowRenderer<"date"> => {
     return (rowProps) => (
-      <DateQuestionInput
+      <DateInput
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}

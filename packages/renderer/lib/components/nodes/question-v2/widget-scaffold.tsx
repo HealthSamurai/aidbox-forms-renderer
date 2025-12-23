@@ -10,7 +10,7 @@ export type WidgetScaffoldProps = {
   beforeBody?: ReactNode;
   body: ReactNode;
   afterBody?: ReactNode;
-  showOptionsStatus?: boolean;
+  showOptionsState?: boolean;
 };
 
 export function WidgetScaffold({
@@ -19,13 +19,13 @@ export function WidgetScaffold({
   beforeBody,
   body,
   afterBody,
-  showOptionsStatus,
+  showOptionsState,
 }: WidgetScaffoldProps) {
   const { NodeWrapper } = useTheme();
   return (
     <NodeWrapper linkId={node.linkId} className={className}>
       <NodeHeader node={node} />
-      {showOptionsStatus ? <QuestionOptionsStatus node={node} /> : null}
+      {showOptionsState ? <QuestionOptionsState node={node} /> : null}
       {beforeBody}
       {body}
       {afterBody}
@@ -34,13 +34,13 @@ export function WidgetScaffold({
   );
 }
 
-function QuestionOptionsStatus({ node }: { node: IQuestionNode }) {
-  const { OptionsStatus } = useTheme();
+function QuestionOptionsState({ node }: { node: IQuestionNode }) {
+  const { OptionsState } = useTheme();
   if (node.options.loading) {
-    return <OptionsStatus loading error={undefined} />;
+    return <OptionsState loading error={undefined} />;
   }
   if (node.options.error) {
-    return <OptionsStatus loading={false} error={node.options.error} />;
+    return <OptionsState loading={false} error={node.options.error} />;
   }
   return null;
 }

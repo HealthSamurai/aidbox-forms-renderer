@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { WidgetScaffold } from "../widget-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { QuantityInput } from "../inputs/quantity-input.tsx";
+import { QuantityInput } from "../fhir/quantity/QuantityInput.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const QuantityWidget = observer(function QuantityWidget({

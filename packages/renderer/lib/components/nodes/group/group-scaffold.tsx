@@ -15,16 +15,16 @@ export function GroupScaffold({
   dataControl,
   children,
 }: GroupScaffoldProps) {
-  const { GroupContainer, NodesContainer } = useTheme();
+  const { GroupBody, NodeList } = useTheme();
   const { labelText } = getNodeLabelParts(node);
   return (
-    <GroupContainer
+    <GroupBody
       linkId={node.linkId}
       dataControl={dataControl ?? undefined}
       legend={node.template.text ? labelText : null}
     >
-      <NodesContainer>{children}</NodesContainer>
+      <NodeList>{children}</NodeList>
       <NodeErrors node={node} />
-    </GroupContainer>
+    </GroupBody>
   );
 }

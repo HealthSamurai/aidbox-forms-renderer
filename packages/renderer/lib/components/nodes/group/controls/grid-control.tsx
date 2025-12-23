@@ -9,7 +9,7 @@ import { isGroupNode } from "../../../../stores/nodes/groups/group-store.ts";
 export const GridControl = observer(function GridControl({
   node,
 }: GroupControlProps) {
-  const { GroupExtras, EmptyState } = useTheme();
+  const { GroupActions, EmptyState } = useTheme();
   const rowGroups = node.nodes.filter(isGroupNode);
   const nonRowChildren = node.nodes.filter((child) => !isGroupNode(child));
 
@@ -24,9 +24,9 @@ export const GridControl = observer(function GridControl({
     <GroupScaffold node={node} dataControl="grid">
       {gridContent}
       {nonRowChildren.length > 0 ? (
-        <GroupExtras>
+        <GroupActions>
           <NodesList nodes={nonRowChildren} />
-        </GroupExtras>
+        </GroupActions>
       ) : null}
     </GroupScaffold>
   );

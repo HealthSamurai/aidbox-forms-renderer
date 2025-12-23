@@ -11,11 +11,11 @@ export const GroupWrapperScaffoldItem = observer(
     wrapper: IGroupWrapper;
     node: IGroupNode;
   }) {
-    const { Button, GroupItem } = useTheme();
+    const { Button, GroupHeader } = useTheme();
     const ControlComponent = node.component;
 
     return ControlComponent ? (
-      <GroupItem
+      <GroupHeader
         control={<ControlComponent node={node} />}
         errors={<NodeErrors node={node} />}
         toolbar={

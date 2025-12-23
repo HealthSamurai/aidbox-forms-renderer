@@ -6,23 +6,23 @@ import type {
 } from "../../../../types.ts";
 import { NodesList } from "../../../form/node-list.tsx";
 import { GroupScaffold } from "../group-scaffold.tsx";
-import { ChoiceMatrixHorizontalTable } from "../components/choice-matrix.tsx";
+import { SelectionMatrixHorizontalTable } from "../components/selection-matrix.tsx";
 import { isQuestionNode } from "../../../../stores/nodes/questions/question-store.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export const HTableControl = observer(function HTableControl({
   node,
 }: GroupControlProps) {
-  const { GroupExtras } = useTheme();
+  const { GroupActions } = useTheme();
   const visibleNodes = node.nodes.filter((child) => !child.hidden);
   const { questions, others } = partitionNodes(visibleNodes);
   return (
     <GroupScaffold node={node} dataControl="htable">
-      <ChoiceMatrixHorizontalTable questions={questions} />
+      <SelectionMatrixHorizontalTable questions={questions} />
       {others.length > 0 ? (
-        <GroupExtras>
+        <GroupActions>
           <NodesList nodes={others} />
-        </GroupExtras>
+        </GroupActions>
       ) : null}
     </GroupScaffold>
   );

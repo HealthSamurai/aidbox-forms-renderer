@@ -9,7 +9,7 @@ export const LookupWidget = observer(function LookupWidget<
   return (
     <WidgetScaffold
       node={node}
-      showOptionsStatus
+      showOptionsState
       body={<LookupControl node={node} />}
     />
   );

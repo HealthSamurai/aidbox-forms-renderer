@@ -16,7 +16,7 @@ export const DropdownWidget = observer(function DropdownWidget<
   return (
     <WidgetScaffold
       node={node}
-      showOptionsStatus
+      showOptionsState
       body={<DropdownControl node={node} mode={mode} />}
     />
   );

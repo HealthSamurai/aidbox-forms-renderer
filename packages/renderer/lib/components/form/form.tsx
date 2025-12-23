@@ -24,7 +24,7 @@ export const Form = observer(function Form({
     FormShell,
     FormHeader,
     FormErrors,
-    NodesContainer,
+    NodeList,
     FormSection,
     PageStatus,
     PageNavigation,
@@ -112,7 +112,7 @@ export const Form = observer(function Form({
       {issueMessages.length > 0 ? (
         <FormErrors messages={issueMessages} />
       ) : null}
-      <NodesContainer>
+      <NodeList>
         {visibleHeaderNodes.length > 0 ? (
           <FormSection variant="header">
             <NodesList nodes={visibleHeaderNodes} />
@@ -135,7 +135,7 @@ export const Form = observer(function Form({
             <NodesList nodes={visibleFooterNodes} />
           </FormSection>
         ) : null}
-      </NodesContainer>
+      </NodeList>
       <FormActions>
         <Button type="submit">Submit</Button>
         <Button type="button" variant="secondary" onClick={() => store.reset()}>
