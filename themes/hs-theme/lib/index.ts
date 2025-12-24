@@ -15,7 +15,6 @@ export { SliderInput } from "./components/slider-input.tsx";
 export { SpinnerInput } from "./components/spinner-input.tsx";
 export { SelectField } from "./components/select-field.tsx";
 export { SelectOrStringField } from "./components/select-or-string-field.tsx";
-export { AutocompleteField } from "./components/autocomplete-field.tsx";
 export { RadioGroup } from "./components/radio-group.tsx";
 export { CheckboxGroup } from "./components/checkbox-group.tsx";
 export { MultiSelectField } from "./components/multi-select-field.tsx";
@@ -63,7 +62,6 @@ import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectField } from "./components/select-field.tsx";
 import { SelectOrStringField } from "./components/select-or-string-field.tsx";
-import { AutocompleteField } from "./components/autocomplete-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
 import { MultiSelectField } from "./components/multi-select-field.tsx";
@@ -113,7 +111,6 @@ export const theme: Theme = {
   SpinnerInput,
   SelectField,
   SelectOrStringField,
-  AutocompleteField,
   RadioGroup,
   CheckboxGroup,
   MultiSelectField,

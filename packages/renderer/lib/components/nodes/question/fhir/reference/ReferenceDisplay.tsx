@@ -1,13 +1,6 @@
-import type { Reference } from "fhir/r5";
+import type { ValueDisplayProps } from "../../../../../types.ts";
 
-export function ReferenceDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: Reference | null | undefined;
-  placeholder?: string;
-}) {
-  if (!value) return <>{placeholder}</>;
-  const label = value.display ?? value.reference;
-  return <>{label ?? placeholder}</>;
+export function ReferenceDisplay({ value }: ValueDisplayProps<"reference">) {
+  const label = value.display ?? value.reference ?? "";
+  return <>{label}</>;
 }

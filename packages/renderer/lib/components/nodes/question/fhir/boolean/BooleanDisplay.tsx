@@ -1,11 +1,5 @@
-export function BooleanDisplay({
-  value,
-  placeholder = "Unanswered",
-}: {
-  value: boolean | null | undefined;
-  placeholder?: string;
-}) {
-  if (value === true) return <>Yes</>;
-  if (value === false) return <>No</>;
-  return <>{placeholder}</>;
+import type { ValueDisplayProps } from "../../../../../types.ts";
+
+export function BooleanDisplay({ value }: ValueDisplayProps<"boolean">) {
+  return <>{value ? "Yes" : "No"}</>;
 }

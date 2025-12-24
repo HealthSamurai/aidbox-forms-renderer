@@ -210,6 +210,14 @@ export type AnswerOptionEntry<T extends AnswerType> = {
   disabled: boolean;
 };
 
+export type ValueDisplayProps<T extends AnswerType> = {
+  value: DataTypeToType<AnswerTypeToDataType<T>>;
+};
+
+export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
+  ValueDisplayProps<T>
+>;
+
 export type DataType =
   | "base64Binary"
   | "boolean"

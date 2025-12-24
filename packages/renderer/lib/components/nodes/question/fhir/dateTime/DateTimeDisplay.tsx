@@ -1,10 +1,5 @@
-export function DateTimeDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: string | null | undefined;
-  placeholder?: string;
-}) {
-  if (value == null || value === "") return <>{placeholder}</>;
+import type { ValueDisplayProps } from "../../../../../types.ts";
+
+export function DateTimeDisplay({ value }: ValueDisplayProps<"dateTime">) {
   return <>{value}</>;
 }

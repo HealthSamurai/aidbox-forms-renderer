@@ -1,10 +1,5 @@
-export function DecimalDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: number | null | undefined;
-  placeholder?: string;
-}) {
-  if (value === null || value === undefined) return <>{placeholder}</>;
+import type { ValueDisplayProps } from "../../../../../types.ts";
+
+export function DecimalDisplay({ value }: ValueDisplayProps<"decimal">) {
   return <>{value}</>;
 }

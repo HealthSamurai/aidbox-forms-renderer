@@ -1,10 +1,5 @@
-export function TimeDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: string | null | undefined;
-  placeholder?: string;
-}) {
-  if (value == null || value === "") return <>{placeholder}</>;
+import type { ValueDisplayProps } from "../../../../../types.ts";
+
+export function TimeDisplay({ value }: ValueDisplayProps<"time">) {
   return <>{value}</>;
 }

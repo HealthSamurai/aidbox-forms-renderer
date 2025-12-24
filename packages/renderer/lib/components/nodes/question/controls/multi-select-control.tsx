@@ -5,10 +5,10 @@ import type {
   AnswerType,
   IAnswerInstance,
   IQuestionNode,
+  ValueDisplayComponent,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
-import { AnswerDisplay } from "../values/answer-display.tsx";
 import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
 import { StringInput } from "../fhir/string/StringInput.tsx";
 import { TextInput } from "../fhir/text/TextInput.tsx";
@@ -23,6 +23,7 @@ export type MultiSelectControlProps<T extends AnswerType> = {
   displayOptions?: ReadonlyArray<AnswerOptionEntry<T>>;
   mode: MultiSelectMode;
   customKind: CustomKind;
+  ValueDisplay: ValueDisplayComponent<T>;
   showOptions?: boolean;
   showSelectedOptions?: boolean;
 };
@@ -35,6 +36,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
   displayOptions,
   mode,
   customKind,
+  ValueDisplay,
   showOptions = true,
   showSelectedOptions = true,
 }: MultiSelectControlProps<T>) {
@@ -64,37 +66,47 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     store.setMultiConfig(config);
   }, [store, config]);
 
-  const selectedChips = store.selectedChipItems.map((item) => ({
-    key: item.key,
-    content: (
-      <AnswerDisplay
-        type={node.type}
-        value={item.answer.value}
-        placeholder="Selection"
-      />
-    ),
-    errors: <AnswerErrors answer={item.answer} />,
-    onRemove: () => store.handleRemoveAnswer(item.answer),
-    removeDisabled: !store.canRemoveSelection,
-    removeLabel: "Remove selection",
-  }));
+  const selectedChips = store.selectedChipItems.flatMap((item) => {
+    const value = item.answer.value;
+    if (value == null) return [];
+    return [
+      {
+        key: item.key,
+        content: <ValueDisplay value={value} />,
+        errors: <AnswerErrors answer={item.answer} />,
+        onRemove: () => store.handleRemoveAnswer(item.answer),
+        removeDisabled: !store.canRemoveSelection,
+        removeLabel: "Remove selection",
+      },
+    ];
+  });
 
-  const customChips = store.customChipItems.map((item) => ({
-    key: item.key,
-    content: item.inlineString ? (
-      renderInlineCustomInput(node, item.answer)
-    ) : (
-      <AnswerDisplay
-        type={node.type}
-        value={item.answer.value}
-        placeholder="Custom value"
-      />
-    ),
-    errors: <AnswerErrors answer={item.answer} />,
-    onRemove: () => store.handleRemoveAnswer(item.answer),
-    removeDisabled: !store.canRemoveSelection,
-    removeLabel: "Remove custom value",
-  }));
+  const customChips = store.customChipItems.flatMap((item) => {
+    if (item.inlineString) {
+      return [
+        {
+          key: item.key,
+          content: renderInlineCustomInput(node, item.answer),
+          errors: <AnswerErrors answer={item.answer} />,
+          onRemove: () => store.handleRemoveAnswer(item.answer),
+          removeDisabled: !store.canRemoveSelection,
+          removeLabel: "Remove custom value",
+        },
+      ];
+    }
+    const value = item.answer.value;
+    if (value == null) return [];
+    return [
+      {
+        key: item.key,
+        content: <ValueDisplay value={value} />,
+        errors: <AnswerErrors answer={item.answer} />,
+        onRemove: () => store.handleRemoveAnswer(item.answer),
+        removeDisabled: !store.canRemoveSelection,
+        removeLabel: "Remove custom value",
+      },
+    ];
+  });
 
   const chips = [...selectedChips, ...customChips];
 

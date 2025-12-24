@@ -1,13 +1,6 @@
-import type { Coding } from "fhir/r5";
+import type { ValueDisplayProps } from "../../../../../types.ts";
 
-export function CodingDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: Coding | null | undefined;
-  placeholder?: string;
-}) {
-  if (!value) return <>{placeholder}</>;
+export function CodingDisplay({ value }: ValueDisplayProps<"coding">) {
   const parts: string[] = [];
   if (value.display) {
     parts.push(value.display);
@@ -17,5 +10,5 @@ export function CodingDisplay({
   if (value.system) {
     parts.push(`(${value.system})`);
   }
-  return <>{parts.length > 0 ? parts.join(" ") : placeholder}</>;
+  return <>{parts.join(" ")}</>;
 }

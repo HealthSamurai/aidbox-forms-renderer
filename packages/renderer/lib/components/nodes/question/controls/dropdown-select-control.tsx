@@ -4,44 +4,26 @@ import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import type { RowRenderProps } from "../answers/answer-row.tsx";
 import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
-import { MultiSelectControl } from "./multi-select-control.tsx";
-import { AnswerDisplay } from "../values/answer-display.tsx";
-import type { MultiSelectMode } from "../../../../stores/nodes/questions/select-control-types.ts";
+type RowVariant = "options" | "open-choice";
 
-type DropdownMode = MultiSelectMode;
+export type DropdownSelectControlProps<T extends AnswerType> = {
+  node: IQuestionNode<T>;
+  rowVariant: RowVariant;
+};
 
 export const DropdownSelectControl = observer(function DropdownSelectControl<
   T extends AnswerType,
->({ node, mode }: { node: IQuestionNode<T>; mode: DropdownMode }) {
+>({ node, rowVariant }: DropdownSelectControlProps<T>) {
   const store = node.selectStore;
-
-  const customKind =
-    node.options.constraint === "optionsOrString"
-      ? "string"
-      : node.options.constraint === "optionsOrType"
-        ? "type"
-        : "none";
-
-  if (store.isMultiSelect) {
-    return (
-      <MultiSelectControl
-        node={node}
-        options={node.options.entries}
-        mode={mode}
-        customKind={customKind}
-      />
-    );
-  }
 
   return (
     <AnswerList
       node={node}
       renderRow={(rowProps) =>
-        customKind === "none" ? (
+        rowVariant === "options" ? (
           <OptionsRow
             node={node}
             rowProps={rowProps}
-            mode={mode}
             rowStore={store.getDropdownRowState(rowProps.answer)}
             isLoading={store.isLoading}
           />
@@ -49,7 +31,6 @@ export const DropdownSelectControl = observer(function DropdownSelectControl<
           <OpenChoiceRow
             node={node}
             rowProps={rowProps}
-            mode={mode}
             rowStore={store.getDropdownRowState(rowProps.answer)}
             isLoading={store.isLoading}
           />
@@ -62,63 +43,16 @@ export const DropdownSelectControl = observer(function DropdownSelectControl<
 const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   node,
   rowProps,
-  mode,
   rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: RowRenderProps<T>;
-  mode: DropdownMode;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectField, AutocompleteField } = useTheme();
+  const { SelectField } = useTheme();
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
-
-  if (mode === "autocomplete") {
-    return (
-      <AutocompleteField
-        options={node.options.entries}
-        selectValue={rowStore.selectValue}
-        legacyOptionLabel={rowStore.legacyOption?.label}
-        onSelect={rowStore.handleSelect}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
-        readOnly={node.readOnly}
-        mode="autocomplete"
-        isLoading={isLoading}
-        onClear={clearHandler}
-        clearLabel="Clear"
-      />
-    );
-  }
-
-  if (mode === "lookup") {
-    return (
-      <AutocompleteField
-        options={node.options.entries}
-        selectValue={rowStore.selectValue}
-        legacyOptionLabel={rowStore.legacyOption?.label}
-        onSelect={rowStore.handleSelect}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
-        readOnly={node.readOnly}
-        mode="lookup"
-        isLoading={isLoading}
-        onClear={clearHandler}
-        clearLabel="Clear"
-        valueDisplay={
-          <AnswerDisplay
-            type={node.type}
-            value={rowProps.value}
-            placeholder="Select an option"
-          />
-        }
-      />
-    );
-  }
 
   return (
     <SelectField
@@ -140,18 +74,15 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
 const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   node,
   rowProps,
-  mode,
   rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: RowRenderProps<T>;
-  mode: DropdownMode;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectField, AutocompleteField, Button, SelectOrInputField } =
-    useTheme();
+  const { SelectField, Button, SelectOrInputField } = useTheme();
 
   if (rowStore.isCustomActive) {
     const renderer = getAnswerInputRenderer(node);
@@ -173,51 +104,6 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   }
 
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
-
-  if (mode === "autocomplete") {
-    return (
-      <AutocompleteField
-        options={rowStore.extendedOptions}
-        selectValue={rowStore.optionKey}
-        legacyOptionLabel={undefined}
-        onSelect={rowStore.handleSelect}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
-        readOnly={node.readOnly}
-        mode="autocomplete"
-        isLoading={isLoading}
-        onClear={clearHandler}
-        clearLabel="Clear"
-      />
-    );
-  }
-
-  if (mode === "lookup") {
-    return (
-      <AutocompleteField
-        options={rowStore.extendedOptions}
-        selectValue={rowStore.optionKey}
-        legacyOptionLabel={undefined}
-        onSelect={rowStore.handleSelect}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
-        readOnly={node.readOnly}
-        mode="lookup"
-        isLoading={isLoading}
-        onClear={clearHandler}
-        clearLabel="Clear"
-        valueDisplay={
-          <AnswerDisplay
-            type={node.type}
-            value={rowProps.value}
-            placeholder="Select an option"
-          />
-        }
-      />
-    );
-  }
 
   return (
     <SelectField

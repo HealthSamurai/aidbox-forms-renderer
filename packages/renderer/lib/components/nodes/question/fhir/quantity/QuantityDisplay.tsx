@@ -1,13 +1,6 @@
-import type { Quantity } from "fhir/r5";
+import type { ValueDisplayProps } from "../../../../../types.ts";
 
-export function QuantityDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: Quantity | null | undefined;
-  placeholder?: string;
-}) {
-  if (!value) return <>{placeholder}</>;
+export function QuantityDisplay({ value }: ValueDisplayProps<"quantity">) {
   const pieces: Array<string | number> = [];
   if (value.value !== undefined && value.value !== null) {
     pieces.push(value.value);
@@ -17,6 +10,5 @@ export function QuantityDisplay({
   } else if (value.code) {
     pieces.push(value.code);
   }
-  if (pieces.length === 0) return <>{placeholder}</>;
   return <>{pieces.join(" ")}</>;
 }

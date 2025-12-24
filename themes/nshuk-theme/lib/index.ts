@@ -17,7 +17,6 @@ import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectField } from "./components/select-field.tsx";
 import { SelectOrStringField } from "./components/select-or-string-field.tsx";
-import { AutocompleteField } from "./components/autocomplete-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
 import { MultiSelectField } from "./components/multi-select-field.tsx";
@@ -79,7 +78,6 @@ const passthrough: Theme = {
   SpinnerInput,
   SelectField,
   SelectOrStringField,
-  AutocompleteField,
   RadioGroup,
   CheckboxGroup,
   MultiSelectField,
@@ -129,9 +127,6 @@ export type SpinnerInputProps = ComponentProps<typeof passthrough.SpinnerInput>;
 export type SelectFieldProps = ComponentProps<typeof passthrough.SelectField>;
 export type SelectOrStringFieldProps = ComponentProps<
   typeof passthrough.SelectOrStringField
->;
-export type AutocompleteFieldProps = ComponentProps<
-  typeof passthrough.AutocompleteField
 >;
 export type RadioGroupProps = ComponentProps<typeof passthrough.RadioGroup>;
 export type CheckboxGroupProps = ComponentProps<

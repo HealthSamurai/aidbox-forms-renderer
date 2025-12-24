@@ -1,10 +1,5 @@
-export function IntegerDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: number | null | undefined;
-  placeholder?: string;
-}) {
-  if (value === null || value === undefined) return <>{placeholder}</>;
+import type { ValueDisplayProps } from "../../../../../types.ts";
+
+export function IntegerDisplay({ value }: ValueDisplayProps<"integer">) {
   return <>{value}</>;
 }

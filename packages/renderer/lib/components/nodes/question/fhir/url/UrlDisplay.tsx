@@ -1,13 +1,7 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
+import type { ValueDisplayProps } from "../../../../../types.ts";
 
-export function UrlDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: string | null | undefined;
-  placeholder?: string;
-}) {
+export function UrlDisplay({ value }: ValueDisplayProps<"url">) {
   const { Link } = useTheme();
-  if (value == null || value === "") return <>{placeholder}</>;
   return <Link href={value} label={value} target="_blank" rel="noreferrer" />;
 }

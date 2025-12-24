@@ -1,5 +1,9 @@
 import { observer } from "mobx-react-lite";
-import type { AnswerType, IQuestionNode } from "../../../../types.ts";
+import type {
+  AnswerType,
+  IQuestionNode,
+  ValueDisplayComponent,
+} from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
@@ -9,17 +13,17 @@ import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
 import { MultiSelectControl } from "./multi-select-control.tsx";
 import type { CustomKind } from "../../../../stores/nodes/questions/select-control-types.ts";
 
+export type ListSelectControlProps<T extends AnswerType> = {
+  node: IQuestionNode<T>;
+  customKind: CustomKind;
+  ValueDisplay: ValueDisplayComponent<T>;
+};
+
 export const ListSelectControl = observer(function ListSelectControl<
   T extends AnswerType,
->({ node }: { node: IQuestionNode<T> }) {
+>({ node, customKind, ValueDisplay }: ListSelectControlProps<T>) {
   const { CheckboxGroup } = useTheme();
   const store = node.selectStore;
-  const customKind: CustomKind =
-    node.options.constraint === "optionsOrString"
-      ? "string"
-      : node.options.constraint === "optionsOrType"
-        ? "type"
-        : "none";
 
   if (store.useCheckboxes) {
     const state = store.checkboxState;
@@ -29,8 +33,9 @@ export const ListSelectControl = observer(function ListSelectControl<
           node={node}
           options={state.options}
           displayOptions={[]}
-          mode="autocomplete"
+          mode="select"
           customKind={customKind}
+          ValueDisplay={ValueDisplay}
           showOptions
           showSelectedOptions={false}
         />

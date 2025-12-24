@@ -1,13 +1,6 @@
-import type { Attachment } from "fhir/r5";
+import type { ValueDisplayProps } from "../../../../../types.ts";
 
-export function AttachmentDisplay({
-  value,
-  placeholder = "—",
-}: {
-  value: Attachment | null | undefined;
-  placeholder?: string;
-}) {
-  if (!value) return <>{placeholder}</>;
-  const label = value.title ?? value.url;
-  return <>{label ?? placeholder}</>;
+export function AttachmentDisplay({ value }: ValueDisplayProps<"attachment">) {
+  const label = value.title ?? value.url ?? "";
+  return <>{label}</>;
 }
