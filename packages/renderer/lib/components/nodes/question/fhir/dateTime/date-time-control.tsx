@@ -1,15 +1,15 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { StringInput } from "./StringInput.tsx";
+import { DateTimeInput } from "./date-time-input.tsx";
 
-export function StringControl({
+export function DateTimeControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"string">) {
+}: ValueControlProps<"dateTime">) {
   return (
-    <StringInput
+    <DateTimeInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
@@ -17,7 +17,6 @@ export function StringControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
-      inputMode={node.keyboardType}
     />
   );
 }

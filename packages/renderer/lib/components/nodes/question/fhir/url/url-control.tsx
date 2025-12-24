@@ -1,23 +1,22 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { DecimalInput } from "./DecimalInput.tsx";
+import { UrlInput } from "./url-input.tsx";
 
-export function DecimalControl({
+export function UrlControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"decimal">) {
+}: ValueControlProps<"url">) {
   return (
-    <DecimalInput
+    <UrlInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
       placeholder={node.placeholder}
-      value={answer.value ?? null}
+      value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
-      unitLabel={node.unitDisplay}
     />
   );
 }

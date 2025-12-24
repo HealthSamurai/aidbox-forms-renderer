@@ -72,7 +72,7 @@ export class GroupWrapper
   }
 
   @computed
-  get component(): GroupControlDefinition["wrapperComponent"] | undefined {
+  get renderer(): GroupControlDefinition["wrapperComponent"] | undefined {
     return this.form.groupControlRegistry.resolveWrapper(this)
       ?.wrapperComponent;
   }

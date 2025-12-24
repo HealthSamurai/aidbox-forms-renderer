@@ -78,7 +78,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   }
 
   @computed
-  get component(): GroupControlDefinition["groupComponent"] | undefined {
+  get renderer(): GroupControlDefinition["groupComponent"] | undefined {
     return this.form.groupControlRegistry.resolveGroup(this)?.groupComponent;
   }
 

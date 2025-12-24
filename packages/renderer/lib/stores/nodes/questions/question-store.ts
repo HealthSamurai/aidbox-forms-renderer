@@ -75,8 +75,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private lastIndex = 0;
 
   @computed
-  get component(): QuestionControlDefinition["component"] | undefined {
-    return this.form.questionControlRegistry.resolve(this)?.component;
+  get renderer(): QuestionControlDefinition["renderer"] | undefined {
+    return this.form.questionControlRegistry.resolve(this)?.renderer;
   }
 
   @computed({ keepAlive: true })

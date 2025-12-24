@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import type { IQuestionNode } from "../../../../types.ts";
-import { QuestionScaffold } from "../question-scaffold.tsx";
-import { AnswerList } from "../answers/answer-list.tsx";
-import { DateControl } from "../fhir/date/DateControl.tsx";
-import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
+import type { IQuestionNode } from "../../../../../types.ts";
+import { QuestionScaffold } from "../../question-scaffold.tsx";
+import { AnswerList } from "../../answers/answer-list.tsx";
+import { DateControl } from "./date-control.tsx";
+import type { AnswerRowRenderer } from "../../answers/answer-row.tsx";
 
 export const DateRenderer = observer(function DateRenderer({
   node,

@@ -13,9 +13,9 @@ export const GroupWrapperScaffoldItem = observer(
   }) {
     const { Button, GroupWrapperScaffoldItem: ThemedGroupWrapperScaffoldItem } =
       useTheme();
-    const ControlComponent = node.component;
+    const Renderer = node.renderer;
 
-    return ControlComponent ? (
+    return Renderer ? (
       <ThemedGroupWrapperScaffoldItem
         errors={<NodeErrors node={node} />}
         toolbar={
@@ -31,7 +31,7 @@ export const GroupWrapperScaffoldItem = observer(
           ) : null
         }
       >
-        <ControlComponent node={node} />
+        <Renderer node={node} />
       </ThemedGroupWrapperScaffoldItem>
     ) : null;
   },

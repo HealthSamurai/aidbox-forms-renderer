@@ -1,21 +1,23 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { AttachmentInput } from "./AttachmentInput.tsx";
+import { DecimalInput } from "./decimal-input.tsx";
 
-export function AttachmentControl({
+export function DecimalControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"attachment">) {
+}: ValueControlProps<"decimal">) {
   return (
-    <AttachmentInput
+    <DecimalInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
+      placeholder={node.placeholder}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
+      unitLabel={node.unitDisplay}
     />
   );
 }

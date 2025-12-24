@@ -1,21 +1,22 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { BooleanInput } from "./BooleanInput.tsx";
+import { ReferenceInput } from "./reference-input.tsx";
 
-export function BooleanControl({
+export function ReferenceControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"boolean">) {
+}: ValueControlProps<"reference">) {
   return (
-    <BooleanInput
+    <ReferenceInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
+      placeholder={node.placeholder}
     />
   );
 }

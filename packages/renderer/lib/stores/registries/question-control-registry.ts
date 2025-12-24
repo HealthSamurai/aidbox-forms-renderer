@@ -1,220 +1,146 @@
-import type {
-  AnswerType,
-  IQuestionNode,
-  QuestionControlDefinition,
-} from "../../types.ts";
-import { StringRenderer } from "../../components/nodes/question/renderers/string-renderer.tsx";
-import { NumberRenderer } from "../../components/nodes/question/renderers/number-renderer.tsx";
-import { DecimalRenderer } from "../../components/nodes/question/renderers/decimal-renderer.tsx";
-import { DateRenderer } from "../../components/nodes/question/renderers/date-renderer.tsx";
-import { DateTimeRenderer } from "../../components/nodes/question/renderers/datetime-renderer.tsx";
-import { TimeRenderer } from "../../components/nodes/question/renderers/time-renderer.tsx";
-import { QuantityRenderer } from "../../components/nodes/question/renderers/quantity-renderer.tsx";
-import { CodingRenderer } from "../../components/nodes/question/renderers/coding-renderer.tsx";
-import { ReferenceRenderer } from "../../components/nodes/question/renderers/reference-renderer.tsx";
-import { AttachmentRenderer } from "../../components/nodes/question/renderers/attachment-renderer.tsx";
+import type { IQuestionNode, QuestionControlDefinition } from "../../types.ts";
+import { StringRenderer } from "../../components/nodes/question/fhir/string/string-renderer.tsx";
+import { IntegerRenderer } from "../../components/nodes/question/fhir/integer/integer-renderer.tsx";
+import { DecimalRenderer } from "../../components/nodes/question/fhir/decimal/decimal-renderer.tsx";
+import { DateRenderer } from "../../components/nodes/question/fhir/date/date-renderer.tsx";
+import { DateTimeRenderer } from "../../components/nodes/question/fhir/dateTime/date-time-renderer.tsx";
+import { TimeRenderer } from "../../components/nodes/question/fhir/time/time-renderer.tsx";
+import { QuantityRenderer } from "../../components/nodes/question/fhir/quantity/quantity-renderer.tsx";
+import { CodingRenderer } from "../../components/nodes/question/fhir/coding/coding-renderer.tsx";
+import { ReferenceRenderer } from "../../components/nodes/question/fhir/reference/reference-renderer.tsx";
+import { AttachmentRenderer } from "../../components/nodes/question/fhir/attachment/attachment-renderer.tsx";
 import { ListSelectRenderer } from "../../components/nodes/question/renderers/list-select-renderer.tsx";
 import { DropdownRenderer } from "../../components/nodes/question/renderers/dropdown-renderer.tsx";
 import { UnsupportedRenderer } from "../../components/nodes/question/renderers/unsupported-renderer.tsx";
-
-type StringLikeType = Extract<AnswerType, "string" | "text">;
-type DatalistType = Extract<
-  AnswerType,
-  "string" | "integer" | "decimal" | "date" | "dateTime" | "time" | "url"
->;
-type HybridType = Extract<
-  AnswerType,
-  "quantity" | "coding" | "reference" | "text"
->;
+import { SliderRenderer } from "../../components/nodes/question/renderers/slider-renderer.tsx";
+import { SpinnerRenderer } from "../../components/nodes/question/renderers/spinner-renderer.tsx";
 
 export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
   {
-    name: "option-or-string",
-    priority: 110,
-    matcher: (node): node is IQuestionNode<StringLikeType> =>
-      isStringLike(node) && node.options.constraint === "optionsOrString",
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
+    name: "numeric-with-slider",
+    priority: 120,
+    matcher: (node) =>
+      node.control === "slider" &&
+      (node.type === "integer" ||
+        node.type === "decimal" ||
+        node.type === "quantity"),
+    renderer: SliderRenderer,
+  },
   {
-    name: "options-or-type-datalist",
-    priority: 100,
-    matcher: (node): node is IQuestionNode<DatalistType> =>
-      node.options.constraint === "optionsOrType" &&
-      isDatalistType(node) &&
-      hasOptions(node),
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
+    name: "numeric-with-spinner",
+    priority: 115,
+    matcher: (node) =>
+      node.control === "spinner" &&
+      (node.type === "integer" ||
+        node.type === "decimal" ||
+        node.type === "quantity"),
+    renderer: SpinnerRenderer,
+  },
   {
-    name: "options-or-type-hybrid",
-    priority: 100,
-    matcher: (node): node is IQuestionNode<HybridType> =>
-      node.options.constraint === "optionsOrType" &&
-      isHybridType(node) &&
-      hasOptions(node),
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
-  {
-    name: "options-list-control",
+    name: "list-select",
     priority: 95,
-    matcher: (node): node is IQuestionNode =>
+    matcher: (node) =>
       hasOptions(node) &&
       (node.control === "radio-button" || node.control === "check-box"),
-    component: ListSelectRenderer,
-  } as QuestionControlDefinition,
+    renderer: ListSelectRenderer,
+  },
   {
-    name: "options-lookup",
+    name: "dropdown",
     priority: 90,
-    matcher: (node): node is IQuestionNode =>
-      hasOptions(node) && node.control === "lookup",
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => hasOptions(node),
+    renderer: DropdownRenderer,
+  },
   {
-    name: "options-lookup",
-    priority: 90,
-    matcher: (node): node is IQuestionNode =>
-      hasOptions(node) && node.control === "lookup",
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
-  {
-    name: "options-autocomplete",
-    priority: 85,
-    matcher: (node): node is IQuestionNode =>
-      hasOptions(node) && node.control === "autocomplete",
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
-  {
-    name: "options-select",
-    priority: 80,
-    matcher: (node): node is IQuestionNode => hasOptions(node),
-    component: DropdownRenderer,
-  } as QuestionControlDefinition,
-  {
-    name: "boolean-primitive",
+    name: "boolean-with-list",
     priority: 20,
-    matcher: (node): node is IQuestionNode<"boolean"> =>
-      node.type === "boolean",
-    component: ListSelectRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "boolean",
+    renderer: ListSelectRenderer,
+  },
   {
-    name: "string-primitive",
+    name: "string",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"string"> => node.type === "string",
-    component: StringRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "string",
+    renderer: StringRenderer,
+  },
   {
-    name: "text-primitive",
+    name: "text",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"text"> => node.type === "text",
-    component: StringRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "text",
+    renderer: StringRenderer,
+  },
   {
-    name: "url-primitive",
+    name: "url",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"url"> => node.type === "url",
-    component: StringRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "url",
+    renderer: StringRenderer,
+  },
   {
-    name: "integer-primitive",
+    name: "integer",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"integer"> =>
-      node.type === "integer",
-    component: NumberRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "integer",
+    renderer: IntegerRenderer,
+  },
   {
-    name: "decimal-primitive",
+    name: "decimal",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"decimal"> =>
-      node.type === "decimal",
-    component: DecimalRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "decimal",
+    renderer: DecimalRenderer,
+  },
   {
-    name: "date-primitive",
+    name: "date",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"date"> => node.type === "date",
-    component: DateRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "date",
+    renderer: DateRenderer,
+  },
   {
-    name: "dateTime-primitive",
+    name: "date-time",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"dateTime"> =>
-      node.type === "dateTime",
-    component: DateTimeRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "dateTime",
+    renderer: DateTimeRenderer,
+  },
   {
-    name: "time-primitive",
+    name: "time",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"time"> => node.type === "time",
-    component: TimeRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "time",
+    renderer: TimeRenderer,
+  },
   {
-    name: "quantity-primitive",
+    name: "quantity",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"quantity"> =>
-      node.type === "quantity",
-    component: QuantityRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "quantity",
+    renderer: QuantityRenderer,
+  },
   {
-    name: "coding-primitive",
+    name: "coding",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"coding"> => node.type === "coding",
-    component: CodingRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "coding",
+    renderer: CodingRenderer,
+  },
   {
-    name: "reference-primitive",
+    name: "reference",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"reference"> =>
-      node.type === "reference",
-    component: ReferenceRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "reference",
+    renderer: ReferenceRenderer,
+  },
   {
-    name: "attachment-primitive",
+    name: "attachment",
     priority: 10,
-    matcher: (node): node is IQuestionNode<"attachment"> =>
-      node.type === "attachment",
-    component: AttachmentRenderer,
-  } as QuestionControlDefinition,
+    matcher: (node) => node.type === "attachment",
+    renderer: AttachmentRenderer,
+  },
   {
     name: "unsupported-question",
     priority: Number.NEGATIVE_INFINITY,
-    matcher: (_node): _node is IQuestionNode => true,
-    component: UnsupportedRenderer,
-  } as QuestionControlDefinition,
-] as QuestionControlDefinition[];
+    matcher: () => true,
+    renderer: UnsupportedRenderer,
+  },
+];
 
 function hasOptions(node: IQuestionNode) {
   return !!(
     node.template.answerOption?.length ||
     node.expressionRegistry.answer ||
     node.template.answerValueSet
-  );
-}
-
-function isStringLike(
-  node: IQuestionNode,
-): node is IQuestionNode<StringLikeType> {
-  return node.type === "string" || node.type === "text";
-}
-
-function isDatalistType(
-  node: IQuestionNode,
-): node is IQuestionNode<DatalistType> {
-  return (
-    node.type === "string" ||
-    node.type === "integer" ||
-    node.type === "decimal" ||
-    node.type === "date" ||
-    node.type === "dateTime" ||
-    node.type === "time" ||
-    node.type === "url"
-  );
-}
-
-function isHybridType(node: IQuestionNode): node is IQuestionNode<HybridType> {
-  return (
-    node.type === "quantity" ||
-    node.type === "coding" ||
-    node.type === "reference" ||
-    node.type === "text"
   );
 }
 

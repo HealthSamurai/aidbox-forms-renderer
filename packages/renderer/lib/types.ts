@@ -567,7 +567,7 @@ export interface IGroupNode extends IActualNode {
   readonly nodes: Array<IPresentableNode>;
   readonly visibleNodes: Array<IPresentableNode>;
   readonly control: GroupItemControl | undefined;
-  readonly component: GroupControlDefinition["groupComponent"] | undefined;
+  readonly renderer: GroupControlDefinition["groupComponent"] | undefined;
   readonly gridStore: IGridStore;
   readonly tableStore: ITableStore;
 }
@@ -583,7 +583,7 @@ export interface IGroupWrapper extends IPresentableNode {
   readonly minOccurs: number;
   readonly maxOccurs: number;
   readonly control: GroupItemControl | undefined;
-  readonly component: GroupControlDefinition["wrapperComponent"] | undefined;
+  readonly renderer: GroupControlDefinition["wrapperComponent"] | undefined;
   readonly gridTableStore: IGridTableStore;
   addNode(): void;
   removeNode(instance: IGroupNode): void;
@@ -631,19 +631,17 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   ): { key: string; label: string } | null;
 }
 
-export type QuestionControlProps<T extends AnswerType = AnswerType> = {
+export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
   node: IQuestionNode<T>;
 };
 
-export type QuestionControlMatcher<T extends AnswerType = AnswerType> = (
-  node: IQuestionNode,
-) => node is IQuestionNode<T>;
+export type QuestionControlMatcher = (node: IQuestionNode) => boolean;
 
 export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   name: string;
   priority: number;
-  matcher: QuestionControlMatcher<T>;
-  component: ComponentType<QuestionControlProps<T>>;
+  matcher: QuestionControlMatcher;
+  renderer: ComponentType<QuestionRendererProps<T>>;
 }
 
 type SelectCheckboxOption<T extends AnswerType> = {
@@ -753,7 +751,7 @@ export interface IQuestionNode<
   readonly selectStore: ISelectStore<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;
-  readonly component: QuestionControlDefinition["component"] | undefined;
+  readonly renderer: QuestionControlDefinition["renderer"] | undefined;
 
   readonly canAdd: boolean;
   readonly canRemove: boolean;

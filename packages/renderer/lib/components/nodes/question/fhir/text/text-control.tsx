@@ -1,15 +1,15 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { UrlInput } from "./UrlInput.tsx";
+import { TextInput } from "./text-input.tsx";
 
-export function UrlControl({
+export function TextControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"url">) {
+}: ValueControlProps<"text">) {
   return (
-    <UrlInput
+    <TextInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}

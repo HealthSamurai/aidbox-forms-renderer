@@ -1,15 +1,15 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { CodingInput } from "./CodingInput.tsx";
+import { AttachmentInput } from "./attachment-input.tsx";
 
-export function CodingControl({
+export function AttachmentControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"coding">) {
+}: ValueControlProps<"attachment">) {
   return (
-    <CodingInput
+    <AttachmentInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}

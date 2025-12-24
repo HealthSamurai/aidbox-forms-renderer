@@ -1,22 +1,23 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { TextInput } from "./TextInput.tsx";
+import { IntegerInput } from "./integer-input.tsx";
 
-export function TextControl({
+export function IntegerControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"text">) {
+}: ValueControlProps<"integer">) {
   return (
-    <TextInput
+    <IntegerInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
       placeholder={node.placeholder}
-      value={answer.value ?? ""}
+      value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
+      unitLabel={node.unitDisplay}
     />
   );
 }

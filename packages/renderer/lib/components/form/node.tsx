@@ -12,16 +12,16 @@ export const Node = observer(function Node({
   node: IPresentableNode;
 }) {
   if (isQuestionNode(node)) {
-    const Component = node.component;
-    return Component ? <Component node={node} /> : null;
+    const Renderer = node.renderer;
+    return Renderer ? <Renderer node={node} /> : null;
   }
   if (isGroupNode(node)) {
-    const Component = node.component;
-    return Component ? <Component node={node} /> : null;
+    const Renderer = node.renderer;
+    return Renderer ? <Renderer node={node} /> : null;
   }
   if (isGroupWrapper(node)) {
-    const Component = node.component;
-    return Component ? <Component wrapper={node} /> : null;
+    const Renderer = node.renderer;
+    return Renderer ? <Renderer wrapper={node} /> : null;
   }
   if (isDisplayNode(node)) return <DisplayRenderer node={node} />;
   return null;

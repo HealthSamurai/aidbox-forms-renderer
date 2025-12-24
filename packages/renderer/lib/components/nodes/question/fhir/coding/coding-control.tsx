@@ -1,20 +1,19 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { DateTimeInput } from "./DateTimeInput.tsx";
+import { CodingInput } from "./coding-input.tsx";
 
-export function DateTimeControl({
+export function CodingControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"dateTime">) {
+}: ValueControlProps<"coding">) {
   return (
-    <DateTimeInput
+    <CodingInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
-      value={answer.value ?? ""}
+      value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
     />

@@ -4,32 +4,32 @@ import type {
   ValueControlProps,
   ValueDisplayComponent,
 } from "../../../../types.ts";
-import { StringDisplay } from "./string/StringDisplay.tsx";
-import { TextDisplay } from "./text/TextDisplay.tsx";
-import { IntegerDisplay } from "./integer/IntegerDisplay.tsx";
-import { DecimalDisplay } from "./decimal/DecimalDisplay.tsx";
-import { BooleanDisplay } from "./boolean/BooleanDisplay.tsx";
-import { DateDisplay } from "./date/DateDisplay.tsx";
-import { DateTimeDisplay } from "./dateTime/DateTimeDisplay.tsx";
-import { TimeDisplay } from "./time/TimeDisplay.tsx";
-import { UrlDisplay } from "./url/UrlDisplay.tsx";
-import { ReferenceDisplay } from "./reference/ReferenceDisplay.tsx";
-import { QuantityDisplay } from "./quantity/QuantityDisplay.tsx";
-import { CodingDisplay } from "./coding/CodingDisplay.tsx";
-import { AttachmentDisplay } from "./attachment/AttachmentDisplay.tsx";
-import { StringControl } from "./string/StringControl.tsx";
-import { TextControl } from "./text/TextControl.tsx";
-import { IntegerControl } from "./integer/IntegerControl.tsx";
-import { DecimalControl } from "./decimal/DecimalControl.tsx";
-import { BooleanControl } from "./boolean/BooleanControl.tsx";
-import { DateControl } from "./date/DateControl.tsx";
-import { DateTimeControl } from "./dateTime/DateTimeControl.tsx";
-import { TimeControl } from "./time/TimeControl.tsx";
-import { UrlControl } from "./url/UrlControl.tsx";
-import { ReferenceControl } from "./reference/ReferenceControl.tsx";
-import { QuantityControl } from "./quantity/QuantityControl.tsx";
-import { CodingControl } from "./coding/CodingControl.tsx";
-import { AttachmentControl } from "./attachment/AttachmentControl.tsx";
+import { StringDisplay } from "./string/string-display.tsx";
+import { TextDisplay } from "./text/text-display.tsx";
+import { IntegerDisplay } from "./integer/integer-display.tsx";
+import { DecimalDisplay } from "./decimal/decimal-display.tsx";
+import { BooleanDisplay } from "./boolean/boolean-display.tsx";
+import { DateDisplay } from "./date/date-display.tsx";
+import { DateTimeDisplay } from "./dateTime/date-time-display.tsx";
+import { TimeDisplay } from "./time/time-display.tsx";
+import { UrlDisplay } from "./url/url-display.tsx";
+import { ReferenceDisplay } from "./reference/reference-display.tsx";
+import { QuantityDisplay } from "./quantity/quantity-display.tsx";
+import { CodingDisplay } from "./coding/coding-display.tsx";
+import { AttachmentDisplay } from "./attachment/attachment-display.tsx";
+import { StringControl } from "./string/string-control.tsx";
+import { TextControl } from "./text/text-control.tsx";
+import { IntegerControl } from "./integer/integer-control.tsx";
+import { DecimalControl } from "./decimal/decimal-control.tsx";
+import { BooleanControl } from "./boolean/boolean-control.tsx";
+import { DateControl } from "./date/date-control.tsx";
+import { DateTimeControl } from "./dateTime/date-time-control.tsx";
+import { TimeControl } from "./time/time-control.tsx";
+import { UrlControl } from "./url/url-control.tsx";
+import { ReferenceControl } from "./reference/reference-control.tsx";
+import { QuantityControl } from "./quantity/quantity-control.tsx";
+import { CodingControl } from "./coding/coding-control.tsx";
+import { AttachmentControl } from "./attachment/attachment-control.tsx";
 
 export const VALUE_DISPLAY_BY_TYPE: {
   [K in AnswerType]: ValueDisplayComponent<K>;

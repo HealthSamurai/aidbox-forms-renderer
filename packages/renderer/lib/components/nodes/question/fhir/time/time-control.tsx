@@ -1,15 +1,15 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { DateInput } from "./DateInput.tsx";
+import { TimeInput } from "./time-input.tsx";
 
-export function DateControl({
+export function TimeControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"date">) {
+}: ValueControlProps<"time">) {
   return (
-    <DateInput
+    <TimeInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}

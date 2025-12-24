@@ -1,22 +1,23 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { ReferenceInput } from "./ReferenceInput.tsx";
+import { StringInput } from "./string-input.tsx";
 
-export function ReferenceControl({
+export function StringControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"reference">) {
+}: ValueControlProps<"string">) {
   return (
-    <ReferenceInput
+    <StringInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      value={answer.value ?? null}
+      placeholder={node.placeholder}
+      value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
-      placeholder={node.placeholder}
+      inputMode={node.keyboardType}
     />
   );
 }

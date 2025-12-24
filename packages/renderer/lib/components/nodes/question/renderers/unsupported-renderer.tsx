@@ -1,7 +1,7 @@
 import { QuestionScaffold } from "../question-scaffold.tsx";
-import type { QuestionControlProps } from "../../../../types.ts";
+import type { QuestionRendererProps } from "../../../../types.ts";
 
-export function UnsupportedRenderer({ node }: QuestionControlProps) {
+export function UnsupportedRenderer({ node }: QuestionRendererProps) {
   return (
     <QuestionScaffold node={node} children={`Unsupported type: ${node.type}`} />
   );

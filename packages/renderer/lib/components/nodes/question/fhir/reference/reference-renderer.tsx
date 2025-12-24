@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import type { IQuestionNode } from "../../../../types.ts";
-import { QuestionScaffold } from "../question-scaffold.tsx";
-import { AnswerList } from "../answers/answer-list.tsx";
-import { ReferenceControl } from "../fhir/reference/ReferenceControl.tsx";
-import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
+import type { IQuestionNode } from "../../../../../types.ts";
+import { QuestionScaffold } from "../../question-scaffold.tsx";
+import { AnswerList } from "../../answers/answer-list.tsx";
+import { ReferenceControl } from "./reference-control.tsx";
+import type { AnswerRowRenderer } from "../../answers/answer-row.tsx";
 
 export const ReferenceRenderer = observer(function ReferenceRenderer({
   node,

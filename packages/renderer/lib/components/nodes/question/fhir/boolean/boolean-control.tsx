@@ -1,20 +1,19 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { TimeInput } from "./TimeInput.tsx";
+import { BooleanInput } from "./boolean-input.tsx";
 
-export function TimeControl({
+export function BooleanControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"time">) {
+}: ValueControlProps<"boolean">) {
   return (
-    <TimeInput
+    <BooleanInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
-      value={answer.value ?? ""}
+      value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
     />

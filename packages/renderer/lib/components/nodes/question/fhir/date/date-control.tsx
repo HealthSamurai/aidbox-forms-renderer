@@ -1,20 +1,21 @@
 import type { ValueControlProps } from "../../../../../types.ts";
-import { QuantityInput } from "./QuantityInput.tsx";
+import { DateInput } from "./date-input.tsx";
 
-export function QuantityControl({
+export function DateControl({
   node,
   answer,
   inputId,
   labelId,
   describedById,
-}: ValueControlProps<"quantity">) {
+}: ValueControlProps<"date">) {
   return (
-    <QuantityInput
-      answer={answer}
+    <DateInput
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
       placeholder={node.placeholder}
+      value={answer.value ?? ""}
+      onChange={(value) => answer.setValueByUser(value)}
       disabled={node.readOnly}
     />
   );
