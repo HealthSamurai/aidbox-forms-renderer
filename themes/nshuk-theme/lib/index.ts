@@ -47,7 +47,6 @@ import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
-import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { Link } from "./components/link.tsx";
@@ -56,14 +55,7 @@ import "./global.css";
 export type { Theme, QuantityInputProps, QuantityUnitOption };
 export type { TextInputProps, TextAreaProps, NumberInputProps };
 export { Button, TextInput, TextArea, NumberInput };
-export {
-  CodingInput,
-  ReferenceInput,
-  SelectOrInputField,
-  TabContainer,
-  DisplayRenderer,
-  Link,
-};
+export { CodingInput, ReferenceInput, TabContainer, DisplayRenderer, Link };
 
 const passthrough: Theme = {
   Button,
@@ -108,7 +100,6 @@ const passthrough: Theme = {
   GroupActions,
   GridTable,
   AttachmentInput,
-  SelectOrInputField,
   TabContainer,
   DisplayRenderer,
   Link,

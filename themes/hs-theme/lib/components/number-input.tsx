@@ -11,7 +11,6 @@ export function NumberInput({
   ariaLabelledBy,
   ariaDescribedBy,
   unitLabel,
-  list,
 }: {
   id?: string | undefined;
   value: number | null;
@@ -22,7 +21,6 @@ export function NumberInput({
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   unitLabel?: string | undefined;
-  list?: string | undefined;
 }) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -39,7 +37,6 @@ export function NumberInput({
       <Frame $solo={solo}>
         <Field
           id={inputId}
-          list={list}
           type="number"
           value={value ?? ""}
           onChange={(e) => {

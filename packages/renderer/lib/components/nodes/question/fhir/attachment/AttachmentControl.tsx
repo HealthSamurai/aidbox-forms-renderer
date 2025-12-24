@@ -1,0 +1,21 @@
+import type { ValueControlProps } from "../../../../../types.ts";
+import { AttachmentInput } from "./AttachmentInput.tsx";
+
+export function AttachmentControl({
+  node,
+  answer,
+  inputId,
+  labelId,
+  describedById,
+}: ValueControlProps<"attachment">) {
+  return (
+    <AttachmentInput
+      inputId={inputId}
+      labelId={labelId}
+      describedById={describedById}
+      value={answer.value ?? null}
+      onChange={(value) => answer.setValueByUser(value)}
+      disabled={node.readOnly}
+    />
+  );
+}

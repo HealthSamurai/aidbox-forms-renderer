@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { IntegerInput } from "../fhir/integer/IntegerInput.tsx";
+import { IntegerControl } from "../fhir/integer/IntegerControl.tsx";
 import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
@@ -59,16 +59,12 @@ export const NumberRenderer = observer(function NumberRenderer({
     }
 
     return (rowProps) => (
-      <IntegerInput
+      <IntegerControl
+        node={node}
+        answer={rowProps.answer}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        placeholder={node.placeholder}
-        value={rowProps.value ?? null}
-        onChange={rowProps.setValue}
-        disabled={node.readOnly}
-        unitLabel={node.unitDisplay}
-        list={rowProps.list}
       />
     );
   }, [SliderInput, SpinnerInput, bounds.max, bounds.min, node, sliderStep]);

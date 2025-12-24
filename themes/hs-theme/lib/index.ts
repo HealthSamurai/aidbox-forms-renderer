@@ -45,7 +45,6 @@ export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { GroupActions } from "./components/group-actions.tsx";
 export { GridTable } from "./components/grid-table.tsx";
 export { AttachmentInput } from "./components/attachment-input.tsx";
-export { SelectOrInputField } from "./components/select-or-input-field.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
 export { DisplayRenderer } from "./components/display-renderer.tsx";
 export { Link } from "./components/link.tsx";
@@ -93,7 +92,6 @@ import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
-import { SelectOrInputField } from "./components/select-or-input-field.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { Link } from "./components/link.tsx";
 import type { Theme } from "@aidbox-forms/theme";
@@ -142,7 +140,6 @@ export const theme: Theme = {
   GridTable,
   AttachmentInput,
   DisplayRenderer,
-  SelectOrInputField,
   TabContainer,
   Link,
 };

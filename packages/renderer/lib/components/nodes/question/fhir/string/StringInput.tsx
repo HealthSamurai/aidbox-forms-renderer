@@ -9,7 +9,6 @@ export type StringInputProps = {
   describedById?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
-  list?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
 };
 
@@ -21,14 +20,12 @@ export function StringInput({
   describedById,
   placeholder,
   disabled,
-  list,
   inputMode,
 }: StringInputProps) {
   const { TextInput: ThemedTextInput } = useTheme();
   return (
     <ThemedTextInput
       id={inputId}
-      list={list}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}
       placeholder={placeholder}

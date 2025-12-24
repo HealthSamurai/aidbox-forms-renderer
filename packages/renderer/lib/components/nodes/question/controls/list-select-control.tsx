@@ -1,43 +1,64 @@
 import { observer } from "mobx-react-lite";
-import type {
-  AnswerType,
-  IQuestionNode,
-  ValueDisplayComponent,
-} from "../../../../types.ts";
+import { useCallback } from "react";
+import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
+import { AnswerRow, type RowRenderProps } from "../answers/answer-row.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
-import type { RowRenderProps } from "../answers/answer-row.tsx";
-import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
-import { MultiSelectControl } from "./multi-select-control.tsx";
-import type { CustomKind } from "../../../../stores/nodes/questions/select-control-types.ts";
+import { getValueControl } from "../fhir/index.ts";
 
 export type ListSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
-  customKind: CustomKind;
-  ValueDisplay: ValueDisplayComponent<T>;
 };
 
 export const ListSelectControl = observer(function ListSelectControl<
   T extends AnswerType,
->({ node, customKind, ValueDisplay }: ListSelectControlProps<T>) {
-  const { CheckboxGroup } = useTheme();
+>({ node }: ListSelectControlProps<T>) {
+  const { CheckboxGroup, AnswerList: ThemedAnswerList, Button } = useTheme();
   const store = node.selectStore;
+  const Control = getValueControl(node.type);
+  const renderCustomInput = useCallback(
+    (rowProps: RowRenderProps<T>) => (
+      <Control
+        node={node}
+        answer={rowProps.answer}
+        inputId={rowProps.inputId}
+        labelId={rowProps.labelId}
+        describedById={rowProps.describedById}
+      />
+    ),
+    [Control, node],
+  );
+  const addCustomAnswer = useCallback(() => {
+    node.addAnswer();
+  }, [node]);
 
   if (store.useCheckboxes) {
     const state = store.checkboxState;
     const customControl =
       store.allowCustom && state.isCustomActive ? (
-        <MultiSelectControl
-          node={node}
-          options={state.options}
-          displayOptions={[]}
-          mode="select"
-          customKind={customKind}
-          ValueDisplay={ValueDisplay}
-          showOptions
-          showSelectedOptions={false}
+        <ThemedAnswerList
+          answers={state.nonOptionAnswers.map((answer) => (
+            <AnswerRow
+              key={answer.key}
+              node={node}
+              answer={answer}
+              renderRow={renderCustomInput}
+            />
+          ))}
+          toolbar={
+            node.repeats ? (
+              <Button
+                type="button"
+                variant="success"
+                onClick={addCustomAnswer}
+                disabled={!node.canAdd}
+              >
+                Add another
+              </Button>
+            ) : undefined
+          }
         />
       ) : null;
 
@@ -79,10 +100,17 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
 }) {
   const { RadioGroup } = useTheme();
   const store = node.selectStore;
+  const Control = getValueControl(node.type);
   const rowStore = store.getListRowState(rowProps.answer);
-  const customInput = rowStore.isCustomActive
-    ? getAnswerInputRenderer(node)(rowProps)
-    : null;
+  const customInput = rowStore.isCustomActive ? (
+    <Control
+      node={node}
+      answer={rowProps.answer}
+      inputId={rowProps.inputId}
+      labelId={rowProps.labelId}
+      describedById={rowProps.describedById}
+    />
+  ) : null;
 
   return (
     <RadioGroup

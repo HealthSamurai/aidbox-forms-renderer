@@ -23,7 +23,6 @@ export type RowRenderProps<T extends AnswerType = AnswerType> = {
   setValue: (v: DataTypeToType<AnswerTypeToDataType<T>> | null) => void;
   inputId: string;
   labelId: string;
-  list?: string | undefined;
   describedById: string | undefined;
   answer: IAnswerInstance<T>;
 };

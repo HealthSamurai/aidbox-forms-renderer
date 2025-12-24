@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { TimeInput } from "../fhir/time/TimeInput.tsx";
+import { TimeControl } from "../fhir/time/TimeControl.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const TimeRenderer = observer(function TimeRenderer({
@@ -13,14 +13,12 @@ export const TimeRenderer = observer(function TimeRenderer({
 }) {
   const renderRow = useMemo((): AnswerRowRenderer<"time"> => {
     return (rowProps) => (
-      <TimeInput
+      <TimeControl
+        node={node}
+        answer={rowProps.answer}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        placeholder={node.placeholder}
-        value={rowProps.value ?? ""}
-        onChange={rowProps.setValue}
-        disabled={node.readOnly}
       />
     );
   }, [node]);

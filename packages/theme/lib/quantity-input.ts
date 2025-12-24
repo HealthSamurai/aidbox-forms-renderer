@@ -15,7 +15,6 @@ export type QuantityInputProps = {
   onChangeFreeTextUnit: (text: string) => void;
   isUnitFreeForm: boolean;
   inputId?: string | undefined;
-  list?: string | undefined;
   placeholder?: string | undefined;
   unitPlaceholder?: string | undefined;
   ariaLabelledBy?: string | undefined;

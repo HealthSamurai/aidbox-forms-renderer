@@ -1,13 +1,9 @@
 import type { MultiSelectFieldProps } from "@aidbox-forms/theme";
-import { useState } from "react";
 
 export function MultiSelectField({
-  mode,
   options,
   selectValue = "",
   onSelectOption,
-  searchValue = "",
-  onSearchValueChange,
   labelId,
   describedById,
   readOnly = false,
@@ -18,8 +14,6 @@ export function MultiSelectField({
   dialog,
   selectPlaceholder,
 }: MultiSelectFieldProps) {
-  const [lookupOpen, setLookupOpen] = useState(false);
-
   const handleSelectChange = (key: string) => {
     if (!key) return;
     onSelectOption(key);
@@ -28,106 +22,23 @@ export function MultiSelectField({
   const renderOptions = () => {
     if (!showOptions) return null;
 
-    if (mode === "select") {
-      return (
-        <select
-          id={labelId ? `${labelId}-multi-select` : undefined}
-          className="nhsuk-select"
-          value={selectValue}
-          onChange={(event) => handleSelectChange(event.target.value)}
-          disabled={readOnly || isLoading}
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
-        >
-          <option value="">{selectPlaceholder ?? "Select an option"}</option>
-          {options.map((entry) => (
-            <option key={entry.key} value={entry.key} disabled={entry.disabled}>
-              {entry.label}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    const list = (
-      <ul className="nhsuk-list nhsuk-list--border" aria-label="Options">
-        {options.map((entry) => (
-          <li key={entry.key}>
-            <button
-              type="button"
-              className="nhsuk-link"
-              onClick={() => handleSelectChange(entry.key)}
-              disabled={readOnly || isLoading || entry.disabled}
-            >
-              {entry.label}
-            </button>
-          </li>
-        ))}
-      </ul>
-    );
-
-    const search = (
-      <div className="nhsuk-form-group">
-        <input
-          id={labelId ? `${labelId}-${mode}-search` : undefined}
-          className="nhsuk-input"
-          type="search"
-          value={searchValue}
-          onChange={(event) => onSearchValueChange?.(event.target.value)}
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
-          disabled={readOnly || isLoading}
-          placeholder={
-            mode === "lookup" ? "Search directory" : "Type to search"
-          }
-        />
-      </div>
-    );
-
-    if (mode === "lookup") {
-      return (
-        <>
-          <button
-            type="button"
-            className="nhsuk-button nhsuk-button--secondary"
-            onClick={() => setLookupOpen(true)}
-            disabled={readOnly}
-          >
-            Open lookup
-          </button>
-          {lookupOpen ? (
-            <div
-              role="dialog"
-              aria-modal="true"
-              className="nhsuk-u-padding-4 nhsuk-u-margin-top-3 nhsuk-u-bg-white"
-              style={{
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
-                borderRadius: "4px",
-              }}
-            >
-              <h3 className="nhsuk-heading-s nhsuk-u-margin-bottom-3">
-                Lookup options
-              </h3>
-              {search}
-              {list}
-              <button
-                type="button"
-                className="nhsuk-button nhsuk-button--secondary"
-                onClick={() => setLookupOpen(false)}
-              >
-                Close
-              </button>
-            </div>
-          ) : null}
-        </>
-      );
-    }
-
     return (
-      <>
-        {search}
-        {list}
-      </>
+      <select
+        id={labelId ? `${labelId}-multi-select` : undefined}
+        className="nhsuk-select"
+        value={selectValue}
+        onChange={(event) => handleSelectChange(event.target.value)}
+        disabled={readOnly || isLoading}
+        aria-labelledby={labelId}
+        aria-describedby={describedById}
+      >
+        <option value="">{selectPlaceholder ?? "Select an option"}</option>
+        {options.map((entry) => (
+          <option key={entry.key} value={entry.key} disabled={entry.disabled}>
+            {entry.label}
+          </option>
+        ))}
+      </select>
     );
   };
 

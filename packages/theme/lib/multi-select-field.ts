@@ -18,12 +18,9 @@ export type MultiSelectDialog = {
 };
 
 export type MultiSelectFieldProps = {
-  mode: "select" | "autocomplete" | "lookup";
   options: ReadonlyArray<OptionEntry<unknown>>;
   selectValue?: string | undefined;
   onSelectOption: (key: string) => void;
-  searchValue?: string | undefined;
-  onSearchValueChange?: ((value: string) => void) | undefined;
   labelId?: string | undefined;
   describedById?: string | undefined;
   readOnly?: boolean | undefined;

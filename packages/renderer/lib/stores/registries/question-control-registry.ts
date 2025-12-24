@@ -15,7 +15,6 @@ import { ReferenceRenderer } from "../../components/nodes/question/renderers/ref
 import { AttachmentRenderer } from "../../components/nodes/question/renderers/attachment-renderer.tsx";
 import { ListSelectRenderer } from "../../components/nodes/question/renderers/list-select-renderer.tsx";
 import { DropdownRenderer } from "../../components/nodes/question/renderers/dropdown-renderer.tsx";
-import { LookupRenderer } from "../../components/nodes/question/renderers/lookup-renderer.tsx";
 import { UnsupportedRenderer } from "../../components/nodes/question/renderers/unsupported-renderer.tsx";
 
 type StringLikeType = Extract<AnswerType, "string" | "text">;
@@ -58,7 +57,8 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     name: "options-list-control",
     priority: 95,
     matcher: (node): node is IQuestionNode =>
-      hasOptions(node) && usesListControl(node),
+      hasOptions(node) &&
+      (node.control === "radio-button" || node.control === "check-box"),
     component: ListSelectRenderer,
   } as QuestionControlDefinition,
   {
@@ -66,7 +66,14 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     priority: 90,
     matcher: (node): node is IQuestionNode =>
       hasOptions(node) && node.control === "lookup",
-    component: LookupRenderer,
+    component: DropdownRenderer,
+  } as QuestionControlDefinition,
+  {
+    name: "options-lookup",
+    priority: 90,
+    matcher: (node): node is IQuestionNode =>
+      hasOptions(node) && node.control === "lookup",
+    component: DropdownRenderer,
   } as QuestionControlDefinition,
   {
     name: "options-autocomplete",
@@ -180,10 +187,6 @@ function hasOptions(node: IQuestionNode) {
     node.expressionRegistry.answer ||
     node.template.answerValueSet
   );
-}
-
-function usesListControl(node: IQuestionNode) {
-  return node.control === "radio-button" || node.control === "check-box";
 }
 
 function isStringLike(

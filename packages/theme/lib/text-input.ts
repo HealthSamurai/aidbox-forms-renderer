@@ -4,7 +4,6 @@ export type TextInputProps = {
   id?: string | undefined;
   type?: string | undefined;
   value: string;
-  list?: string | undefined;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;

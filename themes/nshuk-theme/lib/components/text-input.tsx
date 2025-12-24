@@ -4,7 +4,6 @@ export type TextInputProps = {
   id?: string | undefined;
   type?: string | undefined;
   value: string;
-  list?: string | undefined;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
@@ -23,7 +22,6 @@ export function TextInput({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
-  list,
 }: TextInputProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
@@ -33,7 +31,6 @@ export function TextInput({
   return (
     <input
       id={id}
-      list={list}
       className="nhsuk-input"
       type={type}
       value={value}

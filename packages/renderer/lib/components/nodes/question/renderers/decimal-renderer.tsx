@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { DecimalInput } from "../fhir/decimal/DecimalInput.tsx";
+import { DecimalControl } from "../fhir/decimal/DecimalControl.tsx";
 import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
@@ -54,16 +54,12 @@ export const DecimalRenderer = observer(function DecimalRenderer({
     }
 
     return (rowProps) => (
-      <DecimalInput
+      <DecimalControl
+        node={node}
+        answer={rowProps.answer}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        placeholder={node.placeholder}
-        value={rowProps.value ?? null}
-        onChange={rowProps.setValue}
-        disabled={node.readOnly}
-        unitLabel={node.unitDisplay}
-        list={rowProps.list}
       />
     );
   }, [SliderInput, SpinnerInput, bounds.max, bounds.min, node, sliderStep]);

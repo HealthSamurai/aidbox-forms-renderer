@@ -18,7 +18,6 @@ import {
   getNodeLabelId,
   sanitizeForId,
 } from "../../../utils.ts";
-import type { CustomKind, MultiSelectMode } from "./select-control-types.ts";
 import type { RowRenderProps } from "../../../components/nodes/question/answers/answer-row.tsx";
 
 const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
@@ -46,15 +45,6 @@ const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
     disabled: false,
   },
 ];
-
-type MultiSelectConfig<T extends AnswerType> = {
-  options: ReadonlyArray<AnswerOptionEntry<T>>;
-  displayOptions: ReadonlyArray<AnswerOptionEntry<T>> | undefined;
-  mode: MultiSelectMode;
-  customKind: CustomKind;
-  showOptions: boolean;
-  showSelectedOptions: boolean;
-};
 
 type PendingDialog<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
@@ -113,36 +103,17 @@ export class SelectStore<
   >();
 
   @observable.ref
-  private multiConfig: MultiSelectConfig<T>;
-
-  @observable.ref
   private pendingCustomKeys = new Set<string>();
 
   @observable
   selectValue = "";
 
   @observable
-  query = "";
-
-  @observable.ref
   private customDialog: PendingDialog<T> | null = null;
 
   constructor(node: IQuestionNode<T>) {
     this.node = node;
-    this.multiConfig = {
-      options: node.options.entries as ReadonlyArray<AnswerOptionEntry<T>>,
-      displayOptions: undefined,
-      mode: "select",
-      customKind: "none",
-      showOptions: true,
-      showSelectedOptions: true,
-    };
     makeObservable(this);
-  }
-
-  @action
-  setMultiConfig(config: MultiSelectConfig<T>): void {
-    this.multiConfig = config;
   }
 
   @computed
@@ -339,11 +310,6 @@ export class SelectStore<
   }
 
   @computed
-  get listOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
-    return this.multiConfig.displayOptions ?? this.multiConfig.options;
-  }
-
-  @computed
   get canAddSelection(): boolean {
     return (
       !this.node.readOnly &&
@@ -363,7 +329,7 @@ export class SelectStore<
 
   @computed
   get hasCustomAction(): boolean {
-    return this.multiConfig.customKind !== "none";
+    return this.allowCustom;
   }
 
   @computed
@@ -372,7 +338,7 @@ export class SelectStore<
     const selectedOptionAnswers = new Map<string, IAnswerInstance<T>>();
     const usedAnswerKeys = new Set<string>();
 
-    this.multiConfig.options.forEach((option) => {
+    this.node.options.entries.forEach((option) => {
       const match = this.node.answers.find((answer) => {
         if (answer.value == null) return false;
         if (usedAnswerKeys.has(answer.key)) return false;
@@ -401,14 +367,10 @@ export class SelectStore<
 
   @computed
   get customAnswers(): IAnswerInstance<T>[] {
+    const isTypeCustom = this.node.options.constraint === "optionsOrType";
     return this.node.answers.filter((answer) => {
       if (this.usedAnswerKeys.has(answer.key)) return false;
-      if (
-        this.multiConfig.customKind === "type" &&
-        this.pendingCustomKeys.has(answer.key)
-      ) {
-        return false;
-      }
+      if (isTypeCustom && this.pendingCustomKeys.has(answer.key)) return false;
       if (this.pendingCustomKeys.has(answer.key)) return true;
       return answer.value != null;
     });
@@ -424,21 +386,8 @@ export class SelectStore<
   }
 
   @computed
-  get filteredOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
-    const lowered = this.query.trim().toLowerCase();
-    if (!lowered) return this.listOptions;
-    return this.listOptions.filter((option) =>
-      option.label.toLowerCase().includes(lowered),
-    );
-  }
-
-  @computed
   get preparedOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
-    const baseOptions =
-      this.multiConfig.mode === "select"
-        ? this.listOptions
-        : this.filteredOptions;
-    return baseOptions.map((entry) => {
+    return this.node.options.entries.map((entry) => {
       const isSelected = this.selectedOptionAnswers.has(entry.key);
       return {
         ...entry,
@@ -461,14 +410,11 @@ export class SelectStore<
       disabled: !this.canAddSelection,
     };
 
-    return this.multiConfig.mode === "select"
-      ? [...this.preparedOptions, customOption]
-      : [customOption, ...this.preparedOptions];
+    return [...this.preparedOptions, customOption];
   }
 
   @computed
   get selectedChipItems(): MultiSelectChipItem<T>[] {
-    if (!this.multiConfig.showSelectedOptions) return [];
     return [...this.selectedOptionAnswers.values()].map((answer) => ({
       key: answer.key,
       answer,
@@ -479,7 +425,7 @@ export class SelectStore<
 
   @computed
   get customChipItems(): MultiSelectChipItem<T>[] {
-    const inlineString = this.multiConfig.customKind === "string";
+    const inlineString = this.node.options.constraint === "optionsOrString";
     return this.customAnswers.map((answer) => ({
       key: answer.key,
       answer,
@@ -491,15 +437,15 @@ export class SelectStore<
   @computed
   get hasSelections(): boolean {
     const customCount = this.customAnswers.length;
-    if (!this.multiConfig.showSelectedOptions) {
-      return customCount > 0;
-    }
     return this.selectedOptionAnswers.size + customCount > 0;
   }
 
   @computed
   get dialogState(): MultiSelectDialogState<T> | null {
-    if (!this.customDialog || this.multiConfig.customKind !== "type") {
+    if (
+      !this.customDialog ||
+      this.node.options.constraint !== "optionsOrType"
+    ) {
       return null;
     }
     return {
@@ -507,11 +453,6 @@ export class SelectStore<
       isNew: this.customDialog.isNew,
       canConfirm: answerHasContent(this.customDialog.answer),
     };
-  }
-
-  @action.bound
-  setQuery(value: string): void {
-    this.query = value;
   }
 
   @action.bound
@@ -545,17 +486,12 @@ export class SelectStore<
   @action.bound
   handleClearAll(): void {
     if (!this.canRemoveSelection) return;
-    const answersToClear = this.multiConfig.showSelectedOptions
-      ? this.node.answers
-      : this.customAnswers;
-    [...answersToClear].forEach((answer) => this.node.removeAnswer(answer));
+    [...this.node.answers].forEach((answer) => this.node.removeAnswer(answer));
   }
 
   @action.bound
   handleSelectOption(key: string): void {
-    if (this.multiConfig.mode === "select") {
-      this.selectValue = "";
-    }
+    this.selectValue = "";
     this.handleSelectChange(key);
   }
 
@@ -563,14 +499,14 @@ export class SelectStore<
   handleSelectChange(key: string): void {
     if (!key) return;
     if (key === this.specifyOtherKey) {
-      if (this.multiConfig.customKind === "string") {
+      if (this.node.options.constraint === "optionsOrString") {
         this.addCustomStringAnswer();
-      } else if (this.multiConfig.customKind === "type") {
+      } else if (this.node.options.constraint === "optionsOrType") {
         this.addCustomTypeAnswer();
       }
       return;
     }
-    const option = this.multiConfig.options.find((entry) => entry.key === key);
+    const option = this.node.options.entries.find((entry) => entry.key === key);
     if (option) {
       this.addOptionAnswer(option);
     }

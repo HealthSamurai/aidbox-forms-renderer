@@ -11,12 +11,10 @@ export function TextInput({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
-  list,
 }: {
   id?: string | undefined;
   type?: string | undefined;
   value: string;
-  list?: string | undefined;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
@@ -27,7 +25,6 @@ export function TextInput({
   return (
     <input
       id={id}
-      list={list}
       className={inputClass}
       type={type}
       value={value}

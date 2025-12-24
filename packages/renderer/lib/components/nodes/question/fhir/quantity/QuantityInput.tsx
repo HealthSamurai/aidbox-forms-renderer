@@ -8,7 +8,6 @@ export type QuantityInputProps = {
   describedById?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
-  list?: string | undefined;
 };
 
 export function QuantityInput({
@@ -18,7 +17,6 @@ export function QuantityInput({
   describedById,
   placeholder,
   disabled,
-  list,
 }: QuantityInputProps) {
   const { QuantityInput: ThemedQuantityInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
@@ -28,7 +26,6 @@ export function QuantityInput({
   return (
     <ThemedQuantityInput
       inputId={inputId}
-      list={list}
       disabled={disabled}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}

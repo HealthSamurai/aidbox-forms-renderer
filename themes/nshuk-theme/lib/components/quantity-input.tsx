@@ -9,7 +9,6 @@ export function QuantityInput({
   onChangeFreeTextUnit,
   isUnitFreeForm,
   inputId,
-  list,
   placeholder,
   unitPlaceholder = "unit",
   ariaLabelledBy,
@@ -26,7 +25,6 @@ export function QuantityInput({
       >
         <input
           id={inputId}
-          list={list}
           className="nhsuk-input"
           type="number"
           value={value ?? ""}

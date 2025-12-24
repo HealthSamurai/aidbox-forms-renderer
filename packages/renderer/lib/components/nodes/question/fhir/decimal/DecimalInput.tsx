@@ -9,7 +9,6 @@ export type DecimalInputProps = {
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   unitLabel?: string | undefined;
-  list?: string | undefined;
 };
 
 export function DecimalInput({
@@ -21,13 +20,11 @@ export function DecimalInput({
   placeholder,
   disabled,
   unitLabel,
-  list,
 }: DecimalInputProps) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
     <ThemedNumberInput
       id={inputId}
-      list={list}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}
       placeholder={placeholder}

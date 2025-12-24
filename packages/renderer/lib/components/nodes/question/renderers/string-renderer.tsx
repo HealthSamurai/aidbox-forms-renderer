@@ -3,9 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { StringInput } from "../fhir/string/StringInput.tsx";
-import { TextInput } from "../fhir/text/TextInput.tsx";
-import { UrlInput } from "../fhir/url/UrlInput.tsx";
+import { getValueControl } from "../fhir/index.ts";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const StringRenderer = observer(function StringRenderer({
@@ -13,51 +11,19 @@ export const StringRenderer = observer(function StringRenderer({
 }: {
   node: IQuestionNode<"string" | "text" | "url">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<
-    "string" | "text" | "url"
-  > => {
-    if (node.type === "text") {
-      return (rowProps) => (
-        <TextInput
-          inputId={rowProps.inputId}
-          labelId={rowProps.labelId}
-          describedById={rowProps.describedById}
-          placeholder={node.placeholder}
-          value={rowProps.value ?? ""}
-          onChange={rowProps.setValue}
-          disabled={node.readOnly}
-        />
-      );
-    }
-
-    if (node.type === "url") {
-      return (rowProps) => (
-        <UrlInput
-          inputId={rowProps.inputId}
-          labelId={rowProps.labelId}
-          describedById={rowProps.describedById}
-          placeholder={node.placeholder}
-          value={rowProps.value ?? ""}
-          onChange={rowProps.setValue}
-          disabled={node.readOnly}
-        />
-      );
-    }
-
-    return (rowProps) => (
-      <StringInput
+  const Control = getValueControl(node.type);
+  const renderRow = useMemo(
+    (): AnswerRowRenderer<"string" | "text" | "url"> => (rowProps) => (
+      <Control
+        node={node}
+        answer={rowProps.answer}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        placeholder={node.placeholder}
-        value={rowProps.value ?? ""}
-        onChange={rowProps.setValue}
-        disabled={node.readOnly}
-        list={rowProps.list}
-        inputMode={node.keyboardType}
       />
-    );
-  }, [node]);
+    ),
+    [Control, node],
+  );
 
   return (
     <QuestionScaffold

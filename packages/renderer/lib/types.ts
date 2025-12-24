@@ -218,6 +218,14 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
   ValueDisplayProps<T>
 >;
 
+export type ValueControlProps<T extends AnswerType> = {
+  node: IQuestionNode<T>;
+  answer: IAnswerInstance<T>;
+  inputId: string;
+  labelId: string;
+  describedById?: string | undefined;
+};
+
 export type DataType =
   | "base64Binary"
   | "boolean"
@@ -638,18 +646,6 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   component: ComponentType<QuestionControlProps<T>>;
 }
 
-type SelectMode = "select" | "autocomplete" | "lookup";
-type SelectCustomKind = "none" | "string" | "type";
-
-type SelectConfig<T extends AnswerType> = {
-  options: ReadonlyArray<AnswerOptionEntry<T>>;
-  displayOptions: ReadonlyArray<AnswerOptionEntry<T>> | undefined;
-  mode: SelectMode;
-  customKind: SelectCustomKind;
-  showOptions: boolean;
-  showSelectedOptions: boolean;
-};
-
 type SelectCheckboxOption<T extends AnswerType> = {
   key: string;
   label: string;
@@ -662,7 +658,12 @@ type SelectCheckboxState<T extends AnswerType> = {
   uiOptions: Array<SelectCheckboxOption<T>>;
   selectedKeys: Set<string>;
   answerByKey: Map<string, IAnswerInstance<T>>;
+  nonOptionAnswers: IAnswerInstance<T>[];
+  customAnswers: IAnswerInstance<T>[];
+  availableAnswers: IAnswerInstance<T>[];
+  canAddSelection: boolean;
   isCustomActive: boolean;
+  specifyOthersKey: string;
 };
 
 type SelectChipItem<T extends AnswerType> = {
@@ -687,7 +688,6 @@ type SelectRowProps<T extends AnswerType> = {
   setValue: BivariantCallback<DataTypeToType<AnswerTypeToDataType<T>> | null>;
   inputId: string;
   labelId: string;
-  list?: string | undefined;
   describedById: string | undefined;
   answer: IAnswerInstance<T>;
 };
@@ -728,15 +728,12 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly dialogState: SelectDialogState<T> | null;
   readonly extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
   readonly selectValue: string;
-  readonly query: string;
   readonly labelId: string;
   readonly describedById: string | undefined;
 
-  setMultiConfig(config: SelectConfig<T>): void;
   handleCheckboxToggle(key: string): void;
   getListRowState(answer: IAnswerInstance<T>): ListSelectRowState;
   getDropdownRowState(answer: IAnswerInstance<T>): DropdownRowState<T>;
-  setQuery(value: string): void;
   handleSelectOption(key: string): void;
   handleSelectChange(key: string): void;
   handleRemoveAnswer(answer: IAnswerInstance<T>): void;

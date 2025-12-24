@@ -11,7 +11,6 @@ export function NumberInput({
   ariaLabelledBy,
   ariaDescribedBy,
   unitLabel,
-  list,
 }: NumberInputProps) {
   const described = [ariaDescribedBy].filter(Boolean).join(" ").trim();
   const describedBy = described.length > 0 ? described : undefined;
@@ -22,7 +21,6 @@ export function NumberInput({
         <UnitWrapper>
           <input
             id={id}
-            list={list}
             className="nhsuk-input"
             type="number"
             value={value ?? ""}
@@ -47,7 +45,6 @@ export function NumberInput({
       ) : (
         <input
           id={id}
-          list={list}
           className="nhsuk-input"
           type="number"
           value={value ?? ""}

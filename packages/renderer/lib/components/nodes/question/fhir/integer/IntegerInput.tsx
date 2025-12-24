@@ -9,7 +9,6 @@ export type IntegerInputProps = {
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   unitLabel?: string | undefined;
-  list?: string | undefined;
 };
 
 export function IntegerInput({
@@ -21,13 +20,11 @@ export function IntegerInput({
   placeholder,
   disabled,
   unitLabel,
-  list,
 }: IntegerInputProps) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
     <ThemedNumberInput
       id={inputId}
-      list={list}
       ariaLabelledBy={labelId}
       ariaDescribedBy={describedById}
       placeholder={placeholder}

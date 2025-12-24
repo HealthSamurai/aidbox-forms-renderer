@@ -3,7 +3,7 @@ import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import type { RowRenderProps } from "../answers/answer-row.tsx";
-import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
+import { getValueControl } from "../fhir/index.ts";
 type RowVariant = "options" | "open-choice";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {
@@ -82,24 +82,28 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectField, Button, SelectOrInputField } = useTheme();
+  const { SelectField, Button } = useTheme();
 
   if (rowStore.isCustomActive) {
-    const renderer = getAnswerInputRenderer(node);
+    const Control = getValueControl(node.type);
     return (
-      <SelectOrInputField
-        input={renderer(rowProps)}
-        inputFooter={
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={rowStore.exitCustom}
-            disabled={node.readOnly}
-          >
-            Back to options
-          </Button>
-        }
-      />
+      <>
+        <Control
+          node={node}
+          answer={rowProps.answer}
+          inputId={rowProps.inputId}
+          labelId={rowProps.labelId}
+          describedById={rowProps.describedById}
+        />
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={rowStore.exitCustom}
+          disabled={node.readOnly}
+        >
+          Back to options
+        </Button>
+      </>
     );
   }
 

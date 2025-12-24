@@ -16,7 +16,6 @@ export type QuantityInputProps = {
   onChangeFreeTextUnit: (text: string) => void;
   isUnitFreeForm: boolean;
   inputId?: string | undefined;
-  list?: string | undefined;
   placeholder?: string | undefined;
   unitPlaceholder?: string | undefined;
   ariaLabelledBy?: string | undefined;
@@ -33,7 +32,6 @@ export function QuantityInput({
   onChangeFreeTextUnit,
   isUnitFreeForm,
   inputId,
-  list,
   placeholder,
   unitPlaceholder = "unit",
   ariaLabelledBy,
@@ -47,7 +45,6 @@ export function QuantityInput({
       <ValueSlot>
         <input
           id={inputId}
-          list={list}
           className={inputClass}
           type="number"
           value={value ?? ""}

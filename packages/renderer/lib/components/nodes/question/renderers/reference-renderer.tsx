@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { ReferenceInput } from "../fhir/reference/ReferenceInput.tsx";
+import { ReferenceControl } from "../fhir/reference/ReferenceControl.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
 
 export const ReferenceRenderer = observer(function ReferenceRenderer({
@@ -13,14 +13,12 @@ export const ReferenceRenderer = observer(function ReferenceRenderer({
 }) {
   const renderRow = useMemo((): AnswerRowRenderer<"reference"> => {
     return (rowProps) => (
-      <ReferenceInput
+      <ReferenceControl
+        node={node}
+        answer={rowProps.answer}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
-        value={rowProps.value ?? null}
-        onChange={rowProps.setValue}
-        disabled={node.readOnly}
-        placeholder={node.placeholder}
       />
     );
   }, [node]);

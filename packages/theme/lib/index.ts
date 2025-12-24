@@ -42,7 +42,6 @@ import type { GroupActionsProps } from "./group-actions.ts";
 import type { GridTableProps } from "./grid-table.ts";
 import type { AttachmentInputProps } from "./attachment-input.ts";
 import type { DisplayRendererProps } from "./display-renderer.ts";
-import type { SelectOrInputFieldProps } from "./select-or-input-field.ts";
 import type { TabContainerProps } from "./tab-container.ts";
 import type { LinkProps } from "./link.ts";
 
@@ -90,7 +89,6 @@ export * from "./group-actions.ts";
 export * from "./grid-table.ts";
 export * from "./attachment-input.ts";
 export * from "./display-renderer.ts";
-export * from "./select-or-input-field.ts";
 export * from "./tab-container.ts";
 export * from "./link.ts";
 
@@ -138,7 +136,6 @@ export type Theme = {
   GridTable: ComponentType<GridTableProps>;
   AttachmentInput: ComponentType<AttachmentInputProps>;
   DisplayRenderer: ComponentType<DisplayRendererProps>;
-  SelectOrInputField: ComponentType<SelectOrInputFieldProps>;
   TabContainer: ComponentType<TabContainerProps>;
   Link: ComponentType<LinkProps>;
 };

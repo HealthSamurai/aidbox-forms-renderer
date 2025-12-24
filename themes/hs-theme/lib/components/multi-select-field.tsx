@@ -1,16 +1,12 @@
 import { styled } from "@linaria/react";
 import type { MultiSelectFieldProps } from "@aidbox-forms/theme";
-import { useState } from "react";
 import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
 export function MultiSelectField({
-  mode,
   options,
   selectValue = "",
   onSelectOption,
-  searchValue = "",
-  onSearchValueChange,
   labelId,
   describedById,
   readOnly = false,
@@ -21,8 +17,6 @@ export function MultiSelectField({
   dialog,
   selectPlaceholder,
 }: MultiSelectFieldProps) {
-  const [lookupOpen, setLookupOpen] = useState(false);
-
   const handleSelectChange = (key: string) => {
     if (!key) return;
     onSelectOption(key);
@@ -31,100 +25,26 @@ export function MultiSelectField({
   const renderOptions = () => {
     if (!showOptions) return null;
 
-    if (mode === "select") {
-      return (
-        <FieldRow>
-          <select
-            id={labelId ? `${labelId}-multi-select` : undefined}
-            className={inputClass}
-            value={selectValue}
-            onChange={(event) => handleSelectChange(event.target.value)}
-            disabled={readOnly || isLoading}
-            aria-labelledby={labelId}
-            aria-describedby={describedById}
-            aria-busy={isLoading || undefined}
-          >
-            <option value="">{selectPlaceholder ?? "Select an option"}</option>
-            {options.map((entry) => (
-              <option
-                key={entry.key}
-                value={entry.key}
-                disabled={entry.disabled}
-              >
-                {entry.label}
-              </option>
-            ))}
-          </select>
-        </FieldRow>
-      );
-    }
-
-    const list = (
-      <Options aria-label="Options">
-        {options.map((entry) => (
-          <OptionItem key={entry.key}>
-            <OptionButton
-              type="button"
-              onClick={() => handleSelectChange(entry.key)}
-              disabled={readOnly || isLoading || entry.disabled}
-            >
-              {entry.label}
-            </OptionButton>
-          </OptionItem>
-        ))}
-      </Options>
-    );
-
-    const search = (
-      <SearchInput
-        id={labelId ? `${labelId}-${mode}-search` : undefined}
-        className={inputClass}
-        type="search"
-        value={searchValue}
-        onChange={(event) => onSearchValueChange?.(event.target.value)}
-        aria-labelledby={labelId}
-        aria-describedby={describedById}
-        disabled={readOnly || isLoading}
-        placeholder={mode === "lookup" ? "Search directory" : "Type to search"}
-      />
-    );
-
-    if (mode === "lookup") {
-      return (
-        <>
-          <LookupButton
-            type="button"
-            onClick={() => setLookupOpen(true)}
-            disabled={readOnly}
-          >
-            Open lookup
-          </LookupButton>
-          {lookupOpen ? (
-            <Overlay role="dialog" aria-modal="true">
-              <Dialog>
-                <DialogTitle>Lookup options</DialogTitle>
-                <Stack>
-                  {search}
-                  {list}
-                </Stack>
-                <LookupButton
-                  type="button"
-                  onClick={() => setLookupOpen(false)}
-                >
-                  Close
-                </LookupButton>
-              </Dialog>
-            </Overlay>
-          ) : null}
-        </>
-      );
-    }
-
     return (
-      <Stack>
-        {search}
-        {list}
-      </Stack>
+      <FieldRow>
+        <select
+          id={labelId ? `${labelId}-multi-select` : undefined}
+          className={inputClass}
+          value={selectValue}
+          onChange={(event) => handleSelectChange(event.target.value)}
+          disabled={readOnly || isLoading}
+          aria-labelledby={labelId}
+          aria-describedby={describedById}
+          aria-busy={isLoading || undefined}
+        >
+          <option value="">{selectPlaceholder ?? "Select an option"}</option>
+          {options.map((entry) => (
+            <option key={entry.key} value={entry.key} disabled={entry.disabled}>
+              {entry.label}
+            </option>
+          ))}
+        </select>
+      </FieldRow>
     );
   };
 
@@ -182,57 +102,6 @@ const FieldRow = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
-`;
-
-const LookupButton = styled.button`
-  border: none;
-  background: #edf2f7;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-`;
-
-const SearchInput = styled.input``;
-
-const Options = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid #cbd5e0;
-  border-radius: 0.375rem;
-  max-height: 12rem;
-  overflow: auto;
-`;
-
-const OptionItem = styled.li`
-  & + & {
-    border-top: 1px solid #e2e8f0;
-  }
-`;
-
-const OptionButton = styled.button`
-  display: block;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    background: #edf2f7;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
 `;
 
 const ChipList = styled.div`

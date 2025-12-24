@@ -21,7 +21,6 @@ export const DropdownRenderer = observer(function DropdownRenderer<
   const rowVariant = customKind === "none" ? "options" : "open-choice";
   const ValueDisplay = VALUE_DISPLAY_BY_TYPE[node.type];
   const isMultiSelect = node.selectStore.isMultiSelect;
-  const mode = "select";
 
   return (
     <QuestionScaffold
@@ -29,13 +28,7 @@ export const DropdownRenderer = observer(function DropdownRenderer<
       showOptionsState
       children={
         isMultiSelect ? (
-          <MultiSelectControl
-            node={node}
-            options={node.options.entries}
-            mode={mode}
-            customKind={customKind}
-            ValueDisplay={ValueDisplay}
-          />
+          <MultiSelectControl node={node} ValueDisplay={ValueDisplay} />
         ) : (
           <DropdownSelectControl node={node} rowVariant={rowVariant} />
         )

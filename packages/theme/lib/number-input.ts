@@ -10,7 +10,6 @@ export type NumberInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   unitLabel?: string | undefined;
-  list?: string | undefined;
 };
 
 export type NumberInputComponent = ComponentType<NumberInputProps>;

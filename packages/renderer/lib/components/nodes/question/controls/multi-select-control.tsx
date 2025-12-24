@@ -1,7 +1,5 @@
-import { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type {
-  AnswerOptionEntry,
   AnswerType,
   IAnswerInstance,
   IQuestionNode,
@@ -9,62 +7,20 @@ import type {
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
-import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
-import { StringInput } from "../fhir/string/StringInput.tsx";
-import { TextInput } from "../fhir/text/TextInput.tsx";
-import type {
-  CustomKind,
-  MultiSelectMode,
-} from "../../../../stores/nodes/questions/select-control-types.ts";
+import { getValueControl } from "../fhir/index.ts";
 
 export type MultiSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
-  options: ReadonlyArray<AnswerOptionEntry<T>>;
-  displayOptions?: ReadonlyArray<AnswerOptionEntry<T>>;
-  mode: MultiSelectMode;
-  customKind: CustomKind;
   ValueDisplay: ValueDisplayComponent<T>;
   showOptions?: boolean;
-  showSelectedOptions?: boolean;
 };
 
 export const MultiSelectControl = observer(function MultiSelectControl<
   T extends AnswerType,
->({
-  node,
-  options,
-  displayOptions,
-  mode,
-  customKind,
-  ValueDisplay,
-  showOptions = true,
-  showSelectedOptions = true,
-}: MultiSelectControlProps<T>) {
+>({ node, ValueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
   const { Button, MultiSelectField } = useTheme();
   const store = node.selectStore;
-
-  const config = useMemo(
-    () => ({
-      options,
-      displayOptions,
-      mode,
-      customKind,
-      showOptions,
-      showSelectedOptions,
-    }),
-    [
-      options,
-      displayOptions,
-      mode,
-      customKind,
-      showOptions,
-      showSelectedOptions,
-    ],
-  );
-
-  useEffect(() => {
-    store.setMultiConfig(config);
-  }, [store, config]);
+  const Control = getValueControl(node.type);
 
   const selectedChips = store.selectedChipItems.flatMap((item) => {
     const value = item.answer.value;
@@ -142,52 +98,53 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     ) : undefined;
 
   const dialogState = store.dialogState;
-  const dialog =
-    dialogState && customKind === "type"
-      ? (() => {
-          const renderer = getAnswerInputRenderer(node);
-          const rowProps = store.buildRowProps(dialogState.answer, "custom");
+  const dialog = dialogState
+    ? (() => {
+        const rowProps = store.buildRowProps(dialogState.answer, "custom");
 
-          return {
-            open: true,
-            title: "Specify other",
-            content: (
-              <>
-                {renderer(rowProps)}
-                <AnswerErrors answer={dialogState.answer} />
-              </>
-            ),
-            actions: (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={store.cancelCustomDialog}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant="success"
-                  onClick={store.confirmCustomDialog}
-                  disabled={!dialogState.canConfirm}
-                >
-                  Add
-                </Button>
-              </>
-            ),
-          };
-        })()
-      : undefined;
+        return {
+          open: true,
+          title: "Specify other",
+          content: (
+            <>
+              <Control
+                node={node}
+                answer={rowProps.answer}
+                inputId={rowProps.inputId}
+                labelId={rowProps.labelId}
+                describedById={rowProps.describedById}
+              />
+              <AnswerErrors answer={dialogState.answer} />
+            </>
+          ),
+          actions: (
+            <>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={store.cancelCustomDialog}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="success"
+                onClick={store.confirmCustomDialog}
+                disabled={!dialogState.canConfirm}
+              >
+                Add
+              </Button>
+            </>
+          ),
+        };
+      })()
+    : undefined;
 
   return (
     <MultiSelectField
-      mode={mode}
       options={store.extendedOptions}
       selectValue={store.selectValue}
       onSelectOption={store.handleSelectOption}
-      searchValue={store.query}
-      onSearchValueChange={store.setQuery}
       labelId={store.labelId}
       describedById={store.describedById}
       readOnly={node.readOnly}
@@ -207,35 +164,14 @@ function renderInlineCustomInput<T extends AnswerType>(
 ) {
   const store = node.selectStore;
   const rowProps = store.buildRowProps(answer, "custom-inline");
-  if (node.type === "string" || node.type === "text") {
-    const value = (rowProps.value ?? "") as string;
-    return (
-      <>
-        {node.type === "text" ? (
-          <TextInput
-            inputId={rowProps.inputId}
-            labelId={rowProps.labelId}
-            describedById={rowProps.describedById}
-            value={value}
-            onChange={(next) => rowProps.setValue(next as never)}
-            disabled={node.readOnly}
-            placeholder={node.placeholder}
-          />
-        ) : (
-          <StringInput
-            inputId={rowProps.inputId}
-            labelId={rowProps.labelId}
-            describedById={rowProps.describedById}
-            value={value}
-            onChange={(next) => rowProps.setValue(next as never)}
-            disabled={node.readOnly}
-            placeholder={node.placeholder}
-          />
-        )}
-      </>
-    );
-  }
-
-  const renderer = getAnswerInputRenderer(node);
-  return renderer(rowProps);
+  const Control = getValueControl(node.type);
+  return (
+    <Control
+      node={node}
+      answer={rowProps.answer}
+      inputId={rowProps.inputId}
+      labelId={rowProps.labelId}
+      describedById={rowProps.describedById}
+    />
+  );
 }
