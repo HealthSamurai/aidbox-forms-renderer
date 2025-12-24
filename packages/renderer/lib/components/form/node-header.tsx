@@ -1,5 +1,5 @@
 import { getNodeLabelParts } from "./node-text.tsx";
-import { INode } from "../../types.ts";
+import { IPresentableNode } from "../../types.ts";
 import { observer } from "mobx-react-lite";
 import { NodeHelp } from "./node-help.tsx";
 import { NodeFlyover } from "./node-flyover.tsx";
@@ -9,7 +9,7 @@ import { useTheme } from "../../ui/theme.tsx";
 export const NodeHeader = observer(function NodeHeader({
   node,
 }: {
-  node: INode;
+  node: IPresentableNode;
 }) {
   const { NodeHeader: ThemedNodeHeader } = useTheme();
   const { labelText, labelId, htmlFor } = getNodeLabelParts(node);

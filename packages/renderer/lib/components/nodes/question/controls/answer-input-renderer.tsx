@@ -15,6 +15,7 @@ import { QuantityInput } from "../fhir/quantity/QuantityInput.tsx";
 import { CodingInput } from "../fhir/coding/CodingInput.tsx";
 import { ReferenceInput } from "../fhir/reference/ReferenceInput.tsx";
 import { AttachmentInput } from "../fhir/attachment/AttachmentInput.tsx";
+import { BooleanInput } from "../fhir/boolean/BooleanInput.tsx";
 
 export function getAnswerInputRenderer<T extends AnswerType>(
   node: IQuestionNode<T>,
@@ -160,6 +161,17 @@ export function getAnswerInputRenderer<T extends AnswerType>(
     case "attachment":
       return ((rowProps: RowRenderProps<"attachment">) => (
         <AttachmentInput
+          inputId={rowProps.inputId}
+          labelId={rowProps.labelId}
+          describedById={rowProps.describedById}
+          value={rowProps.value ?? null}
+          onChange={rowProps.setValue}
+          disabled={node.readOnly}
+        />
+      )) as AnswerRowRenderer<T>;
+    case "boolean":
+      return ((rowProps: RowRenderProps<"boolean">) => (
+        <BooleanInput
           inputId={rowProps.inputId}
           labelId={rowProps.labelId}
           describedById={rowProps.describedById}

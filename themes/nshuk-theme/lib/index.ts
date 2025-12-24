@@ -46,7 +46,6 @@ import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
-import { SelectionMatrix } from "./components/selection-matrix.tsx";
 import { GridTable } from "./components/grid-table.tsx";
 import { AttachmentInput } from "./components/attachment-input.tsx";
 import { SelectOrInputField } from "./components/select-or-input-field.tsx";
@@ -109,7 +108,6 @@ const passthrough: Theme = {
   GroupWrapperScaffoldItem,
   GroupScaffold,
   GroupActions,
-  SelectionMatrix,
   GridTable,
   AttachmentInput,
   SelectOrInputField,

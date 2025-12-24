@@ -76,12 +76,12 @@
   - Questionnaire-aware; manage answers array, min/max, and render answer-level validation errors.
   - May delegate value editing to InputComponents when a simple value editor is sufficient.
   - Not responsible for rendering nested child nodes.
-- List-select controls: `ListSelectControl`, `DropdownControl`, `LookupControl`
+- List-select controls: `ListSelectControl`, `DropdownSelectControl`, `ModalSelectControl`
   - has `repeats: boolean` property to distinguish single-answer vs. multi-answer variants
   - `ListSelectControl` renders either single-select radio-button list, or multi-select checkbox list
-  - Checkbox variant of `ListSelectControl` may embed `DropdownControl` in tokenized multi-select mode (no preset options) to implement the “Specify others” flow for `optionsOrString`/`optionsOrType`, honoring min/max and per-chip validation.
-  - `DropdownControl` renders single-select or multi-select dropdown/autocomplete
-  - `LookupControl` same as `DropdownControl` but opens a modal dialog instead of inline dropdown
+  - Checkbox variant of `ListSelectControl` may embed `DropdownSelectControl` in tokenized multi-select mode (no preset options) to implement the “Specify others” flow for `optionsOrString`/`optionsOrType`, honoring min/max and per-chip validation.
+  - `DropdownSelectControl` renders single-select or multi-select dropdown/autocomplete
+  - `ModalSelectControl` same as `DropdownSelectControl` but opens a modal dialog instead of inline dropdown
   - For `type=reference`, perform lookup/autocomplete based on reference resource hints (e.g., `questionnaire-referenceResource`) and may use `sdc-questionnaire-lookupQuestionnaire` to create/select a target.
 - Freeform controls
   - Examples: text, textarea, integer, decimal, date, dateTime, time, URL, reference, quantity, attachment.
@@ -127,8 +127,8 @@ lib/components/nodes/question/
 │  └─ answer-row.tsx
 ├─ controls/
 │  ├─ list-select-control.tsx     # toggles radio vs checkbox based on props
-│  ├─ dropdown-control.tsx        # inline dropdown/autocomplete (single & multi)
-│  └─ lookup-control.tsx          # modal-based dropdown
+│  ├─ dropdown-select-control.tsx # inline dropdown/autocomplete (single & multi)
+│  └─ modal-select-control.tsx    # modal-based dropdown
 ├─ inputs/                        # adapters from stores to base controls
 │  ├─ string-input.tsx
 │  ├─ text-input.tsx

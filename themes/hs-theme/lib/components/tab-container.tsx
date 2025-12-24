@@ -33,8 +33,8 @@ export function TabContainer({
               type="button"
               role="tab"
               aria-selected={selected}
-              aria-controls={item.panelId}
-              id={item.tabId}
+              aria-controls={item.tabPanelId}
+              id={item.tabButtonId}
               onClick={() => onSelect(idx)}
               data-selected={selected ? "true" : "false"}
             >
@@ -43,7 +43,11 @@ export function TabContainer({
           );
         })}
       </TabList>
-      <Panel role="tabpanel" id={active.panelId} aria-labelledby={active.tabId}>
+      <Panel
+        role="tabpanel"
+        id={active.tabPanelId}
+        aria-labelledby={active.tabButtonId}
+      >
         {active.content}
       </Panel>
       {errors ? <ErrorsSlot>{errors}</ErrorsSlot> : null}

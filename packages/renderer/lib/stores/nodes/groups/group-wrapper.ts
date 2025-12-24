@@ -27,6 +27,7 @@ import {
 } from "../../../utils.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { GroupStore } from "./group-store.ts";
+import { GridTableStore } from "./grid-table-store.ts";
 
 export class GroupWrapper
   extends AbstractPresentableNode
@@ -74,6 +75,11 @@ export class GroupWrapper
   get component(): GroupControlDefinition["wrapperComponent"] | undefined {
     return this.form.groupControlRegistry.resolveWrapper(this)
       ?.wrapperComponent;
+  }
+
+  @computed({ keepAlive: true })
+  get gridTableStore(): GridTableStore {
+    return new GridTableStore(this);
   }
 
   @computed
@@ -201,7 +207,7 @@ export class GroupWrapper
             this.form.reportRenderingIssue(
               makeIssue(
                 "structure",
-                `Gtable group "${this.linkId}" expects only question items, but child "${node.linkId}" is type '${node.template.type}'.`,
+                `Group table "${this.linkId}" expects only question items, but child "${node.linkId}" is type '${node.template.type}'.`,
               ),
             );
             return;
@@ -211,7 +217,7 @@ export class GroupWrapper
             this.form.reportRenderingIssue(
               makeIssue(
                 "structure",
-                `Question "${node.linkId}" inside gtable group "${this.linkId}" must not allow multiple answers.`,
+                `Question "${node.linkId}" inside group table group "${this.linkId}" must not allow multiple answers.`,
               ),
             );
           }

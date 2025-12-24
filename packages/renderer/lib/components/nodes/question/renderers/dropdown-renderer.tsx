@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
-import { DropdownControl } from "../controls/dropdown-control.tsx";
+import { DropdownSelectControl } from "../controls/dropdown-select-control.tsx";
 
 export const DropdownRenderer = observer(function DropdownRenderer<
   T extends AnswerType,
@@ -17,7 +17,7 @@ export const DropdownRenderer = observer(function DropdownRenderer<
     <QuestionScaffold
       node={node}
       showOptionsState
-      children={<DropdownControl node={node} mode={mode} />}
+      children={<DropdownSelectControl node={node} mode={mode} />}
     />
   );
 });

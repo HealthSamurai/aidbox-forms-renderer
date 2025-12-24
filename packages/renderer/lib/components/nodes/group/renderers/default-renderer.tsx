@@ -6,10 +6,9 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 export const DefaultRenderer = observer(function DefaultRenderer({
   node,
 }: GroupControlProps) {
-  const visibleNodes = node.nodes.filter((child) => !child.hidden);
   return (
     <GroupScaffold node={node}>
-      <NodesList nodes={visibleNodes} />
+      <NodesList nodes={node.visibleNodes} />
     </GroupScaffold>
   );
 });

@@ -11,7 +11,7 @@ import { HorizontalTableRenderer } from "../../components/nodes/group/renderers/
 import { PageRenderer } from "../../components/nodes/group/renderers/page-renderer.tsx";
 import { TabContainerRenderer } from "../../components/nodes/group/renderers/tab-container-renderer.tsx";
 import { VerticalTableRenderer } from "../../components/nodes/group/renderers/vertical-table-renderer.tsx";
-import { GTableRenderer } from "../../components/nodes/group/renderers/gtable-renderer.tsx";
+import { GridTableRenderer } from "../../components/nodes/group/renderers/grid-table-renderer.tsx";
 import { GroupWrapperScaffold } from "../../components/nodes/group/group-wrapper-scaffold.tsx";
 
 export class GroupControlRegistry {
@@ -79,7 +79,7 @@ export const defaultGroupControlDefinitions: GroupControlDefinition[] = [
     name: "group-gtable",
     priority: 10,
     matcher: (node) => node.control === "gtable",
-    wrapperComponent: GTableRenderer,
+    wrapperComponent: GridTableRenderer,
   },
   {
     name: "group-htable",

@@ -118,8 +118,14 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  private get valueMap(): Map<string, DataTypeToType<AnswerTypeToDataType<T>>> {
-    const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();
+  private get valueMap(): Map<
+    string,
+    DataTypeToType<AnswerTypeToDataType<T>> | null
+  > {
+    const map = new Map<
+      string,
+      DataTypeToType<AnswerTypeToDataType<T>> | null
+    >();
     for (const entry of this.entries) {
       map.set(entry.key, entry.value);
     }
@@ -135,7 +141,9 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
     const match = this.entries.find((entry) =>
-      areValuesEqual(dataType, value, entry.value),
+      entry.value == null
+        ? false
+        : areValuesEqual(dataType, value, entry.value),
     );
     return match?.key ?? "";
   }

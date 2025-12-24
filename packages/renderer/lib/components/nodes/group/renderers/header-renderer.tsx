@@ -6,10 +6,9 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 export const HeaderRenderer = observer(function HeaderRenderer({
   node,
 }: GroupControlProps) {
-  const visibleNodes = node.nodes.filter((child) => !child.hidden);
   return (
     <GroupScaffold node={node} dataControl="header">
-      <NodesList nodes={visibleNodes} />
+      <NodesList nodes={node.visibleNodes} />
     </GroupScaffold>
   );
 });

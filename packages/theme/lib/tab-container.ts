@@ -3,8 +3,8 @@ import type { ComponentType, ReactNode } from "react";
 export type TabItem = {
   key: string;
   label: ReactNode;
-  tabId: string;
-  panelId: string;
+  tabButtonId: string;
+  tabPanelId: string;
   content: ReactNode;
 };
 

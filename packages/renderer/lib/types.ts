@@ -205,7 +205,7 @@ export type AnswerType = Exclude<
 export type AnswerOptionEntry<T extends AnswerType> = {
   key: string;
   label: string;
-  value: DataTypeToType<AnswerTypeToDataType<T>>;
+  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   option: QuestionnaireItemAnswerOption;
   disabled: boolean;
 };
@@ -468,10 +468,92 @@ export interface GroupControlDefinition {
   wrapperComponent?: ComponentType<GroupWrapperControlProps>;
 }
 
+type GridColumnState = {
+  key: string;
+  label: string;
+};
+
+type GridCellState = {
+  key: string;
+  question?: IQuestionNode | undefined;
+};
+
+type GridRowState = {
+  key: string;
+  label: string;
+  cells: Array<GridCellState>;
+};
+
+export interface IGridStore {
+  readonly columns: Array<GridColumnState>;
+  readonly rows: Array<GridRowState>;
+  readonly emptyMessage: string | null;
+}
+
+type TableColumnState = {
+  key: string;
+  label: string;
+};
+
+type TableCellState = {
+  key: string;
+  entry: AnswerOptionEntry<AnswerType> | undefined;
+  placeholder?: string;
+  selected: boolean;
+  disabled: boolean;
+  toggleSelection?: () => void;
+};
+
+type TableRowState = {
+  key: string;
+  question: IQuestionNode;
+  labelId: string;
+  describedBy?: string | undefined;
+  inputName: string;
+  selectedKey: string;
+  selectedKeys: Set<string>;
+  cells: Array<TableCellState>;
+  hasDetails: boolean;
+};
+
+export interface ITableStore {
+  readonly questions: Array<IQuestionNode>;
+  readonly others: Array<IPresentableNode>;
+  readonly columns: Array<TableColumnState>;
+  readonly rowStates: Array<TableRowState>;
+  readonly detailQuestions: Array<IQuestionNode>;
+}
+
+type GridTableColumnState = {
+  key: string;
+  label: string;
+};
+
+type GridTableCellState = {
+  key: string;
+  question?: IQuestionNode | undefined;
+  action?: "remove" | undefined;
+};
+
+type GridTableRowState = {
+  key: string;
+  label: string;
+  node: IGroupNode;
+  cells: Array<GridTableCellState>;
+};
+
+export interface IGridTableStore {
+  readonly gridColumns: Array<GridTableColumnState>;
+  readonly rows: Array<GridTableRowState>;
+}
+
 export interface IGroupNode extends IActualNode {
   readonly nodes: Array<IPresentableNode>;
+  readonly visibleNodes: Array<IPresentableNode>;
   readonly control: GroupItemControl | undefined;
   readonly component: GroupControlDefinition["groupComponent"] | undefined;
+  readonly gridStore: IGridStore;
+  readonly tableStore: ITableStore;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -486,6 +568,7 @@ export interface IGroupWrapper extends IPresentableNode {
   readonly maxOccurs: number;
   readonly control: GroupItemControl | undefined;
   readonly component: GroupControlDefinition["wrapperComponent"] | undefined;
+  readonly gridTableStore: IGridTableStore;
   addNode(): void;
   removeNode(instance: IGroupNode): void;
 }
@@ -547,12 +630,122 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   component: ComponentType<QuestionControlProps<T>>;
 }
 
-export interface IQuestionNode<T extends AnswerType = AnswerType>
-  extends IActualNode {
+type SelectMode = "select" | "autocomplete" | "lookup";
+type SelectCustomKind = "none" | "string" | "type";
+
+type SelectConfig<T extends AnswerType> = {
+  options: ReadonlyArray<AnswerOptionEntry<T>>;
+  displayOptions: ReadonlyArray<AnswerOptionEntry<T>> | undefined;
+  mode: SelectMode;
+  customKind: SelectCustomKind;
+  showOptions: boolean;
+  showSelectedOptions: boolean;
+};
+
+type SelectCheckboxOption<T extends AnswerType> = {
+  key: string;
+  label: string;
+  value: AnswerOptionEntry<T>["value"];
+  disabled: boolean;
+};
+
+type SelectCheckboxState<T extends AnswerType> = {
+  options: ReadonlyArray<AnswerOptionEntry<T>>;
+  uiOptions: Array<SelectCheckboxOption<T>>;
+  selectedKeys: Set<string>;
+  answerByKey: Map<string, IAnswerInstance<T>>;
+  isCustomActive: boolean;
+};
+
+type SelectChipItem<T extends AnswerType> = {
+  key: string;
+  answer: IAnswerInstance<T>;
+  inlineString: boolean;
+  kind: "option" | "custom";
+};
+
+type SelectDialogState<T extends AnswerType> = {
+  answer: IAnswerInstance<T>;
+  isNew: boolean;
+  canConfirm: boolean;
+};
+
+type BivariantCallback<T> = {
+  bivarianceHack(value: T): void;
+}["bivarianceHack"];
+
+type SelectRowProps<T extends AnswerType> = {
+  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  setValue: BivariantCallback<DataTypeToType<AnswerTypeToDataType<T>> | null>;
+  inputId: string;
+  labelId: string;
+  list?: string | undefined;
+  describedById: string | undefined;
+  answer: IAnswerInstance<T>;
+};
+
+type ListSelectRowState = {
+  isCustomActive: boolean;
+  radioOptions: Array<{ key: string; label: string; disabled?: boolean }>;
+  selectValue: string;
+  legacyOption: { key: string; label: string } | null;
+  handleChange: (key: string) => void;
+};
+
+type DropdownRowState<T extends AnswerType> = {
+  optionKey: string;
+  extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
+  isCustomActive: boolean;
+  exitCustom: () => void;
+  handleSelect: (key: string) => void;
+  selectValue: string;
+  legacyOption: { key: string; label: string } | null;
+  canClear: boolean;
+  clearValue: () => void;
+};
+
+export interface ISelectStore<T extends AnswerType = AnswerType> {
+  readonly useCheckboxes: boolean;
+  readonly isMultiSelect: boolean;
+  readonly allowCustom: boolean;
+  readonly isLoading: boolean;
+  readonly checkboxState: SelectCheckboxState<T>;
+  readonly selectedChipItems: Array<SelectChipItem<T>>;
+  readonly customChipItems: Array<SelectChipItem<T>>;
+  readonly hasCustomAction: boolean;
+  readonly specifyOtherKey: string;
+  readonly canAddSelection: boolean;
+  readonly canRemoveSelection: boolean;
+  readonly hasSelections: boolean;
+  readonly dialogState: SelectDialogState<T> | null;
+  readonly extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
+  readonly selectValue: string;
+  readonly query: string;
+  readonly labelId: string;
+  readonly describedById: string | undefined;
+
+  setMultiConfig(config: SelectConfig<T>): void;
+  handleCheckboxToggle(key: string): void;
+  getListRowState(answer: IAnswerInstance<T>): ListSelectRowState;
+  getDropdownRowState(answer: IAnswerInstance<T>): DropdownRowState<T>;
+  setQuery(value: string): void;
+  handleSelectOption(key: string): void;
+  handleSelectChange(key: string): void;
+  handleRemoveAnswer(answer: IAnswerInstance<T>): void;
+  handleClearAll(): void;
+  cancelCustomDialog(): void;
+  confirmCustomDialog(): void;
+  buildRowProps(answer: IAnswerInstance<T>, suffix: string): SelectRowProps<T>;
+}
+
+export interface IQuestionNode<
+  T extends AnswerType = AnswerType,
+> extends IActualNode {
   readonly type: T;
   readonly control: QuestionItemControl | undefined;
   readonly repeats: boolean;
   readonly options: IAnswerOptions<T>;
+  readonly selectStore: ISelectStore<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;
   readonly component: QuestionControlDefinition["component"] | undefined;

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
-import { LookupControl } from "../controls/lookup-control.tsx";
+import { ModalSelectControl } from "../controls/modal-select-control.tsx";
 
 export const LookupRenderer = observer(function LookupRenderer<
   T extends AnswerType,
@@ -10,7 +10,7 @@ export const LookupRenderer = observer(function LookupRenderer<
     <QuestionScaffold
       node={node}
       showOptionsState
-      children={<LookupControl node={node} />}
+      children={<ModalSelectControl node={node} />}
     />
   );
 });

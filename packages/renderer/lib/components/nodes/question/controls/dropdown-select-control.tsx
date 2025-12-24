@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import type { RowRenderProps } from "../answers/answer-row.tsx";
 import { getAnswerInputRenderer } from "./answer-input-renderer.tsx";
-import {
-  MultiSelectControl,
-  type CustomKind,
-  type MultiSelectMode,
-} from "./multi-select-control.tsx";
+import { MultiSelectControl } from "./multi-select-control.tsx";
 import { AnswerDisplay } from "../values/answer-display.tsx";
+import type { MultiSelectMode } from "../../../../stores/nodes/questions/select-control-types.ts";
 
 type DropdownMode = MultiSelectMode;
 
-export const DropdownControl = observer(function DropdownControl<
+export const DropdownSelectControl = observer(function DropdownSelectControl<
   T extends AnswerType,
 >({ node, mode }: { node: IQuestionNode<T>; mode: DropdownMode }) {
-  const hasChildren =
-    Array.isArray(node.template.item) && node.template.item.length > 0;
-  const isMultiSelect = node.repeats && !hasChildren;
-  const customKind = getCustomKind(node);
+  const store = node.selectStore;
 
-  if (isMultiSelect) {
+  const customKind =
+    node.options.constraint === "optionsOrString"
+      ? "string"
+      : node.options.constraint === "optionsOrType"
+        ? "type"
+        : "none";
+
+  if (store.isMultiSelect) {
     return (
       <MultiSelectControl
         node={node}
@@ -42,14 +42,16 @@ export const DropdownControl = observer(function DropdownControl<
             node={node}
             rowProps={rowProps}
             mode={mode}
-            isLoading={node.options.loading}
+            rowStore={store.getDropdownRowState(rowProps.answer)}
+            isLoading={store.isLoading}
           />
         ) : (
           <OpenChoiceRow
             node={node}
             rowProps={rowProps}
             mode={mode}
-            isLoading={node.options.loading}
+            rowStore={store.getDropdownRowState(rowProps.answer)}
+            isLoading={store.isLoading}
           />
         )
       }
@@ -61,28 +63,25 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   node,
   rowProps,
   mode,
+  rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: RowRenderProps<T>;
   mode: DropdownMode;
+  rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
   const { SelectField, AutocompleteField } = useTheme();
-  const { selectValue, legacyOption } = getOptionSelectionState(node, rowProps);
-  const canClear = rowProps.value != null && !node.readOnly;
-  const clearHandler = canClear ? () => rowProps.setValue(null) : undefined;
+  const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
 
   if (mode === "autocomplete") {
     return (
       <AutocompleteField
         options={node.options.entries}
-        selectValue={selectValue}
-        legacyOptionLabel={legacyOption?.label}
-        onSelect={(key) => {
-          const nextValue = key ? node.options.getValueForKey(key) : null;
-          rowProps.setValue(nextValue);
-        }}
+        selectValue={rowStore.selectValue}
+        legacyOptionLabel={rowStore.legacyOption?.label}
+        onSelect={rowStore.handleSelect}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -99,12 +98,9 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
     return (
       <AutocompleteField
         options={node.options.entries}
-        selectValue={selectValue}
-        legacyOptionLabel={legacyOption?.label}
-        onSelect={(key) => {
-          const nextValue = key ? node.options.getValueForKey(key) : null;
-          rowProps.setValue(nextValue);
-        }}
+        selectValue={rowStore.selectValue}
+        legacyOptionLabel={rowStore.legacyOption?.label}
+        onSelect={rowStore.handleSelect}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -127,12 +123,9 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   return (
     <SelectField
       options={node.options.entries}
-      selectValue={selectValue}
-      legacyOption={legacyOption}
-      onChange={(key) => {
-        const nextValue = key ? node.options.getValueForKey(key) : null;
-        rowProps.setValue(nextValue);
-      }}
+      selectValue={rowStore.selectValue}
+      legacyOption={rowStore.legacyOption}
+      onChange={rowStore.handleSelect}
       inputId={rowProps.inputId}
       labelId={rowProps.labelId}
       describedById={rowProps.describedById}
@@ -148,39 +141,19 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   node,
   rowProps,
   mode,
+  rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: RowRenderProps<T>;
   mode: DropdownMode;
+  rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
   const { SelectField, AutocompleteField, Button, SelectOrInputField } =
     useTheme();
-  const [forceCustom, setForceCustom] = useState(false);
-  const customKey = `${node.key}::__specify_other__`;
-  const optionKey = node.options.getKeyForValue(rowProps.value);
-  const isCustomValue = optionKey === "" && rowProps.value != null;
-  const isCustomActive = isCustomValue || forceCustom;
-  const canClear = rowProps.value != null && !node.readOnly;
-  const clearHandler = canClear ? () => rowProps.setValue(null) : undefined;
 
-  useEffect(() => {
-    if (optionKey && forceCustom) {
-      setForceCustom(false);
-    }
-  }, [forceCustom, optionKey]);
-
-  const extendedOptions = [
-    ...node.options.entries,
-    {
-      key: customKey,
-      label: "Specify other",
-      value: null as unknown as (typeof node.options.entries)[number]["value"],
-    },
-  ];
-
-  if (isCustomActive) {
+  if (rowStore.isCustomActive) {
     const renderer = getAnswerInputRenderer(node);
     return (
       <SelectOrInputField
@@ -189,10 +162,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => {
-              rowProps.setValue(null);
-              setForceCustom(false);
-            }}
+            onClick={rowStore.exitCustom}
             disabled={node.readOnly}
           >
             Back to options
@@ -202,23 +172,15 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
     );
   }
 
-  const handleSelect = (key: string) => {
-    if (key === customKey) {
-      setForceCustom(true);
-      rowProps.setValue(null);
-      return;
-    }
-    const nextValue = key ? node.options.getValueForKey(key) : null;
-    rowProps.setValue(nextValue);
-  };
+  const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
 
   if (mode === "autocomplete") {
     return (
       <AutocompleteField
-        options={extendedOptions}
-        selectValue={optionKey}
+        options={rowStore.extendedOptions}
+        selectValue={rowStore.optionKey}
         legacyOptionLabel={undefined}
-        onSelect={(key) => handleSelect(key)}
+        onSelect={rowStore.handleSelect}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -234,10 +196,10 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   if (mode === "lookup") {
     return (
       <AutocompleteField
-        options={extendedOptions}
-        selectValue={optionKey}
+        options={rowStore.extendedOptions}
+        selectValue={rowStore.optionKey}
         legacyOptionLabel={undefined}
-        onSelect={(key) => handleSelect(key)}
+        onSelect={rowStore.handleSelect}
         inputId={rowProps.inputId}
         labelId={rowProps.labelId}
         describedById={rowProps.describedById}
@@ -259,10 +221,10 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
 
   return (
     <SelectField
-      options={extendedOptions}
-      selectValue={optionKey}
+      options={rowStore.extendedOptions}
+      selectValue={rowStore.optionKey}
       legacyOption={null}
-      onChange={(key) => handleSelect(key)}
+      onChange={rowStore.handleSelect}
       inputId={rowProps.inputId}
       labelId={rowProps.labelId}
       describedById={rowProps.describedById}
@@ -273,26 +235,3 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
     />
   );
 });
-
-function getCustomKind(node: IQuestionNode): CustomKind {
-  if (node.options.constraint === "optionsOrString") return "string";
-  if (node.options.constraint === "optionsOrType") return "type";
-  return "none";
-}
-
-function getOptionSelectionState(
-  node: IQuestionNode,
-  rowProps: RowRenderProps,
-) {
-  const regularKey = node.options.getKeyForValue(rowProps.value);
-  const legacyOption =
-    regularKey || rowProps.value == null
-      ? null
-      : node.options.getLegacyEntryForValue(
-          rowProps.answer.key,
-          rowProps.value,
-        );
-  const selectValue = regularKey || legacyOption?.key || "";
-
-  return { selectValue, legacyOption };
-}

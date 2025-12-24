@@ -24,6 +24,8 @@ import { GroupValidator } from "../../validation/group-validator.ts";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { isGroupWrapper } from "./group-wrapper.ts";
+import { GridStore } from "./grid-store.ts";
+import { TableStore } from "./table-store.ts";
 
 export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   readonly expressionRegistry: NodeExpressionRegistry;
@@ -33,6 +35,11 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
     deep: false,
     name: "GroupStore.children",
   });
+
+  @computed
+  get visibleNodes(): IPresentableNode[] {
+    return this.nodes.filter((child) => !child.hidden);
+  }
 
   constructor(
     form: IForm,
@@ -73,6 +80,16 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   @computed
   get component(): GroupControlDefinition["groupComponent"] | undefined {
     return this.form.groupControlRegistry.resolveGroup(this)?.groupComponent;
+  }
+
+  @computed({ keepAlive: true })
+  get gridStore(): GridStore {
+    return new GridStore(this);
+  }
+
+  @computed({ keepAlive: true })
+  get tableStore(): TableStore {
+    return new TableStore(this);
   }
 
   @computed.struct

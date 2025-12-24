@@ -1683,7 +1683,7 @@ export function cloneValue<T>(value: T): T {
 
 export function stringifyValue<T extends DataType>(
   type: T,
-  value: DataTypeToType<T>,
+  value: DataTypeToType<T> | null,
   fallback: string = "",
 ): string {
   if (value == null) {

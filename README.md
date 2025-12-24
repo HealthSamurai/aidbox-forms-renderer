@@ -69,8 +69,8 @@ flowchart TD
     GroupRenderer --> FooterRenderer
     GroupRenderer --> PageRenderer
     GroupRenderer --> GridRenderer
-    GroupRenderer --> VerticalTableRenderer --> SelectionMatrixTable
-    GroupRenderer --> HorizontalTableRenderer --> SelectionMatrixHorizontalTable
+    GroupRenderer --> VerticalTableRenderer
+    GroupRenderer --> HorizontalTableRenderer
     GroupRenderer --> TabContainerRenderer
     GroupWrapperScaffold --> GroupWrapperScaffoldItem
     GroupWrapperScaffold --> RepeatingGroupMatrix
@@ -109,8 +109,8 @@ flowchart LR
     GroupWrapperScaffoldItem
     AnswerList
     AnswerRow
-    SelectionMatrixTable
-    SelectionMatrixHorizontalTable
+    VerticalTableRenderer
+    HorizontalTableRenderer
     GridRenderer
     MultiSelectControl
     DropdownControl
@@ -138,7 +138,6 @@ flowchart LR
     GroupWrapperScaffoldItemTheme["GroupWrapperScaffoldItem (theme)"]
     GroupWrapperScaffoldTheme["GroupWrapperScaffold (theme)"]
     GridTable
-    SelectionMatrix
     AnswerListTheme["AnswerList (theme)"]
     AnswerRowTheme["AnswerRow (theme)"]
     SelectField
@@ -180,8 +179,12 @@ flowchart LR
   AnswerRow --> ErrorsTheme
 
   GridRenderer --> GridTable
-  SelectionMatrixTable --> SelectionMatrix
-  SelectionMatrixHorizontalTable --> SelectionMatrix
+  VerticalTableRenderer --> GridTable
+  VerticalTableRenderer --> RadioGroup
+  VerticalTableRenderer --> CheckboxGroup
+  HorizontalTableRenderer --> GridTable
+  HorizontalTableRenderer --> RadioGroup
+  HorizontalTableRenderer --> CheckboxGroup
 
   DropdownControl --> SelectField
   DropdownControl --> AutocompleteField

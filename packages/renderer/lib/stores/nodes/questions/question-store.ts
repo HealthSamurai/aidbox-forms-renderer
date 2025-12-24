@@ -46,6 +46,7 @@ import {
 import type { HTMLAttributes } from "react";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { AnswerOptions } from "./answer-options.ts";
+import { SelectStore } from "./select-store.ts";
 
 type AnswerLifecycle =
   | "pristine"
@@ -76,6 +77,11 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed
   get component(): QuestionControlDefinition["component"] | undefined {
     return this.form.questionControlRegistry.resolve(this)?.component;
+  }
+
+  @computed({ keepAlive: true })
+  get selectStore(): SelectStore<T> {
+    return new SelectStore(this);
   }
 
   constructor(
