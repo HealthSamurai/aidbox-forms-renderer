@@ -4,7 +4,7 @@ import classNames from "classnames";
 export function GroupWrapperScaffold({
   linkId,
   header,
-  items,
+  children,
   toolbar,
 }: GroupWrapperScaffoldProps) {
   return (
@@ -22,7 +22,7 @@ export function GroupWrapperScaffold({
     >
       {header ? <div className="nhsuk-u-margin-bottom-2">{header}</div> : null}
       <div className="nhsuk-fieldset__content nhsuk-u-margin-top-2">
-        {items}
+        {children}
       </div>
       {toolbar ? (
         <div className="nhsuk-button-group nhsuk-u-margin-top-3">{toolbar}</div>

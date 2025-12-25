@@ -19,16 +19,6 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
     <ThemedGroupWrapperScaffold
       linkId={wrapper.linkId}
       header={header}
-      items={
-        children ??
-        wrapper.visibleNodes.map((node) => (
-          <GroupWrapperScaffoldItem
-            key={node.key}
-            node={node}
-            wrapper={wrapper}
-          />
-        ))
-      }
       toolbar={
         <Button
           type="button"
@@ -39,6 +29,15 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
           Add section
         </Button>
       }
-    />
+    >
+      {children ??
+        wrapper.visibleNodes.map((node) => (
+          <GroupWrapperScaffoldItem
+            key={node.key}
+            node={node}
+            wrapper={wrapper}
+          />
+        ))}
+    </ThemedGroupWrapperScaffold>
   );
 });

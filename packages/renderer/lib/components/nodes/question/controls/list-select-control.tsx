@@ -31,13 +31,6 @@ export const ListSelectControl = observer(function ListSelectControl<
     const customControl =
       store.allowCustom && state.isCustomActive ? (
         <ThemedAnswerList
-          answers={state.nonOptionAnswers.map((answer) => (
-            <AnswerScaffold
-              key={answer.key}
-              answer={answer}
-              control={Control}
-            />
-          ))}
           toolbar={
             node.repeats ? (
               <Button
@@ -50,7 +43,15 @@ export const ListSelectControl = observer(function ListSelectControl<
               </Button>
             ) : undefined
           }
-        />
+        >
+          {state.nonOptionAnswers.map((answer) => (
+            <AnswerScaffold
+              key={answer.key}
+              answer={answer}
+              control={Control}
+            />
+          ))}
+        </ThemedAnswerList>
       ) : null;
 
     return (

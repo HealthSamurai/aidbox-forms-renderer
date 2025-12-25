@@ -27,11 +27,10 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   );
 
   return (
-    <ThemedAnswerList
-      answers={answers.map((answer) => (
+    <ThemedAnswerList toolbar={toolbar}>
+      {answers.map((answer) => (
         <AnswerScaffold key={answer.key} answer={answer} control={control} />
       ))}
-      toolbar={toolbar}
-    />
+    </ThemedAnswerList>
   );
 });

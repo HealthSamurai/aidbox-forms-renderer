@@ -1,10 +1,10 @@
 import { styled } from "@linaria/react";
 import type { AnswerListProps } from "@aidbox-forms/theme";
 
-export function AnswerList({ answers, toolbar }: AnswerListProps) {
+export function AnswerList({ children, toolbar }: AnswerListProps) {
   return (
     <div>
-      <List>{answers}</List>
+      <List>{children}</List>
       {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
     </div>
   );

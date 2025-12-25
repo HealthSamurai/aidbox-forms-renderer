@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type AnswerListProps = {
-  answers: ReactNode;
+  children: ReactNode;
   toolbar?: ReactNode;
 };
 

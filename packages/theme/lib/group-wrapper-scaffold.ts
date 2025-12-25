@@ -3,7 +3,7 @@ import type { ComponentType, ReactNode } from "react";
 export type GroupWrapperScaffoldProps = {
   linkId: string;
   header?: ReactNode;
-  items: ReactNode;
+  children: ReactNode;
   toolbar?: ReactNode;
 };
 
