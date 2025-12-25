@@ -1,6 +1,10 @@
-import type { AnswerRowProps } from "@aidbox-forms/theme";
+import type { AnswerScaffoldProps } from "@aidbox-forms/theme";
 
-export function AnswerRow({ control, toolbar, children }: AnswerRowProps) {
+export function AnswerScaffold({
+  control,
+  toolbar,
+  children,
+}: AnswerScaffoldProps) {
   return (
     <div className="nhsuk-form-group">
       <div>{control}</div>

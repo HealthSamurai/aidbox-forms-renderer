@@ -31,7 +31,7 @@ export type AnswerRenderCallback<T extends AnswerType = AnswerType> = (
   props: AnswerRenderCallbackProps<T>,
 ) => ReactElement;
 
-export const AnswerRenderer = observer(function AnswerRow<
+export const AnswerScaffold = observer(function AnswerScaffold<
   T extends AnswerType,
 >({
   answer,
@@ -40,7 +40,7 @@ export const AnswerRenderer = observer(function AnswerRow<
   answer: IAnswerInstance<T>;
   render: AnswerRenderCallback<T>;
 }) {
-  const { Button, AnswerRow: ThemedAnswerRow } = useTheme();
+  const { Button, AnswerScaffold: ThemedAnswerScaffold } = useTheme();
   const handleRemove = useCallback(() => {
     answer.question.removeAnswer(answer);
   }, [answer]);
@@ -56,7 +56,7 @@ export const AnswerRenderer = observer(function AnswerRow<
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
   return (
-    <ThemedAnswerRow
+    <ThemedAnswerScaffold
       control={render({
         value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
         setValue: (value) => answer.setValueByUser(value),

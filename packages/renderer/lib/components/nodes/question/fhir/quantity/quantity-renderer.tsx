@@ -4,7 +4,7 @@ import type { IQuestionNode } from "../../../../../types.ts";
 import { QuestionScaffold } from "../../question-scaffold.tsx";
 import { AnswerList } from "../../answers/answer-list.tsx";
 import { QuantityControl } from "./quantity-control.tsx";
-import type { AnswerRenderCallback } from "../../answers/answer-renderer.tsx";
+import type { AnswerRenderCallback } from "../../answers/answer-scaffold.tsx";
 
 export const QuantityRenderer = observer(function QuantityRenderer({
   node,

@@ -3,9 +3,9 @@ import { useCallback } from "react";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import {
-  AnswerRenderer,
+  AnswerScaffold,
   type AnswerRenderCallbackProps,
-} from "../answers/answer-renderer.tsx";
+} from "../answers/answer-scaffold.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
@@ -48,7 +48,7 @@ export const ListSelectControl = observer(function ListSelectControl<
       store.allowCustom && state.isCustomActive ? (
         <ThemedAnswerList
           answers={state.nonOptionAnswers.map((answer) => (
-            <AnswerRenderer
+            <AnswerScaffold
               key={answer.key}
               answer={answer}
               render={renderCustomInput}

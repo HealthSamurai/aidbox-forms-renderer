@@ -4,7 +4,7 @@ import type { IQuestionNode } from "../../../../../types.ts";
 import { QuestionScaffold } from "../../question-scaffold.tsx";
 import { AnswerList } from "../../answers/answer-list.tsx";
 import { DateControl } from "./date-control.tsx";
-import type { AnswerRenderCallback } from "../../answers/answer-renderer.tsx";
+import type { AnswerRenderCallback } from "../../answers/answer-scaffold.tsx";
 
 export const DateRenderer = observer(function DateRenderer({
   node,

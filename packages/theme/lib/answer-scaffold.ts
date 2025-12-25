@@ -1,9 +1,9 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type AnswerRowProps = {
+export type AnswerScaffoldProps = {
   control: ReactNode;
   toolbar?: ReactNode;
   children?: ReactNode;
 };
 
-export type AnswerRowComponent = ComponentType<AnswerRowProps>;
+export type AnswerScaffoldComponent = ComponentType<AnswerScaffoldProps>;

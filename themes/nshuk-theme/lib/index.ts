@@ -31,7 +31,7 @@ import { NodeHelp } from "./components/node-help.tsx";
 import { NodeLegal } from "./components/node-legal.tsx";
 import { NodeFlyover } from "./components/node-flyover.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
-import { AnswerRow } from "./components/answer-row.tsx";
+import { AnswerScaffold } from "./components/answer-scaffold.tsx";
 import { Form } from "./components/form.tsx";
 import { FormHeader } from "./components/form-header.tsx";
 import { FormErrors } from "./components/form-errors.tsx";
@@ -84,7 +84,7 @@ const passthrough: Theme = {
   NodeLegal,
   NodeFlyover,
   AnswerList,
-  AnswerRow,
+  AnswerScaffold,
   Form,
   FormHeader,
   FormErrors,

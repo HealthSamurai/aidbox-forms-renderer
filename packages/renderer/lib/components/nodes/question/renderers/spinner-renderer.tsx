@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import type { AnswerRenderCallback } from "../answers/answer-renderer.tsx";
+import type { AnswerRenderCallback } from "../answers/answer-scaffold.tsx";
 import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 

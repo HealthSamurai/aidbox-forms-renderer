@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
-import type { AnswerRenderCallbackProps } from "../answers/answer-renderer.tsx";
+import type { AnswerRenderCallbackProps } from "../answers/answer-scaffold.tsx";
 import { getValueControl } from "../fhir/index.ts";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {

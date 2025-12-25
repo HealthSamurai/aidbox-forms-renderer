@@ -18,7 +18,7 @@ import {
   getNodeLabelId,
   sanitizeForId,
 } from "../../../utils.ts";
-import type { AnswerRenderCallbackProps } from "../../../components/nodes/question/answers/answer-renderer.tsx";
+import type { AnswerRenderCallbackProps } from "../../../components/nodes/question/answers/answer-scaffold.tsx";
 
 const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
 

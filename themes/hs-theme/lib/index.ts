@@ -29,7 +29,7 @@ export { NodeHelp } from "./components/node-help.tsx";
 export { NodeLegal } from "./components/node-legal.tsx";
 export { NodeFlyover } from "./components/node-flyover.tsx";
 export { AnswerList } from "./components/answer-list.tsx";
-export { AnswerRow } from "./components/answer-row.tsx";
+export { AnswerScaffold } from "./components/answer-scaffold.tsx";
 export { Form } from "./components/form.tsx";
 export { FormHeader } from "./components/form-header.tsx";
 export { FormErrors } from "./components/form-errors.tsx";
@@ -85,7 +85,7 @@ import { EmptyState } from "./components/empty-state.tsx";
 import { FormActions } from "./components/form-actions.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
-import { AnswerRow } from "./components/answer-row.tsx";
+import { AnswerScaffold } from "./components/answer-scaffold.tsx";
 import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
@@ -132,7 +132,7 @@ export const theme: Theme = {
   EmptyState,
   FormActions,
   AnswerList,
-  AnswerRow,
+  AnswerScaffold,
   GroupWrapperScaffold,
   GroupWrapperScaffoldItem,
   GroupScaffold,
