@@ -18,7 +18,7 @@ import {
   getNodeLabelId,
   sanitizeForId,
 } from "../../../utils.ts";
-import type { RowRenderProps } from "../../../components/nodes/question/answers/answer-row.tsx";
+import type { AnswerRenderCallbackProps } from "../../../components/nodes/question/answers/answer-renderer.tsx";
 
 const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
 
@@ -533,7 +533,10 @@ export class SelectStore<
     this.customDialog = null;
   }
 
-  buildRowProps(answer: IAnswerInstance<T>, suffix: string): RowRenderProps<T> {
+  buildRowProps(
+    answer: IAnswerInstance<T>,
+    suffix: string,
+  ): AnswerRenderCallbackProps<T> {
     const answerErrorId =
       answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
     const describedByPieces = [

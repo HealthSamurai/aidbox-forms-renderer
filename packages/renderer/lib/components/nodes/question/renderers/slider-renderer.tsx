@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
+import type { AnswerRenderCallback } from "../answers/answer-renderer.tsx";
 import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 
@@ -16,28 +16,25 @@ export const SliderRenderer = observer(function SliderRenderer({
   const sliderStep =
     getSliderStepValue(node.template) ?? (node.type === "integer" ? 1 : 0.1);
 
-  const renderRow = useMemo((): AnswerRowRenderer<
+  const render = useMemo((): AnswerRenderCallback<
     "integer" | "decimal" | "quantity"
   > => {
-    return (rowProps) => {
-      const isQuantity = rowProps.answer.question.type === "quantity";
-      const value = getNumericValue(rowProps.answer.value);
-      const { min, max } = rowProps.answer.bounds;
+    return ({ answer, describedById, labelId, setValue }) => {
+      const value = getNumericValue(answer.value);
+      const { min, max } = answer.bounds;
 
       const handleChange = (next: number | null) => {
-        if (isQuantity) {
-          rowProps.answer.quantity.handleNumberInput(
-            next == null ? "" : String(next),
-          );
+        if (answer.question.type === "quantity") {
+          answer.quantity.handleNumberInput(next == null ? "" : String(next));
           return;
         }
 
-        if (rowProps.answer.question.type === "integer") {
-          rowProps.setValue(next != null ? Math.round(next) : null);
+        if (answer.question.type === "integer") {
+          setValue(next != null ? Math.round(next) : null);
           return;
         }
 
-        rowProps.setValue(next);
+        setValue(next);
       };
 
       return (
@@ -48,8 +45,8 @@ export const SliderRenderer = observer(function SliderRenderer({
           max={getNumericValue(max) ?? undefined}
           step={sliderStep}
           disabled={node.readOnly}
-          ariaLabelledBy={rowProps.labelId}
-          ariaDescribedBy={rowProps.describedById}
+          ariaLabelledBy={labelId}
+          ariaDescribedBy={describedById}
           lowerLabel={node.lower}
           upperLabel={node.upper}
           unitLabel={node.unitDisplay}
@@ -60,7 +57,7 @@ export const SliderRenderer = observer(function SliderRenderer({
 
   return (
     <QuestionScaffold node={node}>
-      <AnswerList node={node} renderRow={renderRow} />
+      <AnswerList node={node} render={render} />
     </QuestionScaffold>
   );
 });

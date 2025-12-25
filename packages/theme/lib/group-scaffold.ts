@@ -4,7 +4,7 @@ export type GroupScaffoldProps = {
   linkId: string;
   header?: ReactNode;
   children: ReactNode;
-  dataControl?: string | null | undefined;
+  dataControl?: string | undefined;
 };
 
 export type GroupScaffoldComponent = ComponentType<GroupScaffoldProps>;

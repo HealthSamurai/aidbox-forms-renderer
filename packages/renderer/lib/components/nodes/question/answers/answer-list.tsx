@@ -1,16 +1,15 @@
-import type { ReactElement } from "react";
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-import { AnswerRow, type RowRenderProps } from "./answer-row.tsx";
+import { AnswerRenderer, AnswerRenderCallback } from "./answer-renderer.tsx";
 
 export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   node,
-  renderRow,
+  render,
 }: {
   node: IQuestionNode<T>;
-  renderRow: (p: RowRenderProps<T>) => ReactElement;
+  render: AnswerRenderCallback<T>;
 }) {
   const { Button, AnswerList: ThemedAnswerList } = useTheme();
   const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
@@ -30,12 +29,7 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   return (
     <ThemedAnswerList
       answers={answers.map((answer) => (
-        <AnswerRow
-          key={answer.key}
-          node={node}
-          answer={answer}
-          renderRow={renderRow}
-        />
+        <AnswerRenderer key={answer.key} answer={answer} render={render} />
       ))}
       toolbar={toolbar}
     />

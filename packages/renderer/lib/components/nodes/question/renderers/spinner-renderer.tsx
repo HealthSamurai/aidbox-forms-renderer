@@ -1,51 +1,42 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import type { IAnswerInstance, IQuestionNode } from "../../../../types.ts";
+import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
+import type { AnswerRenderCallback } from "../answers/answer-renderer.tsx";
 import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-
-type NumericType = "integer" | "decimal" | "quantity";
-
-function isQuantityAnswer(
-  answer: IAnswerInstance<NumericType>,
-): answer is IAnswerInstance<"quantity"> {
-  return answer.question.type === "quantity";
-}
 
 export const SpinnerRenderer = observer(function SpinnerRenderer({
   node,
 }: {
-  node: IQuestionNode<NumericType>;
+  node: IQuestionNode<"integer" | "decimal" | "quantity">;
 }) {
   const { SpinnerInput } = useTheme();
-  const spinnerStep =
+  const step =
     getSliderStepValue(node.template) ?? (node.type === "integer" ? 1 : 0.1);
 
-  const renderRow = useMemo((): AnswerRowRenderer<NumericType> => {
-    return (rowProps) => {
-      const isQuantity = isQuantityAnswer(rowProps.answer);
-      const value = getNumericValue(rowProps.answer.value);
-      const { min, max } = rowProps.answer.bounds;
+  const render = useMemo((): AnswerRenderCallback<
+    "integer" | "decimal" | "quantity"
+  > => {
+    return ({ answer, describedById, labelId, setValue }) => {
+      const value = getNumericValue(answer.value);
+      const { min, max } = answer.bounds;
       const minValue = getNumericValue(min) ?? undefined;
       const maxValue = getNumericValue(max) ?? undefined;
 
       const handleChange = (next: number | null) => {
-        if (isQuantity) {
-          rowProps.answer.quantity.handleNumberInput(
-            next == null ? "" : String(next),
-          );
+        if (answer.question.type === "quantity") {
+          answer.quantity.handleNumberInput(next == null ? "" : String(next));
           return;
         }
 
-        if (rowProps.answer.question.type === "integer") {
-          rowProps.setValue(next != null ? Math.round(next) : null);
+        if (answer.question.type === "integer") {
+          setValue(next != null ? Math.round(next) : null);
           return;
         }
 
-        rowProps.setValue(next);
+        setValue(next);
       };
 
       return (
@@ -54,20 +45,20 @@ export const SpinnerRenderer = observer(function SpinnerRenderer({
           onChange={handleChange}
           min={minValue}
           max={maxValue}
-          step={spinnerStep}
+          step={step}
           disabled={node.readOnly}
-          ariaLabelledBy={rowProps.labelId}
-          ariaDescribedBy={rowProps.describedById}
+          ariaLabelledBy={labelId}
+          ariaDescribedBy={describedById}
           placeholder={node.placeholder}
           unitLabel={node.unitDisplay}
         />
       );
     };
-  }, [SpinnerInput, node, spinnerStep]);
+  }, [SpinnerInput, node, step]);
 
   return (
     <QuestionScaffold node={node}>
-      <AnswerList node={node} renderRow={renderRow} />
+      <AnswerList node={node} render={render} />
     </QuestionScaffold>
   );
 });

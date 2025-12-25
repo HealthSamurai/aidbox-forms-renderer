@@ -15,10 +15,9 @@ import type {
   AnswerTypeToDataType,
   DataTypeToType,
   IAnswerInstance,
-  IQuestionNode,
 } from "../../../../types.ts";
 
-export type RowRenderProps<T extends AnswerType = AnswerType> = {
+export type AnswerRenderCallbackProps<T extends AnswerType = AnswerType> = {
   value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   setValue: (v: DataTypeToType<AnswerTypeToDataType<T>> | null) => void;
   inputId: string;
@@ -27,50 +26,52 @@ export type RowRenderProps<T extends AnswerType = AnswerType> = {
   answer: IAnswerInstance<T>;
 };
 
-export type AnswerRowRenderer<T extends AnswerType = AnswerType> = (
-  rowProps: RowRenderProps<T>,
+// todo: use ComponentType when possible
+export type AnswerRenderCallback<T extends AnswerType = AnswerType> = (
+  props: AnswerRenderCallbackProps<T>,
 ) => ReactElement;
 
-export const AnswerRow = observer(function AnswerRow<T extends AnswerType>({
-  node,
-  renderRow,
+export const AnswerRenderer = observer(function AnswerRow<
+  T extends AnswerType,
+>({
   answer,
+  render,
 }: {
-  node: IQuestionNode<T>;
-  renderRow: (p: RowRenderProps<T>) => ReactElement;
   answer: IAnswerInstance<T>;
+  render: AnswerRenderCallback<T>;
 }) {
   const { Button, AnswerRow: ThemedAnswerRow } = useTheme();
   const handleRemove = useCallback(() => {
-    node.removeAnswer(answer);
-  }, [node, answer]);
+    answer.question.removeAnswer(answer);
+  }, [answer]);
 
   const answerErrorId =
     answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
 
-  const describedByPieces = [getNodeDescribedBy(node), answerErrorId].filter(
-    (value): value is string => Boolean(value),
-  );
+  const describedByPieces = [
+    getNodeDescribedBy(answer.question),
+    answerErrorId,
+  ].filter((value): value is string => Boolean(value));
   const describedById =
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
   return (
     <ThemedAnswerRow
-      control={renderRow({
+      control={render({
         value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
         setValue: (value) => answer.setValueByUser(value),
         inputId: sanitizeForId(answer.key),
-        labelId: getNodeLabelId(node),
+        labelId: getNodeLabelId(answer.question),
         describedById,
         answer: answer as IAnswerInstance<T>,
       })}
       toolbar={
-        node.repeats ? (
+        answer.question.repeats ? (
           <Button
             type="button"
             variant="danger"
             onClick={handleRemove}
-            disabled={!node.canRemove}
+            disabled={!answer.question.canRemove}
           >
             Remove
           </Button>

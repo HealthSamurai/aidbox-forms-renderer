@@ -2,7 +2,10 @@ import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { AnswerRow, type RowRenderProps } from "../answers/answer-row.tsx";
+import {
+  AnswerRenderer,
+  type AnswerRenderCallbackProps,
+} from "../answers/answer-renderer.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
@@ -19,13 +22,18 @@ export const ListSelectControl = observer(function ListSelectControl<
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const renderCustomInput = useCallback(
-    (rowProps: RowRenderProps<T>) => (
+    ({
+      answer,
+      describedById,
+      inputId,
+      labelId,
+    }: AnswerRenderCallbackProps<T>) => (
       <Control
         node={node}
-        answer={rowProps.answer}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
+        answer={answer}
+        inputId={inputId}
+        labelId={labelId}
+        describedById={describedById}
       />
     ),
     [Control, node],
@@ -40,11 +48,10 @@ export const ListSelectControl = observer(function ListSelectControl<
       store.allowCustom && state.isCustomActive ? (
         <ThemedAnswerList
           answers={state.nonOptionAnswers.map((answer) => (
-            <AnswerRow
+            <AnswerRenderer
               key={answer.key}
-              node={node}
               answer={answer}
-              renderRow={renderCustomInput}
+              render={renderCustomInput}
             />
           ))}
           toolbar={
@@ -84,9 +91,7 @@ export const ListSelectControl = observer(function ListSelectControl<
   return (
     <AnswerList
       node={node}
-      renderRow={(rowProps) => (
-        <OptionRadioRow node={node} rowProps={rowProps} />
-      )}
+      render={(props) => <OptionRadioRow node={node} rowProps={props} />}
     />
   );
 });
@@ -96,7 +101,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   rowProps,
 }: {
   node: IQuestionNode<T>;
-  rowProps: RowRenderProps<T>;
+  rowProps: AnswerRenderCallbackProps<T>;
 }) {
   const { RadioGroup } = useTheme();
   const store = node.selectStore;

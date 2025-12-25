@@ -4,28 +4,28 @@ import type { IQuestionNode } from "../../../../../types.ts";
 import { QuestionScaffold } from "../../question-scaffold.tsx";
 import { AnswerList } from "../../answers/answer-list.tsx";
 import { DateControl } from "./date-control.tsx";
-import type { AnswerRowRenderer } from "../../answers/answer-row.tsx";
+import type { AnswerRenderCallback } from "../../answers/answer-renderer.tsx";
 
 export const DateRenderer = observer(function DateRenderer({
   node,
 }: {
   node: IQuestionNode<"date">;
 }) {
-  const renderRow = useMemo((): AnswerRowRenderer<"date"> => {
-    return (rowProps) => (
+  const render = useMemo((): AnswerRenderCallback<"date"> => {
+    return ({ answer, describedById, inputId, labelId }) => (
       <DateControl
         node={node}
-        answer={rowProps.answer}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
+        answer={answer}
+        inputId={inputId}
+        labelId={labelId}
+        describedById={describedById}
       />
     );
   }, [node]);
 
   return (
     <QuestionScaffold node={node}>
-      <AnswerList node={node} renderRow={renderRow} />
+      <AnswerList node={node} render={render} />
     </QuestionScaffold>
   );
 });

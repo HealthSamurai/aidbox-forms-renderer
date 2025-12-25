@@ -11,16 +11,17 @@ import { getValueControl } from "../fhir/index.ts";
 
 export type MultiSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
-  ValueDisplay: ValueDisplayComponent<T>;
+  valueDisplay: ValueDisplayComponent<T>;
   showOptions?: boolean;
 };
 
 export const MultiSelectControl = observer(function MultiSelectControl<
   T extends AnswerType,
->({ node, ValueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
+>({ node, valueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
   const { Button, MultiSelectField } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
+  const ValueDisplay = valueDisplay;
 
   const selectedChips = store.selectedChipItems.flatMap((item) => {
     const value = item.answer.value;

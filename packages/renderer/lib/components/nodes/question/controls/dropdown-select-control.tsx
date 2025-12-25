@@ -2,36 +2,35 @@ import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
-import type { RowRenderProps } from "../answers/answer-row.tsx";
+import type { AnswerRenderCallbackProps } from "../answers/answer-renderer.tsx";
 import { getValueControl } from "../fhir/index.ts";
-type RowVariant = "options" | "open-choice";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
-  rowVariant: RowVariant;
 };
 
 export const DropdownSelectControl = observer(function DropdownSelectControl<
   T extends AnswerType,
->({ node, rowVariant }: DropdownSelectControlProps<T>) {
+>({ node }: DropdownSelectControlProps<T>) {
   const store = node.selectStore;
 
   return (
     <AnswerList
       node={node}
-      renderRow={(rowProps) =>
-        rowVariant === "options" ? (
-          <OptionsRow
+      render={(props) =>
+        node.options.constraint === "optionsOrString" ||
+        node.options.constraint === "optionsOrType" ? (
+          <OpenChoiceRow
             node={node}
-            rowProps={rowProps}
-            rowStore={store.getDropdownRowState(rowProps.answer)}
+            rowProps={props}
+            rowStore={store.getDropdownRowState(props.answer)}
             isLoading={store.isLoading}
           />
         ) : (
-          <OpenChoiceRow
+          <OptionsRow
             node={node}
-            rowProps={rowProps}
-            rowStore={store.getDropdownRowState(rowProps.answer)}
+            rowProps={props}
+            rowStore={store.getDropdownRowState(props.answer)}
             isLoading={store.isLoading}
           />
         )
@@ -47,7 +46,7 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   isLoading,
 }: {
   node: IQuestionNode<T>;
-  rowProps: RowRenderProps<T>;
+  rowProps: AnswerRenderCallbackProps<T>;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
@@ -78,7 +77,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   isLoading,
 }: {
   node: IQuestionNode<T>;
-  rowProps: RowRenderProps<T>;
+  rowProps: AnswerRenderCallbackProps<T>;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {

@@ -4,7 +4,7 @@ import type { IQuestionNode } from "../../../../../types.ts";
 import { QuestionScaffold } from "../../question-scaffold.tsx";
 import { AnswerList } from "../../answers/answer-list.tsx";
 import { getValueControl } from "../index.ts";
-import type { AnswerRowRenderer } from "../../answers/answer-row.tsx";
+import type { AnswerRenderCallback } from "../../answers/answer-renderer.tsx";
 
 export const StringRenderer = observer(function StringRenderer({
   node,
@@ -12,22 +12,23 @@ export const StringRenderer = observer(function StringRenderer({
   node: IQuestionNode<"string" | "text" | "url">;
 }) {
   const Control = getValueControl(node.type);
-  const renderRow = useMemo(
-    (): AnswerRowRenderer<"string" | "text" | "url"> => (rowProps) => (
-      <Control
-        node={node}
-        answer={rowProps.answer}
-        inputId={rowProps.inputId}
-        labelId={rowProps.labelId}
-        describedById={rowProps.describedById}
-      />
-    ),
+  const render = useMemo(
+    (): AnswerRenderCallback<"string" | "text" | "url"> =>
+      ({ answer, describedById, inputId, labelId }) => (
+        <Control
+          node={node}
+          answer={answer}
+          inputId={inputId}
+          labelId={labelId}
+          describedById={describedById}
+        />
+      ),
     [Control, node],
   );
 
   return (
     <QuestionScaffold node={node}>
-      <AnswerList node={node} renderRow={renderRow} />
+      <AnswerList node={node} render={render} />
     </QuestionScaffold>
   );
 });
