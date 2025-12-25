@@ -5,8 +5,8 @@ export type StringInputProps = {
   value: string;
   onChange: (value: string) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
@@ -16,8 +16,8 @@ export function StringInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   placeholder,
   disabled,
   inputMode,
@@ -26,8 +26,8 @@ export function StringInput({
   return (
     <ThemedTextInput
       id={inputId}
-      ariaLabelledBy={labelId}
-      ariaDescribedBy={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

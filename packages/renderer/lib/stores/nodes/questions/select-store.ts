@@ -300,12 +300,12 @@ export class SelectStore<
   }
 
   @computed
-  get labelId(): string {
+  get ariaLabelledBy(): string {
     return getNodeLabelId(this.node);
   }
 
   @computed
-  get describedById(): string | undefined {
+  get ariaDescribedBy(): string | undefined {
     return getNodeDescribedBy(this.node);
   }
 
@@ -543,13 +543,13 @@ export class SelectStore<
       getNodeDescribedBy(this.node),
       answerErrorId,
     ].filter((value): value is string => Boolean(value));
-    const describedById =
+    const ariaDescribedBy =
       describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
     return {
       inputId: sanitizeForId(`${answer.key}-${suffix}`),
-      labelId: getNodeLabelId(this.node),
-      describedById,
+      ariaLabelledBy: getNodeLabelId(this.node),
+      ariaDescribedBy,
       answer,
     };
   }

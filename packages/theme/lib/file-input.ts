@@ -5,8 +5,8 @@ export type FileInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   sizeLabel?: string | undefined;
   filename?: string | undefined;

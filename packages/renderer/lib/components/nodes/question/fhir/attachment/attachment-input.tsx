@@ -10,8 +10,8 @@ export type AttachmentInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
 };
 
@@ -19,8 +19,8 @@ export function AttachmentInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   disabled,
 }: AttachmentInputProps) {
   const { FileInput: ThemedFileInput } = useTheme();
@@ -49,8 +49,8 @@ export function AttachmentInput({
   return (
     <ThemedFileInput
       inputId={inputIdentifier}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}
       filename={displayLabel}
       sizeLabel={sizeKb !== undefined ? `${sizeKb} KB` : undefined}

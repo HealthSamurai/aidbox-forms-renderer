@@ -3,7 +3,7 @@ import { getNodeLabelId, sanitizeForId } from "../../utils.ts";
 import { isQuestionNode } from "../../stores/nodes/questions/question-store.ts";
 
 export function getNodeLabelParts(node: IPresentableNode) {
-  const labelId = getNodeLabelId(node);
+  const ariaLabelledBy = getNodeLabelId(node);
   const htmlFor = getPrimaryControlId(node);
   const labelText = [
     node.prefix ? `${node.prefix} ` : "",
@@ -12,7 +12,7 @@ export function getNodeLabelParts(node: IPresentableNode) {
     .join("")
     .trim();
 
-  return { labelId, htmlFor, labelText };
+  return { ariaLabelledBy, htmlFor, labelText };
 }
 
 function getPrimaryControlId(node: IPresentableNode): string | undefined {

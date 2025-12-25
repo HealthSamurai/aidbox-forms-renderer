@@ -4,14 +4,14 @@ import { AttachmentInput } from "./attachment-input.tsx";
 export function AttachmentControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"attachment">) {
   return (
     <AttachmentInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}

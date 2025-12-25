@@ -5,10 +5,10 @@ import { inputClass } from "./tokens.ts";
 
 export function MultiSelectInput({
   options,
-  selectValue = "",
-  onSelectOption,
-  labelId,
-  describedById,
+  value = "",
+  onChange,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly = false,
   isLoading = false,
   showOptions = true,
@@ -19,7 +19,7 @@ export function MultiSelectInput({
 }: MultiSelectInputProps) {
   const handleSelectChange = (key: string) => {
     if (!key) return;
-    onSelectOption(key);
+    onChange(key);
   };
 
   const renderOptions = () => {
@@ -28,13 +28,13 @@ export function MultiSelectInput({
     return (
       <FieldRow>
         <select
-          id={labelId ? `${labelId}-multi-select` : undefined}
+          id={ariaLabelledBy ? `${ariaLabelledBy}-multi-select` : undefined}
           className={inputClass}
-          value={selectValue}
+          value={value}
           onChange={(event) => handleSelectChange(event.target.value)}
           disabled={readOnly || isLoading}
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
           aria-busy={isLoading || undefined}
         >
           <option value="">{selectPlaceholder ?? "Select an option"}</option>

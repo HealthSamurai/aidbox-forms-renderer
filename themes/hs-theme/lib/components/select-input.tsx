@@ -4,12 +4,12 @@ import { inputClass } from "./tokens.ts";
 
 type SelectInputProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
-  selectValue: string;
+  value: string;
   legacyOption: { key: string; label: string } | null;
   onChange: (value: string) => void;
   inputId: string;
-  labelId: string;
-  describedById: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
   onClear?: (() => void) | undefined;
@@ -18,12 +18,12 @@ type SelectInputProps = {
 
 export function SelectInput({
   options,
-  selectValue,
+  value,
   legacyOption,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly,
   isLoading = false,
   onClear,
@@ -35,11 +35,11 @@ export function SelectInput({
         <select
           id={inputId}
           className={inputClass}
-          value={selectValue}
+          value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={readOnly}
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
           aria-busy={isLoading || undefined}
         >
           <option value="">Select an option</option>

@@ -6,8 +6,8 @@ import { useCallback } from "react";
 
 export const SliderControl = observer(function SliderControl({
   answer,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"integer" | "decimal" | "quantity">) {
   const { SliderInput } = useTheme();
   const { min, max } = answer.bounds;
@@ -40,8 +40,8 @@ export const SliderControl = observer(function SliderControl({
       max={getNumericValue(max) ?? undefined}
       step={step}
       disabled={answer.question.readOnly}
-      ariaLabelledBy={labelId}
-      ariaDescribedBy={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       lowerLabel={answer.question.lower}
       upperLabel={answer.question.upper}
       unitLabel={answer.question.unitDisplay}

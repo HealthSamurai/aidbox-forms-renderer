@@ -4,14 +4,14 @@ import { DateTimeInput } from "./date-time-input.tsx";
 export function DateTimeControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"dateTime">) {
   return (
     <DateTimeInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}

@@ -7,11 +7,11 @@ export type CheckboxListProps<TValue = unknown> = {
     value: TValue;
     disabled?: boolean;
   }>;
-  selectedKeys: Set<string>;
-  onToggle: (key: string) => void;
+  value: Set<string>;
+  onChange: (key: string) => void;
   inputName: string;
-  labelId: string;
-  describedById?: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy?: string | undefined;
   readOnly?: boolean;
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;

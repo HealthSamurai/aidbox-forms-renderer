@@ -12,7 +12,6 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
 }: GroupControlProps) {
   const { GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList } =
     useTheme();
-  useTheme();
   const store = node.tableStore;
 
   let content: JSX.Element;
@@ -56,15 +55,15 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                     disabled: cell.disabled,
                   },
                 ]}
-                selectedKeys={row.selectedKeys}
-                onToggle={(key) => {
+                value={row.selectedKeys}
+                onChange={(key) => {
                   if (key === cell.key) {
                     cell.toggleSelection?.();
                   }
                 }}
                 inputName={row.inputName}
-                labelId={row.labelId}
-                describedById={row.describedBy}
+                ariaLabelledBy={row.ariaLabelledBy}
+                ariaDescribedBy={row.ariaDescribedBy}
                 readOnly={row.question.readOnly}
               />
             ),
@@ -82,7 +81,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                   disabled: cell.disabled,
                 },
               ]}
-              selectValue={row.selectedKey}
+              value={row.selectedKey}
               legacyOptionLabel={undefined}
               legacyOptionKey={undefined}
               onChange={(key) => {
@@ -91,8 +90,8 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                 }
               }}
               inputId={row.inputName}
-              labelId={row.labelId}
-              describedById={row.describedBy}
+              ariaLabelledBy={row.ariaLabelledBy}
+              ariaDescribedBy={row.ariaDescribedBy}
               readOnly={row.question.readOnly}
             />
           ),

@@ -3,7 +3,7 @@ import type { NodeHeaderProps } from "@aidbox-forms/theme";
 
 export function NodeHeader({
   label,
-  labelId,
+  ariaLabelledBy,
   htmlFor,
   required,
   help,
@@ -13,7 +13,7 @@ export function NodeHeader({
   return (
     <Wrapper>
       <LabelRow>
-        <Label id={labelId} htmlFor={htmlFor}>
+        <Label id={ariaLabelledBy} htmlFor={htmlFor}>
           {label}
           {required ? <Required aria-hidden>*</Required> : null}
         </Label>

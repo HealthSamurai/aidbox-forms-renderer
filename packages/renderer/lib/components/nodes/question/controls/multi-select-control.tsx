@@ -111,8 +111,8 @@ export const MultiSelectControl = observer(function MultiSelectControl<
               <Control
                 answer={rowProps.answer}
                 inputId={rowProps.inputId}
-                labelId={rowProps.labelId}
-                describedById={rowProps.describedById}
+                ariaLabelledBy={rowProps.ariaLabelledBy}
+                ariaDescribedBy={rowProps.ariaDescribedBy}
               />
               <AnswerErrors answer={dialogState.answer} />
             </>
@@ -143,10 +143,10 @@ export const MultiSelectControl = observer(function MultiSelectControl<
   return (
     <MultiSelectInput
       options={store.extendedOptions}
-      selectValue={store.selectValue}
-      onSelectOption={store.handleSelectOption}
-      labelId={store.labelId}
-      describedById={store.describedById}
+      value={store.selectValue}
+      onChange={store.handleSelectOption}
+      ariaLabelledBy={store.ariaLabelledBy}
+      ariaDescribedBy={store.ariaDescribedBy}
       readOnly={node.readOnly}
       isLoading={store.isLoading}
       showOptions={showOptions}
@@ -169,8 +169,8 @@ function renderInlineCustomInput<T extends AnswerType>(
     <Control
       answer={rowProps.answer}
       inputId={rowProps.inputId}
-      labelId={rowProps.labelId}
-      describedById={rowProps.describedById}
+      ariaLabelledBy={rowProps.ariaLabelledBy}
+      ariaDescribedBy={rowProps.ariaDescribedBy}
     />
   );
 }

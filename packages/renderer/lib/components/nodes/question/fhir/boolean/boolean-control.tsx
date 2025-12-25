@@ -4,14 +4,14 @@ import { BooleanInput } from "./boolean-input.tsx";
 export function BooleanControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"boolean">) {
   return (
     <BooleanInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}

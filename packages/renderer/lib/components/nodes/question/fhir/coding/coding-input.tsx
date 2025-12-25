@@ -5,8 +5,8 @@ export type CodingInputProps = {
   value: Coding | null;
   onChange: (value: Coding | null) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
 };
 
@@ -14,8 +14,8 @@ export function CodingInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   disabled,
 }: CodingInputProps) {
   const { InputGroup, TextInput } = useTheme();
@@ -36,8 +36,8 @@ export function CodingInput({
     <InputGroup layout="grid">
       <TextInput
         id={systemId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={coding.system ?? ""}
         onChange={(next) => handleChange("system", next)}
         disabled={disabled}
@@ -45,8 +45,8 @@ export function CodingInput({
       />
       <TextInput
         id={codeId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={coding.code ?? ""}
         onChange={(next) => handleChange("code", next)}
         disabled={disabled}
@@ -54,8 +54,8 @@ export function CodingInput({
       />
       <TextInput
         id={displayId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={coding.display ?? ""}
         onChange={(next) => handleChange("display", next)}
         disabled={disabled}

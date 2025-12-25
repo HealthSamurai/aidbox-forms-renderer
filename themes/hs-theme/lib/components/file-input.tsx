@@ -4,8 +4,8 @@ import { useRef, type ChangeEvent } from "react";
 
 export function FileInput({
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   disabled,
   filename,
   sizeLabel,
@@ -37,15 +37,15 @@ export function FileInput({
         id={inputId}
         type="file"
         onChange={handleFileChange}
-        aria-labelledby={labelId}
-        aria-describedby={describedById}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         disabled={disabled}
       />
       {hasAttachment ? (
         <Summary
           role="group"
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
         >
           <Label>
             {filename}

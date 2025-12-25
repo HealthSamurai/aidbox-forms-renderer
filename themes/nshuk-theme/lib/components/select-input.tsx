@@ -2,12 +2,12 @@ import type { SelectInputProps } from "@aidbox-forms/theme";
 
 export function SelectInput({
   options,
-  selectValue,
+  value,
   onChange,
   legacyOption,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly,
   isLoading,
   onClear,
@@ -19,11 +19,11 @@ export function SelectInput({
         <select
           id={inputId}
           className="nhsuk-select"
-          value={selectValue}
+          value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={readOnly || isLoading}
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
         >
           <option value="">Select an option</option>
           {legacyOption ? (

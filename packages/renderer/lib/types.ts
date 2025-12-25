@@ -221,8 +221,8 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
 export type ValueControlProps<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
   inputId: string;
-  labelId: string;
-  describedById?: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy?: string | undefined;
 };
 
 export type DataType =
@@ -522,8 +522,8 @@ type TableCellState = {
 type TableRowState = {
   key: string;
   question: IQuestionNode;
-  labelId: string;
-  describedBy?: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy?: string | undefined;
   inputName: string;
   selectedKey: string;
   selectedKeys: Set<string>;
@@ -722,8 +722,8 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly dialogState: SelectDialogState<T> | null;
   readonly extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
   readonly selectValue: string;
-  readonly labelId: string;
-  readonly describedById: string | undefined;
+  readonly ariaLabelledBy: string;
+  readonly ariaDescribedBy: string | undefined;
 
   handleCheckboxToggle(key: string): void;
   getListRowState(answer: IAnswerInstance<T>): ListSelectRowState;

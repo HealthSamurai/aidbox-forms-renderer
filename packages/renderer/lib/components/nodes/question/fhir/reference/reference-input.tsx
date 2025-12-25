@@ -5,8 +5,8 @@ export type ReferenceInputProps = {
   value: Reference | null;
   onChange: (value: Reference | null) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
 };
@@ -15,8 +15,8 @@ export function ReferenceInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   placeholder,
   disabled,
 }: ReferenceInputProps) {
@@ -37,8 +37,8 @@ export function ReferenceInput({
     <InputGroup layout="grid">
       <TextInput
         id={referenceId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={reference.reference ?? ""}
         onChange={(next) => setField("reference", next)}
         disabled={disabled}
@@ -46,8 +46,8 @@ export function ReferenceInput({
       />
       <TextInput
         id={displayId}
-        ariaLabelledBy={labelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={reference.display ?? ""}
         onChange={(next) => setField("display", next)}
         disabled={disabled}

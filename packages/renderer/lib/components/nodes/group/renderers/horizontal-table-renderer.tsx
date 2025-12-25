@@ -66,15 +66,15 @@ export const HorizontalTableRenderer = observer(
                       disabled: cell.disabled,
                     },
                   ]}
-                  selectedKeys={row.selectedKeys}
-                  onToggle={(key) => {
+                  value={row.selectedKeys}
+                  onChange={(key) => {
                     if (key === column.key) {
                       cell.toggleSelection?.();
                     }
                   }}
                   inputName={row.inputName}
-                  labelId={row.labelId}
-                  describedById={row.describedBy}
+                  ariaLabelledBy={row.ariaLabelledBy}
+                  ariaDescribedBy={row.ariaDescribedBy}
                   readOnly={row.question.readOnly}
                 />
               ),
@@ -92,7 +92,7 @@ export const HorizontalTableRenderer = observer(
                     disabled: cell.disabled,
                   },
                 ]}
-                selectValue={row.selectedKey}
+                value={row.selectedKey}
                 legacyOptionLabel={undefined}
                 legacyOptionKey={undefined}
                 onChange={(key) => {
@@ -101,8 +101,8 @@ export const HorizontalTableRenderer = observer(
                   }
                 }}
                 inputId={row.inputName}
-                labelId={row.labelId}
-                describedById={row.describedBy}
+                ariaLabelledBy={row.ariaLabelledBy}
+                ariaDescribedBy={row.ariaDescribedBy}
                 readOnly={row.question.readOnly}
               />
             ),

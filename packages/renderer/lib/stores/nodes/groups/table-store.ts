@@ -45,8 +45,8 @@ export type TableCellState = {
 export type TableRowState = {
   key: string;
   question: IQuestionNode;
-  labelId: string;
-  describedBy?: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy?: string | undefined;
   inputName: string;
   selectedKey: string;
   selectedKeys: Set<string>;
@@ -80,8 +80,8 @@ export class TableStore implements ITableStore {
   @computed
   get rowStates(): TableRowState[] {
     return this.model.rows.map((row) => {
-      const labelId = getNodeLabelId(row.question);
-      const describedBy = getNodeDescribedBy(row.question);
+      const ariaLabelledBy = getNodeLabelId(row.question);
+      const ariaDescribedBy = getNodeDescribedBy(row.question);
       const inputName = sanitizeForId(`${row.question.key}-table`);
       const selectedKeys = new Set<string>();
       let selectedKey = "";
@@ -165,8 +165,8 @@ export class TableStore implements ITableStore {
       return {
         key: row.question.key,
         question: row.question,
-        labelId,
-        describedBy,
+        ariaLabelledBy,
+        ariaDescribedBy,
         inputName,
         selectedKey,
         selectedKeys,

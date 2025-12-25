@@ -4,8 +4,8 @@ export type TimeInputProps = {
   value: string;
   onChange: (value: string) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
 };
@@ -14,8 +14,8 @@ export function TimeInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   placeholder,
   disabled,
 }: TimeInputProps) {
@@ -23,8 +23,8 @@ export function TimeInput({
   return (
     <ThemedTimeInput
       id={inputId}
-      ariaLabelledBy={labelId}
-      ariaDescribedBy={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

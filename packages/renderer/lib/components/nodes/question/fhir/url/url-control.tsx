@@ -4,14 +4,14 @@ import { UrlInput } from "./url-input.tsx";
 export function UrlControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"url">) {
   return (
     <UrlInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}

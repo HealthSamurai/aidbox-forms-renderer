@@ -8,13 +8,13 @@ export type RadioButtonListProps = {
     label: string;
     disabled?: boolean;
   }>;
-  selectValue: string;
+  value: string;
   onChange: (value: string) => void;
   legacyOptionLabel: string | undefined;
   legacyOptionKey: string | undefined;
   inputId: string;
-  labelId: string;
-  describedById: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
   after?: ReactNode;
@@ -23,13 +23,13 @@ export type RadioButtonListProps = {
 
 export function RadioButtonList({
   options,
-  selectValue,
+  value,
   onChange,
   legacyOptionLabel,
   legacyOptionKey,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly,
   isLoading = false,
   after,
@@ -39,8 +39,8 @@ export function RadioButtonList({
     <>
       <RadioGroupContainer
         role="radiogroup"
-        aria-labelledby={labelId}
-        aria-describedby={describedById}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
         {legacyOptionLabel && legacyOptionKey ? (
@@ -50,7 +50,7 @@ export function RadioButtonList({
                 type="radio"
                 name={inputId}
                 value={legacyOptionKey}
-                checked={selectValue === legacyOptionKey}
+                checked={value === legacyOptionKey}
                 disabled
                 readOnly
               />
@@ -65,7 +65,7 @@ export function RadioButtonList({
                 type="radio"
                 name={inputId}
                 value={entry.key}
-                checked={selectValue === entry.key}
+                checked={value === entry.key}
                 disabled={readOnly || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
               />

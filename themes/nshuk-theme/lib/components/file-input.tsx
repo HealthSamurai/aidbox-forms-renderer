@@ -3,8 +3,8 @@ import { useRef, type ChangeEvent } from "react";
 
 export function FileInput({
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   disabled,
   filename,
   sizeLabel,
@@ -34,8 +34,8 @@ export function FileInput({
       <input
         ref={fileInputRef}
         id={inputId}
-        aria-labelledby={labelId}
-        aria-describedby={describedById}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         className="nhsuk-file-upload"
         disabled={disabled}
         type="file"
@@ -46,8 +46,8 @@ export function FileInput({
         <div
           className="nhsuk-u-margin-top-2"
           role="group"
-          aria-labelledby={labelId}
-          aria-describedby={describedById}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
         >
           <p className="nhsuk-body">{filename}</p>
           {sizeLabel ? (

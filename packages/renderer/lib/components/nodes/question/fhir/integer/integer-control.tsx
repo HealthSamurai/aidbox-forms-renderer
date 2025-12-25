@@ -4,14 +4,14 @@ import { IntegerInput } from "./integer-input.tsx";
 export function IntegerControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"integer">) {
   return (
     <IntegerInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}

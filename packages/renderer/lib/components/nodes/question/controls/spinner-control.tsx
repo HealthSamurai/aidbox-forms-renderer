@@ -6,8 +6,8 @@ import { useCallback } from "react";
 
 export const SpinnerControl = observer(function SpinnerControl({
   answer,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"integer" | "decimal" | "quantity">) {
   const { SpinnerInput } = useTheme();
   const { min, max } = answer.bounds;
@@ -37,8 +37,8 @@ export const SpinnerControl = observer(function SpinnerControl({
       max={getNumericValue(max) ?? undefined}
       step={answer.question.type === "integer" ? 1 : 0.1}
       disabled={answer.question.readOnly}
-      ariaLabelledBy={labelId}
-      ariaDescribedBy={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       unitLabel={answer.question.unitDisplay}
     />

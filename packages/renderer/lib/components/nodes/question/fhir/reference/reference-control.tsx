@@ -4,14 +4,14 @@ import { ReferenceInput } from "./reference-input.tsx";
 export function ReferenceControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"reference">) {
   return (
     <ReferenceInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}

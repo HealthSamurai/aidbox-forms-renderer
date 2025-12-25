@@ -11,11 +11,11 @@ type OptionEntry<TValue> = {
 
 export type CheckboxListProps<TValue> = {
   options: ReadonlyArray<OptionEntry<TValue>>;
-  selectedKeys: Set<string>;
-  onToggle: (key: string) => void;
+  value: Set<string>;
+  onChange: (key: string) => void;
   inputName: string;
-  labelId: string;
-  describedById?: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy?: string | undefined;
   readOnly?: boolean;
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;
@@ -24,11 +24,11 @@ export type CheckboxListProps<TValue> = {
 
 export function CheckboxList<TValue>({
   options,
-  selectedKeys,
-  onToggle,
+  value,
+  onChange,
   inputName,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly,
   isLoading = false,
   renderErrors,
@@ -41,7 +41,7 @@ export function CheckboxList<TValue>({
     >
       {options.map((option, index) => {
         const optionId = `${inputName}-option-${index}`;
-        const isChecked = selectedKeys.has(option.key);
+        const isChecked = value.has(option.key);
         const disableToggle = readOnly || isLoading || option.disabled;
 
         return (
@@ -52,9 +52,9 @@ export function CheckboxList<TValue>({
                 name={inputName}
                 checked={isChecked}
                 disabled={disableToggle}
-                aria-labelledby={`${labelId} ${optionId}`}
-                aria-describedby={describedById}
-                onChange={() => onToggle(option.key)}
+                aria-labelledby={`${ariaLabelledBy} ${optionId}`}
+                aria-describedby={ariaDescribedBy}
+                onChange={() => onChange(option.key)}
               />
               <span id={optionId}>{option.label}</span>
             </CheckboxLabel>

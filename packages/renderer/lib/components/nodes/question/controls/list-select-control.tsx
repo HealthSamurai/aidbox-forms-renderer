@@ -56,11 +56,11 @@ export const ListSelectControl = observer(function ListSelectControl<
     return (
       <CheckboxList
         options={state.uiOptions}
-        selectedKeys={state.selectedKeys}
-        onToggle={store.handleCheckboxToggle}
+        value={state.selectedKeys}
+        onChange={store.handleCheckboxToggle}
         inputName={node.key}
-        labelId={getNodeLabelId(node)}
-        describedById={getNodeDescribedBy(node)}
+        ariaLabelledBy={getNodeLabelId(node)}
+        ariaDescribedBy={getNodeDescribedBy(node)}
         readOnly={node.readOnly}
         isLoading={store.isLoading}
         renderErrors={(key) => {
@@ -95,21 +95,21 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
     <Control
       answer={rowProps.answer}
       inputId={rowProps.inputId}
-      labelId={rowProps.labelId}
-      describedById={rowProps.describedById}
+      ariaLabelledBy={rowProps.ariaLabelledBy}
+      ariaDescribedBy={rowProps.ariaDescribedBy}
     />
   ) : null;
 
   return (
     <RadioButtonList
       options={rowStore.radioOptions}
-      selectValue={rowStore.selectValue}
+      value={rowStore.selectValue}
       legacyOptionLabel={rowStore.legacyOption?.label}
       legacyOptionKey={rowStore.legacyOption?.key}
       onChange={rowStore.handleChange}
       inputId={rowProps.inputId}
-      labelId={rowProps.labelId}
-      describedById={rowProps.describedById}
+      ariaLabelledBy={rowProps.ariaLabelledBy}
+      ariaDescribedBy={rowProps.ariaDescribedBy}
       readOnly={node.readOnly}
       isLoading={store.isLoading}
       after={customInput}

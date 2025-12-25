@@ -2,7 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 
 export type NodeHeaderProps = {
   label: ReactNode;
-  labelId?: string | undefined;
+  ariaLabelledBy?: string | undefined;
   htmlFor?: string | undefined;
   required?: boolean | undefined;
   help?: ReactNode;

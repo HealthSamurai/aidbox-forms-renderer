@@ -59,12 +59,12 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   return (
     <SelectInput
       options={node.options.entries}
-      selectValue={rowStore.selectValue}
+      value={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleSelect}
       inputId={rowProps.inputId}
-      labelId={rowProps.labelId}
-      describedById={rowProps.describedById}
+      ariaLabelledBy={rowProps.ariaLabelledBy}
+      ariaDescribedBy={rowProps.ariaDescribedBy}
       readOnly={node.readOnly}
       isLoading={isLoading}
       onClear={clearHandler}
@@ -93,8 +93,8 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
         <Control
           answer={rowProps.answer}
           inputId={rowProps.inputId}
-          labelId={rowProps.labelId}
-          describedById={rowProps.describedById}
+          ariaLabelledBy={rowProps.ariaLabelledBy}
+          ariaDescribedBy={rowProps.ariaDescribedBy}
         />
         <Button
           type="button"
@@ -113,12 +113,12 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   return (
     <SelectInput
       options={rowStore.extendedOptions}
-      selectValue={rowStore.optionKey}
+      value={rowStore.optionKey}
       legacyOption={null}
       onChange={rowStore.handleSelect}
       inputId={rowProps.inputId}
-      labelId={rowProps.labelId}
-      describedById={rowProps.describedById}
+      ariaLabelledBy={rowProps.ariaLabelledBy}
+      ariaDescribedBy={rowProps.ariaDescribedBy}
       readOnly={node.readOnly}
       isLoading={isLoading}
       onClear={clearHandler}

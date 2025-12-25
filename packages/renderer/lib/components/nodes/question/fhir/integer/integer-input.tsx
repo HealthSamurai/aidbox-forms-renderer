@@ -4,8 +4,8 @@ export type IntegerInputProps = {
   value: number | null;
   onChange: (value: number | null) => void;
   inputId?: string | undefined;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   unitLabel?: string | undefined;
@@ -15,8 +15,8 @@ export function IntegerInput({
   value,
   onChange,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   placeholder,
   disabled,
   unitLabel,
@@ -25,8 +25,8 @@ export function IntegerInput({
   return (
     <ThemedNumberInput
       id={inputId}
-      ariaLabelledBy={labelId}
-      ariaDescribedBy={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}
       value={value ?? null}
       onChange={(next) => onChange(next != null ? Math.round(next) : null)}

@@ -4,15 +4,15 @@ import { QuantityInput } from "./quantity-input.tsx";
 export function QuantityControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"quantity">) {
   return (
     <QuantityInput
       answer={answer}
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       disabled={answer.question.readOnly}
     />

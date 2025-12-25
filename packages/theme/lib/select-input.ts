@@ -2,12 +2,12 @@ import type { ComponentType } from "react";
 
 export type SelectInputProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
-  selectValue: string;
+  value: string;
   onChange: (key: string) => void;
   legacyOption: { key: string; label: string } | null;
   inputId: string;
-  labelId: string;
-  describedById: string | undefined;
+  ariaLabelledBy: string;
+  ariaDescribedBy: string | undefined;
   readOnly: boolean;
   isLoading?: boolean;
   onClear?: (() => void) | undefined;

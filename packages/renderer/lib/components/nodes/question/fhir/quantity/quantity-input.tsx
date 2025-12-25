@@ -4,8 +4,8 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type QuantityInputProps = {
   answer: IAnswerInstance<"quantity">;
   inputId: string;
-  labelId?: string | undefined;
-  describedById?: string | undefined;
+  ariaLabelledBy?: string | undefined;
+  ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
 };
@@ -13,8 +13,8 @@ export type QuantityInputProps = {
 export function QuantityInput({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   placeholder,
   disabled,
 }: QuantityInputProps) {
@@ -23,7 +23,7 @@ export function QuantityInput({
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitKey;
   const inputBaseId = inputId;
-  const resolvedLabelId = labelId ?? inputBaseId;
+  const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
   const unitInputId = `${inputBaseId}-unit`;
 
   const handleValueChange = (nextValue: number | null) => {
@@ -36,8 +36,8 @@ export function QuantityInput({
     <InputGroup layout="row" weights={[2, 1]}>
       <NumberInput
         id={inputId}
-        ariaLabelledBy={resolvedLabelId}
-        ariaDescribedBy={describedById}
+        ariaLabelledBy={resolvedAriaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         value={answer.value?.value ?? null}
         onChange={handleValueChange}
         disabled={disabled}
@@ -47,8 +47,8 @@ export function QuantityInput({
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
           id={unitInputId}
-          ariaLabelledBy={resolvedLabelId}
-          ariaDescribedBy={describedById}
+          ariaLabelledBy={resolvedAriaLabelledBy}
+          ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
           disabled={disabled}
@@ -57,12 +57,12 @@ export function QuantityInput({
       ) : (
         <SelectInput
           options={answer.quantity.entries}
-          selectValue={unitValue}
+          value={unitValue}
           legacyOption={null}
           onChange={(key) => answer.quantity.handleSelectChange(key)}
           inputId={unitInputId}
-          labelId={resolvedLabelId}
-          describedById={describedById}
+          ariaLabelledBy={resolvedAriaLabelledBy}
+          ariaDescribedBy={ariaDescribedBy}
           readOnly={Boolean(disabled)}
         />
       )}

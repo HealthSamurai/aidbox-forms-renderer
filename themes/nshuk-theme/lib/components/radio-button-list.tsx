@@ -2,13 +2,13 @@ import type { RadioButtonListProps } from "@aidbox-forms/theme";
 
 export function RadioButtonList({
   options,
-  selectValue,
+  value,
   onChange,
   legacyOptionLabel,
   legacyOptionKey,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
   readOnly,
   isLoading,
   after,
@@ -22,8 +22,8 @@ export function RadioButtonList({
       <div
         className="nhsuk-radios"
         role="radiogroup"
-        aria-labelledby={labelId}
-        aria-describedby={describedById}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
         {legacyOptionLabel && legacyOptionKey ? (
@@ -34,10 +34,10 @@ export function RadioButtonList({
               type="radio"
               name={inputId}
               value={legacyOptionKey}
-              checked={selectValue === legacyOptionKey}
+              checked={value === legacyOptionKey}
               disabled
               readOnly
-              aria-describedby={describedById}
+              aria-describedby={ariaDescribedBy}
             />
             <label
               className="nhsuk-label nhsuk-radios__label"
@@ -57,10 +57,10 @@ export function RadioButtonList({
                 type="radio"
                 name={inputId}
                 value={entry.key}
-                checked={selectValue === entry.key}
+                checked={value === entry.key}
                 disabled={readOnly || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
-                aria-describedby={describedById}
+                aria-describedby={ariaDescribedBy}
               />
               <label
                 className="nhsuk-label nhsuk-radios__label"

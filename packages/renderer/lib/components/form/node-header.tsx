@@ -12,12 +12,12 @@ export const NodeHeader = observer(function NodeHeader({
   node: IPresentableNode;
 }) {
   const { NodeHeader: ThemedNodeHeader } = useTheme();
-  const { labelText, labelId, htmlFor } = getNodeLabelParts(node);
+  const { labelText, ariaLabelledBy, htmlFor } = getNodeLabelParts(node);
 
   return (
     <ThemedNodeHeader
       label={labelText}
-      labelId={labelId}
+      ariaLabelledBy={ariaLabelledBy}
       htmlFor={htmlFor}
       required={node.required}
       help={<NodeHelp node={node} />}

@@ -4,14 +4,14 @@ import { CodingInput } from "./coding-input.tsx";
 export function CodingControl({
   answer,
   inputId,
-  labelId,
-  describedById,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: ValueControlProps<"coding">) {
   return (
     <CodingInput
       inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}

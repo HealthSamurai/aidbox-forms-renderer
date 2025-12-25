@@ -40,7 +40,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
     getNodeDescribedBy(answer.question),
     answerErrorId,
   ].filter((value): value is string => Boolean(value));
-  const describedById =
+  const ariaDescribedBy =
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
   const Component = control;
@@ -50,8 +50,8 @@ export const AnswerScaffold = observer(function AnswerScaffold<
       control={
         <Component
           inputId={sanitizeForId(answer.key)}
-          labelId={getNodeLabelId(answer.question)}
-          describedById={describedById}
+          ariaLabelledBy={getNodeLabelId(answer.question)}
+          ariaDescribedBy={ariaDescribedBy}
           answer={answer as IAnswerInstance<T>}
         />
       }
