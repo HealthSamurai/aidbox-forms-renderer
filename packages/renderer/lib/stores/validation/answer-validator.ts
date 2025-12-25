@@ -1,8 +1,7 @@
 import { computed, makeObservable } from "mobx";
-import type { OperationOutcomeIssue, Quantity } from "fhir/r5";
+import type { OperationOutcomeIssue } from "fhir/r5";
 
 import {
-  ANSWER_TYPE_TO_DATA_TYPE,
   compareDateTimeValues,
   compareDateValues,
   compareQuantities,
@@ -24,11 +23,12 @@ import type {
   IAnswerInstance,
   INodeValidator,
   IQuestionNode,
+  ValueBounds,
 } from "../../types.ts";
 
-export class AnswerValidator<T extends AnswerType = AnswerType>
-  implements INodeValidator
-{
+export class AnswerValidator<
+  T extends AnswerType = AnswerType,
+> implements INodeValidator {
   private readonly answer: IAnswerInstance<T>;
   private readonly question: IQuestionNode<T>;
 
@@ -52,10 +52,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     }
 
     const type = this.question.type;
-    const value = this.answer.value as DataTypeToType<
-      AnswerTypeToDataType<T>
-    > | null;
-
+    const value = this.answer.value;
     let issues: OperationOutcomeIssue[];
     switch (type) {
       case "string":
@@ -110,6 +107,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
             value as DataTypeToType<"integer"> | null,
             numberMin,
             numberMax,
+            type,
           );
         }
         break;
@@ -129,6 +127,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
             value as DataTypeToType<"decimal"> | null,
             numberMin,
             numberMax,
+            type,
             maxDecimalPlaces,
           );
         }
@@ -156,11 +155,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
           comparableMax = undefined;
         }
         issues = this.validateTemporalValue(
-          value as
-            | DataTypeToType<"date">
-            | DataTypeToType<"dateTime">
-            | DataTypeToType<"time">
-            | null,
+          value as DataTypeToType<"date" | "dateTime" | "time"> | null,
           {
             minLength,
             maxLength,
@@ -288,6 +283,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     value: number | null,
     min: number | undefined,
     max: number | undefined,
+    type: "integer" | "decimal",
     maxDecimalPlaces?: number,
   ): OperationOutcomeIssue[] {
     if (typeof value !== "number") {
@@ -297,10 +293,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     const issues: OperationOutcomeIssue[] = [];
 
     if (min != null && value < min) {
-      const formattedMin = stringifyValue(
-        ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
-        min as DataTypeToType<AnswerTypeToDataType<T>>,
-      );
+      const formattedMin = stringifyValue(type, min);
       issues.push(
         makeIssue(
           "invalid",
@@ -310,10 +303,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     }
 
     if (max != null && value > max) {
-      const formattedMax = stringifyValue(
-        ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
-        max as DataTypeToType<AnswerTypeToDataType<T>>,
-      );
+      const formattedMax = stringifyValue(type, max);
       issues.push(
         makeIssue(
           "invalid",
@@ -335,6 +325,61 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     }
 
     return issues;
+  }
+
+  @computed.struct
+  public get bounds(): ValueBounds<T> {
+    let bounds: ValueBounds<AnswerType>;
+
+    switch (this.question.type) {
+      case "integer":
+        bounds = {
+          min: this.resolveNumberBound("min", "integer"),
+          max: this.resolveNumberBound("max", "integer"),
+        };
+        break;
+      case "decimal":
+        bounds = {
+          min: this.resolveNumberBound("min", "decimal"),
+          max: this.resolveNumberBound("max", "decimal"),
+        };
+        break;
+      case "date":
+        bounds = {
+          min: this.resolveTemporalBound("min", "date"),
+          max: this.resolveTemporalBound("max", "date"),
+        };
+        break;
+      case "dateTime":
+        bounds = {
+          min: this.resolveTemporalBound("min", "dateTime"),
+          max: this.resolveTemporalBound("max", "dateTime"),
+        };
+        break;
+      case "time":
+        bounds = {
+          min: this.resolveTemporalBound("min", "time"),
+          max: this.resolveTemporalBound("max", "time"),
+        };
+        break;
+      case "quantity":
+        bounds = {
+          min: this.resolveQuantityBound("min"),
+          max: this.resolveQuantityBound("max"),
+        };
+        break;
+      case "boolean":
+      case "string":
+      case "text":
+      case "url":
+      case "coding":
+      case "attachment":
+      case "reference":
+      default:
+        bounds = { min: undefined, max: undefined };
+    }
+
+    return bounds as ValueBounds<T>;
   }
 
   private validateTemporalValue(
@@ -382,10 +427,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         constraints.comparableMin,
       );
       if (comparison != null && comparison < 0) {
-        const formattedMin = stringifyValue(
-          ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
-          constraints.comparableMin as DataTypeToType<AnswerTypeToDataType<T>>,
-        );
+        const formattedMin = stringifyValue(type, constraints.comparableMin);
         issues.push(
           makeIssue(
             "invalid",
@@ -402,10 +444,7 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
         constraints.comparableMax,
       );
       if (comparison != null && comparison > 0) {
-        const formattedMax = stringifyValue(
-          ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
-          constraints.comparableMax as DataTypeToType<AnswerTypeToDataType<T>>,
-        );
+        const formattedMax = stringifyValue(type, constraints.comparableMax);
         issues.push(
           makeIssue("invalid", `Value must not be later than ${formattedMax}.`),
         );
@@ -518,18 +557,12 @@ export class AnswerValidator<T extends AnswerType = AnswerType>
     }
 
     const url = kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE;
-
-    switch (type) {
-      case "date":
-        return extractExtensionValue(template, url, "date");
-      case "dateTime":
-        return extractExtensionValue(template, url, "dateTime");
-      case "time":
-        return extractExtensionValue(template, url, "time");
-    }
+    return extractExtensionValue(template, url, type);
   }
 
-  private resolveQuantityBound(kind: "min" | "max"): Quantity | undefined {
+  private resolveQuantityBound(
+    kind: "min" | "max",
+  ): DataTypeToType<AnswerTypeToDataType<"quantity">> | undefined {
     const template = this.question.template;
 
     const slot =

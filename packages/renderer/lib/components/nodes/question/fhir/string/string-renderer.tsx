@@ -26,9 +26,8 @@ export const StringRenderer = observer(function StringRenderer({
   );
 
   return (
-    <QuestionScaffold
-      node={node}
-      children={<AnswerList node={node} renderRow={renderRow} />}
-    />
+    <QuestionScaffold node={node}>
+      <AnswerList node={node} renderRow={renderRow} />
+    </QuestionScaffold>
   );
 });

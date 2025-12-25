@@ -4,7 +4,7 @@ import type { IAnswerInstance, IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
-import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
+import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 type NumericType = "integer" | "decimal" | "quantity";
@@ -15,28 +15,22 @@ function isQuantityAnswer(
   return answer.question.type === "quantity";
 }
 
-function getNumericValue(answer: IAnswerInstance<NumericType>): number | null {
-  if (isQuantityAnswer(answer)) {
-    return answer.value?.value ?? null;
-  }
-
-  return typeof answer.value === "number" ? answer.value : null;
-}
-
 export const SpinnerRenderer = observer(function SpinnerRenderer({
   node,
 }: {
   node: IQuestionNode<NumericType>;
 }) {
   const { SpinnerInput } = useTheme();
-  const bounds = getNumericBounds(node.template);
   const spinnerStep =
     getSliderStepValue(node.template) ?? (node.type === "integer" ? 1 : 0.1);
 
   const renderRow = useMemo((): AnswerRowRenderer<NumericType> => {
     return (rowProps) => {
       const isQuantity = isQuantityAnswer(rowProps.answer);
-      const value = getNumericValue(rowProps.answer);
+      const value = getNumericValue(rowProps.answer.value);
+      const { min, max } = rowProps.answer.bounds;
+      const minValue = getNumericValue(min) ?? undefined;
+      const maxValue = getNumericValue(max) ?? undefined;
 
       const handleChange = (next: number | null) => {
         if (isQuantity) {
@@ -58,8 +52,8 @@ export const SpinnerRenderer = observer(function SpinnerRenderer({
         <SpinnerInput
           value={value}
           onChange={handleChange}
-          min={bounds.min}
-          max={bounds.max}
+          min={minValue}
+          max={maxValue}
           step={spinnerStep}
           disabled={node.readOnly}
           ariaLabelledBy={rowProps.labelId}
@@ -69,12 +63,11 @@ export const SpinnerRenderer = observer(function SpinnerRenderer({
         />
       );
     };
-  }, [SpinnerInput, bounds.max, bounds.min, node, spinnerStep]);
+  }, [SpinnerInput, node, spinnerStep]);
 
   return (
-    <QuestionScaffold
-      node={node}
-      children={<AnswerList node={node} renderRow={renderRow} />}
-    />
+    <QuestionScaffold node={node}>
+      <AnswerList node={node} renderRow={renderRow} />
+    </QuestionScaffold>
   );
 });

@@ -23,16 +23,12 @@ export const DropdownRenderer = observer(function DropdownRenderer<
   const isMultiSelect = node.selectStore.isMultiSelect;
 
   return (
-    <QuestionScaffold
-      node={node}
-      showOptionsState
-      children={
-        isMultiSelect ? (
-          <MultiSelectControl node={node} ValueDisplay={ValueDisplay} />
-        ) : (
-          <DropdownSelectControl node={node} rowVariant={rowVariant} />
-        )
-      }
-    />
+    <QuestionScaffold node={node} showOptionsState>
+      {isMultiSelect ? (
+        <MultiSelectControl node={node} ValueDisplay={ValueDisplay} />
+      ) : (
+        <DropdownSelectControl node={node} rowVariant={rowVariant} />
+      )}
+    </QuestionScaffold>
   );
 });

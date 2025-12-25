@@ -589,6 +589,11 @@ export interface IGroupWrapper extends IPresentableNode {
   removeNode(instance: IGroupNode): void;
 }
 
+export interface ValueBounds<T extends AnswerType = AnswerType> {
+  readonly min: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
+  readonly max: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
+}
+
 export interface IAnswerInstance<T extends AnswerType = AnswerType> {
   readonly key: string;
   readonly question: IQuestionNode<T>;
@@ -600,6 +605,7 @@ export interface IAnswerInstance<T extends AnswerType = AnswerType> {
   readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
   readonly scope: IScope;
   readonly issues: Array<OperationOutcomeIssue>;
+  readonly bounds: ValueBounds<T>;
   readonly quantity: IQuantityAnswer;
   dispose(): void;
 }
@@ -776,6 +782,7 @@ export type INode =
 
 export interface INodeValidator {
   readonly issues: Array<OperationOutcomeIssue>;
+  // readonly bounds;
 }
 
 export interface IValueSetExpander {

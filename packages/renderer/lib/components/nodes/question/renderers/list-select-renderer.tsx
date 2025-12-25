@@ -7,10 +7,8 @@ export const ListSelectRenderer = observer(function ListSelectRenderer<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   return (
-    <QuestionScaffold
-      node={node}
-      showOptionsState
-      children={<ListSelectControl node={node} />}
-    />
+    <QuestionScaffold node={node} showOptionsState>
+      <ListSelectControl node={node} />
+    </QuestionScaffold>
   );
 });

@@ -296,15 +296,6 @@ export function findDisplayItemByControl(
   });
 }
 
-export function getNumericBounds(item: QuestionnaireItem): {
-  min: number | undefined;
-  max: number | undefined;
-} {
-  const min = extractNumericExtension(findExtension(item, EXT.MIN_VALUE));
-  const max = extractNumericExtension(findExtension(item, EXT.MAX_VALUE));
-  return { min, max };
-}
-
 export function getSliderStepValue(
   item: QuestionnaireItem,
 ): number | undefined {
@@ -315,23 +306,6 @@ export function getSliderStepValue(
   }
   if (typeof extension.valueDecimal === "number") {
     return extension.valueDecimal;
-  }
-  return undefined;
-}
-
-function extractNumericExtension(extension: Extension | undefined) {
-  if (!extension) return undefined;
-  if (typeof extension.valueInteger === "number") {
-    return extension.valueInteger;
-  }
-  if (typeof extension.valueDecimal === "number") {
-    return extension.valueDecimal;
-  }
-  if (
-    extension.valueQuantity &&
-    typeof extension.valueQuantity.value === "number"
-  ) {
-    return extension.valueQuantity.value;
   }
   return undefined;
 }
@@ -368,6 +342,14 @@ export function isQuantity(value: unknown): value is Quantity {
     "system" in quantity ||
     "comparator" in quantity
   );
+}
+
+export function getNumericValue(value: unknown): number | null {
+  if (isQuantity(value)) {
+    return typeof value.value === "number" ? value.value : null;
+  }
+
+  return typeof value === "number" ? value : null;
 }
 
 export function parseNumber(value: unknown): number | undefined {

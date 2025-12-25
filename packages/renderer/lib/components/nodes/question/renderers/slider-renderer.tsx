@@ -1,27 +1,11 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import type { IAnswerInstance, IQuestionNode } from "../../../../types.ts";
+import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
 import type { AnswerRowRenderer } from "../answers/answer-row.tsx";
-import { getNumericBounds, getSliderStepValue } from "../../../../utils.ts";
+import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-
-type NumericType = "integer" | "decimal" | "quantity";
-
-function isQuantityAnswer(
-  answer: IAnswerInstance<NumericType>,
-): answer is IAnswerInstance<"quantity"> {
-  return answer.question.type === "quantity";
-}
-
-function getNumericValue(answer: IAnswerInstance<NumericType>): number | null {
-  if (isQuantityAnswer(answer)) {
-    return answer.value?.value ?? null;
-  }
-
-  return typeof answer.value === "number" ? answer.value : null;
-}
 
 export const SliderRenderer = observer(function SliderRenderer({
   node,
@@ -29,14 +13,16 @@ export const SliderRenderer = observer(function SliderRenderer({
   node: IQuestionNode<"integer" | "decimal" | "quantity">;
 }) {
   const { SliderInput } = useTheme();
-  const bounds = getNumericBounds(node.template);
   const sliderStep =
     getSliderStepValue(node.template) ?? (node.type === "integer" ? 1 : 0.1);
 
-  const renderRow = useMemo((): AnswerRowRenderer<NumericType> => {
+  const renderRow = useMemo((): AnswerRowRenderer<
+    "integer" | "decimal" | "quantity"
+  > => {
     return (rowProps) => {
-      const isQuantity = isQuantityAnswer(rowProps.answer);
-      const value = getNumericValue(rowProps.answer);
+      const isQuantity = rowProps.answer.question.type === "quantity";
+      const value = getNumericValue(rowProps.answer.value);
+      const { min, max } = rowProps.answer.bounds;
 
       const handleChange = (next: number | null) => {
         if (isQuantity) {
@@ -58,8 +44,8 @@ export const SliderRenderer = observer(function SliderRenderer({
         <SliderInput
           value={value}
           onChange={handleChange}
-          min={bounds.min}
-          max={bounds.max}
+          min={getNumericValue(min) ?? undefined}
+          max={getNumericValue(max) ?? undefined}
           step={sliderStep}
           disabled={node.readOnly}
           ariaLabelledBy={rowProps.labelId}
@@ -70,12 +56,11 @@ export const SliderRenderer = observer(function SliderRenderer({
         />
       );
     };
-  }, [SliderInput, bounds.max, bounds.min, node, sliderStep]);
+  }, [SliderInput, node, sliderStep]);
 
   return (
-    <QuestionScaffold
-      node={node}
-      children={<AnswerList node={node} renderRow={renderRow} />}
-    />
+    <QuestionScaffold node={node}>
+      <AnswerList node={node} renderRow={renderRow} />
+    </QuestionScaffold>
   );
 });

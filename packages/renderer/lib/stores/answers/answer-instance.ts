@@ -9,6 +9,7 @@ import type {
   IQuestionNode,
   SnapshotKind,
   AnswerTypeToDataType,
+  ValueBounds,
 } from "../../types.ts";
 import type {
   QuestionnaireResponseItem,
@@ -23,9 +24,9 @@ import type { OperationOutcomeIssue } from "fhir/r5";
 import { AnswerValidator } from "../validation/answer-validator.ts";
 import { QuantityAnswer } from "./quantity-answer.ts";
 
-export class AnswerInstance<T extends AnswerType>
-  implements IAnswerInstance<T>
-{
+export class AnswerInstance<
+  T extends AnswerType,
+> implements IAnswerInstance<T> {
   readonly key: string;
   readonly scope: IScope;
 
@@ -101,6 +102,11 @@ export class AnswerInstance<T extends AnswerType>
   @computed
   get issues(): OperationOutcomeIssue[] {
     return this.validator.issues;
+  }
+
+  @computed.struct
+  get bounds(): ValueBounds<T> {
+    return this.validator.bounds;
   }
 
   private buildAnswerSnapshot(
