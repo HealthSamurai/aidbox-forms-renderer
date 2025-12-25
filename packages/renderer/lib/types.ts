@@ -524,7 +524,7 @@ type TableRowState = {
   question: IQuestionNode;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
-  inputName: string;
+  id: string;
   selectedKey: string;
   selectedKeys: Set<string>;
   cells: Array<TableCellState>;

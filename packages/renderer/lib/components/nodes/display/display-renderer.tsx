@@ -10,5 +10,9 @@ export const DisplayRenderer = observer(function DisplayRenderer({
 }) {
   const { DisplayRenderer: ThemedDisplayRenderer } = useTheme();
   const { labelText } = getNodeLabelParts(node);
-  return <ThemedDisplayRenderer linkId={node.linkId} content={labelText} />;
+  return (
+    <ThemedDisplayRenderer linkId={node.linkId}>
+      {labelText}
+    </ThemedDisplayRenderer>
+  );
 });

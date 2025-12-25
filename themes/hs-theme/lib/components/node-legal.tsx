@@ -1,16 +1,16 @@
 import { styled } from "@linaria/react";
 import type { NodeLegalProps } from "@aidbox-forms/theme";
 
-export function NodeLegal({ id, content, ariaLabel }: NodeLegalProps) {
+export function NodeLegal({ id, children, ariaLabel }: NodeLegalProps) {
   return (
     <Wrapper>
       <LegalButton type="button" aria-describedby={id} aria-label={ariaLabel}>
         §
       </LegalButton>
       <Tooltip role="dialog" aria-hidden="true">
-        {content}
+        {children}
       </Tooltip>
-      <SrOnly id={id}>{content}</SrOnly>
+      <SrOnly id={id}>{children}</SrOnly>
     </Wrapper>
   );
 }

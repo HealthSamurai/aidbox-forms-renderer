@@ -63,7 +63,7 @@ export function QuantityInput({
           id={unitInputId}
           ariaLabelledBy={resolvedAriaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
-          readOnly={Boolean(disabled)}
+          disabled={Boolean(disabled)}
         />
       )}
     </InputGroup>

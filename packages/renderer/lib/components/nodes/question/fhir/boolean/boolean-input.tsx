@@ -46,7 +46,7 @@ export function BooleanInput({
       id={fallbackInputId}
       ariaLabelledBy={fallbackAriaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
-      readOnly={Boolean(disabled)}
+      disabled={Boolean(disabled)}
     />
   );
 }

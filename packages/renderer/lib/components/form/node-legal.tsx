@@ -17,10 +17,8 @@ export const NodeLegal = observer(function NodeLegal({
   const legalId = getNodeLegalId(node);
 
   return (
-    <ThemedNodeLegal
-      id={legalId}
-      content={node.legal}
-      ariaLabel="Legal information"
-    />
+    <ThemedNodeLegal id={legalId} ariaLabel="Legal information">
+      {node.legal}
+    </ThemedNodeLegal>
   );
 });

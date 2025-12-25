@@ -9,8 +9,8 @@ type SelectInputProps = {
   onChange: (value: string) => void;
   id: string;
   ariaLabelledBy: string;
-  ariaDescribedBy: string | undefined;
-  readOnly: boolean;
+  ariaDescribedBy?: string | undefined;
+  disabled: boolean;
   isLoading?: boolean;
   onClear?: (() => void) | undefined;
   clearLabel?: string | undefined;
@@ -24,7 +24,7 @@ export function SelectInput({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading = false,
   onClear,
   clearLabel,
@@ -37,7 +37,7 @@ export function SelectInput({
           className={inputClass}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          disabled={readOnly}
+          disabled={disabled}
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
           aria-busy={isLoading || undefined}
@@ -55,7 +55,7 @@ export function SelectInput({
           ))}
         </select>
         {onClear ? (
-          <ClearButton type="button" onClick={onClear} disabled={readOnly}>
+          <ClearButton type="button" onClick={onClear} disabled={disabled}>
             {clearLabel ?? "Clear"}
           </ClearButton>
         ) : null}

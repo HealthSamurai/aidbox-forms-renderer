@@ -23,7 +23,7 @@ export type MultiSelectInputProps = {
   onChange: (key: string) => void;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
-  readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   isLoading?: boolean | undefined;
   showOptions?: boolean | undefined;
   chips: ReadonlyArray<MultiSelectChip>;

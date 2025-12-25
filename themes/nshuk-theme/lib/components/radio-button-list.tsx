@@ -8,7 +8,7 @@ export function RadioButtonList({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading,
   after,
   afterInset = false,
@@ -34,7 +34,6 @@ export function RadioButtonList({
               value={legacyOption.key}
               checked={value === legacyOption.key}
               disabled
-              readOnly
               aria-describedby={ariaDescribedBy}
             />
             <label
@@ -56,7 +55,7 @@ export function RadioButtonList({
                 name={id}
                 value={entry.key}
                 checked={value === entry.key}
-                disabled={readOnly || entry.disabled}
+                disabled={disabled || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
                 aria-describedby={ariaDescribedBy}
               />

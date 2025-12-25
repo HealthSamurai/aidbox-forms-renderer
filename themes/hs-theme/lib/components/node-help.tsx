@@ -1,16 +1,16 @@
 import { styled } from "@linaria/react";
 import type { NodeHelpProps } from "@aidbox-forms/theme";
 
-export function NodeHelp({ id, content, ariaLabel }: NodeHelpProps) {
+export function NodeHelp({ id, children, ariaLabel }: NodeHelpProps) {
   return (
     <Wrapper>
       <HelpButton type="button" aria-describedby={id} aria-label={ariaLabel}>
         ?
       </HelpButton>
       <Tooltip role="tooltip" aria-hidden="true">
-        {content}
+        {children}
       </Tooltip>
-      <SrOnly id={id}>{content}</SrOnly>
+      <SrOnly id={id}>{children}</SrOnly>
     </Wrapper>
   );
 }

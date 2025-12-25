@@ -7,8 +7,8 @@ export type SelectInputProps = {
   legacyOption: { key: string; label: string } | null;
   id: string;
   ariaLabelledBy: string;
-  ariaDescribedBy: string | undefined;
-  readOnly: boolean;
+  ariaDescribedBy?: string | undefined;
+  disabled: boolean;
   isLoading?: boolean;
   onClear?: (() => void) | undefined;
   clearLabel?: string | undefined;

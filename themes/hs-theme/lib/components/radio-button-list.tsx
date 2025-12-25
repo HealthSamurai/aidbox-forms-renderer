@@ -13,8 +13,8 @@ export type RadioButtonListProps = {
   legacyOption: { key: string; label: string } | null;
   id: string;
   ariaLabelledBy: string;
-  ariaDescribedBy: string | undefined;
-  readOnly: boolean;
+  ariaDescribedBy?: string | undefined;
+  disabled: boolean;
   isLoading?: boolean;
   after?: ReactNode;
   afterInset?: boolean;
@@ -28,7 +28,7 @@ export function RadioButtonList({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading = false,
   after,
   afterInset = false,
@@ -50,7 +50,6 @@ export function RadioButtonList({
                 value={legacyOption.key}
                 checked={value === legacyOption.key}
                 disabled
-                readOnly
               />
               {legacyOption.label}
             </RadioLabel>
@@ -64,7 +63,7 @@ export function RadioButtonList({
                 name={id}
                 value={entry.key}
                 checked={value === entry.key}
-                disabled={readOnly || entry.disabled}
+                disabled={disabled || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
               />
               {entry.label}

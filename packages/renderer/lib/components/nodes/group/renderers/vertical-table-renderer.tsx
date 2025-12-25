@@ -61,10 +61,10 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                     cell.toggleSelection?.();
                   }
                 }}
-                inputName={row.inputName}
+                id={row.id}
                 ariaLabelledBy={row.ariaLabelledBy}
                 ariaDescribedBy={row.ariaDescribedBy}
-                readOnly={row.question.readOnly}
+                disabled={row.question.readOnly}
               />
             ),
           };
@@ -88,10 +88,10 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                   cell.toggleSelection?.();
                 }
               }}
-              id={row.inputName}
+              id={row.id}
               ariaLabelledBy={row.ariaLabelledBy}
               ariaDescribedBy={row.ariaDescribedBy}
-              readOnly={row.question.readOnly}
+              disabled={row.question.readOnly}
             />
           ),
         };

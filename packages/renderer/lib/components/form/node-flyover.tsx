@@ -16,10 +16,8 @@ export const NodeFlyover = observer(function NodeFlyover({
   }
 
   return (
-    <ThemedNodeFlyover
-      id={flyoverId}
-      content={node.flyover}
-      ariaLabel="More context"
-    />
+    <ThemedNodeFlyover id={flyoverId} ariaLabel="More context">
+      {node.flyover}
+    </ThemedNodeFlyover>
   );
 });

@@ -17,10 +17,8 @@ export const NodeHelp = observer(function NodeHelp({
   const helpId = getNodeHelpId(node);
 
   return (
-    <ThemedNodeHelp
-      id={helpId}
-      content={node.help}
-      ariaLabel="More information"
-    />
+    <ThemedNodeHelp id={helpId} ariaLabel="More information">
+      {node.help}
+    </ThemedNodeHelp>
   );
 });

@@ -9,10 +9,10 @@ export type CheckboxListProps<TValue = unknown> = {
   }>;
   value: Set<string>;
   onChange: (key: string) => void;
-  inputName: string;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
-  readOnly?: boolean;
+  disabled?: boolean;
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;
   after?: ReactNode;

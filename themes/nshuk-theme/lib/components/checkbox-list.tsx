@@ -4,10 +4,10 @@ export function CheckboxList<T>({
   options,
   value,
   onChange,
-  inputName,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading,
   renderErrors,
   after,
@@ -20,15 +20,15 @@ export function CheckboxList<T>({
       aria-busy={isLoading || undefined}
     >
       {options.map((option, index) => {
-        const optionId = `${inputName}-option-${index}`;
+        const optionId = `${id}-option-${index}`;
         const isChecked = value.has(option.key);
-        const disableToggle = readOnly || isLoading || option.disabled;
+        const disableToggle = disabled || isLoading || option.disabled;
         return (
           <div className="nhsuk-checkboxes__item" key={option.key}>
             <input
               className="nhsuk-checkboxes__input"
               type="checkbox"
-              name={inputName}
+              name={id}
               id={optionId}
               checked={isChecked}
               disabled={disableToggle}

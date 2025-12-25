@@ -8,7 +8,7 @@ export function SelectInput({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading,
   onClear,
   clearLabel,
@@ -21,7 +21,7 @@ export function SelectInput({
           className="nhsuk-select"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          disabled={readOnly || isLoading}
+          disabled={disabled || isLoading}
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         >
@@ -42,7 +42,7 @@ export function SelectInput({
             className="nhsuk-button nhsuk-button--secondary"
             type="button"
             onClick={onClear}
-            disabled={readOnly}
+            disabled={disabled}
           >
             {clearLabel ?? "Clear"}
           </button>

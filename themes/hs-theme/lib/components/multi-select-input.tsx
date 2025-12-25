@@ -9,7 +9,7 @@ export function MultiSelectInput({
   onChange,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly = false,
+  disabled = false,
   isLoading = false,
   showOptions = true,
   chips,
@@ -32,7 +32,7 @@ export function MultiSelectInput({
           className={inputClass}
           value={value}
           onChange={(event) => handleSelectChange(event.target.value)}
-          disabled={readOnly || isLoading}
+          disabled={disabled || isLoading}
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
           aria-busy={isLoading || undefined}
@@ -69,7 +69,7 @@ export function MultiSelectInput({
                   type="button"
                   onClick={chip.onRemove}
                   aria-label={chip.removeLabel ?? "Remove"}
-                  disabled={readOnly || chip.removeDisabled}
+                  disabled={disabled || chip.removeDisabled}
                 >
                   Remove
                 </ChipButton>

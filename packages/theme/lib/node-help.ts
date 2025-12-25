@@ -2,7 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 
 export type NodeHelpProps = {
   id: string;
-  content: ReactNode;
+  children: ReactNode;
   ariaLabel?: string | undefined;
 };
 

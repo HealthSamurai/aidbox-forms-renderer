@@ -6,7 +6,7 @@ export function MultiSelectInput({
   onChange,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly = false,
+  disabled = false,
   isLoading = false,
   showOptions = true,
   chips,
@@ -28,7 +28,7 @@ export function MultiSelectInput({
         className="nhsuk-select"
         value={value}
         onChange={(event) => handleSelectChange(event.target.value)}
-        disabled={readOnly || isLoading}
+        disabled={disabled || isLoading}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
       >
@@ -84,7 +84,7 @@ export function MultiSelectInput({
                   className="nhsuk-link"
                   onClick={chip.onRemove}
                   aria-label={chip.removeLabel ?? "Remove"}
-                  disabled={readOnly || chip.removeDisabled}
+                  disabled={disabled || chip.removeDisabled}
                 >
                   Remove
                 </button>

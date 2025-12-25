@@ -13,10 +13,10 @@ export type CheckboxListProps<TValue> = {
   options: ReadonlyArray<OptionEntry<TValue>>;
   value: Set<string>;
   onChange: (key: string) => void;
-  inputName: string;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
-  readOnly?: boolean;
+  disabled?: boolean;
   isLoading?: boolean;
   renderErrors?: (key: string) => ReactNode;
   after?: ReactNode;
@@ -26,30 +26,30 @@ export function CheckboxList<TValue>({
   options,
   value,
   onChange,
-  inputName,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
-  readOnly,
+  disabled,
   isLoading = false,
   renderErrors,
   after,
 }: CheckboxListProps<TValue>) {
   return (
     <CheckboxControl
-      data-readonly={readOnly}
+      data-disabled={disabled}
       aria-busy={isLoading || undefined}
     >
       {options.map((option, index) => {
-        const optionId = `${inputName}-option-${index}`;
+        const optionId = `${id}-option-${index}`;
         const isChecked = value.has(option.key);
-        const disableToggle = readOnly || isLoading || option.disabled;
+        const disableToggle = disabled || isLoading || option.disabled;
 
         return (
           <CheckboxOption key={option.key}>
             <CheckboxLabel>
               <input
                 type="checkbox"
-                name={inputName}
+                name={id}
                 checked={isChecked}
                 disabled={disableToggle}
                 aria-labelledby={`${ariaLabelledBy} ${optionId}`}

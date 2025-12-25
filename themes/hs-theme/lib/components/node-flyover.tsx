@@ -1,16 +1,16 @@
 import { styled } from "@linaria/react";
 import type { NodeFlyoverProps } from "@aidbox-forms/theme";
 
-export function NodeFlyover({ id, content, ariaLabel }: NodeFlyoverProps) {
+export function NodeFlyover({ id, children, ariaLabel }: NodeFlyoverProps) {
   return (
     <Wrapper>
       <FlyoverButton type="button" aria-describedby={id} aria-label={ariaLabel}>
         i
       </FlyoverButton>
       <Tooltip role="tooltip" aria-hidden="true">
-        {content}
+        {children}
       </Tooltip>
-      <SrOnly id={id}>{content}</SrOnly>
+      <SrOnly id={id}>{children}</SrOnly>
     </Wrapper>
   );
 }
