@@ -3,7 +3,7 @@ import { styled } from "@linaria/react";
 import { useRef, type ChangeEvent } from "react";
 
 export function FileInput({
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -34,7 +34,7 @@ export function FileInput({
     <Wrapper>
       <HiddenInput
         ref={fileInputRef}
-        id={inputId}
+        id={id}
         type="file"
         onChange={handleFileChange}
         aria-labelledby={ariaLabelledBy}

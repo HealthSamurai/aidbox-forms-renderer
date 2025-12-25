@@ -7,7 +7,7 @@ type SelectInputProps = {
   value: string;
   legacyOption: { key: string; label: string } | null;
   onChange: (value: string) => void;
-  inputId: string;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy: string | undefined;
   readOnly: boolean;
@@ -21,7 +21,7 @@ export function SelectInput({
   value,
   legacyOption,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   readOnly,
@@ -33,7 +33,7 @@ export function SelectInput({
     <div data-loading={isLoading ? "true" : undefined}>
       <FieldRow>
         <select
-          id={inputId}
+          id={id}
           className={inputClass}
           value={value}
           onChange={(event) => onChange(event.target.value)}

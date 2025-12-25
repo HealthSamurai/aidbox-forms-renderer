@@ -3,8 +3,8 @@ import type { PageNavigationProps } from "@aidbox-forms/theme";
 export function PageNavigation({
   onPrev,
   onNext,
-  disablePrev,
-  disableNext,
+  disabledPrev,
+  disabledNext,
   current,
   total,
 }: PageNavigationProps) {
@@ -14,7 +14,7 @@ export function PageNavigation({
         className="nhsuk-button nhsuk-button--secondary"
         type="button"
         onClick={onPrev}
-        disabled={disablePrev}
+        disabled={disabledPrev}
       >
         Previous
       </button>
@@ -25,7 +25,7 @@ export function PageNavigation({
         className="nhsuk-button nhsuk-button--secondary"
         type="button"
         onClick={onNext}
-        disabled={disableNext}
+        disabled={disabledNext}
       >
         Next
       </button>

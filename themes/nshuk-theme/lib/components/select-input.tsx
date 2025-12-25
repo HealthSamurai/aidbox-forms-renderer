@@ -5,7 +5,7 @@ export function SelectInput({
   value,
   onChange,
   legacyOption,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   readOnly,
@@ -17,7 +17,7 @@ export function SelectInput({
     <div aria-busy={isLoading || undefined}>
       <div className="nhsuk-u-display-flex nhsuk-u-align-items-center nhsuk-u-gap-3">
         <select
-          id={inputId}
+          id={id}
           className="nhsuk-select"
           value={value}
           onChange={(event) => onChange(event.target.value)}

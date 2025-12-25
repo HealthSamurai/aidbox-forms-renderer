@@ -153,7 +153,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
       chips={chips}
       actions={actions}
       {...(dialog ? { dialog } : {})}
-      selectPlaceholder="Select an option"
+      placeholder="Select an option"
     />
   );
 });

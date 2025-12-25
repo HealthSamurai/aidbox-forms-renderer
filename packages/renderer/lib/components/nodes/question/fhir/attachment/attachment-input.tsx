@@ -48,7 +48,7 @@ export function AttachmentInput({
 
   return (
     <ThemedFileInput
-      inputId={inputIdentifier}
+      id={inputIdentifier}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}

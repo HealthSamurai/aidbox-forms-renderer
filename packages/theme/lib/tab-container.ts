@@ -11,8 +11,8 @@ export type TabItem = {
 export type TabContainerProps = {
   legend?: ReactNode;
   items: TabItem[];
-  activeIndex: number;
-  onSelect: (index: number) => void;
+  value: number;
+  onChange: (index: number) => void;
   errors?: ReactNode;
   empty?: ReactNode;
   linkId?: string | undefined;

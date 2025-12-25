@@ -29,10 +29,10 @@ export function QuestionScaffold({
 function QuestionOptionsState({ node }: { node: IQuestionNode }) {
   const { OptionsState } = useTheme();
   if (node.options.loading) {
-    return <OptionsState loading error={undefined} />;
+    return <OptionsState isLoading error={undefined} />;
   }
   if (node.options.error) {
-    return <OptionsState loading={false} error={node.options.error} />;
+    return <OptionsState isLoading={false} error={node.options.error} />;
   }
   return null;
 }

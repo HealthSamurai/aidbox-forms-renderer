@@ -29,7 +29,7 @@ export type MultiSelectInputProps = {
   chips: ReadonlyArray<MultiSelectChip>;
   actions?: ReactNode;
   dialog?: MultiSelectDialog;
-  selectPlaceholder?: string | undefined;
+  placeholder?: string | undefined;
 };
 
 export type MultiSelectInputComponent = ComponentType<MultiSelectInputProps>;

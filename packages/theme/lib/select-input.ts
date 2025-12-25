@@ -5,7 +5,7 @@ export type SelectInputProps = {
   value: string;
   onChange: (key: string) => void;
   legacyOption: { key: string; label: string } | null;
-  inputId: string;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy: string | undefined;
   readOnly: boolean;

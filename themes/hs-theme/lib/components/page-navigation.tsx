@@ -7,8 +7,8 @@ export function PageNavigation({
   total,
   onPrev,
   onNext,
-  disablePrev,
-  disableNext,
+  disabledPrev,
+  disabledNext,
 }: PageNavigationProps) {
   return (
     <Nav>
@@ -16,7 +16,7 @@ export function PageNavigation({
         type="button"
         variant="secondary"
         onClick={onPrev}
-        disabled={disablePrev}
+        disabled={disabledPrev}
       >
         Previous
       </Button>
@@ -27,7 +27,7 @@ export function PageNavigation({
         type="button"
         variant="secondary"
         onClick={onNext}
-        disabled={disableNext}
+        disabled={disabledNext}
       >
         Next
       </Button>

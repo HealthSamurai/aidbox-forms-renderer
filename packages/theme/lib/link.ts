@@ -1,8 +1,8 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type LinkProps = {
   href: string;
-  label: string;
+  children: ReactNode;
   target?: string | undefined;
   rel?: string | undefined;
 };

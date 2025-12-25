@@ -2,7 +2,7 @@ import type { FileInputProps } from "@aidbox-forms/theme";
 import { useRef, type ChangeEvent } from "react";
 
 export function FileInput({
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -33,7 +33,7 @@ export function FileInput({
     <div className="nhsuk-form-group">
       <input
         ref={fileInputRef}
-        id={inputId}
+        id={id}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
         className="nhsuk-file-upload"

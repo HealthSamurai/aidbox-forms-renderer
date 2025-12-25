@@ -32,7 +32,7 @@ export const TableQuestionDetails = observer(function TableQuestionDetails({
     showStatus ? (
       <OptionsState
         key={`${question.key}-status`}
-        loading={question.options.loading}
+        isLoading={question.options.loading}
         error={question.options.error ?? undefined}
       />
     ) : null,

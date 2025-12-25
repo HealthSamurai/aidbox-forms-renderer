@@ -104,10 +104,9 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
     <RadioButtonList
       options={rowStore.radioOptions}
       value={rowStore.selectValue}
-      legacyOptionLabel={rowStore.legacyOption?.label}
-      legacyOptionKey={rowStore.legacyOption?.key}
+      legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleChange}
-      inputId={rowProps.inputId}
+      id={rowProps.inputId}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
       readOnly={node.readOnly}

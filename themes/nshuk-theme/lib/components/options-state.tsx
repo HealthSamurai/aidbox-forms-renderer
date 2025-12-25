@@ -1,7 +1,7 @@
 import type { OptionsStateProps } from "@aidbox-forms/theme";
 
-export function OptionsState({ loading, error }: OptionsStateProps) {
-  if (loading) {
+export function OptionsState({ isLoading, error }: OptionsStateProps) {
+  if (isLoading) {
     return (
       <div className="nhsuk-hint" role="status">
         Loading options…

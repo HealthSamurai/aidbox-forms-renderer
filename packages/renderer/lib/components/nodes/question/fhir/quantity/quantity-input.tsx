@@ -60,7 +60,7 @@ export function QuantityInput({
           value={unitValue}
           legacyOption={null}
           onChange={(key) => answer.quantity.handleSelectChange(key)}
-          inputId={unitInputId}
+          id={unitInputId}
           ariaLabelledBy={resolvedAriaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           readOnly={Boolean(disabled)}

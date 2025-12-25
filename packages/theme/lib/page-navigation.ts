@@ -5,8 +5,8 @@ export type PageNavigationProps = {
   total: number;
   onPrev: () => void;
   onNext: () => void;
-  disablePrev: boolean;
-  disableNext: boolean;
+  disabledPrev: boolean;
+  disabledNext: boolean;
 };
 
 export type PageNavigationComponent = ComponentType<PageNavigationProps>;

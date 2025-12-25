@@ -27,8 +27,8 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
     <TabContainer
       legend={legend}
       items={items}
-      activeIndex={activeIndex}
-      onSelect={setActiveTab}
+      value={activeIndex}
+      onChange={setActiveTab}
       errors={<NodeErrors node={node} />}
       empty="No tab content"
       linkId={node.linkId}

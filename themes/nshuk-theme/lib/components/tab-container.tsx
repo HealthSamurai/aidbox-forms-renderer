@@ -4,8 +4,8 @@ import classNames from "classnames";
 export function TabContainer({
   legend,
   items,
-  activeIndex,
-  onSelect,
+  value,
+  onChange,
   errors,
   empty,
   linkId,
@@ -19,7 +19,7 @@ export function TabContainer({
   }
 
   const clampedIndex = Math.min(
-    Math.max(activeIndex, 0),
+    Math.max(value, 0),
     Math.max(items.length - 1, 0),
   );
 
@@ -43,7 +43,7 @@ export function TabContainer({
                 id={item.tabButtonId}
                 aria-selected={selected}
                 aria-controls={item.tabPanelId}
-                onClick={() => onSelect(idx)}
+                onClick={() => onChange(idx)}
               >
                 {item.label}
               </button>

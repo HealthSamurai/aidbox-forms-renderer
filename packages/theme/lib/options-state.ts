@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 export type OptionsStateProps = {
-  loading: boolean;
+  isLoading: boolean;
   error?: string | undefined;
 };
 

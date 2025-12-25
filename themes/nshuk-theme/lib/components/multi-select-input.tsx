@@ -12,7 +12,7 @@ export function MultiSelectInput({
   chips,
   actions,
   dialog,
-  selectPlaceholder,
+  placeholder,
 }: MultiSelectInputProps) {
   const handleSelectChange = (key: string) => {
     if (!key) return;
@@ -32,7 +32,7 @@ export function MultiSelectInput({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
       >
-        <option value="">{selectPlaceholder ?? "Select an option"}</option>
+        <option value="">{placeholder ?? "Select an option"}</option>
         {options.map((entry) => (
           <option key={entry.key} value={entry.key} disabled={entry.disabled}>
             {entry.label}

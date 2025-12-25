@@ -1,10 +1,10 @@
 import type { LinkProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
-export function Link({ href, label, target, rel }: LinkProps) {
+export function Link({ href, children, target, rel }: LinkProps) {
   return (
     <Anchor href={href} target={target} rel={rel}>
-      {label}
+      {children}
     </Anchor>
   );
 }

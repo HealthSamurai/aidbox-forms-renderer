@@ -4,7 +4,7 @@ import type { ComponentType } from "react";
 export type FileInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;

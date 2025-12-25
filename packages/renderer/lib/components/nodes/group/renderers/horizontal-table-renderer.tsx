@@ -93,14 +93,13 @@ export const HorizontalTableRenderer = observer(
                   },
                 ]}
                 value={row.selectedKey}
-                legacyOptionLabel={undefined}
-                legacyOptionKey={undefined}
+                legacyOption={null}
                 onChange={(key) => {
                   if (key === column.key) {
                     cell.toggleSelection?.();
                   }
                 }}
-                inputId={row.inputName}
+                id={row.inputName}
                 ariaLabelledBy={row.ariaLabelledBy}
                 ariaDescribedBy={row.ariaDescribedBy}
                 readOnly={row.question.readOnly}

@@ -4,9 +4,8 @@ export function RadioButtonList({
   options,
   value,
   onChange,
-  legacyOptionLabel,
-  legacyOptionKey,
-  inputId,
+  legacyOption,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   readOnly,
@@ -14,8 +13,7 @@ export function RadioButtonList({
   after,
   afterInset = false,
 }: RadioButtonListProps) {
-  const makeInputId = (key: string) =>
-    inputId ? `${inputId}-${key}` : undefined;
+  const makeInputId = (key: string) => (id ? `${id}-${key}` : undefined);
 
   return (
     <div className="nhsuk-form-group">
@@ -26,24 +24,24 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {legacyOptionLabel && legacyOptionKey ? (
+        {legacyOption ? (
           <div className="nhsuk-radios__item">
             <input
               className="nhsuk-radios__input"
-              id={makeInputId(legacyOptionKey)}
+              id={makeInputId(legacyOption.key)}
               type="radio"
-              name={inputId}
-              value={legacyOptionKey}
-              checked={value === legacyOptionKey}
+              name={id}
+              value={legacyOption.key}
+              checked={value === legacyOption.key}
               disabled
               readOnly
               aria-describedby={ariaDescribedBy}
             />
             <label
               className="nhsuk-label nhsuk-radios__label"
-              htmlFor={makeInputId(legacyOptionKey)}
+              htmlFor={makeInputId(legacyOption.key)}
             >
-              {legacyOptionLabel}
+              {legacyOption.label}
             </label>
           </div>
         ) : null}
@@ -55,7 +53,7 @@ export function RadioButtonList({
                 className="nhsuk-radios__input"
                 id={optionId}
                 type="radio"
-                name={inputId}
+                name={id}
                 value={entry.key}
                 checked={value === entry.key}
                 disabled={readOnly || entry.disabled}

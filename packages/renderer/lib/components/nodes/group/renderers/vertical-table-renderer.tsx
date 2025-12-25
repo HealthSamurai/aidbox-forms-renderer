@@ -82,14 +82,13 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                 },
               ]}
               value={row.selectedKey}
-              legacyOptionLabel={undefined}
-              legacyOptionKey={undefined}
+              legacyOption={null}
               onChange={(key) => {
                 if (key === cell.key) {
                   cell.toggleSelection?.();
                 }
               }}
-              inputId={row.inputName}
+              id={row.inputName}
               ariaLabelledBy={row.ariaLabelledBy}
               ariaDescribedBy={row.ariaDescribedBy}
               readOnly={row.question.readOnly}

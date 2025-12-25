@@ -5,8 +5,8 @@ import { EmptyState } from "./empty-state.tsx";
 export function TabContainer({
   legend,
   items,
-  activeIndex,
-  onSelect,
+  value,
+  onChange,
   errors,
   empty,
   linkId,
@@ -16,7 +16,7 @@ export function TabContainer({
   }
 
   const clampedIndex = Math.min(
-    Math.max(activeIndex, 0),
+    Math.max(value, 0),
     Math.max(items.length - 1, 0),
   );
   const active = items[clampedIndex];
@@ -35,7 +35,7 @@ export function TabContainer({
               aria-selected={selected}
               aria-controls={item.tabPanelId}
               id={item.tabButtonId}
-              onClick={() => onSelect(idx)}
+              onClick={() => onChange(idx)}
               data-selected={selected ? "true" : "false"}
             >
               {item.label}

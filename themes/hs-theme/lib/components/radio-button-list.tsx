@@ -10,9 +10,8 @@ export type RadioButtonListProps = {
   }>;
   value: string;
   onChange: (value: string) => void;
-  legacyOptionLabel: string | undefined;
-  legacyOptionKey: string | undefined;
-  inputId: string;
+  legacyOption: { key: string; label: string } | null;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy: string | undefined;
   readOnly: boolean;
@@ -25,9 +24,8 @@ export function RadioButtonList({
   options,
   value,
   onChange,
-  legacyOptionLabel,
-  legacyOptionKey,
-  inputId,
+  legacyOption,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   readOnly,
@@ -43,18 +41,18 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {legacyOptionLabel && legacyOptionKey ? (
+        {legacyOption ? (
           <RadioOption>
             <RadioLabel>
               <input
                 type="radio"
-                name={inputId}
-                value={legacyOptionKey}
-                checked={value === legacyOptionKey}
+                name={id}
+                value={legacyOption.key}
+                checked={value === legacyOption.key}
                 disabled
                 readOnly
               />
-              {legacyOptionLabel}
+              {legacyOption.label}
             </RadioLabel>
           </RadioOption>
         ) : null}
@@ -63,7 +61,7 @@ export function RadioButtonList({
             <RadioLabel>
               <input
                 type="radio"
-                name={inputId}
+                name={id}
                 value={entry.key}
                 checked={value === entry.key}
                 disabled={readOnly || entry.disabled}

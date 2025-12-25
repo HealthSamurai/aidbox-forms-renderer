@@ -1,8 +1,8 @@
 import { styled } from "@linaria/react";
 import type { OptionsStateProps } from "@aidbox-forms/theme";
 
-export function OptionsState({ loading, error }: OptionsStateProps) {
-  if (loading) {
+export function OptionsState({ isLoading, error }: OptionsStateProps) {
+  if (isLoading) {
     return <Hint role="status">Loading options…</Hint>;
   }
   if (error) {

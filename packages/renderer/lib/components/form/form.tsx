@@ -95,8 +95,8 @@ export const Form = observer(function Form({
             pageCount === 0 ? 0 : Math.min(index + 1, pageCount - 1),
           )
         }
-        disablePrev={clampedPageIndex === 0 || pageCount === 0}
-        disableNext={pageCount === 0 || clampedPageIndex >= pageCount - 1}
+        disabledPrev={clampedPageIndex === 0 || pageCount === 0}
+        disabledNext={pageCount === 0 || clampedPageIndex >= pageCount - 1}
       />
     </FormSection>
   ) : null;

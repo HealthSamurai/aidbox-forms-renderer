@@ -42,9 +42,8 @@ export function BooleanInput({
           onChange(null);
         }
       }}
-      legacyOptionLabel={undefined}
-      legacyOptionKey={undefined}
-      inputId={fallbackInputId}
+      legacyOption={null}
+      id={fallbackInputId}
       ariaLabelledBy={fallbackAriaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       readOnly={Boolean(disabled)}
