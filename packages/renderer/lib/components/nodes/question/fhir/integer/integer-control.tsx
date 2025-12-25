@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { IntegerInput } from "./integer-input.tsx";
 
 export function IntegerControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -13,11 +12,11 @@ export function IntegerControl({
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
+      placeholder={answer.question.placeholder}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
-      unitLabel={node.unitDisplay}
+      disabled={answer.question.readOnly}
+      unitLabel={answer.question.unitDisplay}
     />
   );
 }

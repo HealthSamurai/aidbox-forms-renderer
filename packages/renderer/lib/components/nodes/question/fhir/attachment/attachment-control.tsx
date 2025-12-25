@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { AttachmentInput } from "./attachment-input.tsx";
 
 export function AttachmentControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -15,7 +14,7 @@ export function AttachmentControl({
       describedById={describedById}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
+      disabled={answer.question.readOnly}
     />
   );
 }

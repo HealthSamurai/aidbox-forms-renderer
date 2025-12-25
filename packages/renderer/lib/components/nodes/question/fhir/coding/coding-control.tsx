@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { CodingInput } from "./coding-input.tsx";
 
 export function CodingControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -15,7 +14,7 @@ export function CodingControl({
       describedById={describedById}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
+      disabled={answer.question.readOnly}
     />
   );
 }

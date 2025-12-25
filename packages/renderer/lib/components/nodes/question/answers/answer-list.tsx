@@ -6,10 +6,10 @@ import { AnswerScaffold, AnswerRenderCallback } from "./answer-scaffold.tsx";
 
 export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   node,
-  render,
+  control,
 }: {
   node: IQuestionNode<T>;
-  render: AnswerRenderCallback<T>;
+  control: AnswerRenderCallback<T>;
 }) {
   const { Button, AnswerList: ThemedAnswerList } = useTheme();
   const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
@@ -29,7 +29,7 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   return (
     <ThemedAnswerList
       answers={answers.map((answer) => (
-        <AnswerScaffold key={answer.key} answer={answer} render={render} />
+        <AnswerScaffold key={answer.key} answer={answer} control={control} />
       ))}
       toolbar={toolbar}
     />

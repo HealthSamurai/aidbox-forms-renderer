@@ -1,8 +1,11 @@
 import { observer } from "mobx-react-lite";
-import type { AnswerType, IQuestionNode } from "../../../../types.ts";
+import {
+  AnswerType,
+  IQuestionNode,
+  ValueControlProps,
+} from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
-import type { AnswerRenderCallbackProps } from "../answers/answer-scaffold.tsx";
 import { getValueControl } from "../fhir/index.ts";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {
@@ -17,7 +20,7 @@ export const DropdownSelectControl = observer(function DropdownSelectControl<
   return (
     <AnswerList
       node={node}
-      render={(props) =>
+      control={(props) =>
         node.options.constraint === "optionsOrString" ||
         node.options.constraint === "optionsOrType" ? (
           <OpenChoiceRow
@@ -46,7 +49,7 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   isLoading,
 }: {
   node: IQuestionNode<T>;
-  rowProps: AnswerRenderCallbackProps<T>;
+  rowProps: ValueControlProps<T>;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
@@ -77,7 +80,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   isLoading,
 }: {
   node: IQuestionNode<T>;
-  rowProps: AnswerRenderCallbackProps<T>;
+  rowProps: ValueControlProps<T>;
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
@@ -88,7 +91,6 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
     return (
       <>
         <Control
-          node={node}
           answer={rowProps.answer}
           inputId={rowProps.inputId}
           labelId={rowProps.labelId}

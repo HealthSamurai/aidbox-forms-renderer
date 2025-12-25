@@ -219,7 +219,6 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
 >;
 
 export type ValueControlProps<T extends AnswerType> = {
-  node: IQuestionNode<T>;
   answer: IAnswerInstance<T>;
   inputId: string;
   labelId: string;
@@ -687,19 +686,6 @@ type SelectDialogState<T extends AnswerType> = {
   canConfirm: boolean;
 };
 
-type BivariantCallback<T> = {
-  bivarianceHack(value: T): void;
-}["bivarianceHack"];
-
-type SelectRowProps<T extends AnswerType> = {
-  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
-  setValue: BivariantCallback<DataTypeToType<AnswerTypeToDataType<T>> | null>;
-  inputId: string;
-  labelId: string;
-  describedById: string | undefined;
-  answer: IAnswerInstance<T>;
-};
-
 type ListSelectRowState = {
   isCustomActive: boolean;
   radioOptions: Array<{ key: string; label: string; disabled?: boolean }>;
@@ -748,7 +734,10 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   handleClearAll(): void;
   cancelCustomDialog(): void;
   confirmCustomDialog(): void;
-  buildRowProps(answer: IAnswerInstance<T>, suffix: string): SelectRowProps<T>;
+  buildRowProps(
+    answer: IAnswerInstance<T>,
+    suffix: string,
+  ): ValueControlProps<T>;
 }
 
 export interface IQuestionNode<

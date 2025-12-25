@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { ReferenceInput } from "./reference-input.tsx";
 
 export function ReferenceControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -15,8 +14,8 @@ export function ReferenceControl({
       describedById={describedById}
       value={answer.value ?? null}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
-      placeholder={node.placeholder}
+      disabled={answer.question.readOnly}
+      placeholder={answer.question.placeholder}
     />
   );
 }

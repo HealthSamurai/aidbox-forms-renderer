@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { StringInput } from "./string-input.tsx";
 
 export function StringControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -13,11 +12,11 @@ export function StringControl({
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
+      placeholder={answer.question.placeholder}
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
-      inputMode={node.keyboardType}
+      disabled={answer.question.readOnly}
+      inputMode={answer.question.keyboardType}
     />
   );
 }

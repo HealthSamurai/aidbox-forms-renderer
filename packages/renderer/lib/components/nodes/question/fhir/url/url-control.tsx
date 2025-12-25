@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { UrlInput } from "./url-input.tsx";
 
 export function UrlControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -13,10 +12,10 @@ export function UrlControl({
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
+      placeholder={answer.question.placeholder}
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
-      disabled={node.readOnly}
+      disabled={answer.question.readOnly}
     />
   );
 }

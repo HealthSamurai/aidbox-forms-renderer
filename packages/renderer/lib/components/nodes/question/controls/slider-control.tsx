@@ -1,0 +1,50 @@
+import { observer } from "mobx-react-lite";
+import type { ValueControlProps } from "../../../../types.ts";
+import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
+import { useTheme } from "../../../../ui/theme.tsx";
+import { useCallback } from "react";
+
+export const SliderControl = observer(function SliderControl({
+  answer,
+  labelId,
+  describedById,
+}: ValueControlProps<"integer" | "decimal" | "quantity">) {
+  const { SliderInput } = useTheme();
+  const { min, max } = answer.bounds;
+  const step =
+    getSliderStepValue(answer.question.template) ??
+    (answer.question.type === "integer" ? 1 : 0.1);
+
+  const onChange = useCallback(
+    (next: number | null) => {
+      if (answer.question.type === "quantity") {
+        answer.quantity.handleNumberInput(next == null ? "" : String(next));
+        return;
+      }
+
+      if (answer.question.type === "integer") {
+        answer.setValueByUser(next != null ? Math.round(next) : null);
+        return;
+      }
+
+      answer.setValueByUser(next);
+    },
+    [answer],
+  );
+
+  return (
+    <SliderInput
+      value={getNumericValue(answer.value)}
+      onChange={onChange}
+      min={getNumericValue(min) ?? undefined}
+      max={getNumericValue(max) ?? undefined}
+      step={step}
+      disabled={answer.question.readOnly}
+      ariaLabelledBy={labelId}
+      ariaDescribedBy={describedById}
+      lowerLabel={answer.question.lower}
+      upperLabel={answer.question.upper}
+      unitLabel={answer.question.unitDisplay}
+    />
+  );
+});

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ComponentType } from "react";
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { NodesList } from "../../../form/node-list.tsx";
@@ -10,35 +10,23 @@ import {
   getNodeLabelId,
   sanitizeForId,
 } from "../../../../utils.ts";
-import type {
+import {
   AnswerType,
-  AnswerTypeToDataType,
-  DataTypeToType,
   IAnswerInstance,
+  ValueControlProps,
 } from "../../../../types.ts";
 
-export type AnswerRenderCallbackProps<T extends AnswerType = AnswerType> = {
-  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
-  setValue: (v: DataTypeToType<AnswerTypeToDataType<T>> | null) => void;
-  inputId: string;
-  labelId: string;
-  describedById: string | undefined;
-  answer: IAnswerInstance<T>;
-};
-
-// todo: use ComponentType when possible
-export type AnswerRenderCallback<T extends AnswerType = AnswerType> = (
-  props: AnswerRenderCallbackProps<T>,
-) => ReactElement;
+export type AnswerRenderCallback<T extends AnswerType = AnswerType> =
+  ComponentType<ValueControlProps<T>>;
 
 export const AnswerScaffold = observer(function AnswerScaffold<
   T extends AnswerType,
 >({
   answer,
-  render,
+  control,
 }: {
   answer: IAnswerInstance<T>;
-  render: AnswerRenderCallback<T>;
+  control: AnswerRenderCallback<T>;
 }) {
   const { Button, AnswerScaffold: ThemedAnswerScaffold } = useTheme();
   const handleRemove = useCallback(() => {
@@ -55,16 +43,18 @@ export const AnswerScaffold = observer(function AnswerScaffold<
   const describedById =
     describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
+  const Component = control;
+
   return (
     <ThemedAnswerScaffold
-      control={render({
-        value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-        setValue: (value) => answer.setValueByUser(value),
-        inputId: sanitizeForId(answer.key),
-        labelId: getNodeLabelId(answer.question),
-        describedById,
-        answer: answer as IAnswerInstance<T>,
-      })}
+      control={
+        <Component
+          inputId={sanitizeForId(answer.key)}
+          labelId={getNodeLabelId(answer.question)}
+          describedById={describedById}
+          answer={answer as IAnswerInstance<T>}
+        />
+      }
       toolbar={
         answer.question.repeats ? (
           <Button

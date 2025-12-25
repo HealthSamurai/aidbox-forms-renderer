@@ -2,7 +2,6 @@ import type { ValueControlProps } from "../../../../../types.ts";
 import { QuantityInput } from "./quantity-input.tsx";
 
 export function QuantityControl({
-  node,
   answer,
   inputId,
   labelId,
@@ -14,8 +13,8 @@ export function QuantityControl({
       inputId={inputId}
       labelId={labelId}
       describedById={describedById}
-      placeholder={node.placeholder}
-      disabled={node.readOnly}
+      placeholder={answer.question.placeholder}
+      disabled={answer.question.readOnly}
     />
   );
 }

@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import type {
+import {
   AnswerOptionEntry,
   AnswerType,
   AnswerTypeToDataType,
@@ -7,6 +7,7 @@ import type {
   IAnswerInstance,
   IQuestionNode,
   ISelectStore,
+  ValueControlProps,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
@@ -18,7 +19,6 @@ import {
   getNodeLabelId,
   sanitizeForId,
 } from "../../../utils.ts";
-import type { AnswerRenderCallbackProps } from "../../../components/nodes/question/answers/answer-scaffold.tsx";
 
 const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
 
@@ -536,7 +536,7 @@ export class SelectStore<
   buildRowProps(
     answer: IAnswerInstance<T>,
     suffix: string,
-  ): AnswerRenderCallbackProps<T> {
+  ): ValueControlProps<T> {
     const answerErrorId =
       answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
     const describedByPieces = [
@@ -547,8 +547,6 @@ export class SelectStore<
       describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
     return {
-      value: answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-      setValue: (value) => answer.setValueByUser(value),
       inputId: sanitizeForId(`${answer.key}-${suffix}`),
       labelId: getNodeLabelId(this.node),
       describedById,
