@@ -30,7 +30,7 @@ import {
 } from "fhir/r5";
 
 import { AbstractActualNodeStore } from "../base/abstract-actual-node-store.ts";
-import { AnswerInstance } from "../../answers/answer-instance.ts";
+import { AnswerInstance } from "./answer-instance.ts";
 import { QuestionValidator } from "../../validation/question-validator.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,

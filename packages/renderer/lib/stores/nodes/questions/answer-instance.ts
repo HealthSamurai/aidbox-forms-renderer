@@ -10,7 +10,7 @@ import type {
   SnapshotKind,
   AnswerTypeToDataType,
   ValueBounds,
-} from "../../types.ts";
+} from "../../../types.ts";
 import type {
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
@@ -19,9 +19,9 @@ import {
   ANSWER_TYPE_TO_DATA_TYPE,
   asAnswerFragment,
   shouldCreateStore,
-} from "../../utils.ts";
+} from "../../../utils.ts";
 import type { OperationOutcomeIssue } from "fhir/r5";
-import { AnswerValidator } from "../validation/answer-validator.ts";
+import { AnswerValidator } from "../../validation/answer-validator.ts";
 import { QuantityAnswer } from "./quantity-answer.ts";
 
 export class AnswerInstance<

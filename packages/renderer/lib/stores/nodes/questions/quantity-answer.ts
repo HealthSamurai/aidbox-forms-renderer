@@ -4,8 +4,8 @@ import type {
   IAnswerInstance,
   IQuantityAnswer,
   UnitOptionEntry,
-} from "../../types.ts";
-import { areCodingsEqual, isEmptyObject } from "../../utils.ts";
+} from "../../../types.ts";
+import { areCodingsEqual, isEmptyObject } from "../../../utils.ts";
 
 const LEGACY_UNIT_PREFIX = "__legacy_unit__";
 
