@@ -3,7 +3,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type BooleanInputProps = {
   value: boolean | null;
   onChange: (value: boolean | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -18,7 +18,7 @@ const BOOLEAN_OPTIONS = [
 export function BooleanInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -26,7 +26,7 @@ export function BooleanInput({
   const { RadioButtonList } = useTheme();
   const selectedKey =
     value === true ? "yes" : value === false ? "no" : "unanswered";
-  const fallbackInputId = inputId ?? "boolean";
+  const fallbackInputId = id ?? "boolean";
   const fallbackAriaLabelledBy = ariaLabelledBy ?? fallbackInputId;
 
   return (

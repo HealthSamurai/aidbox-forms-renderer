@@ -3,13 +3,13 @@ import { UrlInput } from "./url-input.tsx";
 
 export function UrlControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"url">) {
   return (
     <UrlInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}

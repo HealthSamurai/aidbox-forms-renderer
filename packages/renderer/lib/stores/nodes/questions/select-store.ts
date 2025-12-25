@@ -81,7 +81,7 @@ export type ListSelectCheckboxState<T extends AnswerType> = {
   availableAnswers: IAnswerInstance<T>[];
   canAddSelection: boolean;
   isCustomActive: boolean;
-  specifyOthersKey: string;
+  specifyOtherKey: string;
 };
 
 export class SelectStore<
@@ -196,10 +196,10 @@ export class SelectStore<
     const hasCustomAnswers = this.allowCustom && customAnswers.length > 0;
     const isCustomActive =
       this.allowCustom && (this.customActive || hasCustomAnswers);
-    const specifyOthersKey = `${this.node.key}::__specify_others__`;
+    const specifyOtherKey = this.specifyOtherKey;
 
     if (isCustomActive) {
-      selectedKeys.add(specifyOthersKey);
+      selectedKeys.add(specifyOtherKey);
     }
 
     const uiOptions = this.options.map((option) => {
@@ -217,8 +217,8 @@ export class SelectStore<
 
     if (this.allowCustom) {
       uiOptions.push({
-        key: specifyOthersKey,
-        label: "Specify others",
+        key: specifyOtherKey,
+        label: "Specify other",
         value: null,
         disabled:
           (!isCustomActive && !canAddSelection) ||
@@ -236,7 +236,7 @@ export class SelectStore<
       availableAnswers,
       canAddSelection,
       isCustomActive,
-      specifyOthersKey,
+      specifyOtherKey,
     };
   }
 
@@ -264,7 +264,7 @@ export class SelectStore<
   handleCheckboxToggle(key: string): void {
     const state = this.checkboxState;
 
-    if (this.allowCustom && key === state.specifyOthersKey) {
+    if (this.allowCustom && key === state.specifyOtherKey) {
       if (state.isCustomActive) {
         if (!this.node.canRemove) return;
         state.nonOptionAnswers.forEach((answer) =>
@@ -547,7 +547,7 @@ export class SelectStore<
       describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
     return {
-      inputId: sanitizeForId(`${answer.key}-${suffix}`),
+      id: sanitizeForId(`${answer.key}-${suffix}`),
       ariaLabelledBy: getNodeLabelId(this.node),
       ariaDescribedBy,
       answer,

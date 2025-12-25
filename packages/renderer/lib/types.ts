@@ -220,7 +220,7 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
 
 export type ValueControlProps<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
-  inputId: string;
+  id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
 };
@@ -670,7 +670,7 @@ type SelectCheckboxState<T extends AnswerType> = {
   availableAnswers: IAnswerInstance<T>[];
   canAddSelection: boolean;
   isCustomActive: boolean;
-  specifyOthersKey: string;
+  specifyOtherKey: string;
 };
 
 type SelectChipItem<T extends AnswerType> = {

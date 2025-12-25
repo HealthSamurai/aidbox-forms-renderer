@@ -62,7 +62,7 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
       value={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleSelect}
-      id={rowProps.inputId}
+      id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
       disabled={node.readOnly}
@@ -92,7 +92,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
       <>
         <Control
           answer={rowProps.answer}
-          inputId={rowProps.inputId}
+          id={rowProps.id}
           ariaLabelledBy={rowProps.ariaLabelledBy}
           ariaDescribedBy={rowProps.ariaDescribedBy}
         />
@@ -116,7 +116,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
       value={rowStore.optionKey}
       legacyOption={null}
       onChange={rowStore.handleSelect}
-      id={rowProps.inputId}
+      id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
       disabled={node.readOnly}

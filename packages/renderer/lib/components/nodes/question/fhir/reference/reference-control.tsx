@@ -3,13 +3,13 @@ import { ReferenceInput } from "./reference-input.tsx";
 
 export function ReferenceControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"reference">) {
   return (
     <ReferenceInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}

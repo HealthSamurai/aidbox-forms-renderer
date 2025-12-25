@@ -95,7 +95,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   const customInput = rowStore.isCustomActive ? (
     <Control
       answer={rowProps.answer}
-      inputId={rowProps.inputId}
+      id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
     />
@@ -107,7 +107,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
       value={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleChange}
-      id={rowProps.inputId}
+      id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
       disabled={node.readOnly}

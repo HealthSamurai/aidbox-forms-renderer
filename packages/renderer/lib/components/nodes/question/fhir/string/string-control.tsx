@@ -3,13 +3,13 @@ import { StringInput } from "./string-input.tsx";
 
 export function StringControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"string">) {
   return (
     <StringInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}

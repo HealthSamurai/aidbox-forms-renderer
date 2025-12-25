@@ -110,7 +110,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
             <>
               <Control
                 answer={rowProps.answer}
-                inputId={rowProps.inputId}
+                id={rowProps.id}
                 ariaLabelledBy={rowProps.ariaLabelledBy}
                 ariaDescribedBy={rowProps.ariaDescribedBy}
               />
@@ -168,7 +168,7 @@ function renderInlineCustomInput<T extends AnswerType>(
   return (
     <Control
       answer={rowProps.answer}
-      inputId={rowProps.inputId}
+      id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
     />

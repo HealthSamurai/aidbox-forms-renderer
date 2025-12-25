@@ -9,7 +9,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type AttachmentInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -18,7 +18,7 @@ export type AttachmentInputProps = {
 export function AttachmentInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -44,7 +44,7 @@ export function AttachmentInput({
   const displayLabel =
     attachment.title ?? attachment.url ?? "Attachment selected";
 
-  const inputIdentifier = `${inputId ?? "attachment"}-file`;
+  const inputIdentifier = `${id ?? "attachment"}-file`;
 
   return (
     <ThemedFileInput

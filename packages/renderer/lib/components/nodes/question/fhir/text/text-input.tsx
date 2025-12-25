@@ -3,7 +3,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type TextInputProps = {
   value: string;
   onChange: (value: string) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -13,7 +13,7 @@ export type TextInputProps = {
 export function TextInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -22,7 +22,7 @@ export function TextInput({
   const { TextArea: ThemedTextArea } = useTheme();
   return (
     <ThemedTextArea
-      id={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

@@ -3,13 +3,13 @@ import { AttachmentInput } from "./attachment-input.tsx";
 
 export function AttachmentControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"attachment">) {
   return (
     <AttachmentInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}

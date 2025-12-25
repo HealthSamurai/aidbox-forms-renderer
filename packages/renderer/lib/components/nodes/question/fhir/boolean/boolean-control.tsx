@@ -3,13 +3,13 @@ import { BooleanInput } from "./boolean-input.tsx";
 
 export function BooleanControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"boolean">) {
   return (
     <BooleanInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}

@@ -3,14 +3,14 @@ import { QuantityInput } from "./quantity-input.tsx";
 
 export function QuantityControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"quantity">) {
   return (
     <QuantityInput
       answer={answer}
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}

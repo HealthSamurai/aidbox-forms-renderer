@@ -3,13 +3,13 @@ import { CodingInput } from "./coding-input.tsx";
 
 export function CodingControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"coding">) {
   return (
     <CodingInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       value={answer.value ?? null}

@@ -49,7 +49,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
     <ThemedAnswerScaffold
       control={
         <Component
-          inputId={sanitizeForId(answer.key)}
+          id={sanitizeForId(answer.key)}
           ariaLabelledBy={getNodeLabelId(answer.question)}
           ariaDescribedBy={ariaDescribedBy}
           answer={answer as IAnswerInstance<T>}

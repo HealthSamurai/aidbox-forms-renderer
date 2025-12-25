@@ -3,7 +3,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type UrlInputProps = {
   value: string;
   onChange: (value: string) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -13,7 +13,7 @@ export type UrlInputProps = {
 export function UrlInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -22,7 +22,7 @@ export function UrlInput({
   const { TextInput: ThemedTextInput } = useTheme();
   return (
     <ThemedTextInput
-      id={inputId}
+      id={id}
       type="url"
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}

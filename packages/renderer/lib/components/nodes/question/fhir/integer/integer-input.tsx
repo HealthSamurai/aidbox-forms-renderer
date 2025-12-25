@@ -3,7 +3,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type IntegerInputProps = {
   value: number | null;
   onChange: (value: number | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -14,7 +14,7 @@ export type IntegerInputProps = {
 export function IntegerInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -24,7 +24,7 @@ export function IntegerInput({
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
     <ThemedNumberInput
-      id={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

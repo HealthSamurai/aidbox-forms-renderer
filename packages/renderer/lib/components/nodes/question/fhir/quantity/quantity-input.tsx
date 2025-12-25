@@ -3,7 +3,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 
 export type QuantityInputProps = {
   answer: IAnswerInstance<"quantity">;
-  inputId: string;
+  id: string;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -12,7 +12,7 @@ export type QuantityInputProps = {
 
 export function QuantityInput({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -22,7 +22,7 @@ export function QuantityInput({
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitKey;
-  const inputBaseId = inputId;
+  const inputBaseId = id;
   const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
   const unitInputId = `${inputBaseId}-unit`;
 
@@ -35,7 +35,7 @@ export function QuantityInput({
   return (
     <InputGroup layout="row" weights={[2, 1]}>
       <NumberInput
-        id={inputId}
+        id={id}
         ariaLabelledBy={resolvedAriaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={answer.value?.value ?? null}

@@ -4,7 +4,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type ReferenceInputProps = {
   value: Reference | null;
   onChange: (value: Reference | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -14,7 +14,7 @@ export type ReferenceInputProps = {
 export function ReferenceInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -30,8 +30,8 @@ export function ReferenceInput({
     onChange(pruneReference(draft));
   };
 
-  const referenceId = inputId;
-  const displayId = inputId ? `${inputId}-display` : undefined;
+  const referenceId = id;
+  const displayId = id ? `${id}-display` : undefined;
 
   return (
     <InputGroup layout="grid">

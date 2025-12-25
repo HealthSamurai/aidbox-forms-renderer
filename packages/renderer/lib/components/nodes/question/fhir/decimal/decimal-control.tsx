@@ -3,13 +3,13 @@ import { DecimalInput } from "./decimal-input.tsx";
 
 export function DecimalControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"decimal">) {
   return (
     <DecimalInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}

@@ -3,13 +3,13 @@ import { DateTimeInput } from "./date-time-input.tsx";
 
 export function DateTimeControl({
   answer,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"dateTime">) {
   return (
     <DateTimeInput
-      inputId={inputId}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}

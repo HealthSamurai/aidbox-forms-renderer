@@ -4,7 +4,7 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type CodingInputProps = {
   value: Coding | null;
   onChange: (value: Coding | null) => void;
-  inputId?: string | undefined;
+  id?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -13,7 +13,7 @@ export type CodingInputProps = {
 export function CodingInput({
   value,
   onChange,
-  inputId,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -28,9 +28,9 @@ export function CodingInput({
     onChange(pruneCoding(draft));
   };
 
-  const systemId = inputId;
-  const codeId = inputId ? `${inputId}-code` : undefined;
-  const displayId = inputId ? `${inputId}-display` : undefined;
+  const systemId = id;
+  const codeId = id ? `${id}-code` : undefined;
+  const displayId = id ? `${id}-display` : undefined;
 
   return (
     <InputGroup layout="grid">
