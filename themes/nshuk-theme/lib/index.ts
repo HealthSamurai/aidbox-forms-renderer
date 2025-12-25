@@ -16,11 +16,9 @@ import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectField } from "./components/select-field.tsx";
-import { SelectOrStringField } from "./components/select-or-string-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
 import { MultiSelectField } from "./components/multi-select-field.tsx";
-import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
 import { Errors } from "./components/errors.tsx";
@@ -69,11 +67,9 @@ const passthrough: Theme = {
   SliderInput,
   SpinnerInput,
   SelectField,
-  SelectOrStringField,
   RadioGroup,
   CheckboxGroup,
   MultiSelectField,
-  TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
   Errors,
@@ -116,15 +112,9 @@ export type TimeInputProps = ComponentProps<typeof passthrough.TimeInput>;
 export type SliderInputProps = ComponentProps<typeof passthrough.SliderInput>;
 export type SpinnerInputProps = ComponentProps<typeof passthrough.SpinnerInput>;
 export type SelectFieldProps = ComponentProps<typeof passthrough.SelectField>;
-export type SelectOrStringFieldProps = ComponentProps<
-  typeof passthrough.SelectOrStringField
->;
 export type RadioGroupProps = ComponentProps<typeof passthrough.RadioGroup>;
 export type CheckboxGroupProps = ComponentProps<
   typeof passthrough.CheckboxGroup
->;
-export type TypedAutocompleteInputProps = ComponentProps<
-  typeof passthrough.TypedAutocompleteInput
 >;
 
 export default theme;

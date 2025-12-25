@@ -38,6 +38,18 @@
 - question nodes enforce min/max occurs limits on their answers
 - readonly and hidden both consider the items enablement under the hood so isEnabled must not be used in ui components
 
+### Component roles
+
+- renderer: top-level question component, owns question scaffold and decides which control to render
+- control: component passed into answer list as the render callback; receives value control props and renders the input for a single answer
+- input: store-agnostic UI widget that renders the actual form element
+- control: maps domain/store state into mechanical input props (value, bounds, handlers)
+- answer list: renders one or more answers for a question and wraps each in answer scaffold
+- answer scaffold: per-answer layout (input + toolbar + child nodes + errors)
+- question scaffold: per-question layout (label/help/options state)
+- value inputs: input widgets used by controls
+- value displays: read-only views used for chips/options
+
 ### Coding guidelines
 
 - do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores

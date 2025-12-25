@@ -14,11 +14,9 @@ export { TimeInput } from "./components/time-input.tsx";
 export { SliderInput } from "./components/slider-input.tsx";
 export { SpinnerInput } from "./components/spinner-input.tsx";
 export { SelectField } from "./components/select-field.tsx";
-export { SelectOrStringField } from "./components/select-or-string-field.tsx";
 export { RadioGroup } from "./components/radio-group.tsx";
 export { CheckboxGroup } from "./components/checkbox-group.tsx";
 export { MultiSelectField } from "./components/multi-select-field.tsx";
-export { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 export { CodingInput } from "./components/coding-input.tsx";
 export { ReferenceInput } from "./components/reference-input.tsx";
 export { Errors } from "./components/errors.tsx";
@@ -60,11 +58,9 @@ import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectField } from "./components/select-field.tsx";
-import { SelectOrStringField } from "./components/select-or-string-field.tsx";
 import { RadioGroup } from "./components/radio-group.tsx";
 import { CheckboxGroup } from "./components/checkbox-group.tsx";
 import { MultiSelectField } from "./components/multi-select-field.tsx";
-import { TypedAutocompleteInput } from "./components/typed-autocomplete-input.tsx";
 import { CodingInput } from "./components/coding-input.tsx";
 import { ReferenceInput } from "./components/reference-input.tsx";
 import { Errors } from "./components/errors.tsx";
@@ -108,11 +104,9 @@ export const theme: Theme = {
   SliderInput,
   SpinnerInput,
   SelectField,
-  SelectOrStringField,
   RadioGroup,
   CheckboxGroup,
   MultiSelectField,
-  TypedAutocompleteInput,
   CodingInput,
   ReferenceInput,
   Errors,
