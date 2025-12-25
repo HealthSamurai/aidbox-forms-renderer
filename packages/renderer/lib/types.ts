@@ -42,7 +42,7 @@ import {
   UsageContext,
 } from "fhir/r5";
 import type { GroupControlRegistry } from "./stores/registries/group-control-registry.ts";
-import type { ComponentType, HTMLAttributes } from "react";
+import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
 
@@ -635,13 +635,17 @@ export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
   node: IQuestionNode<T>;
 };
 
-export type QuestionControlMatcher = (node: IQuestionNode) => boolean;
+type QuestionRendererComponent<T extends AnswerType = AnswerType> = {
+  bivarianceHack(
+    props: QuestionRendererProps<T>,
+  ): ReactNode | Promise<ReactNode>;
+}["bivarianceHack"];
 
 export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   name: string;
   priority: number;
-  matcher: QuestionControlMatcher;
-  renderer: ComponentType<QuestionRendererProps<T>>;
+  matcher: (node: IQuestionNode) => boolean;
+  renderer: QuestionRendererComponent<T>;
 }
 
 type SelectCheckboxOption<T extends AnswerType> = {

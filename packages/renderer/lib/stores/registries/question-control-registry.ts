@@ -19,7 +19,9 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
   {
     name: "numeric-with-slider",
     priority: 120,
-    matcher: (node) =>
+    matcher: (
+      node,
+    ): node is IQuestionNode<"integer" | "decimal" | "quantity"> =>
       node.control === "slider" &&
       (node.type === "integer" ||
         node.type === "decimal" ||

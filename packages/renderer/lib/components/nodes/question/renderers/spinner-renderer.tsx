@@ -20,7 +20,7 @@ function getNumericValue(answer: IAnswerInstance<NumericType>): number | null {
     return answer.value?.value ?? null;
   }
 
-  return answer.value ?? null;
+  return typeof answer.value === "number" ? answer.value : null;
 }
 
 export const SpinnerRenderer = observer(function SpinnerRenderer({

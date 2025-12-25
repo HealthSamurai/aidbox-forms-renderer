@@ -20,13 +20,13 @@ function getNumericValue(answer: IAnswerInstance<NumericType>): number | null {
     return answer.value?.value ?? null;
   }
 
-  return answer.value ?? null;
+  return typeof answer.value === "number" ? answer.value : null;
 }
 
 export const SliderRenderer = observer(function SliderRenderer({
   node,
 }: {
-  node: IQuestionNode<NumericType>;
+  node: IQuestionNode<"integer" | "decimal" | "quantity">;
 }) {
   const { SliderInput } = useTheme();
   const bounds = getNumericBounds(node.template);
