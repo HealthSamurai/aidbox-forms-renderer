@@ -40,9 +40,9 @@ export function TabContainer({
                 type="button"
                 className="nhsuk-tabs__tab"
                 role="tab"
-                id={item.tabButtonId}
+                id={item.buttonId}
                 aria-selected={selected}
-                aria-controls={item.tabPanelId}
+                aria-controls={item.panelId}
                 onClick={() => onChange(idx)}
               >
                 {item.label}
@@ -58,8 +58,8 @@ export function TabContainer({
             key={item.key}
             className="nhsuk-tabs__panel"
             role="tabpanel"
-            id={item.tabPanelId}
-            aria-labelledby={item.tabButtonId}
+            id={item.panelId}
+            aria-labelledby={item.buttonId}
             hidden={!selected}
           >
             {item.content}

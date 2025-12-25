@@ -18,8 +18,8 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
   const items = visibleNodes.map((child, idx) => ({
     key: child.key,
     label: <NodeHeader node={child} />,
-    tabButtonId: `${node.key}-tab-${idx}`,
-    tabPanelId: `${node.key}-panel-${idx}`,
+    buttonId: `${node.key}-tab-${idx}`,
+    panelId: `${node.key}-panel-${idx}`,
     content: <Node node={child} />,
   }));
 
