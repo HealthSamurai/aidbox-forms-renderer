@@ -1,7 +1,7 @@
 import type { Attachment } from "./fhir-shims.ts";
 import type { ComponentType } from "react";
 
-export type AttachmentInputProps = {
+export type FileInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
   inputId?: string | undefined;
@@ -14,4 +14,4 @@ export type AttachmentInputProps = {
   onClear?: (() => void) | undefined;
 };
 
-export type AttachmentInputComponent = ComponentType<AttachmentInputProps>;
+export type FileInputComponent = ComponentType<FileInputProps>;

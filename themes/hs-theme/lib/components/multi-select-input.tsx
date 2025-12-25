@@ -1,9 +1,9 @@
 import { styled } from "@linaria/react";
-import type { MultiSelectFieldProps } from "@aidbox-forms/theme";
+import type { MultiSelectInputProps } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
-export function MultiSelectField({
+export function MultiSelectInput({
   options,
   selectValue = "",
   onSelectOption,
@@ -16,7 +16,7 @@ export function MultiSelectField({
   actions,
   dialog,
   selectPlaceholder,
-}: MultiSelectFieldProps) {
+}: MultiSelectInputProps) {
   const handleSelectChange = (key: string) => {
     if (!key) return;
     onSelectOption(key);

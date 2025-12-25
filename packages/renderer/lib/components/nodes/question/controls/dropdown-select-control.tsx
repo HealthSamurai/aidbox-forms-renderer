@@ -53,11 +53,11 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectField } = useTheme();
+  const { SelectInput } = useTheme();
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
 
   return (
-    <SelectField
+    <SelectInput
       options={node.options.entries}
       selectValue={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
@@ -84,7 +84,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectField, Button } = useTheme();
+  const { SelectInput, Button } = useTheme();
 
   if (rowStore.isCustomActive) {
     const Control = getValueControl(node.type);
@@ -111,7 +111,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
 
   return (
-    <SelectField
+    <SelectInput
       options={rowStore.extendedOptions}
       selectValue={rowStore.optionKey}
       legacyOption={null}

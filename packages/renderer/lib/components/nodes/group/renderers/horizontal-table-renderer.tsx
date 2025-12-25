@@ -9,8 +9,13 @@ import { JSX } from "react";
 
 export const HorizontalTableRenderer = observer(
   function HorizontalTableRenderer({ node }: GroupControlProps) {
-    const { GroupActions, GridTable, EmptyState, RadioGroup, CheckboxGroup } =
-      useTheme();
+    const {
+      GroupActions,
+      GridTable,
+      EmptyState,
+      RadioButtonList,
+      CheckboxList,
+    } = useTheme();
     const store = node.tableStore;
 
     let content: JSX.Element;
@@ -52,7 +57,7 @@ export const HorizontalTableRenderer = observer(
             return {
               key: `${row.question.key}-${column.key}`,
               content: (
-                <CheckboxGroup
+                <CheckboxList
                   options={[
                     {
                       key: column.key,
@@ -79,7 +84,7 @@ export const HorizontalTableRenderer = observer(
           return {
             key: `${row.question.key}-${column.key}`,
             content: (
-              <RadioGroup
+              <RadioButtonList
                 options={[
                   {
                     key: column.key,

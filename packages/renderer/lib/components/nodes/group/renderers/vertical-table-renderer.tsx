@@ -10,8 +10,9 @@ import { JSX } from "react";
 export const VerticalTableRenderer = observer(function VerticalTableRenderer({
   node,
 }: GroupControlProps) {
-  const { GroupActions, GridTable, EmptyState, RadioGroup, CheckboxGroup } =
+  const { GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList } =
     useTheme();
+  useTheme();
   const store = node.tableStore;
 
   let content: JSX.Element;
@@ -46,7 +47,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
           return {
             key: `${row.key}-${cell.key}`,
             content: (
-              <CheckboxGroup
+              <CheckboxList
                 options={[
                   {
                     key: cell.key,
@@ -73,7 +74,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
         return {
           key: `${row.key}-${cell.key}`,
           content: (
-            <RadioGroup
+            <RadioButtonList
               options={[
                 {
                   key: cell.key,

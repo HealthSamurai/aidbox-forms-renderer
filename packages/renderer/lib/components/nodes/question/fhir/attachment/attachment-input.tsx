@@ -1,5 +1,5 @@
 import type { Attachment } from "fhir/r5";
-import type { AttachmentInputProps as ThemeAttachmentInputProps } from "@aidbox-forms/theme";
+import type { FileInputProps as ThemeFileInputProps } from "@aidbox-forms/theme";
 import {
   prepareAttachmentFromFile,
   pruneAttachment,
@@ -23,9 +23,9 @@ export function AttachmentInput({
   describedById,
   disabled,
 }: AttachmentInputProps) {
-  const { AttachmentInput: ThemedAttachmentInput } = useTheme();
+  const { FileInput: ThemedFileInput } = useTheme();
   const attachment = value ?? {};
-  type ThemeAttachment = ThemeAttachmentInputProps["value"];
+  type ThemeAttachment = ThemeFileInputProps["value"];
 
   const handleFileSelect = async (file: File) => {
     const updated = await prepareAttachmentFromFile(file, attachment);
@@ -47,7 +47,7 @@ export function AttachmentInput({
   const inputIdentifier = `${inputId ?? "attachment"}-file`;
 
   return (
-    <ThemedAttachmentInput
+    <ThemedFileInput
       inputId={inputIdentifier}
       labelId={labelId}
       describedById={describedById}

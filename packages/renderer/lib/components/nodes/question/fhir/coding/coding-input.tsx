@@ -18,7 +18,7 @@ export function CodingInput({
   describedById,
   disabled,
 }: CodingInputProps) {
-  const { CodingInput: ThemedCodingInput } = useTheme();
+  const { InputGroup, TextInput } = useTheme();
   const coding = value ?? {};
   const handleChange = (field: keyof Coding, nextValue: string) => {
     const draft: Coding = {
@@ -28,19 +28,40 @@ export function CodingInput({
     onChange(pruneCoding(draft));
   };
 
+  const systemId = inputId;
+  const codeId = inputId ? `${inputId}-code` : undefined;
+  const displayId = inputId ? `${inputId}-display` : undefined;
+
   return (
-    <ThemedCodingInput
-      inputId={inputId}
-      labelId={labelId}
-      describedById={describedById}
-      system={coding.system ?? ""}
-      code={coding.code ?? ""}
-      display={coding.display ?? ""}
-      onChangeSystem={(next) => handleChange("system", next)}
-      onChangeCode={(next) => handleChange("code", next)}
-      onChangeDisplay={(next) => handleChange("display", next)}
-      disabled={disabled}
-    />
+    <InputGroup layout="grid">
+      <TextInput
+        id={systemId}
+        ariaLabelledBy={labelId}
+        ariaDescribedBy={describedById}
+        value={coding.system ?? ""}
+        onChange={(next) => handleChange("system", next)}
+        disabled={disabled}
+        placeholder="System (e.g. http://loinc.org)"
+      />
+      <TextInput
+        id={codeId}
+        ariaLabelledBy={labelId}
+        ariaDescribedBy={describedById}
+        value={coding.code ?? ""}
+        onChange={(next) => handleChange("code", next)}
+        disabled={disabled}
+        placeholder="Code"
+      />
+      <TextInput
+        id={displayId}
+        ariaLabelledBy={labelId}
+        ariaDescribedBy={describedById}
+        value={coding.display ?? ""}
+        onChange={(next) => handleChange("display", next)}
+        disabled={disabled}
+        placeholder="Display"
+      />
+    </InputGroup>
   );
 }
 

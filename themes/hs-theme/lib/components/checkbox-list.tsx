@@ -9,7 +9,7 @@ type OptionEntry<TValue> = {
   disabled?: boolean;
 };
 
-export type CheckboxGroupProps<TValue> = {
+export type CheckboxListProps<TValue> = {
   options: ReadonlyArray<OptionEntry<TValue>>;
   selectedKeys: Set<string>;
   onToggle: (key: string) => void;
@@ -22,7 +22,7 @@ export type CheckboxGroupProps<TValue> = {
   after?: ReactNode;
 };
 
-export function CheckboxGroup<TValue>({
+export function CheckboxList<TValue>({
   options,
   selectedKeys,
   onToggle,
@@ -33,7 +33,7 @@ export function CheckboxGroup<TValue>({
   isLoading = false,
   renderErrors,
   after,
-}: CheckboxGroupProps<TValue>) {
+}: CheckboxListProps<TValue>) {
   return (
     <CheckboxControl
       data-readonly={readOnly}

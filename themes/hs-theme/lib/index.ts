@@ -3,22 +3,15 @@ export type { ButtonProps } from "./components/button.tsx";
 export { TextInput } from "./components/text-input.tsx";
 export { TextArea } from "./components/text-area.tsx";
 export { NumberInput } from "./components/number-input.tsx";
-export {
-  QuantityInput,
-  type QuantityInputProps,
-  type QuantityUnitOption,
-} from "./components/quantity-input.tsx";
 export { DateInput } from "./components/date-input.tsx";
 export { DateTimeInput } from "./components/date-time-input.tsx";
 export { TimeInput } from "./components/time-input.tsx";
 export { SliderInput } from "./components/slider-input.tsx";
 export { SpinnerInput } from "./components/spinner-input.tsx";
-export { SelectField } from "./components/select-field.tsx";
-export { RadioGroup } from "./components/radio-group.tsx";
-export { CheckboxGroup } from "./components/checkbox-group.tsx";
-export { MultiSelectField } from "./components/multi-select-field.tsx";
-export { CodingInput } from "./components/coding-input.tsx";
-export { ReferenceInput } from "./components/reference-input.tsx";
+export { SelectInput } from "./components/select-input.tsx";
+export { RadioButtonList } from "./components/radio-button-list.tsx";
+export { CheckboxList } from "./components/checkbox-list.tsx";
+export { MultiSelectInput } from "./components/multi-select-input.tsx";
 export { Errors } from "./components/errors.tsx";
 export { NodeHeader } from "./components/node-header.tsx";
 export { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -42,7 +35,8 @@ export { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-it
 export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { GroupActions } from "./components/group-actions.tsx";
 export { GridTable } from "./components/grid-table.tsx";
-export { AttachmentInput } from "./components/attachment-input.tsx";
+export { InputGroup } from "./components/input-group.tsx";
+export { FileInput } from "./components/file-input.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
 export { DisplayRenderer } from "./components/display-renderer.tsx";
 export { Link } from "./components/link.tsx";
@@ -51,18 +45,15 @@ import { Button } from "./components/button.tsx";
 import { TextInput } from "./components/text-input.tsx";
 import { TextArea } from "./components/text-area.tsx";
 import { NumberInput } from "./components/number-input.tsx";
-import { QuantityInput } from "./components/quantity-input.tsx";
 import { DateInput } from "./components/date-input.tsx";
 import { DateTimeInput } from "./components/date-time-input.tsx";
 import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
-import { SelectField } from "./components/select-field.tsx";
-import { RadioGroup } from "./components/radio-group.tsx";
-import { CheckboxGroup } from "./components/checkbox-group.tsx";
-import { MultiSelectField } from "./components/multi-select-field.tsx";
-import { CodingInput } from "./components/coding-input.tsx";
-import { ReferenceInput } from "./components/reference-input.tsx";
+import { SelectInput } from "./components/select-input.tsx";
+import { RadioButtonList } from "./components/radio-button-list.tsx";
+import { CheckboxList } from "./components/checkbox-list.tsx";
+import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -87,7 +78,8 @@ import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-it
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
-import { AttachmentInput } from "./components/attachment-input.tsx";
+import { InputGroup } from "./components/input-group.tsx";
+import { FileInput } from "./components/file-input.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { Link } from "./components/link.tsx";
 import type { Theme } from "@aidbox-forms/theme";
@@ -97,18 +89,15 @@ export const theme: Theme = {
   TextInput,
   TextArea,
   NumberInput,
-  QuantityInput,
   DateInput,
   DateTimeInput,
   TimeInput,
   SliderInput,
   SpinnerInput,
-  SelectField,
-  RadioGroup,
-  CheckboxGroup,
-  MultiSelectField,
-  CodingInput,
-  ReferenceInput,
+  SelectInput,
+  RadioButtonList,
+  CheckboxList,
+  MultiSelectInput,
   Errors,
   NodeHeader,
   QuestionScaffold,
@@ -132,7 +121,8 @@ export const theme: Theme = {
   GroupScaffold,
   GroupActions,
   GridTable,
-  AttachmentInput,
+  InputGroup,
+  FileInput,
   DisplayRenderer,
   TabContainer,
   Link,

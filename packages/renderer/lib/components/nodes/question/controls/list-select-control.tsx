@@ -19,7 +19,7 @@ export type ListSelectControlProps<T extends AnswerType> = {
 export const ListSelectControl = observer(function ListSelectControl<
   T extends AnswerType,
 >({ node }: ListSelectControlProps<T>) {
-  const { CheckboxGroup, AnswerList: ThemedAnswerList, Button } = useTheme();
+  const { CheckboxList, AnswerList: ThemedAnswerList, Button } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const addCustomAnswer = useCallback(() => {
@@ -54,7 +54,7 @@ export const ListSelectControl = observer(function ListSelectControl<
       ) : null;
 
     return (
-      <CheckboxGroup
+      <CheckboxList
         options={state.uiOptions}
         selectedKeys={state.selectedKeys}
         onToggle={store.handleCheckboxToggle}
@@ -87,7 +87,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   node: IQuestionNode<T>;
   rowProps: ValueControlProps<T>;
 }) {
-  const { RadioGroup } = useTheme();
+  const { RadioButtonList } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const rowStore = store.getListRowState(rowProps.answer);
@@ -101,7 +101,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   ) : null;
 
   return (
-    <RadioGroup
+    <RadioButtonList
       options={rowStore.radioOptions}
       selectValue={rowStore.selectValue}
       legacyOptionLabel={rowStore.legacyOption?.label}

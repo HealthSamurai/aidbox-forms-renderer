@@ -23,14 +23,14 @@ export function BooleanInput({
   describedById,
   disabled,
 }: BooleanInputProps) {
-  const { RadioGroup } = useTheme();
+  const { RadioButtonList } = useTheme();
   const selectValue =
     value === true ? "yes" : value === false ? "no" : "unanswered";
   const fallbackInputId = inputId ?? "boolean";
   const fallbackLabelId = labelId ?? fallbackInputId;
 
   return (
-    <RadioGroup
+    <RadioButtonList
       options={BOOLEAN_OPTIONS}
       selectValue={selectValue}
       onChange={(key) => {

@@ -17,7 +17,7 @@ export type MultiSelectDialog = {
   actions: ReactNode;
 };
 
-export type MultiSelectFieldProps = {
+export type MultiSelectInputProps = {
   options: ReadonlyArray<OptionEntry<unknown>>;
   selectValue?: string | undefined;
   onSelectOption: (key: string) => void;
@@ -32,4 +32,4 @@ export type MultiSelectFieldProps = {
   selectPlaceholder?: string | undefined;
 };
 
-export type MultiSelectFieldComponent = ComponentType<MultiSelectFieldProps>;
+export type MultiSelectInputComponent = ComponentType<MultiSelectInputProps>;

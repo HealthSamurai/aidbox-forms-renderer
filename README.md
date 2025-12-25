@@ -57,8 +57,8 @@ import { theme } from "@aidbox-forms/nshuk-theme";
 | TabContainerRenderer     | TabContainer                                                                                                     |
 | GridRenderer             | GridTable, EmptyState                                                                                            |
 | GridTableRenderer        | Button, GridTable, EmptyState                                                                                    |
-| VerticalTableRenderer    | GroupActions, GridTable, EmptyState, RadioGroup, CheckboxGroup                                                   |
-| HorizontalTableRenderer  | GroupActions, GridTable, EmptyState, RadioGroup, CheckboxGroup                                                   |
+| VerticalTableRenderer    | GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList                                               |
+| HorizontalTableRenderer  | GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList                                               |
 | TableQuestionDetails     | NodeList, OptionsState                                                                                           |
 | QuestionScaffold         | QuestionScaffold, OptionsState                                                                                   |
 | AnswerList               | Button, AnswerList                                                                                               |
@@ -68,19 +68,19 @@ import { theme } from "@aidbox-forms/nshuk-theme";
 | StringInput              | TextInput                                                                                                        |
 | IntegerInput             | NumberInput                                                                                                      |
 | DecimalInput             | NumberInput                                                                                                      |
-| BooleanInput             | RadioGroup                                                                                                       |
-| QuantityInput            | QuantityInput                                                                                                    |
+| BooleanInput             | RadioButtonList                                                                                                  |
+| QuantityInput            | InputGroup, NumberInput, SelectInput, TextInput                                                                  |
 | DateInput                | DateInput                                                                                                        |
 | DateTimeInput            | DateTimeInput                                                                                                    |
 | TimeInput                | TimeInput                                                                                                        |
 | UrlInput                 | TextInput                                                                                                        |
 | UrlDisplay               | Link                                                                                                             |
-| CodingInput              | CodingInput                                                                                                      |
-| ReferenceInput           | ReferenceInput                                                                                                   |
-| AttachmentInput          | AttachmentInput                                                                                                  |
-| DropdownSelectControl    | SelectField, Button                                                                                              |
-| ListSelectControl        | CheckboxGroup, AnswerList, Button, RadioGroup                                                                    |
-| MultiSelectControl       | Button, MultiSelectField                                                                                         |
+| CodingInput              | InputGroup, TextInput                                                                                            |
+| ReferenceInput           | InputGroup, TextInput                                                                                            |
+| AttachmentInput          | FileInput                                                                                                        |
+| DropdownSelectControl    | SelectInput, Button                                                                                              |
+| ListSelectControl        | CheckboxList, AnswerList, Button, RadioButtonList                                                                |
+| MultiSelectControl       | Button, MultiSelectInput                                                                                         |
 | SliderControl            | SliderInput                                                                                                      |
 | SpinnerControl           | SpinnerInput                                                                                                     |
 

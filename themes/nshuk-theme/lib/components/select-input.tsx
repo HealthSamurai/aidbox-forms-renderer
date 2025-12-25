@@ -1,6 +1,6 @@
-import type { SelectFieldProps } from "@aidbox-forms/theme";
+import type { SelectInputProps } from "@aidbox-forms/theme";
 
-export function SelectField({
+export function SelectInput({
   options,
   selectValue,
   onChange,
@@ -12,7 +12,7 @@ export function SelectField({
   isLoading,
   onClear,
   clearLabel,
-}: SelectFieldProps) {
+}: SelectInputProps) {
   return (
     <div aria-busy={isLoading || undefined}>
       <div className="nhsuk-u-display-flex nhsuk-u-align-items-center nhsuk-u-gap-3">

@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-export type SelectFieldProps = {
+export type SelectInputProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
   selectValue: string;
   onChange: (key: string) => void;
@@ -14,4 +14,4 @@ export type SelectFieldProps = {
   clearLabel?: string | undefined;
 };
 
-export type SelectFieldComponent = ComponentType<SelectFieldProps>;
+export type SelectInputComponent = ComponentType<SelectInputProps>;

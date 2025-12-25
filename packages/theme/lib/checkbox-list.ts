@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type CheckboxGroupProps<TValue = unknown> = {
+export type CheckboxListProps<TValue = unknown> = {
   options: ReadonlyArray<{
     key: string;
     label: string;
@@ -18,4 +18,4 @@ export type CheckboxGroupProps<TValue = unknown> = {
   after?: ReactNode;
 };
 
-export type CheckboxGroupComponent = ComponentType<CheckboxGroupProps>;
+export type CheckboxListComponent = ComponentType<CheckboxListProps>;

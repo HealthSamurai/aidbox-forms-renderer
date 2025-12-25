@@ -1,6 +1,6 @@
-import type { CheckboxGroupProps } from "@aidbox-forms/theme";
+import type { CheckboxListProps } from "@aidbox-forms/theme";
 
-export function CheckboxGroup<T>({
+export function CheckboxList<T>({
   options,
   selectedKeys,
   onToggle,
@@ -11,7 +11,7 @@ export function CheckboxGroup<T>({
   isLoading,
   renderErrors,
   after,
-}: CheckboxGroupProps<T>) {
+}: CheckboxListProps<T>) {
   return (
     <div
       className="nhsuk-checkboxes"

@@ -1,6 +1,6 @@
-import type { MultiSelectFieldProps } from "@aidbox-forms/theme";
+import type { MultiSelectInputProps } from "@aidbox-forms/theme";
 
-export function MultiSelectField({
+export function MultiSelectInput({
   options,
   selectValue = "",
   onSelectOption,
@@ -13,7 +13,7 @@ export function MultiSelectField({
   actions,
   dialog,
   selectPlaceholder,
-}: MultiSelectFieldProps) {
+}: MultiSelectInputProps) {
   const handleSelectChange = (key: string) => {
     if (!key) return;
     onSelectOption(key);

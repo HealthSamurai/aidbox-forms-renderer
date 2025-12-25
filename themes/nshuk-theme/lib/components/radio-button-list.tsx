@@ -1,6 +1,6 @@
-import type { RadioGroupProps } from "@aidbox-forms/theme";
+import type { RadioButtonListProps } from "@aidbox-forms/theme";
 
-export function RadioGroup({
+export function RadioButtonList({
   options,
   selectValue,
   onChange,
@@ -13,7 +13,7 @@ export function RadioGroup({
   isLoading,
   after,
   afterInset = false,
-}: RadioGroupProps) {
+}: RadioButtonListProps) {
   const makeInputId = (key: string) =>
     inputId ? `${inputId}-${key}` : undefined;
 

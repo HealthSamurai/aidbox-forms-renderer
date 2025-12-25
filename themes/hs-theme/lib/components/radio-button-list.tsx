@@ -2,7 +2,7 @@ import { styled } from "@linaria/react";
 import type { ReactNode } from "react";
 import { optionStatusClass } from "./option-status.ts";
 
-export type RadioGroupProps = {
+export type RadioButtonListProps = {
   options: ReadonlyArray<{
     key: string;
     label: string;
@@ -21,7 +21,7 @@ export type RadioGroupProps = {
   afterInset?: boolean;
 };
 
-export function RadioGroup({
+export function RadioButtonList({
   options,
   selectValue,
   onChange,
@@ -34,7 +34,7 @@ export function RadioGroup({
   isLoading = false,
   after,
   afterInset = false,
-}: RadioGroupProps) {
+}: RadioButtonListProps) {
   return (
     <>
       <RadioGroupContainer

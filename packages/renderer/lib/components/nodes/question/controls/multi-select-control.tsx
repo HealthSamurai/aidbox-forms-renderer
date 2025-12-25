@@ -18,7 +18,7 @@ export type MultiSelectControlProps<T extends AnswerType> = {
 export const MultiSelectControl = observer(function MultiSelectControl<
   T extends AnswerType,
 >({ node, valueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
-  const { Button, MultiSelectField } = useTheme();
+  const { Button, MultiSelectInput } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const ValueDisplay = valueDisplay;
@@ -141,7 +141,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     : undefined;
 
   return (
-    <MultiSelectField
+    <MultiSelectInput
       options={store.extendedOptions}
       selectValue={store.selectValue}
       onSelectOption={store.handleSelectOption}

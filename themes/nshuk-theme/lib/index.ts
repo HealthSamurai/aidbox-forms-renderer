@@ -1,26 +1,19 @@
 import type { ComponentProps } from "react";
-import type {
-  Theme,
-  QuantityInputProps,
-  QuantityUnitOption,
-} from "@aidbox-forms/theme";
+import type { Theme } from "@aidbox-forms/theme";
 import { Button } from "./components/button.tsx";
 import { TextInput, type TextInputProps } from "./components/text-input.tsx";
 import { TextArea, type TextAreaProps } from "./components/text-area.tsx";
 import { NumberInput } from "./components/number-input.tsx";
 import type { NumberInputProps } from "@aidbox-forms/theme";
-import { QuantityInput } from "./components/quantity-input.tsx";
 import { DateInput } from "./components/date-input.tsx";
 import { DateTimeInput } from "./components/date-time-input.tsx";
 import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
-import { SelectField } from "./components/select-field.tsx";
-import { RadioGroup } from "./components/radio-group.tsx";
-import { CheckboxGroup } from "./components/checkbox-group.tsx";
-import { MultiSelectField } from "./components/multi-select-field.tsx";
-import { CodingInput } from "./components/coding-input.tsx";
-import { ReferenceInput } from "./components/reference-input.tsx";
+import { SelectInput } from "./components/select-input.tsx";
+import { RadioButtonList } from "./components/radio-button-list.tsx";
+import { CheckboxList } from "./components/checkbox-list.tsx";
+import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -44,34 +37,32 @@ import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-it
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
-import { AttachmentInput } from "./components/attachment-input.tsx";
+import { InputGroup } from "./components/input-group.tsx";
+import { FileInput } from "./components/file-input.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { Link } from "./components/link.tsx";
 import "./global.css";
 
-export type { Theme, QuantityInputProps, QuantityUnitOption };
+export type { Theme };
 export type { TextInputProps, TextAreaProps, NumberInputProps };
 export { Button, TextInput, TextArea, NumberInput };
-export { CodingInput, ReferenceInput, TabContainer, DisplayRenderer, Link };
+export { TabContainer, DisplayRenderer, Link };
 
 const passthrough: Theme = {
   Button,
   TextInput,
   TextArea,
   NumberInput,
-  QuantityInput,
   DateInput,
   DateTimeInput,
   TimeInput,
   SliderInput,
   SpinnerInput,
-  SelectField,
-  RadioGroup,
-  CheckboxGroup,
-  MultiSelectField,
-  CodingInput,
-  ReferenceInput,
+  SelectInput,
+  RadioButtonList,
+  CheckboxList,
+  MultiSelectInput,
   Errors,
   NodeHeader,
   QuestionScaffold,
@@ -95,7 +86,8 @@ const passthrough: Theme = {
   GroupScaffold,
   GroupActions,
   GridTable,
-  AttachmentInput,
+  InputGroup,
+  FileInput,
   TabContainer,
   DisplayRenderer,
   Link,
@@ -111,10 +103,10 @@ export type DateTimeInputProps = ComponentProps<
 export type TimeInputProps = ComponentProps<typeof passthrough.TimeInput>;
 export type SliderInputProps = ComponentProps<typeof passthrough.SliderInput>;
 export type SpinnerInputProps = ComponentProps<typeof passthrough.SpinnerInput>;
-export type SelectFieldProps = ComponentProps<typeof passthrough.SelectField>;
-export type RadioGroupProps = ComponentProps<typeof passthrough.RadioGroup>;
-export type CheckboxGroupProps = ComponentProps<
-  typeof passthrough.CheckboxGroup
+export type SelectInputProps = ComponentProps<typeof passthrough.SelectInput>;
+export type RadioButtonListProps = ComponentProps<
+  typeof passthrough.RadioButtonList
 >;
+export type CheckboxListProps = ComponentProps<typeof passthrough.CheckboxList>;
 
 export default theme;

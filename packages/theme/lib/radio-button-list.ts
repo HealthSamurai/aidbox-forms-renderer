@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type RadioGroupProps = {
+export type RadioButtonListProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
   selectValue: string;
   onChange: (value: string) => void;
@@ -15,4 +15,4 @@ export type RadioGroupProps = {
   afterInset?: boolean;
 };
 
-export type RadioGroupComponent = ComponentType<RadioGroupProps>;
+export type RadioButtonListComponent = ComponentType<RadioButtonListProps>;

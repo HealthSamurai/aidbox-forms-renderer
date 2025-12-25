@@ -2,7 +2,7 @@ import { styled } from "@linaria/react";
 import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
-type SelectFieldProps = {
+type SelectInputProps = {
   options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
   selectValue: string;
   legacyOption: { key: string; label: string } | null;
@@ -16,7 +16,7 @@ type SelectFieldProps = {
   clearLabel?: string | undefined;
 };
 
-export function SelectField({
+export function SelectInput({
   options,
   selectValue,
   legacyOption,
@@ -28,7 +28,7 @@ export function SelectField({
   isLoading = false,
   onClear,
   clearLabel,
-}: SelectFieldProps) {
+}: SelectInputProps) {
   return (
     <div data-loading={isLoading ? "true" : undefined}>
       <FieldRow>

@@ -1,7 +1,7 @@
-import type { AttachmentInputProps } from "@aidbox-forms/theme";
+import type { FileInputProps } from "@aidbox-forms/theme";
 import { useRef, type ChangeEvent } from "react";
 
-export function AttachmentInput({
+export function FileInput({
   inputId,
   labelId,
   describedById,
@@ -10,7 +10,7 @@ export function AttachmentInput({
   sizeLabel,
   onFileSelect,
   onClear,
-}: AttachmentInputProps) {
+}: FileInputProps) {
   const hasAttachment = Boolean(filename);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
