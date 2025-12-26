@@ -4,7 +4,7 @@ import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
 type SelectInputProps = {
-  options: OptionItem[];
+  options: readonly OptionItem[];
   value: string;
   legacyOption: { key: string; label: string } | null;
   onChange: (value: string) => void;

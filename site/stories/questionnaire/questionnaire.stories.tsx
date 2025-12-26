@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { Questionnaire } from "fhir/r5";
-import { FormEvent, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
 import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
@@ -42,13 +42,9 @@ function Renderer({
 }: PlaygroundArgs & { storyId: string }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
 
-  const handleSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      store.validateAll();
-    },
-    [store],
-  );
+  const handleSubmit = useCallback(() => {
+    store.validateAll();
+  }, [store]);
 
   useQuestionnaireResponseBroadcaster(store, storyId);
   useQuestionnaireBroadcaster(questionnaire, storyId);

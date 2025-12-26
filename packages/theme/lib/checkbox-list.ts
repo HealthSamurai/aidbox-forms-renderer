@@ -1,12 +1,8 @@
 import type { ComponentType, ReactNode } from "react";
+import type { OptionValueEntry } from "./option-entry.ts";
 
 export type CheckboxListProps<TValue = unknown> = {
-  options: {
-    key: string;
-    label: string;
-    value: TValue;
-    disabled?: boolean;
-  }[];
+  options: readonly OptionValueEntry<TValue>[];
   value: Set<string>;
   onChange: (key: string) => void;
   id: string;

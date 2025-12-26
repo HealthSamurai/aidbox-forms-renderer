@@ -62,6 +62,7 @@
 - [Data types](#data-types)
   - [OptionItem](#optionitem)
   - [OptionEntry](#optionentry)
+    - [OptionValueEntry](#optionvalueentry)
   - [Attachment](#attachment)
   - [MultiSelectChip](#multiselectchip)
   - [MultiSelectDialog](#multiselectdialog)
@@ -119,7 +120,7 @@ every component must be provided.
 
 ### Link
 
-Anchor component used wherever the renderer needs a plain link, such as external references or supplemental actions.
+General-purpose link for references and related actions surfaced by the renderer. Render as an anchor or equivalent control with standard link behavior.
 
 | Prop       | Type        | Required | Description                                                                           |
 | ---------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
@@ -130,7 +131,7 @@ Anchor component used wherever the renderer needs a plain link, such as external
 
 ### EmptyState
 
-Container for rendering an empty list or table message when there is no content.
+Placeholder container for lists, tables, or groups when there is nothing to render. Use it for messaging, guidance, or simple illustration.
 
 | Prop       | Type        | Required | Description                                                     |
 | ---------- | ----------- | -------- | --------------------------------------------------------------- |
@@ -138,7 +139,7 @@ Container for rendering an empty list or table message when there is no content.
 
 ### Errors
 
-Displays one or more validation messages associated with a control or answer.
+Inline list of validation messages for a specific control or answer. Keep each message distinct and close to the related input.
 
 | Prop       | Type       | Required | Description                                                                |
 | ---------- | ---------- | -------- | -------------------------------------------------------------------------- |
@@ -147,7 +148,7 @@ Displays one or more validation messages associated with a control or answer.
 
 ### OptionsState
 
-Status indicator for option-backed controls while options are loading or failed.
+Status UI for option-backed controls while options are loading or failed. Use it to show a spinner, skeleton, or error message where options would appear.
 
 | Prop        | Type      | Required | Description                                                   |
 | ----------- | --------- | -------- | ------------------------------------------------------------- |
@@ -156,7 +157,7 @@ Status indicator for option-backed controls while options are loading or failed.
 
 ### NodeHelp
 
-Help text block that accompanies a question or group label.
+Short help text associated with a node label. Usually rendered near the label and referenced by the control via aria-describedby.
 
 | Prop        | Type        | Required | Description                                              |
 | ----------- | ----------- | -------- | -------------------------------------------------------- |
@@ -166,8 +167,7 @@ Help text block that accompanies a question or group label.
 
 ### NodeLegal
 
-Legal content tied to a question or group. Use it to surface regulatory or consent text, either inline or behind a
-trigger.
+Legal or consent content tied to a node. It can be inline text or a trigger that reveals more detail, but should remain accessible.
 
 | Prop        | Type        | Required | Description                                                                                                               |
 | ----------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -177,7 +177,7 @@ trigger.
 
 ### NodeFlyover
 
-Supplemental context for a node, typically shown as a tooltip or popover triggered from the header.
+Supplementary context for a node, often presented as a tooltip or popover. Keep it discoverable from the header and reachable via aria-describedby.
 
 | Prop        | Type        | Required | Description                                                                                                               |
 | ----------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -187,7 +187,7 @@ Supplemental context for a node, typically shown as a tooltip or popover trigger
 
 ### NodeHeader
 
-Header region for questions and groups. It renders the label and optional adornments (help, legal, flyover).
+Header block for questions and groups that owns label layout, required marker, and optional help/legal/flyover slots. It also provides the labelled-by anchor for the main control.
 
 | Prop             | Type        | Required | Description                                                                           |
 | ---------------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
@@ -201,8 +201,7 @@ Header region for questions and groups. It renders the label and optional adornm
 
 ### InputGroup
 
-Layout wrapper for composite inputs such as quantity or coding. It groups multiple input widgets into one coherent
-block.
+Layout wrapper for multi-part inputs such as quantity and coding. Arrange the children as a single logical field using the chosen layout and weights.
 
 | Prop       | Type                             | Required | Description                                                                       |
 | ---------- | -------------------------------- | -------- | --------------------------------------------------------------------------------- |
@@ -212,7 +211,7 @@ block.
 
 ### TextInput
 
-Single-line text input used for string, URL, and simple text fields.
+Single-line text field for short string answers, URLs, or identifiers. Render a standard input and forward accessibility ids and placeholder.
 
 | Prop              | Type                                   | Required | Description                                                                 |
 | ----------------- | -------------------------------------- | -------- | --------------------------------------------------------------------------- |
@@ -228,7 +227,7 @@ Single-line text input used for string, URL, and simple text fields.
 
 ### TextArea
 
-Multi-line text input used for long-form answers.
+Multi-line text field for longer narrative responses. Use a textarea or equivalent and forward accessibility ids and placeholder.
 
 | Prop              | Type                      | Required | Description                                                                    |
 | ----------------- | ------------------------- | -------- | ------------------------------------------------------------------------------ |
@@ -242,7 +241,7 @@ Multi-line text input used for long-form answers.
 
 ### NumberInput
 
-Numeric input used for integer, decimal, and quantity values.
+Numeric text field for integer, decimal, and quantity values. Accept null for empty and show a unit label when provided.
 
 | Prop              | Type                                                | Required | Description                                                                         |
 | ----------------- | --------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
@@ -258,7 +257,7 @@ Numeric input used for integer, decimal, and quantity values.
 
 ### DateInput
 
-Date-only input used for calendar dates.
+Date-only field for calendar values. Use a date picker or text input but keep the value string intact.
 
 | Prop              | Type                      | Required | Description                                                                 |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------- |
@@ -272,7 +271,7 @@ Date-only input used for calendar dates.
 
 ### DateTimeInput
 
-Date and time input for combined date-time values.
+Date and time field for combined values. Use a datetime picker or text input but keep the value string intact.
 
 | Prop              | Type                      | Required | Description                                                                       |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------------- |
@@ -286,7 +285,7 @@ Date and time input for combined date-time values.
 
 ### TimeInput
 
-Time-only input for hours and minutes.
+Time-only field for hours and minutes. Use a time picker or text input but keep the value string intact.
 
 | Prop              | Type                      | Required | Description                                                                 |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------- |
@@ -300,7 +299,7 @@ Time-only input for hours and minutes.
 
 ### SliderInput
 
-Range slider for numeric values, typically used when a bounded range is known.
+Range control for bounded numeric values. Show bounds and current value when available, and treat null as no selection.
 
 | Prop              | Type                                                | Required | Description                                                                        |
 | ----------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
@@ -318,7 +317,7 @@ Range slider for numeric values, typically used when a bounded range is known.
 
 ### SpinnerInput
 
-Numeric input with stepper controls for incrementing or decrementing a value.
+Numeric control with stepper affordances for small ranges. It should support typing, step changes, and min/max rules.
 
 | Prop              | Type                                                | Required | Description                                                                                    |
 | ----------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -335,7 +334,7 @@ Numeric input with stepper controls for incrementing or decrementing a value.
 
 ### SelectInput
 
-Single-select dropdown for options-backed questions.
+Single-select dropdown for option lists. Include legacyOption as a disabled entry when present and show a clear control when provided.
 
 | Prop              | Type                                                    | Required | Description                                                                              |
 | ----------------- | ------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
@@ -353,7 +352,7 @@ Single-select dropdown for options-backed questions.
 
 ### RadioButtonList
 
-Single-select list rendered as a radio group.
+Single-select option list presented as radio buttons. Use legacyOption for stored values that are no longer in the list, and allow extra content after the list.
 
 | Prop              | Type                                                    | Required | Description                                                                   |
 | ----------------- | ------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
@@ -371,43 +370,43 @@ Single-select list rendered as a radio group.
 
 ### CheckboxList
 
-Multi-select list rendered as a group of checkboxes.
+Multi-select option list presented as checkboxes. Support per-option errors and an optional after slot for custom inputs.
 
-| Prop              | Type                                                                  | Required | Description                                                                 |
-| ----------------- | --------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------- |
-| `options`         | `{ key: string; label: string; value: TValue; disabled?: boolean }[]` | Yes      | Render these entries as checkbox options.                                   |
-| `value`           | `Set<string>`                                                         | Yes      | Use this set of keys to determine which checkboxes are checked.             |
-| `onChange`        | `(key: string) => void`                                               | Yes      | Call with the toggled option key when the user changes a checkbox.          |
-| `id`              | `string`                                                              | Yes      | Use as the checkbox group name/id so inputs stay grouped.                   |
-| `ariaLabelledBy`  | `string`                                                              | Yes      | Forward to aria-labelledby to associate the group with its label.           |
-| `ariaDescribedBy` | `string`                                                              | No       | Forward to aria-describedby to associate the group with help or error text. |
-| `disabled`        | `boolean`                                                             | No       | When true, render all options as disabled and prevent changes.              |
-| `isLoading`       | `boolean`                                                             | No       | When true, show a loading indicator or busy state for the list.             |
-| `renderErrors`    | `(key: string) => ReactNode`                                          | No       | Render per-option error content for the matching key when provided.         |
-| `after`           | `ReactNode`                                                           | No       | Render additional content after the list (for example, a custom input).     |
+| Prop              | Type                         | Required | Description                                                                 |
+| ----------------- | ---------------------------- | -------- | --------------------------------------------------------------------------- |
+| `options`         | `OptionValueEntry[]`         | Yes      | Render these entries as checkbox options.                                   |
+| `value`           | `Set<string>`                | Yes      | Use this set of keys to determine which checkboxes are checked.             |
+| `onChange`        | `(key: string) => void`      | Yes      | Call with the toggled option key when the user changes a checkbox.          |
+| `id`              | `string`                     | Yes      | Use as the checkbox group name/id so inputs stay grouped.                   |
+| `ariaLabelledBy`  | `string`                     | Yes      | Forward to aria-labelledby to associate the group with its label.           |
+| `ariaDescribedBy` | `string`                     | No       | Forward to aria-describedby to associate the group with help or error text. |
+| `disabled`        | `boolean`                    | No       | When true, render all options as disabled and prevent changes.              |
+| `isLoading`       | `boolean`                    | No       | When true, show a loading indicator or busy state for the list.             |
+| `renderErrors`    | `(key: string) => ReactNode` | No       | Render per-option error content for the matching key when provided.         |
+| `after`           | `ReactNode`                  | No       | Render additional content after the list (for example, a custom input).     |
 
 ### MultiSelectInput
 
-Composite multi-select control that combines a picker, chips, and optional dialog for custom values.
+Composite multi-select UI that combines a picker, chips, optional actions, and an optional custom-value dialog. It should display selections as chips and allow removal when permitted.
 
-| Prop              | Type                     | Required | Description                                                                             |
-| ----------------- | ------------------------ | -------- | --------------------------------------------------------------------------------------- |
-| `options`         | `OptionEntry<unknown>[]` | Yes      | Render these entries as options in the picker dropdown.                                 |
-| `value`           | `string`                 | No       | Use this option key as the current selection shown in the picker.                       |
-| `onChange`        | `(key: string) => void`  | Yes      | Call with the selected option key when the user picks an option.                        |
-| `ariaLabelledBy`  | `string`                 | No       | Forward to aria-labelledby for the picker so it associates with the label.              |
-| `ariaDescribedBy` | `string`                 | No       | Forward to aria-describedby for the picker so it associates with help or error text.    |
-| `disabled`        | `boolean`                | No       | When true, render the picker and chip actions in a disabled state.                      |
-| `isLoading`       | `boolean`                | No       | When true, show a loading indicator or busy state for the options.                      |
-| `showOptions`     | `boolean`                | No       | When false, hide the picker while still rendering chips and actions.                    |
-| `chips`           | `MultiSelectChip[]`      | Yes      | Render each chip as the current selection list, including its remove action and errors. |
-| `actions`         | `ReactNode`              | No       | Render additional action controls provided by the renderer (for example, “Clear all”).  |
-| `dialog`          | `MultiSelectDialog`      | No       | Render an overlay dialog when provided to capture custom values.                        |
-| `placeholder`     | `string`                 | No       | Show this placeholder text in the picker when no value is selected.                     |
+| Prop              | Type                    | Required | Description                                                                             |
+| ----------------- | ----------------------- | -------- | --------------------------------------------------------------------------------------- |
+| `options`         | `OptionEntry[]`         | Yes      | Render these entries as options in the picker dropdown.                                 |
+| `value`           | `string`                | No       | Use this option key as the current selection shown in the picker.                       |
+| `onChange`        | `(key: string) => void` | Yes      | Call with the selected option key when the user picks an option.                        |
+| `ariaLabelledBy`  | `string`                | No       | Forward to aria-labelledby for the picker so it associates with the label.              |
+| `ariaDescribedBy` | `string`                | No       | Forward to aria-describedby for the picker so it associates with help or error text.    |
+| `disabled`        | `boolean`               | No       | When true, render the picker and chip actions in a disabled state.                      |
+| `isLoading`       | `boolean`               | No       | When true, show a loading indicator or busy state for the options.                      |
+| `showOptions`     | `boolean`               | No       | When false, hide the picker while still rendering chips and actions.                    |
+| `chips`           | `MultiSelectChip[]`     | Yes      | Render each chip as the current selection list, including its remove action and errors. |
+| `actions`         | `ReactNode`             | No       | Render additional action controls provided by the renderer (for example, “Clear all”).  |
+| `dialog`          | `MultiSelectDialog`     | No       | Render an overlay dialog when provided to capture custom values.                        |
+| `placeholder`     | `string`                | No       | Show this placeholder text in the picker when no value is selected.                     |
 
 ### FileInput
 
-File upload control for attachment answers, typically wrapping a hidden file input and action buttons.
+Attachment picker that handles file selection, display of the selected file, and clearing. Call onFileSelect for the raw file and onChange when the Attachment value changes.
 
 | Prop              | Type                                                    | Required | Description                                                                          |
 | ----------------- | ------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
@@ -424,7 +423,7 @@ File upload control for attachment answers, typically wrapping a hidden file inp
 
 ### AnswerAddButton
 
-Action button for adding another answer instance in repeating questions.
+Add action for repeating question answers. Usually placed in the answer list toolbar.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -434,7 +433,7 @@ Action button for adding another answer instance in repeating questions.
 
 ### AnswerRemoveButton
 
-Action button for removing an answer instance in repeating questions.
+Remove action for a single repeating answer. Usually placed next to the answer control.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -444,7 +443,7 @@ Action button for removing an answer instance in repeating questions.
 
 ### GroupAddButton
 
-Action button for adding another group instance inside a repeating group wrapper.
+Add action for repeating group instances. Typically placed near the group wrapper toolbar.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -454,7 +453,7 @@ Action button for adding another group instance inside a repeating group wrapper
 
 ### GroupRemoveButton
 
-Action button for removing a group instance from a repeating group wrapper.
+Remove action for a single group instance inside a repeating wrapper.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -464,7 +463,7 @@ Action button for removing a group instance from a repeating group wrapper.
 
 ### FormSubmitButton
 
-Primary submit action for the form. Render it as a submit control so the form onSubmit fires.
+Primary submit call to action for the form. Render a button and invoke onClick when you handle submission outside native form behavior.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -474,7 +473,7 @@ Primary submit action for the form. Render it as a submit control so the form on
 
 ### FormResetButton
 
-Reset action for the form, typically clearing all answers back to their initial values.
+Secondary action that resets the form to its initial state. Render a button that calls onClick.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -484,7 +483,7 @@ Reset action for the form, typically clearing all answers back to their initial 
 
 ### OpenChoiceBackButton
 
-Action used when a dropdown open-choice value is active, returning the user to the option list.
+Action that returns from a custom open-choice input back to the option list.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -494,7 +493,7 @@ Action used when a dropdown open-choice value is active, returning the user to t
 
 ### MultiSelectSpecifyOtherButton
 
-Action that starts the “specify other” flow for multi-select questions.
+Action that opens the custom-value flow for multi-select questions.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -504,7 +503,7 @@ Action that starts the “specify other” flow for multi-select questions.
 
 ### MultiSelectClearAllButton
 
-Action that clears all current selections for multi-select questions.
+Action that clears all current selections in a multi-select control.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -514,7 +513,7 @@ Action that clears all current selections for multi-select questions.
 
 ### MultiSelectDialogCancelButton
 
-Cancel action used inside the multi-select dialog.
+Cancel action inside the custom-value dialog. Close the dialog without adding a value.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -524,7 +523,7 @@ Cancel action used inside the multi-select dialog.
 
 ### MultiSelectDialogAddButton
 
-Confirm action used inside the multi-select dialog to add a custom value.
+Confirm action inside the custom-value dialog. Add the custom value when pressed.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -534,7 +533,7 @@ Confirm action used inside the multi-select dialog to add a custom value.
 
 ### AnswerList
 
-Container that lays out one or more answers for a question and optionally shows the add toolbar.
+Container that lays out one or more answers and an optional toolbar. It controls spacing and ordering of answer rows.
 
 | Prop       | Type        | Required | Description                                              |
 | ---------- | ----------- | -------- | -------------------------------------------------------- |
@@ -543,7 +542,7 @@ Container that lays out one or more answers for a question and optionally shows 
 
 ### AnswerScaffold
 
-Per-answer layout that wraps the input control, remove button area, and nested content.
+Layout for a single answer row, combining the main control, a toolbar area, and nested content such as errors.
 
 | Prop       | Type        | Required | Description                                                       |
 | ---------- | ----------- | -------- | ----------------------------------------------------------------- |
@@ -553,7 +552,7 @@ Per-answer layout that wraps the input control, remove button area, and nested c
 
 ### QuestionScaffold
 
-Top-level layout wrapper for a question. It hosts the header, the control, and validation output.
+Wrapper around a question that organizes header, control, and validation feedback. Use it as the outer shell for question nodes.
 
 | Prop       | Type        | Required | Description                                                                                  |
 | ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -563,7 +562,7 @@ Top-level layout wrapper for a question. It hosts the header, the control, and v
 
 ### GroupWrapperScaffold
 
-Layout wrapper for a repeating group. It surrounds all group instances and the add button.
+Wrapper around a repeating group that holds the collection of instances and the add control.
 
 | Prop       | Type        | Required | Description                                                                                  |
 | ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -574,7 +573,7 @@ Layout wrapper for a repeating group. It surrounds all group instances and the a
 
 ### GroupWrapperScaffoldItem
 
-Per-instance layout used inside a repeating group wrapper.
+Per-instance wrapper inside a repeating group that places the group content alongside its remove action and errors.
 
 | Prop       | Type        | Required | Description                                              |
 | ---------- | ----------- | -------- | -------------------------------------------------------- |
@@ -584,7 +583,7 @@ Per-instance layout used inside a repeating group wrapper.
 
 ### GroupScaffold
 
-Layout wrapper for a non‑repeating group. It hosts the header and the group’s child nodes.
+Wrapper for a non-repeating group that arranges its header and child nodes. dataControl can steer specialized layouts.
 
 | Prop          | Type        | Required | Description                                                                                  |
 | ------------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -595,7 +594,7 @@ Layout wrapper for a non‑repeating group. It hosts the header and the group’
 
 ### GroupActions
 
-Container for auxiliary group-level content that should appear after the main group body.
+Slot for supplemental group-level content that should appear after the main group body.
 
 | Prop       | Type        | Required | Description                                                                |
 | ---------- | ----------- | -------- | -------------------------------------------------------------------------- |
@@ -603,7 +602,7 @@ Container for auxiliary group-level content that should appear after the main gr
 
 ### DisplayRenderer
 
-Renderer for display-only nodes (read-only text blocks).
+Renderer for display-only nodes such as static text or markdown. It should not expose input controls.
 
 | Prop       | Type        | Required | Description                                                                                  |
 | ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -612,7 +611,7 @@ Renderer for display-only nodes (read-only text blocks).
 
 ### NodeList
 
-Container that lays out a list of rendered nodes (questions, groups, or displays).
+List container that renders nodes in order. It should handle spacing and grouping.
 
 | Prop       | Type        | Required | Description                                              |
 | ---------- | ----------- | -------- | -------------------------------------------------------- |
@@ -620,7 +619,7 @@ Container that lays out a list of rendered nodes (questions, groups, or displays
 
 ### FormHeader
 
-Header block for the form, typically containing the questionnaire title and description.
+Form header area for title and description. It is optional and only shown when content is provided.
 
 | Prop          | Type        | Required | Description                                           |
 | ------------- | ----------- | -------- | ----------------------------------------------------- |
@@ -629,7 +628,7 @@ Header block for the form, typically containing the questionnaire title and desc
 
 ### FormErrors
 
-Form-level error summary shown near the top of the form.
+Top-level error summary for the form. Use it to list validation issues after submit attempts.
 
 | Prop       | Type       | Required | Description                                           |
 | ---------- | ---------- | -------- | ----------------------------------------------------- |
@@ -637,7 +636,7 @@ Form-level error summary shown near the top of the form.
 
 ### FormSection
 
-Layout section within the form used to group header, footer, or main content blocks.
+Section wrapper that groups header, footer, or main content within the form. Use variant to drive layout and styling.
 
 | Prop       | Type                                                   | Required | Description                                           |
 | ---------- | ------------------------------------------------------ | -------- | ----------------------------------------------------- |
@@ -646,7 +645,7 @@ Layout section within the form used to group header, footer, or main content blo
 
 ### FormActions
 
-Container for primary form actions such as submit and reset.
+Container for primary form actions, typically submit and reset. Use it to position action controls consistently.
 
 | Prop       | Type        | Required | Description                                                     |
 | ---------- | ----------- | -------- | --------------------------------------------------------------- |
@@ -654,7 +653,7 @@ Container for primary form actions such as submit and reset.
 
 ### Form
 
-Top-level form element that wraps the entire questionnaire.
+Outer wrapper for the questionnaire. If you render a form element, prevent default and call onSubmit; otherwise invoke onSubmit from your own controls.
 
 | Prop       | Type         | Required | Description                                                                |
 | ---------- | ------------ | -------- | -------------------------------------------------------------------------- |
@@ -663,7 +662,7 @@ Top-level form element that wraps the entire questionnaire.
 
 ### PageStatus
 
-Status display for paged forms that communicates the current page position.
+Indicator for the current page in a paged form. Keep it readable and accessible.
 
 | Prop      | Type     | Required | Description                                               |
 | --------- | -------- | -------- | --------------------------------------------------------- |
@@ -672,7 +671,7 @@ Status display for paged forms that communicates the current page position.
 
 ### PageNavigation
 
-Navigation controls for moving between pages in a paged form.
+Controls for moving between pages in a paged form. Provide clear prev/next affordances and honor disabled states.
 
 | Prop           | Type         | Required | Description                                                  |
 | -------------- | ------------ | -------- | ------------------------------------------------------------ |
@@ -685,7 +684,7 @@ Navigation controls for moving between pages in a paged form.
 
 ### GridTable
 
-Table layout used by grid-based group renderers to show questions in rows and columns.
+Tabular layout used by grid-style groups. Render headers and rows based on column and row metadata, with an optional empty state.
 
 | Prop      | Type                | Required | Description                                                          |
 | --------- | ------------------- | -------- | -------------------------------------------------------------------- |
@@ -695,7 +694,7 @@ Table layout used by grid-based group renderers to show questions in rows and co
 
 ### TabContainer
 
-Tabbed container used by group renderers to switch between child group panels.
+Tabbed layout for group panels. Render the active panel, wire ids for aria, and show errors or empty state when relevant.
 
 | Prop       | Type                      | Required | Description                                                                                  |
 | ---------- | ------------------------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -729,7 +728,18 @@ Option shape used by components that need a key, label, and underlying value pay
 | ---------- | --------- | -------- | ------------------------------------------------------------------ |
 | `key`      | `string`  | Yes      | Use as the stable option identifier when matching selections.      |
 | `label`    | `string`  | Yes      | Render as the visible label for the option.                        |
-| `value`    | `TValue`  | No       | Provide the associated value payload for the option when needed.   |
+| `value`    | `unknown` | No       | Provide the associated value payload for the option when needed.   |
+| `disabled` | `boolean` | No       | When true, render the option as unavailable and prevent selection. |
+
+### OptionValueEntry
+
+Option shape used when the value payload is always required (for example, checkbox lists).
+
+| Field      | Type      | Required | Description                                                        |
+| ---------- | --------- | -------- | ------------------------------------------------------------------ |
+| `key`      | `string`  | Yes      | Use as the stable option identifier when matching selections.      |
+| `label`    | `string`  | Yes      | Render as the visible label for the option.                        |
+| `value`    | `unknown` | Yes      | Provide the associated value payload for the option.               |
 | `disabled` | `boolean` | No       | When true, render the option as unavailable and prevent selection. |
 
 ### Attachment

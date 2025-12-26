@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { optionStatusClass } from "./option-status.ts";
 
 export type RadioButtonListProps = {
-  options: OptionItem[];
+  options: readonly OptionItem[];
   value: string;
   onChange: (value: string) => void;
   legacyOption: { key: string; label: string } | null;

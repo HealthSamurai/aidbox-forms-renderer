@@ -18,7 +18,7 @@ export type MultiSelectDialog = {
 };
 
 export type MultiSelectInputProps = {
-  options: OptionEntry<unknown>[];
+  options: readonly OptionEntry<unknown>[];
   value?: string | undefined;
   onChange: (key: string) => void;
   ariaLabelledBy?: string | undefined;
