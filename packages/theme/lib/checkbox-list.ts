@@ -1,16 +1,16 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionValueEntry } from "./option-entry.ts";
+import type { OptionItem } from "./option-item.ts";
 
-export type CheckboxListProps<TValue = unknown> = {
-  options: readonly OptionValueEntry<TValue>[];
-  value: Set<string>;
-  onChange: (key: string) => void;
+export type CheckboxListProps = {
+  options: readonly OptionItem[];
+  tokens: Set<string>;
+  onChange: (token: string) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean;
   isLoading?: boolean;
-  renderErrors?: (key: string) => ReactNode;
+  renderErrors?: (token: string) => ReactNode;
   after?: ReactNode;
 };
 

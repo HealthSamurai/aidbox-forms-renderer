@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionEntry } from "./option-entry.ts";
+import type { OptionItem } from "./option-item.ts";
 
 export type MultiSelectChip = {
   key: string;
@@ -18,9 +18,9 @@ export type MultiSelectDialog = {
 };
 
 export type MultiSelectInputProps = {
-  options: readonly OptionEntry<unknown>[];
-  value?: string | undefined;
-  onChange: (key: string) => void;
+  options: readonly OptionItem[];
+  token?: string | undefined;
+  onChange: (token: string) => void;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;

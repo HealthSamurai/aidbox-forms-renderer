@@ -2,7 +2,7 @@ import type { RadioButtonListProps } from "@aidbox-forms/theme";
 
 export function RadioButtonList({
   options,
-  value,
+  token,
   onChange,
   legacyOption,
   id,
@@ -13,7 +13,7 @@ export function RadioButtonList({
   after,
   afterInset = false,
 }: RadioButtonListProps) {
-  const makeInputId = (key: string) => (id ? `${id}-${key}` : undefined);
+  const makeInputId = (token: string) => (id ? `${id}-${token}` : undefined);
 
   return (
     <div className="nhsuk-form-group">
@@ -28,33 +28,33 @@ export function RadioButtonList({
           <div className="nhsuk-radios__item">
             <input
               className="nhsuk-radios__input"
-              id={makeInputId(legacyOption.key)}
+              id={makeInputId(legacyOption.token)}
               type="radio"
               name={id}
-              value={legacyOption.key}
-              checked={value === legacyOption.key}
+              value={legacyOption.token}
+              checked={token === legacyOption.token}
               disabled
               aria-describedby={ariaDescribedBy}
             />
             <label
               className="nhsuk-label nhsuk-radios__label"
-              htmlFor={makeInputId(legacyOption.key)}
+              htmlFor={makeInputId(legacyOption.token)}
             >
               {legacyOption.label}
             </label>
           </div>
         ) : null}
         {options.map((entry) => {
-          const optionId = makeInputId(entry.key);
+          const optionId = makeInputId(entry.token);
           return (
-            <div key={entry.key} className="nhsuk-radios__item">
+            <div key={entry.token} className="nhsuk-radios__item">
               <input
                 className="nhsuk-radios__input"
                 id={optionId}
                 type="radio"
                 name={id}
-                value={entry.key}
-                checked={value === entry.key}
+                value={entry.token}
+                checked={token === entry.token}
                 disabled={disabled || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
                 aria-describedby={ariaDescribedBy}

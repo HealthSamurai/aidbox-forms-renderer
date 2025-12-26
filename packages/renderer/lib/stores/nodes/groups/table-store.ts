@@ -19,7 +19,7 @@ import {
 import { isQuestionNode } from "../questions/question-store.ts";
 
 type TableOptionColumn = {
-  key: string;
+  token: string;
   label: string;
 };
 
@@ -34,7 +34,7 @@ type TableModel = {
 };
 
 export type TableCellState = {
-  key: string;
+  token: string;
   entry: AnswerOptionEntry<AnswerType> | undefined;
   placeholder?: string;
   selected: boolean;
@@ -87,7 +87,7 @@ export class TableStore implements ITableStore {
       let selectedKey = "";
 
       const cells = this.columns.map((column) => {
-        const entry = row.optionMap.get(column.key);
+        const entry = row.optionMap.get(column.token);
         const cell = (() => {
           if (!entry) {
             return {
@@ -141,11 +141,11 @@ export class TableStore implements ITableStore {
           };
         })();
         if (cell.selected) {
-          selectedKeys.add(column.key);
-          selectedKey = column.key;
+          selectedKeys.add(column.token);
+          selectedKey = column.token;
         }
         return {
-          key: column.key,
+          token: column.token,
           entry,
           ...cell,
         };
@@ -200,17 +200,17 @@ export class TableStore implements ITableStore {
         } catch {
           encodedValue = entry.label;
         }
-        const key = `${type}::${valueLabel}::${encodedValue}`;
+        const token = `${type}::${valueLabel}::${encodedValue}`;
 
-        if (!columnMap.has(key)) {
+        if (!columnMap.has(token)) {
           const column: TableOptionColumn = {
-            key,
+            token,
             label: entry.label,
           };
-          columnMap.set(key, column);
+          columnMap.set(token, column);
           columns.push(column);
         }
-        optionMap.set(key, entry);
+        optionMap.set(token, entry);
       });
       rows.push({ question, optionMap });
     });

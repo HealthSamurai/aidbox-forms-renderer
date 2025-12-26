@@ -6,6 +6,7 @@ import type {
   DataTypeToType,
   IAnswerOptions,
   IQuestionNode,
+  OptionItem,
 } from "../../../types.ts";
 import type {
   Coding,
@@ -102,7 +103,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
       return [
         {
-          key: `${this.question.key}_/_${index}`,
+          token: `${this.question.key}_/_${index}`,
           label,
           value,
           option,
@@ -127,7 +128,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
       DataTypeToType<AnswerTypeToDataType<T>> | null
     >();
     for (const entry of this.entries) {
-      map.set(entry.key, entry.value);
+      map.set(entry.token, entry.value);
     }
     return map;
   }
@@ -145,7 +146,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
         ? false
         : areValuesEqual(dataType, value, entry.value),
     );
-    return match?.key ?? "";
+    return match?.token ?? "";
   }
 
   getValueForKey(key: string): DataTypeToType<AnswerTypeToDataType<T>> | null {
@@ -156,7 +157,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   getLegacyEntryForValue(
     answerKey: string,
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): { key: string; label: string } | null {
+  ): OptionItem | null {
     if (value == null) {
       return null;
     }
@@ -171,7 +172,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     }
 
     return {
-      key: `${answerKey}::__legacy__`,
+      token: `${answerKey}::__legacy__`,
       label,
     };
   }

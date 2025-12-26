@@ -10,9 +10,9 @@ export type BooleanInputProps = {
 };
 
 const BOOLEAN_OPTIONS = [
-  { key: "yes", label: "Yes" },
-  { key: "no", label: "No" },
-  { key: "unanswered", label: "Unanswered" },
+  { token: "yes", label: "Yes" },
+  { token: "no", label: "No" },
+  { token: "unanswered", label: "Unanswered" },
 ];
 
 export function BooleanInput({
@@ -24,7 +24,7 @@ export function BooleanInput({
   disabled,
 }: BooleanInputProps) {
   const { RadioButtonList } = useTheme();
-  const selectedKey =
+  const selectedToken =
     value === true ? "yes" : value === false ? "no" : "unanswered";
   const fallbackInputId = id ?? "boolean";
   const fallbackAriaLabelledBy = ariaLabelledBy ?? fallbackInputId;
@@ -32,11 +32,11 @@ export function BooleanInput({
   return (
     <RadioButtonList
       options={BOOLEAN_OPTIONS}
-      value={selectedKey}
-      onChange={(key) => {
-        if (key === "yes") {
+      token={selectedToken}
+      onChange={(token) => {
+        if (token === "yes") {
           onChange(true);
-        } else if (key === "no") {
+        } else if (token === "no") {
           onChange(false);
         } else {
           onChange(null);

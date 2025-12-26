@@ -54,12 +54,17 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   isLoading: boolean;
 }) {
   const { SelectInput } = useTheme();
+  const options = node.options.entries.map((option) => ({
+    token: option.token,
+    label: option.label,
+    disabled: option.disabled,
+  }));
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
 
   return (
     <SelectInput
-      options={node.options.entries}
-      value={rowStore.selectValue}
+      options={options}
+      token={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleSelect}
       id={rowProps.id}
@@ -107,11 +112,16 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   }
 
   const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
+  const options = rowStore.extendedOptions.map((option) => ({
+    token: option.token,
+    label: option.label,
+    disabled: option.disabled,
+  }));
 
   return (
     <SelectInput
-      options={rowStore.extendedOptions}
-      value={rowStore.optionKey}
+      options={options}
+      token={rowStore.optionKey}
       legacyOption={null}
       onChange={rowStore.handleSelect}
       id={rowProps.id}

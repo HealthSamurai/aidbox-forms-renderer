@@ -2,7 +2,7 @@ import type { MultiSelectInputProps } from "@aidbox-forms/theme";
 
 export function MultiSelectInput({
   options,
-  value = "",
+  token = "",
   onChange,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -14,9 +14,9 @@ export function MultiSelectInput({
   dialog,
   placeholder,
 }: MultiSelectInputProps) {
-  const handleSelectChange = (key: string) => {
-    if (!key) return;
-    onChange(key);
+  const handleSelectChange = (token: string) => {
+    if (!token) return;
+    onChange(token);
   };
 
   const renderOptions = () => {
@@ -26,7 +26,7 @@ export function MultiSelectInput({
       <select
         id={ariaLabelledBy ? `${ariaLabelledBy}-multi-select` : undefined}
         className="nhsuk-select"
-        value={value}
+        value={token}
         onChange={(event) => handleSelectChange(event.target.value)}
         disabled={disabled || isLoading}
         aria-labelledby={ariaLabelledBy}
@@ -34,7 +34,11 @@ export function MultiSelectInput({
       >
         <option value="">{placeholder ?? "Select an option"}</option>
         {options.map((entry) => (
-          <option key={entry.key} value={entry.key} disabled={entry.disabled}>
+          <option
+            key={entry.token}
+            value={entry.token}
+            disabled={entry.disabled}
+          >
             {entry.label}
           </option>
         ))}

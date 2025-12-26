@@ -59,15 +59,15 @@ export const ListSelectControl = observer(function ListSelectControl<
     return (
       <CheckboxList
         options={state.uiOptions}
-        value={state.selectedKeys}
+        tokens={state.selectedKeys}
         onChange={store.handleCheckboxToggle}
         id={node.key}
         ariaLabelledBy={getNodeLabelId(node)}
         ariaDescribedBy={getNodeDescribedBy(node)}
         disabled={node.readOnly}
         isLoading={store.isLoading}
-        renderErrors={(key) => {
-          const answer = state.answerByKey.get(key);
+        renderErrors={(token) => {
+          const answer = state.answerByKey.get(token);
           return answer ? <AnswerErrors answer={answer} /> : null;
         }}
         after={customControl}
@@ -106,7 +106,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   return (
     <RadioButtonList
       options={rowStore.radioOptions}
-      value={rowStore.selectValue}
+      token={rowStore.selectValue}
       legacyOption={rowStore.legacyOption}
       onChange={rowStore.handleChange}
       id={rowProps.id}

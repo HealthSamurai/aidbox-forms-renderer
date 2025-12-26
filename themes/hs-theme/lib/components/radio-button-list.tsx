@@ -1,25 +1,10 @@
 import { styled } from "@linaria/react";
-import type { OptionItem } from "@aidbox-forms/theme";
-import type { ReactNode } from "react";
+import type { RadioButtonListProps } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
-
-export type RadioButtonListProps = {
-  options: readonly OptionItem[];
-  value: string;
-  onChange: (value: string) => void;
-  legacyOption: { key: string; label: string } | null;
-  id: string;
-  ariaLabelledBy: string;
-  ariaDescribedBy?: string | undefined;
-  disabled: boolean;
-  isLoading?: boolean;
-  after?: ReactNode;
-  afterInset?: boolean;
-};
 
 export function RadioButtonList({
   options,
-  value,
+  token,
   onChange,
   legacyOption,
   id,
@@ -44,8 +29,8 @@ export function RadioButtonList({
               <input
                 type="radio"
                 name={id}
-                value={legacyOption.key}
-                checked={value === legacyOption.key}
+                value={legacyOption.token}
+                checked={token === legacyOption.token}
                 disabled
               />
               {legacyOption.label}
@@ -53,13 +38,13 @@ export function RadioButtonList({
           </RadioOption>
         ) : null}
         {options.map((entry) => (
-          <RadioOption key={entry.key}>
+          <RadioOption key={entry.token}>
             <RadioLabel>
               <input
                 type="radio"
                 name={id}
-                value={entry.key}
-                checked={value === entry.key}
+                value={entry.token}
+                checked={token === entry.token}
                 disabled={disabled || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
               />

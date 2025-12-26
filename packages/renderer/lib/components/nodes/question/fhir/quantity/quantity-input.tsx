@@ -21,7 +21,7 @@ export function QuantityInput({
   const { InputGroup, NumberInput, SelectInput, TextInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
-    : answer.quantity.displayUnitKey;
+    : answer.quantity.displayUnitToken;
   const inputBaseId = id;
   const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
   const unitInputId = `${inputBaseId}-unit`;
@@ -57,9 +57,9 @@ export function QuantityInput({
       ) : (
         <SelectInput
           options={answer.quantity.entries}
-          value={unitValue}
+          token={unitValue}
           legacyOption={null}
-          onChange={(key) => answer.quantity.handleSelectChange(key)}
+          onChange={(token) => answer.quantity.handleSelectChange(token)}
           id={unitInputId}
           ariaLabelledBy={resolvedAriaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}

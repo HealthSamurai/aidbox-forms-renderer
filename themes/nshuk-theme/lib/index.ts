@@ -1,9 +1,7 @@
-import type { ComponentProps } from "react";
 import type { Theme } from "@aidbox-forms/theme";
-import { TextInput, type TextInputProps } from "./components/text-input.tsx";
-import { TextArea, type TextAreaProps } from "./components/text-area.tsx";
+import { TextInput } from "./components/text-input.tsx";
+import { TextArea } from "./components/text-area.tsx";
 import { NumberInput } from "./components/number-input.tsx";
-import type { NumberInputProps } from "@aidbox-forms/theme";
 import { DateInput } from "./components/date-input.tsx";
 import { DateTimeInput } from "./components/date-time-input.tsx";
 import { TimeInput } from "./components/time-input.tsx";
@@ -53,9 +51,6 @@ import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { Link } from "./components/link.tsx";
 import "./global.css";
-
-export type { Theme };
-export type { TextInputProps, TextAreaProps, NumberInputProps };
 export { TextInput, TextArea, NumberInput };
 export { TabContainer, DisplayRenderer, Link };
 
@@ -114,19 +109,5 @@ const passthrough: Theme = {
 };
 
 export const theme: Theme = passthrough;
-
-// Derived prop helpers for consumers wanting to wrap other controls using the same shapes.
-export type DateInputProps = ComponentProps<typeof passthrough.DateInput>;
-export type DateTimeInputProps = ComponentProps<
-  typeof passthrough.DateTimeInput
->;
-export type TimeInputProps = ComponentProps<typeof passthrough.TimeInput>;
-export type SliderInputProps = ComponentProps<typeof passthrough.SliderInput>;
-export type SpinnerInputProps = ComponentProps<typeof passthrough.SpinnerInput>;
-export type SelectInputProps = ComponentProps<typeof passthrough.SelectInput>;
-export type RadioButtonListProps = ComponentProps<
-  typeof passthrough.RadioButtonList
->;
-export type CheckboxListProps = ComponentProps<typeof passthrough.CheckboxList>;
 
 export default theme;

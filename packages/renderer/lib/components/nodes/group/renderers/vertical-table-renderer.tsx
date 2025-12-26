@@ -37,27 +37,26 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
       cells: row.cells.map((cell) => {
         if (!cell.entry || !cell.toggleSelection) {
           return {
-            key: `${row.key}-${cell.key}`,
+            key: `${row.key}-${cell.token}`,
             content: cell.placeholder ?? "—",
           };
         }
 
         if (row.question.repeats) {
           return {
-            key: `${row.key}-${cell.key}`,
+            key: `${row.key}-${cell.token}`,
             content: (
               <CheckboxList
                 options={[
                   {
-                    key: cell.key,
+                    token: cell.token,
                     label: cell.entry.label,
-                    value: cell.entry.value,
                     disabled: cell.disabled,
                   },
                 ]}
-                value={row.selectedKeys}
+                tokens={row.selectedKeys}
                 onChange={(key) => {
-                  if (key === cell.key) {
+                  if (key === cell.token) {
                     cell.toggleSelection?.();
                   }
                 }}
@@ -71,20 +70,20 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
         }
 
         return {
-          key: `${row.key}-${cell.key}`,
+          key: `${row.key}-${cell.token}`,
           content: (
             <RadioButtonList
               options={[
                 {
-                  key: cell.key,
+                  token: cell.token,
                   label: cell.entry.label,
                   disabled: cell.disabled,
                 },
               ]}
-              value={row.selectedKey}
+              token={row.selectedKey}
               legacyOption={null}
               onChange={(key) => {
-                if (key === cell.key) {
+                if (key === cell.token) {
                   cell.toggleSelection?.();
                 }
               }}
@@ -102,7 +101,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
       <>
         <GridTable
           columns={store.columns.map((column) => ({
-            key: column.key,
+            key: column.token,
             label: column.label,
           }))}
           rows={rows}

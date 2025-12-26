@@ -1,8 +1,8 @@
 import type { CheckboxListProps } from "@aidbox-forms/theme";
 
-export function CheckboxList<T>({
+export function CheckboxList({
   options,
-  value,
+  tokens,
   onChange,
   id,
   ariaLabelledBy,
@@ -11,7 +11,7 @@ export function CheckboxList<T>({
   isLoading,
   renderErrors,
   after,
-}: CheckboxListProps<T>) {
+}: CheckboxListProps) {
   return (
     <div
       className="nhsuk-checkboxes"
@@ -21,10 +21,10 @@ export function CheckboxList<T>({
     >
       {options.map((option, index) => {
         const optionId = `${id}-option-${index}`;
-        const isChecked = value.has(option.key);
+        const isChecked = tokens.has(option.token);
         const disableToggle = disabled || isLoading || option.disabled;
         return (
-          <div className="nhsuk-checkboxes__item" key={option.key}>
+          <div className="nhsuk-checkboxes__item" key={option.token}>
             <input
               className="nhsuk-checkboxes__input"
               type="checkbox"
@@ -32,7 +32,7 @@ export function CheckboxList<T>({
               id={optionId}
               checked={isChecked}
               disabled={disableToggle}
-              onChange={() => onChange(option.key)}
+              onChange={() => onChange(option.token)}
             />
             <label
               className="nhsuk-label nhsuk-checkboxes__label"
@@ -40,7 +40,7 @@ export function CheckboxList<T>({
             >
               {option.label}
             </label>
-            {renderErrors ? renderErrors(option.key) : null}
+            {renderErrors ? renderErrors(option.token) : null}
           </div>
         );
       })}

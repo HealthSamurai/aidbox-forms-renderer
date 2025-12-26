@@ -138,11 +138,16 @@ export const MultiSelectControl = observer(function MultiSelectControl<
         };
       })()
     : undefined;
+  const options = store.extendedOptions.map((option) => ({
+    token: option.token,
+    label: option.label,
+    disabled: option.disabled,
+  }));
 
   return (
     <MultiSelectInput
-      options={store.extendedOptions}
-      value={store.selectValue}
+      options={options}
+      token={store.selectValue}
       onChange={store.handleSelectOption}
       ariaLabelledBy={store.ariaLabelledBy}
       ariaDescribedBy={store.ariaDescribedBy}

@@ -1,11 +1,11 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionItem } from "./option-entry.ts";
+import type { OptionItem } from "./option-item.ts";
 
 export type RadioButtonListProps = {
   options: readonly OptionItem[];
-  value: string;
-  onChange: (value: string) => void;
-  legacyOption: { key: string; label: string } | null;
+  token: string;
+  onChange: (token: string) => void;
+  legacyOption: OptionItem | null;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;

@@ -62,7 +62,6 @@
 - [Data types](#data-types)
   - [OptionItem](#optionitem)
   - [OptionEntry](#optionentry)
-    - [OptionValueEntry](#optionvalueentry)
   - [Attachment](#attachment)
   - [MultiSelectChip](#multiselectchip)
   - [MultiSelectDialog](#multiselectdialog)
@@ -105,7 +104,8 @@ every component must be provided.
 
 ## Conventions
 
-- Controlled props: inputs use value and onChange. onChange receives the next value, never a DOM event.
+- Controlled props: text/number/date inputs use value and onChange. Option selectors use token and onChange, and
+  checkbox lists use tokens for the selected set. onChange receives the next value, never a DOM event.
 - Disabled states: the renderer uses disabled to indicate non editable inputs. Prefer disabled over readOnly in theme
   components.
 - Accessibility: ariaLabelledBy and ariaDescribedBy are string ids. Wire them to the relevant elements.
@@ -120,7 +120,8 @@ every component must be provided.
 
 ### Link
 
-General-purpose link for references and related actions surfaced by the renderer. Render as an anchor or equivalent control with standard link behavior.
+General-purpose link for references and related actions surfaced by the renderer. Render as an anchor or equivalent
+control with standard link behavior.
 
 | Prop       | Type        | Required | Description                                                                           |
 | ---------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
@@ -131,7 +132,8 @@ General-purpose link for references and related actions surfaced by the renderer
 
 ### EmptyState
 
-Placeholder container for lists, tables, or groups when there is nothing to render. Use it for messaging, guidance, or simple illustration.
+Placeholder container for lists, tables, or groups when there is nothing to render. Use it for messaging, guidance, or
+simple illustration.
 
 | Prop       | Type        | Required | Description                                                     |
 | ---------- | ----------- | -------- | --------------------------------------------------------------- |
@@ -139,7 +141,8 @@ Placeholder container for lists, tables, or groups when there is nothing to rend
 
 ### Errors
 
-Inline list of validation messages for a specific control or answer. Keep each message distinct and close to the related input.
+Inline list of validation messages for a specific control or answer. Keep each message distinct and close to the related
+input.
 
 | Prop       | Type       | Required | Description                                                                |
 | ---------- | ---------- | -------- | -------------------------------------------------------------------------- |
@@ -148,7 +151,8 @@ Inline list of validation messages for a specific control or answer. Keep each m
 
 ### OptionsState
 
-Status UI for option-backed controls while options are loading or failed. Use it to show a spinner, skeleton, or error message where options would appear.
+Status UI for option-backed controls while options are loading or failed. Use it to show a spinner, skeleton, or error
+message where options would appear.
 
 | Prop        | Type      | Required | Description                                                   |
 | ----------- | --------- | -------- | ------------------------------------------------------------- |
@@ -157,7 +161,8 @@ Status UI for option-backed controls while options are loading or failed. Use it
 
 ### NodeHelp
 
-Short help text associated with a node label. Usually rendered near the label and referenced by the control via aria-describedby.
+Short help text associated with a node label. Usually rendered near the label and referenced by the control via
+aria-describedby.
 
 | Prop        | Type        | Required | Description                                              |
 | ----------- | ----------- | -------- | -------------------------------------------------------- |
@@ -167,7 +172,8 @@ Short help text associated with a node label. Usually rendered near the label an
 
 ### NodeLegal
 
-Legal or consent content tied to a node. It can be inline text or a trigger that reveals more detail, but should remain accessible.
+Legal or consent content tied to a node. It can be inline text or a trigger that reveals more detail, but should remain
+accessible.
 
 | Prop        | Type        | Required | Description                                                                                                               |
 | ----------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -177,7 +183,8 @@ Legal or consent content tied to a node. It can be inline text or a trigger that
 
 ### NodeFlyover
 
-Supplementary context for a node, often presented as a tooltip or popover. Keep it discoverable from the header and reachable via aria-describedby.
+Supplementary context for a node, often presented as a tooltip or popover. Keep it discoverable from the header and
+reachable via aria-describedby.
 
 | Prop        | Type        | Required | Description                                                                                                               |
 | ----------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -187,7 +194,8 @@ Supplementary context for a node, often presented as a tooltip or popover. Keep 
 
 ### NodeHeader
 
-Header block for questions and groups that owns label layout, required marker, and optional help/legal/flyover slots. It also provides the labelled-by anchor for the main control.
+Header block for questions and groups that owns label layout, required marker, and optional help/legal/flyover slots. It
+also provides the labelled-by anchor for the main control.
 
 | Prop             | Type        | Required | Description                                                                           |
 | ---------------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
@@ -201,17 +209,19 @@ Header block for questions and groups that owns label layout, required marker, a
 
 ### InputGroup
 
-Layout wrapper for multi-part inputs such as quantity and coding. Arrange the children as a single logical field using the chosen layout and weights.
+Layout wrapper for multi-part inputs such as quantity and coding. Arrange the children as a single logical field using
+the chosen layout and weights.
 
-| Prop       | Type                             | Required | Description                                                                       |
-| ---------- | -------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `children` | `ReactNode`                      | Yes      | Render each child input in order as a single grouped control.                     |
-| `layout`   | <code>"grid" &#124; "row"</code> | Yes      | Choose the overall arrangement: grid-style flow or a horizontal row.              |
-| `weights`  | `number[]`                       | No       | Use as relative size hints per child when layout is row; ignore for grid layouts. |
+| Prop       | Type              | Required | Description                                                                       |
+| ---------- | ----------------- | -------- | --------------------------------------------------------------------------------- |
+| `children` | `ReactNode`       | Yes      | Render each child input in order as a single grouped control.                     |
+| `layout`   | `"grid" \| "row"` | Yes      | Choose the overall arrangement: grid-style flow or a horizontal row.              |
+| `weights`  | `number[]`        | No       | Use as relative size hints per child when layout is row; ignore for grid layouts. |
 
 ### TextInput
 
-Single-line text field for short string answers, URLs, or identifiers. Render a standard input and forward accessibility ids and placeholder.
+Single-line text field for short string answers, URLs, or identifiers. Render a standard input and forward accessibility
+ids and placeholder.
 
 | Prop              | Type                                   | Required | Description                                                                 |
 | ----------------- | -------------------------------------- | -------- | --------------------------------------------------------------------------- |
@@ -227,7 +237,8 @@ Single-line text field for short string answers, URLs, or identifiers. Render a 
 
 ### TextArea
 
-Multi-line text field for longer narrative responses. Use a textarea or equivalent and forward accessibility ids and placeholder.
+Multi-line text field for longer narrative responses. Use a textarea or equivalent and forward accessibility ids and
+placeholder.
 
 | Prop              | Type                      | Required | Description                                                                    |
 | ----------------- | ------------------------- | -------- | ------------------------------------------------------------------------------ |
@@ -243,17 +254,17 @@ Multi-line text field for longer narrative responses. Use a textarea or equivale
 
 Numeric text field for integer, decimal, and quantity values. Accept null for empty and show a unit label when provided.
 
-| Prop              | Type                                                | Required | Description                                                                         |
-| ----------------- | --------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `id`              | `string`                                            | No       | Set as the input id so labels can target it.                                        |
-| `value`           | <code>number &#124; null</code>                     | Yes      | Render this number as the current value; null means show an empty field.            |
-| `onChange`        | <code>(value: number &#124; null) =&gt; void</code> | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
-| `disabled`        | `boolean`                                           | No       | When true, render the input in a disabled state and prevent edits.                  |
-| `placeholder`     | `string`                                            | No       | Show this hint when the field is empty.                                             |
-| `step`            | <code>number &#124; "any"</code>                    | No       | Apply as the input step value to control increments and precision.                  |
-| `ariaLabelledBy`  | `string`                                            | No       | Forward to aria-labelledby to associate the input with its label.                   |
-| `ariaDescribedBy` | `string`                                            | No       | Forward to aria-describedby to associate the input with help or error text.         |
-| `unitLabel`       | `string`                                            | No       | Render a static unit label alongside the input when provided.                       |
+| Prop              | Type                              | Required | Description                                                                         |
+| ----------------- | --------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `id`              | `string`                          | No       | Set as the input id so labels can target it.                                        |
+| `value`           | `number \| null`                  | Yes      | Render this number as the current value; null means show an empty field.            |
+| `onChange`        | `(value: number \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
+| `disabled`        | `boolean`                         | No       | When true, render the input in a disabled state and prevent edits.                  |
+| `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                             |
+| `step`            | `number \| "any"`                 | No       | Apply as the input step value to control increments and precision.                  |
+| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                   |
+| `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.         |
+| `unitLabel`       | `string`                          | No       | Render a static unit label alongside the input when provided.                       |
 
 ### DateInput
 
@@ -301,125 +312,130 @@ Time-only field for hours and minutes. Use a time picker or text input but keep 
 
 Range control for bounded numeric values. Show bounds and current value when available, and treat null as no selection.
 
-| Prop              | Type                                                | Required | Description                                                                        |
-| ----------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
-| `value`           | <code>number &#124; null</code>                     | Yes      | Render this number as the current slider position; null represents an unset value. |
-| `onChange`        | <code>(value: number &#124; null) =&gt; void</code> | Yes      | Call with the new numeric value whenever the slider moves, or null if cleared.     |
-| `disabled`        | `boolean`                                           | No       | When true, render the slider in a disabled state and prevent interaction.          |
-| `min`             | `number`                                            | No       | Use as the lower bound for the slider range.                                       |
-| `max`             | `number`                                            | No       | Use as the upper bound for the slider range.                                       |
-| `step`            | `number`                                            | No       | Apply as the slider step increment.                                                |
-| `ariaLabelledBy`  | `string`                                            | No       | Forward to aria-labelledby to associate the slider with its label.                 |
-| `ariaDescribedBy` | `string`                                            | No       | Forward to aria-describedby to associate the slider with help or error text.       |
-| `lowerLabel`      | `string`                                            | No       | Display this label near the minimum value marker when provided.                    |
-| `upperLabel`      | `string`                                            | No       | Display this label near the maximum value marker when provided.                    |
-| `unitLabel`       | `string`                                            | No       | Render a unit label alongside the current value when provided.                     |
+| Prop              | Type                              | Required | Description                                                                        |
+| ----------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| `value`           | `number \| null`                  | Yes      | Render this number as the current slider position; null represents an unset value. |
+| `onChange`        | `(value: number \| null) => void` | Yes      | Call with the new numeric value whenever the slider moves, or null if cleared.     |
+| `disabled`        | `boolean`                         | No       | When true, render the slider in a disabled state and prevent interaction.          |
+| `min`             | `number`                          | No       | Use as the lower bound for the slider range.                                       |
+| `max`             | `number`                          | No       | Use as the upper bound for the slider range.                                       |
+| `step`            | `number`                          | No       | Apply as the slider step increment.                                                |
+| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the slider with its label.                 |
+| `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the slider with help or error text.       |
+| `lowerLabel`      | `string`                          | No       | Display this label near the minimum value marker when provided.                    |
+| `upperLabel`      | `string`                          | No       | Display this label near the maximum value marker when provided.                    |
+| `unitLabel`       | `string`                          | No       | Render a unit label alongside the current value when provided.                     |
 
 ### SpinnerInput
 
 Numeric control with stepper affordances for small ranges. It should support typing, step changes, and min/max rules.
 
-| Prop              | Type                                                | Required | Description                                                                                    |
-| ----------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| `value`           | <code>number &#124; null</code>                     | Yes      | Render this number as the current value; null represents an empty field.                       |
-| `onChange`        | <code>(value: number &#124; null) =&gt; void</code> | Yes      | Call with the new numeric value when the user edits or uses the stepper, or null when cleared. |
-| `disabled`        | `boolean`                                           | No       | When true, render the control in a disabled state and prevent interaction.                     |
-| `min`             | `number`                                            | No       | Use as the lower bound for the value.                                                          |
-| `max`             | `number`                                            | No       | Use as the upper bound for the value.                                                          |
-| `step`            | `number`                                            | No       | Apply as the step increment for the control.                                                   |
-| `ariaLabelledBy`  | `string`                                            | No       | Forward to aria-labelledby to associate the input with its label.                              |
-| `ariaDescribedBy` | `string`                                            | No       | Forward to aria-describedby to associate the input with help or error text.                    |
-| `placeholder`     | `string`                                            | No       | Show this hint when the field is empty.                                                        |
-| `unitLabel`       | `string`                                            | No       | Render a unit label alongside the input when provided.                                         |
+| Prop              | Type                              | Required | Description                                                                                    |
+| ----------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `value`           | `number \| null`                  | Yes      | Render this number as the current value; null represents an empty field.                       |
+| `onChange`        | `(value: number \| null) => void` | Yes      | Call with the new numeric value when the user edits or uses the stepper, or null when cleared. |
+| `disabled`        | `boolean`                         | No       | When true, render the control in a disabled state and prevent interaction.                     |
+| `min`             | `number`                          | No       | Use as the lower bound for the value.                                                          |
+| `max`             | `number`                          | No       | Use as the upper bound for the value.                                                          |
+| `step`            | `number`                          | No       | Apply as the step increment for the control.                                                   |
+| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                              |
+| `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.                    |
+| `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                                        |
+| `unitLabel`       | `string`                          | No       | Render a unit label alongside the input when provided.                                         |
 
 ### SelectInput
 
-Single-select dropdown for option lists. Include legacyOption as a disabled entry when present and show a clear control when provided.
+Single-select dropdown for option lists. Include legacyOption as a disabled entry when present and show a clear control
+when provided.
 
-| Prop              | Type                                                    | Required | Description                                                                              |
-| ----------------- | ------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`                                          | Yes      | Render these entries as selectable options in the dropdown.                              |
-| `value`           | `string`                                                | Yes      | Render this option key as the current selection.                                         |
-| `onChange`        | `(key: string) => void`                                 | Yes      | Call with the newly selected option key when the user changes the selection.             |
-| `legacyOption`    | <code>{ key: string; label: string } &#124; null</code> | Yes      | Include a non-selectable option that represents a stored value not present in `options`. |
-| `id`              | `string`                                                | Yes      | Set as the select element id so labels can target it.                                    |
-| `ariaLabelledBy`  | `string`                                                | Yes      | Forward to aria-labelledby to associate the select with its label.                       |
-| `ariaDescribedBy` | `string`                                                | No       | Forward to aria-describedby to associate the select with help or error text.             |
-| `disabled`        | `boolean`                                               | Yes      | When true, render the select in a disabled state and prevent changes.                    |
-| `isLoading`       | `boolean`                                               | No       | When true, show a loading indicator or disable option interactions as needed.            |
-| `onClear`         | `() => void`                                            | No       | Invoke when the user requests clearing the current selection.                            |
-| `clearLabel`      | `string`                                                | No       | Render this text on the clear control when `onClear` is provided.                        |
+| Prop              | Type                      | Required | Description                                                                              |
+| ----------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `options`         | `OptionItem[]`            | Yes      | Render these entries as selectable options in the dropdown.                              |
+| `token`           | `string`                  | Yes      | Render this option token as the current selection.                                       |
+| `onChange`        | `(token: string) => void` | Yes      | Call with the newly selected option token when the user changes the selection.           |
+| `legacyOption`    | `OptionItem \| null`      | Yes      | Include a non-selectable option that represents a stored value not present in `options`. |
+| `id`              | `string`                  | Yes      | Set as the select element id so labels can target it.                                    |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the select with its label.                       |
+| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the select with help or error text.             |
+| `disabled`        | `boolean`                 | Yes      | When true, render the select in a disabled state and prevent changes.                    |
+| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or disable option interactions as needed.            |
+| `onClear`         | `() => void`              | No       | Invoke when the user requests clearing the current selection.                            |
+| `clearLabel`      | `string`                  | No       | Render this text on the clear control when `onClear` is provided.                        |
 
 ### RadioButtonList
 
-Single-select option list presented as radio buttons. Use legacyOption for stored values that are no longer in the list, and allow extra content after the list.
+Single-select option list presented as radio buttons. Use legacyOption for stored values that are no longer in the list,
+and allow extra content after the list.
 
-| Prop              | Type                                                    | Required | Description                                                                   |
-| ----------------- | ------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`                                          | Yes      | Render these entries as radio options.                                        |
-| `value`           | `string`                                                | Yes      | Render this option key as the currently selected radio.                       |
-| `onChange`        | `(value: string) => void`                               | Yes      | Call with the newly selected option key when the user changes selection.      |
-| `legacyOption`    | <code>{ key: string; label: string } &#124; null</code> | Yes      | Include a disabled radio for a stored value that is not present in `options`. |
-| `id`              | `string`                                                | Yes      | Use as the radio group name/id so options stay grouped.                       |
-| `ariaLabelledBy`  | `string`                                                | Yes      | Forward to aria-labelledby to associate the group with its label.             |
-| `ariaDescribedBy` | `string`                                                | No       | Forward to aria-describedby to associate the group with help or error text.   |
-| `disabled`        | `boolean`                                               | Yes      | When true, render options as disabled and prevent selection changes.          |
-| `isLoading`       | `boolean`                                               | No       | When true, show a loading indicator or busy state for the list.               |
-| `after`           | `ReactNode`                                             | No       | Render additional content after the list (for example, an open-choice input). |
-| `afterInset`      | `boolean`                                               | No       | When true, indent the `after` content to align with the option text.          |
+| Prop              | Type                      | Required | Description                                                                   |
+| ----------------- | ------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `options`         | `OptionItem[]`            | Yes      | Render these entries as radio options.                                        |
+| `token`           | `string`                  | Yes      | Render this option token as the currently selected radio.                     |
+| `onChange`        | `(token: string) => void` | Yes      | Call with the newly selected option token when the user changes selection.    |
+| `legacyOption`    | `OptionItem \| null`      | Yes      | Include a disabled radio for a stored value that is not present in `options`. |
+| `id`              | `string`                  | Yes      | Use as the radio group name/id so options stay grouped.                       |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the group with its label.             |
+| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the group with help or error text.   |
+| `disabled`        | `boolean`                 | Yes      | When true, render options as disabled and prevent selection changes.          |
+| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or busy state for the list.               |
+| `after`           | `ReactNode`               | No       | Render additional content after the list (for example, an open-choice input). |
+| `afterInset`      | `boolean`                 | No       | When true, indent the `after` content to align with the option text.          |
 
 ### CheckboxList
 
-Multi-select option list presented as checkboxes. Support per-option errors and an optional after slot for custom inputs.
+Multi-select option list presented as checkboxes. Support per-option errors and an optional after slot for custom
+inputs.
 
-| Prop              | Type                         | Required | Description                                                                 |
-| ----------------- | ---------------------------- | -------- | --------------------------------------------------------------------------- |
-| `options`         | `OptionValueEntry[]`         | Yes      | Render these entries as checkbox options.                                   |
-| `value`           | `Set<string>`                | Yes      | Use this set of keys to determine which checkboxes are checked.             |
-| `onChange`        | `(key: string) => void`      | Yes      | Call with the toggled option key when the user changes a checkbox.          |
-| `id`              | `string`                     | Yes      | Use as the checkbox group name/id so inputs stay grouped.                   |
-| `ariaLabelledBy`  | `string`                     | Yes      | Forward to aria-labelledby to associate the group with its label.           |
-| `ariaDescribedBy` | `string`                     | No       | Forward to aria-describedby to associate the group with help or error text. |
-| `disabled`        | `boolean`                    | No       | When true, render all options as disabled and prevent changes.              |
-| `isLoading`       | `boolean`                    | No       | When true, show a loading indicator or busy state for the list.             |
-| `renderErrors`    | `(key: string) => ReactNode` | No       | Render per-option error content for the matching key when provided.         |
-| `after`           | `ReactNode`                  | No       | Render additional content after the list (for example, a custom input).     |
+| Prop              | Type                           | Required | Description                                                                 |
+| ----------------- | ------------------------------ | -------- | --------------------------------------------------------------------------- |
+| `options`         | `OptionItem[]`                 | Yes      | Render these entries as checkbox options.                                   |
+| `tokens`          | `Set<string>`                  | Yes      | Use this set of tokens to determine which checkboxes are checked.           |
+| `onChange`        | `(token: string) => void`      | Yes      | Call with the toggled option token when the user changes a checkbox.        |
+| `id`              | `string`                       | Yes      | Use as the checkbox group name/id so inputs stay grouped.                   |
+| `ariaLabelledBy`  | `string`                       | Yes      | Forward to aria-labelledby to associate the group with its label.           |
+| `ariaDescribedBy` | `string`                       | No       | Forward to aria-describedby to associate the group with help or error text. |
+| `disabled`        | `boolean`                      | No       | When true, render all options as disabled and prevent changes.              |
+| `isLoading`       | `boolean`                      | No       | When true, show a loading indicator or busy state for the list.             |
+| `renderErrors`    | `(token: string) => ReactNode` | No       | Render per-option error content for the matching token when provided.       |
+| `after`           | `ReactNode`                    | No       | Render additional content after the list (for example, a custom input).     |
 
 ### MultiSelectInput
 
-Composite multi-select UI that combines a picker, chips, optional actions, and an optional custom-value dialog. It should display selections as chips and allow removal when permitted.
+Composite multi-select UI that combines a picker, chips, optional actions, and an optional custom-value dialog. It
+should display selections as chips and allow removal when permitted.
 
-| Prop              | Type                    | Required | Description                                                                             |
-| ----------------- | ----------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `options`         | `OptionEntry[]`         | Yes      | Render these entries as options in the picker dropdown.                                 |
-| `value`           | `string`                | No       | Use this option key as the current selection shown in the picker.                       |
-| `onChange`        | `(key: string) => void` | Yes      | Call with the selected option key when the user picks an option.                        |
-| `ariaLabelledBy`  | `string`                | No       | Forward to aria-labelledby for the picker so it associates with the label.              |
-| `ariaDescribedBy` | `string`                | No       | Forward to aria-describedby for the picker so it associates with help or error text.    |
-| `disabled`        | `boolean`               | No       | When true, render the picker and chip actions in a disabled state.                      |
-| `isLoading`       | `boolean`               | No       | When true, show a loading indicator or busy state for the options.                      |
-| `showOptions`     | `boolean`               | No       | When false, hide the picker while still rendering chips and actions.                    |
-| `chips`           | `MultiSelectChip[]`     | Yes      | Render each chip as the current selection list, including its remove action and errors. |
-| `actions`         | `ReactNode`             | No       | Render additional action controls provided by the renderer (for example, “Clear all”).  |
-| `dialog`          | `MultiSelectDialog`     | No       | Render an overlay dialog when provided to capture custom values.                        |
-| `placeholder`     | `string`                | No       | Show this placeholder text in the picker when no value is selected.                     |
+| Prop              | Type                      | Required | Description                                                                             |
+| ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------------------- |
+| `options`         | `OptionItem[]`            | Yes      | Render these entries as options in the picker dropdown.                                 |
+| `token`           | `string`                  | No       | Use this option token as the current selection shown in the picker.                     |
+| `onChange`        | `(token: string) => void` | Yes      | Call with the selected option token when the user picks an option.                      |
+| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby for the picker so it associates with the label.              |
+| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby for the picker so it associates with help or error text.    |
+| `disabled`        | `boolean`                 | No       | When true, render the picker and chip actions in a disabled state.                      |
+| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or busy state for the options.                      |
+| `showOptions`     | `boolean`                 | No       | When false, hide the picker while still rendering chips and actions.                    |
+| `chips`           | `MultiSelectChip[]`       | Yes      | Render each chip as the current selection list, including its remove action and errors. |
+| `actions`         | `ReactNode`               | No       | Render additional action controls provided by the renderer (for example, “Clear all”).  |
+| `dialog`          | `MultiSelectDialog`       | No       | Render an overlay dialog when provided to capture custom values.                        |
+| `placeholder`     | `string`                  | No       | Show this placeholder text in the picker when no value is selected.                     |
 
 ### FileInput
 
-Attachment picker that handles file selection, display of the selected file, and clearing. Call onFileSelect for the raw file and onChange when the Attachment value changes.
+Attachment picker that handles file selection, display of the selected file, and clearing. Call onFileSelect for the raw
+file and onChange when the Attachment value changes.
 
-| Prop              | Type                                                    | Required | Description                                                                          |
-| ----------------- | ------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
-| `value`           | <code>Attachment &#124; null</code>                     | Yes      | Render this attachment as the current value; null means no file is selected.         |
-| `onChange`        | <code>(value: Attachment &#124; null) =&gt; void</code> | Yes      | Call with the updated attachment value when you transform the file or clear it.      |
-| `id`              | `string`                                                | No       | Set as the input id so labels can target the underlying file input.                  |
-| `ariaLabelledBy`  | `string`                                                | No       | Forward to aria-labelledby for the file input and any summary region.                |
-| `ariaDescribedBy` | `string`                                                | No       | Forward to aria-describedby for the file input and any summary region.               |
-| `disabled`        | `boolean`                                               | No       | When true, disable file selection and related actions.                               |
-| `sizeLabel`       | `string`                                                | No       | Display this formatted size string alongside the filename when provided.             |
-| `filename`        | `string`                                                | No       | Display this filename or title when a file is selected.                              |
-| `onFileSelect`    | `(file: File) => void`                                  | No       | Call when the user selects a file so the renderer can convert it into an Attachment. |
-| `onClear`         | `() => void`                                            | No       | Call when the user requests clearing the current file.                               |
+| Prop              | Type                                  | Required | Description                                                                          |
+| ----------------- | ------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `value`           | `Attachment \| null`                  | Yes      | Render this attachment as the current value; null means no file is selected.         |
+| `onChange`        | `(value: Attachment \| null) => void` | Yes      | Call with the updated attachment value when you transform the file or clear it.      |
+| `id`              | `string`                              | No       | Set as the input id so labels can target the underlying file input.                  |
+| `ariaLabelledBy`  | `string`                              | No       | Forward to aria-labelledby for the file input and any summary region.                |
+| `ariaDescribedBy` | `string`                              | No       | Forward to aria-describedby for the file input and any summary region.               |
+| `disabled`        | `boolean`                             | No       | When true, disable file selection and related actions.                               |
+| `sizeLabel`       | `string`                              | No       | Display this formatted size string alongside the filename when provided.             |
+| `filename`        | `string`                              | No       | Display this filename or title when a file is selected.                              |
+| `onFileSelect`    | `(file: File) => void`                | No       | Call when the user selects a file so the renderer can convert it into an Attachment. |
+| `onClear`         | `() => void`                          | No       | Call when the user requests clearing the current file.                               |
 
 ### AnswerAddButton
 
@@ -463,7 +479,8 @@ Remove action for a single group instance inside a repeating wrapper.
 
 ### FormSubmitButton
 
-Primary submit call to action for the form. Render a button and invoke onClick when you handle submission outside native form behavior.
+Primary submit call to action for the form. Render a button and invoke onClick when you handle submission outside native
+form behavior.
 
 | Prop       | Type         | Required | Description                                                                                         |
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
@@ -552,7 +569,8 @@ Layout for a single answer row, combining the main control, a toolbar area, and 
 
 ### QuestionScaffold
 
-Wrapper around a question that organizes header, control, and validation feedback. Use it as the outer shell for question nodes.
+Wrapper around a question that organizes header, control, and validation feedback. Use it as the outer shell for
+question nodes.
 
 | Prop       | Type        | Required | Description                                                                                  |
 | ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -638,10 +656,10 @@ Top-level error summary for the form. Use it to list validation issues after sub
 
 Section wrapper that groups header, footer, or main content within the form. Use variant to drive layout and styling.
 
-| Prop       | Type                                                   | Required | Description                                           |
-| ---------- | ------------------------------------------------------ | -------- | ----------------------------------------------------- |
-| `children` | `ReactNode`                                            | Yes      | Render the content that belongs to this section.      |
-| `variant`  | <code>"header" &#124; "footer" &#124; "default"</code> | No       | Use to apply header/footer styling or default layout. |
+| Prop       | Type                                | Required | Description                                           |
+| ---------- | ----------------------------------- | -------- | ----------------------------------------------------- |
+| `children` | `ReactNode`                         | Yes      | Render the content that belongs to this section.      |
+| `variant`  | `"header" \| "footer" \| "default"` | No       | Use to apply header/footer styling or default layout. |
 
 ### FormActions
 
@@ -653,7 +671,8 @@ Container for primary form actions, typically submit and reset. Use it to positi
 
 ### Form
 
-Outer wrapper for the questionnaire. If you render a form element, prevent default and call onSubmit; otherwise invoke onSubmit from your own controls.
+Outer wrapper for the questionnaire. If you render a form element, prevent default and call onSubmit; otherwise invoke
+onSubmit from your own controls.
 
 | Prop       | Type         | Required | Description                                                                |
 | ---------- | ------------ | -------- | -------------------------------------------------------------------------- |
@@ -684,7 +703,8 @@ Controls for moving between pages in a paged form. Provide clear prev/next affor
 
 ### GridTable
 
-Tabular layout used by grid-style groups. Render headers and rows based on column and row metadata, with an optional empty state.
+Tabular layout used by grid-style groups. Render headers and rows based on column and row metadata, with an optional
+empty state.
 
 | Prop      | Type                | Required | Description                                                          |
 | --------- | ------------------- | -------- | -------------------------------------------------------------------- |
@@ -694,7 +714,8 @@ Tabular layout used by grid-style groups. Render headers and rows based on colum
 
 ### TabContainer
 
-Tabbed layout for group panels. Render the active panel, wire ids for aria, and show errors or empty state when relevant.
+Tabbed layout for group panels. Render the active panel, wire ids for aria, and show errors or empty state when
+relevant.
 
 | Prop       | Type                      | Required | Description                                                                                  |
 | ---------- | ------------------------- | -------- | -------------------------------------------------------------------------------------------- |
@@ -714,45 +735,27 @@ Shared data structures referenced by theme component props.
 
 Base option shape used by single-select controls such as select inputs and radio lists.
 
-| Field      | Type      | Required | Description                                                                   |
-| ---------- | --------- | -------- | ----------------------------------------------------------------------------- |
-| `key`      | `string`  | Yes      | Use as the stable option value to compare against the control’s selected key. |
-| `label`    | `string`  | Yes      | Render as the visible label for the option.                                   |
-| `disabled` | `boolean` | No       | When true, render the option as unavailable and prevent selection.            |
+| Field      | Type        | Required | Description                                                                              |
+| ---------- | ----------- | -------- | ---------------------------------------------------------------------------------------- |
+| `token`    | `string`    | Yes      | Use as the stable option token to compare against the control’s selected token.          |
+| `label`    | `ReactNode` | Yes      | Render as the visible label for the option; the renderer provides display-ready content. |
+| `disabled` | `boolean`   | No       | When true, render the option as unavailable and prevent selection.                       |
 
 ### OptionEntry
 
-Option shape used by components that need a key, label, and underlying value payload.
-
-| Field      | Type      | Required | Description                                                        |
-| ---------- | --------- | -------- | ------------------------------------------------------------------ |
-| `key`      | `string`  | Yes      | Use as the stable option identifier when matching selections.      |
-| `label`    | `string`  | Yes      | Render as the visible label for the option.                        |
-| `value`    | `unknown` | No       | Provide the associated value payload for the option when needed.   |
-| `disabled` | `boolean` | No       | When true, render the option as unavailable and prevent selection. |
-
-### OptionValueEntry
-
-Option shape used when the value payload is always required (for example, checkbox lists).
-
-| Field      | Type      | Required | Description                                                        |
-| ---------- | --------- | -------- | ------------------------------------------------------------------ |
-| `key`      | `string`  | Yes      | Use as the stable option identifier when matching selections.      |
-| `label`    | `string`  | Yes      | Render as the visible label for the option.                        |
-| `value`    | `unknown` | Yes      | Provide the associated value payload for the option.               |
-| `disabled` | `boolean` | No       | When true, render the option as unavailable and prevent selection. |
+Alias of OptionItem.
 
 ### Attachment
 
 Minimal FHIR Attachment shape used by `FileInput` to display metadata and stored content.
 
-| Field         | Type                              | Required | Description                                             |
-| ------------- | --------------------------------- | -------- | ------------------------------------------------------- |
-| `title`       | `string`                          | No       | Display name or title to show for the attachment.       |
-| `url`         | `string`                          | No       | Link target for downloaded or referenced files.         |
-| `size`        | <code>number &#124; string</code> | No       | Byte size or preformatted size string used for display. |
-| `contentType` | `string`                          | No       | MIME type used for labeling or preview decisions.       |
-| `data`        | `string`                          | No       | Base64-encoded file content for inline attachments.     |
+| Field         | Type               | Required | Description                                             |
+| ------------- | ------------------ | -------- | ------------------------------------------------------- |
+| `title`       | `string`           | No       | Display name or title to show for the attachment.       |
+| `url`         | `string`           | No       | Link target for downloaded or referenced files.         |
+| `size`        | `number \| string` | No       | Byte size or preformatted size string used for display. |
+| `contentType` | `string`           | No       | MIME type used for labeling or preview decisions.       |
+| `data`        | `string`           | No       | Base64-encoded file content for inline attachments.     |
 
 ### MultiSelectChip
 

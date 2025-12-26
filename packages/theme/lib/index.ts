@@ -58,7 +58,7 @@ export * from "./date-time-input.ts";
 export * from "./time-input.ts";
 export * from "./slider-input.ts";
 export * from "./spinner-input.ts";
-export * from "./option-entry.ts";
+export * from "./option-item.ts";
 export * from "./select-input.ts";
 export * from "./radio-button-list.ts";
 export * from "./checkbox-list.ts";

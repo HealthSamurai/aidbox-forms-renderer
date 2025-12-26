@@ -1,16 +1,4 @@
-import type { HTMLAttributes } from "react";
-
-export type TextInputProps = {
-  id?: string | undefined;
-  type?: string | undefined;
-  value: string;
-  onChange: (v: string) => void;
-  disabled?: boolean | undefined;
-  placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
-};
+import type { TextInputProps } from "@aidbox-forms/theme";
 
 export function TextInput({
   id,

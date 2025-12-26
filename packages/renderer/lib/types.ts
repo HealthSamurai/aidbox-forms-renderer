@@ -45,6 +45,9 @@ import type { GroupControlRegistry } from "./stores/registries/group-control-reg
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
+import type { OptionItem } from "@aidbox-forms/theme";
+
+export type { OptionItem };
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -203,7 +206,7 @@ export type AnswerType = Exclude<
 >;
 
 export type AnswerOptionEntry<T extends AnswerType> = {
-  key: string;
+  token: string;
   label: string;
   value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   option: QuestionnaireItemAnswerOption;
@@ -506,12 +509,12 @@ export interface IGridStore {
 }
 
 type TableColumnState = {
-  key: string;
+  token: string;
   label: string;
 };
 
 type TableCellState = {
-  key: string;
+  token: string;
   entry: AnswerOptionEntry<AnswerType> | undefined;
   placeholder?: string;
   selected: boolean;
@@ -608,18 +611,13 @@ export interface IAnswerInstance<T extends AnswerType = AnswerType> {
   readonly quantity: IQuantityAnswer;
   dispose(): void;
 }
-export type UnitOptionEntry = {
-  key: string;
-  label: string;
-  disabled: boolean;
-};
 
 export interface IQuantityAnswer {
-  readonly entries: ReadonlyArray<UnitOptionEntry>;
-  readonly displayUnitKey: string;
+  readonly entries: ReadonlyArray<OptionItem>;
+  readonly displayUnitToken: string;
   readonly isUnitFreeForm: boolean;
   handleNumberInput(raw: string): void;
-  handleSelectChange(key: string): void;
+  handleSelectChange(token: string): void;
   handleFreeTextChange(text: string): void;
 }
 
@@ -633,7 +631,7 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   getLegacyEntryForValue(
     answerKey: string,
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): { key: string; label: string } | null;
+  ): OptionItem | null;
 }
 
 export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
@@ -653,16 +651,9 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   renderer: QuestionRendererComponent<T>;
 }
 
-type SelectCheckboxOption<T extends AnswerType> = {
-  key: string;
-  label: string;
-  value: AnswerOptionEntry<T>["value"];
-  disabled: boolean;
-};
-
 type SelectCheckboxState<T extends AnswerType> = {
   options: ReadonlyArray<AnswerOptionEntry<T>>;
-  uiOptions: Array<SelectCheckboxOption<T>>;
+  uiOptions: Array<OptionItem>;
   selectedKeys: Set<string>;
   answerByKey: Map<string, IAnswerInstance<T>>;
   nonOptionAnswers: IAnswerInstance<T>[];
@@ -686,18 +677,12 @@ type SelectDialogState<T extends AnswerType> = {
   canConfirm: boolean;
 };
 
-type OptionItem = {
-  key: string;
-  label: string;
-  disabled?: boolean;
-};
-
 type ListSelectRowState = {
   isCustomActive: boolean;
   radioOptions: OptionItem[];
   selectValue: string;
-  legacyOption: { key: string; label: string } | null;
-  handleChange: (key: string) => void;
+  legacyOption: OptionItem | null;
+  handleChange: (token: string) => void;
 };
 
 type DropdownRowState<T extends AnswerType> = {
@@ -705,9 +690,9 @@ type DropdownRowState<T extends AnswerType> = {
   extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
   isCustomActive: boolean;
   exitCustom: () => void;
-  handleSelect: (key: string) => void;
+  handleSelect: (token: string) => void;
   selectValue: string;
-  legacyOption: { key: string; label: string } | null;
+  legacyOption: OptionItem | null;
   canClear: boolean;
   clearValue: () => void;
 };

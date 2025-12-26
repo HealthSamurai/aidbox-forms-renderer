@@ -7,6 +7,7 @@ import {
   IAnswerInstance,
   IQuestionNode,
   ISelectStore,
+  OptionItem,
   ValueControlProps,
 } from "../../../types.ts";
 import {
@@ -24,21 +25,21 @@ const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
 
 const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
   {
-    key: "yes",
+    token: "yes",
     label: "Yes",
     value: true,
     option: EMPTY_ANSWER_OPTION,
     disabled: false,
   },
   {
-    key: "no",
+    token: "no",
     label: "No",
     value: false,
     option: EMPTY_ANSWER_OPTION,
     disabled: false,
   },
   {
-    key: "unanswered",
+    token: "unanswered",
     label: "Unanswered",
     value: null,
     option: EMPTY_ANSWER_OPTION,
@@ -64,16 +65,9 @@ export type MultiSelectDialogState<T extends AnswerType> = {
   canConfirm: boolean;
 };
 
-export type ListSelectCheckboxOption<T extends AnswerType> = {
-  key: string;
-  label: string;
-  value: AnswerOptionEntry<T>["value"];
-  disabled: boolean;
-};
-
 export type ListSelectCheckboxState<T extends AnswerType> = {
   options: ReadonlyArray<AnswerOptionEntry<T>>;
-  uiOptions: Array<ListSelectCheckboxOption<T>>;
+  uiOptions: Array<OptionItem>;
   selectedKeys: Set<string>;
   answerByKey: Map<string, IAnswerInstance<T>>;
   nonOptionAnswers: IAnswerInstance<T>[];
@@ -178,8 +172,8 @@ export class SelectStore<
         return areValuesEqual(dataType, answer.value, option.value);
       });
       if (match) {
-        selectedKeys.add(option.key);
-        answerByKey.set(option.key, match);
+        selectedKeys.add(option.token);
+        answerByKey.set(option.token, match);
         matchedAnswerKeys.add(match.key);
       }
     });
@@ -203,11 +197,10 @@ export class SelectStore<
     }
 
     const uiOptions = this.options.map((option) => {
-      const isSelected = selectedKeys.has(option.key);
+      const isSelected = selectedKeys.has(option.token);
       return {
-        key: option.key,
+        token: option.token,
         label: option.label,
-        value: option.value,
         disabled:
           option.disabled ||
           (!isSelected && !canAddSelection) ||
@@ -217,9 +210,8 @@ export class SelectStore<
 
     if (this.allowCustom) {
       uiOptions.push({
-        key: specifyOtherKey,
+        token: specifyOtherKey,
         label: "Specify other",
-        value: null,
         disabled:
           (!isCustomActive && !canAddSelection) ||
           (isCustomActive && !this.node.canRemove),
@@ -278,7 +270,7 @@ export class SelectStore<
       return;
     }
 
-    const option = state.options.find((entry) => entry.key === key);
+    const option = state.options.find((entry) => entry.token === key);
     if (!option) return;
     const existing = state.answerByKey.get(key);
     if (existing) {
@@ -350,7 +342,7 @@ export class SelectStore<
         );
       });
       if (match) {
-        selectedOptionAnswers.set(option.key, match);
+        selectedOptionAnswers.set(option.token, match);
         usedAnswerKeys.add(match.key);
       }
     });
@@ -388,7 +380,7 @@ export class SelectStore<
   @computed
   get preparedOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
     return this.node.options.entries.map((entry) => {
-      const isSelected = this.selectedOptionAnswers.has(entry.key);
+      const isSelected = this.selectedOptionAnswers.has(entry.token);
       return {
         ...entry,
         disabled: entry.disabled || isSelected || !this.canAddSelection,
@@ -403,7 +395,7 @@ export class SelectStore<
     }
 
     const customOption: AnswerOptionEntry<T> = {
-      key: this.specifyOtherKey,
+      token: this.specifyOtherKey,
       label: "Specify other",
       value: null,
       option: EMPTY_ANSWER_OPTION,
@@ -506,7 +498,9 @@ export class SelectStore<
       }
       return;
     }
-    const option = this.node.options.entries.find((entry) => entry.key === key);
+    const option = this.node.options.entries.find(
+      (entry) => entry.token === key,
+    );
     if (option) {
       this.addOptionAnswer(option);
     }
@@ -560,7 +554,7 @@ export class SelectStore<
 
   private addOptionAnswer(option: AnswerOptionEntry<T>): void {
     if (!this.canAddSelection || this.isLoading) return;
-    if (this.selectedOptionAnswers.has(option.key)) return;
+    if (this.selectedOptionAnswers.has(option.token)) return;
     const nextValue =
       option.value === undefined
         ? null
@@ -625,16 +619,16 @@ class ListSelectRowState<T extends AnswerType> {
       const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.parent.node.type];
       if (this.answer.value == null) {
         const unanswered = this.parent.options.find(
-          (entry) => entry.key === "unanswered",
+          (entry) => entry.token === "unanswered",
         );
-        return unanswered?.key ?? "";
+        return unanswered?.token ?? "";
       }
       const match = this.parent.options.find(
         (entry) =>
           entry.value != null &&
           areValuesEqual(dataType, entry.value, this.answer.value as never),
       );
-      return match?.key ?? "";
+      return match?.token ?? "";
     }
     return this.parent.node.options.getKeyForValue(
       this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
@@ -642,7 +636,7 @@ class ListSelectRowState<T extends AnswerType> {
   }
 
   @computed
-  get legacyOption(): { key: string; label: string } | null {
+  get legacyOption(): OptionItem | null {
     if (this.parent.allowCustom) return null;
     if (this.parent.isBooleanFallback) return null;
     if (this.selectKey || this.answer.value == null) return null;
@@ -678,17 +672,13 @@ class ListSelectRowState<T extends AnswerType> {
     if (this.isCustomActive) {
       return this.specifyOtherKey;
     }
-    return this.selectKey || this.legacyOption?.key || "";
+    return this.selectKey || this.legacyOption?.token || "";
   }
 
   @computed
-  get radioOptions(): Array<{
-    key: string;
-    label: string;
-    disabled?: boolean;
-  }> {
+  get radioOptions(): OptionItem[] {
     const baseOptions = this.parent.options.map((option) => ({
-      key: option.key,
+      token: option.token,
       label: option.label,
       disabled: option.disabled,
     }));
@@ -697,7 +687,7 @@ class ListSelectRowState<T extends AnswerType> {
     }
     return [
       ...baseOptions,
-      { key: this.specifyOtherKey, label: "Specify other" },
+      { token: this.specifyOtherKey, label: "Specify other" },
     ];
   }
 
@@ -715,7 +705,7 @@ class ListSelectRowState<T extends AnswerType> {
     if (this.parent.isBooleanFallback) {
       const nextValue = (() => {
         if (!key) return null;
-        const match = this.parent.options.find((entry) => entry.key === key);
+        const match = this.parent.options.find((entry) => entry.token === key);
         if (!match) return null;
         return match.value === undefined ? null : cloneValue(match.value);
       })();
@@ -752,7 +742,7 @@ class DropdownRowState<T extends AnswerType> {
   }
 
   @computed
-  get legacyOption(): { key: string; label: string } | null {
+  get legacyOption(): OptionItem | null {
     if (this.parent.allowCustom) return null;
     if (this.optionKey || this.answer.value == null) return null;
     return this.parent.node.options.getLegacyEntryForValue(
@@ -763,7 +753,7 @@ class DropdownRowState<T extends AnswerType> {
 
   @computed
   get selectValue(): string {
-    return this.optionKey || this.legacyOption?.key || "";
+    return this.optionKey || this.legacyOption?.token || "";
   }
 
   @computed

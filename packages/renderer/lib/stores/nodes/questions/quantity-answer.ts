@@ -3,13 +3,13 @@ import type { Coding, Quantity } from "fhir/r5";
 import type {
   IAnswerInstance,
   IQuantityAnswer,
-  UnitOptionEntry,
+  OptionItem,
 } from "../../../types.ts";
 import { areCodingsEqual, isEmptyObject } from "../../../utils.ts";
 
 const LEGACY_UNIT_PREFIX = "__legacy_unit__";
 
-function makeUnitKey(coding: Coding): string {
+function makeUnitToken(coding: Coding): string {
   return [coding.system ?? "", coding.code ?? "", coding.display ?? ""].join(
     "::",
   );
@@ -34,22 +34,22 @@ export class QuantityAnswer implements IQuantityAnswer {
   private get unitEntries(): ReadonlyArray<readonly [string, Coding]> {
     const map = new Map<string, Coding>();
     for (const coding of this.answer.question.unitOptions) {
-      const key = makeUnitKey(coding);
-      if (!map.has(key)) {
-        map.set(key, coding);
+      const token = makeUnitToken(coding);
+      if (!map.has(token)) {
+        map.set(token, coding);
       }
     }
     return [...map.entries()];
   }
 
   @computed
-  private get fallbackOption(): { key: string; label: string } | null {
+  private get fallbackOption(): OptionItem | null {
     if (this.unitEntries.length === 0) {
       return null;
     }
 
-    const keyForQuantity = this.getUnitKeyForQuantity(this.quantityValue);
-    if (keyForQuantity) {
+    const tokenForQuantity = this.getUnitTokenForQuantity(this.quantityValue);
+    if (tokenForQuantity) {
       return null;
     }
 
@@ -64,16 +64,16 @@ export class QuantityAnswer implements IQuantityAnswer {
     }
 
     return {
-      key: `${LEGACY_UNIT_PREFIX}${label}`,
+      token: `${LEGACY_UNIT_PREFIX}${label}`,
       label,
     };
   }
 
   @computed
-  get entries(): ReadonlyArray<UnitOptionEntry> {
-    const base = this.unitEntries.map<UnitOptionEntry>(([key, coding]) => ({
-      key,
-      label: coding.display ?? coding.code ?? coding.system ?? key,
+  get entries(): ReadonlyArray<OptionItem> {
+    const base = this.unitEntries.map<OptionItem>(([token, coding]) => ({
+      token,
+      label: coding.display ?? coding.code ?? coding.system ?? token,
       disabled: false,
     }));
 
@@ -84,7 +84,7 @@ export class QuantityAnswer implements IQuantityAnswer {
 
     return [
       {
-        key: fallback.key,
+        token: fallback.token,
         label: fallback.label,
         disabled: true,
       },
@@ -97,9 +97,9 @@ export class QuantityAnswer implements IQuantityAnswer {
     return this.unitEntries.length === 0;
   }
 
-  private get firstEnabledOptionKey(): string | null {
+  private get firstEnabledOptionToken(): string | null {
     const option = this.entries.find((entry) => !entry.disabled);
-    return option?.key ?? null;
+    return option?.token ?? null;
   }
 
   private get hasSingleUnit(): boolean {
@@ -115,8 +115,8 @@ export class QuantityAnswer implements IQuantityAnswer {
       return false;
     }
 
-    const firstKey = this.firstEnabledOptionKey;
-    if (!firstKey) {
+    const firstToken = this.firstEnabledOptionToken;
+    if (!firstToken) {
       return false;
     }
 
@@ -137,17 +137,17 @@ export class QuantityAnswer implements IQuantityAnswer {
   }
 
   @computed
-  get displayUnitKey(): string {
+  get displayUnitToken(): string {
     if (this.shouldAutoSelectUnit) {
-      return this.firstEnabledOptionKey ?? "";
+      return this.firstEnabledOptionToken ?? "";
     }
 
     const fallback = this.fallbackOption;
     if (fallback) {
-      return fallback.key;
+      return fallback.token;
     }
 
-    return this.getUnitKeyForQuantity(this.quantityValue);
+    return this.getUnitTokenForQuantity(this.quantityValue);
   }
 
   @action
@@ -184,8 +184,8 @@ export class QuantityAnswer implements IQuantityAnswer {
   }
 
   @action
-  handleSelectChange(key: string): void {
-    if (!key) {
+  handleSelectChange(token: string): void {
+    if (!token) {
       this.applyQuantityChange((draft) => {
         delete draft.unit;
         delete draft.code;
@@ -197,11 +197,11 @@ export class QuantityAnswer implements IQuantityAnswer {
       return;
     }
 
-    if (key.startsWith(LEGACY_UNIT_PREFIX)) {
+    if (token.startsWith(LEGACY_UNIT_PREFIX)) {
       return;
     }
 
-    const coding = this.getCodingForKey(key);
+    const coding = this.getCodingForToken(token);
     if (!coding) {
       return;
     }
@@ -236,32 +236,32 @@ export class QuantityAnswer implements IQuantityAnswer {
     this.answer.setValueByUser(isEmptyObject(draft) ? null : draft);
   }
 
-  private getCodingForKey(key: string): Coding | null {
-    const found = this.unitEntries.find(([entryKey]) => entryKey === key);
+  private getCodingForToken(token: string): Coding | null {
+    const found = this.unitEntries.find(([entryToken]) => entryToken === token);
     return found?.[1] ?? null;
   }
 
-  private getUnitKeyForCoding(coding: Coding | null | undefined): string {
+  private getUnitTokenForCoding(coding: Coding | null | undefined): string {
     if (!coding) {
       return "";
     }
 
-    for (const [key, candidate] of this.unitEntries) {
+    for (const [token, candidate] of this.unitEntries) {
       if (areCodingsEqual(candidate, coding)) {
-        return key;
+        return token;
       }
     }
 
     return "";
   }
 
-  private getUnitKeyForQuantity(quantity: Quantity | null): string {
+  private getUnitTokenForQuantity(quantity: Quantity | null): string {
     if (!quantity) {
       return "";
     }
 
     if (quantity.code || quantity.system) {
-      return this.getUnitKeyForCoding({
+      return this.getUnitTokenForCoding({
         code: quantity.code,
         system: quantity.system,
         display: quantity.unit,
@@ -271,11 +271,11 @@ export class QuantityAnswer implements IQuantityAnswer {
     if (quantity.unit) {
       const unit = quantity.unit;
       return (
-        this.getUnitKeyForCoding({
+        this.getUnitTokenForCoding({
           system: quantity.system,
           code: unit,
         }) ||
-        this.getUnitKeyForCoding({
+        this.getUnitTokenForCoding({
           system: quantity.system,
           display: unit,
         })

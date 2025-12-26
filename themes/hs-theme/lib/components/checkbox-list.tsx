@@ -1,30 +1,10 @@
 import { styled } from "@linaria/react";
+import type { CheckboxListProps } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
-import type { ReactNode } from "react";
 
-type OptionEntry<TValue> = {
-  key: string;
-  label: string;
-  value: TValue;
-  disabled?: boolean;
-};
-
-export type CheckboxListProps<TValue> = {
-  options: readonly OptionEntry<TValue>[];
-  value: Set<string>;
-  onChange: (key: string) => void;
-  id: string;
-  ariaLabelledBy: string;
-  ariaDescribedBy?: string | undefined;
-  disabled?: boolean;
-  isLoading?: boolean;
-  renderErrors?: (key: string) => ReactNode;
-  after?: ReactNode;
-};
-
-export function CheckboxList<TValue>({
+export function CheckboxList({
   options,
-  value,
+  tokens,
   onChange,
   id,
   ariaLabelledBy,
@@ -33,7 +13,7 @@ export function CheckboxList<TValue>({
   isLoading = false,
   renderErrors,
   after,
-}: CheckboxListProps<TValue>) {
+}: CheckboxListProps) {
   return (
     <CheckboxControl
       data-disabled={disabled}
@@ -41,11 +21,11 @@ export function CheckboxList<TValue>({
     >
       {options.map((option, index) => {
         const optionId = `${id}-option-${index}`;
-        const isChecked = value.has(option.key);
+        const isChecked = tokens.has(option.token);
         const disableToggle = disabled || isLoading || option.disabled;
 
         return (
-          <CheckboxOption key={option.key}>
+          <CheckboxOption key={option.token}>
             <CheckboxLabel>
               <input
                 type="checkbox"
@@ -54,11 +34,11 @@ export function CheckboxList<TValue>({
                 disabled={disableToggle}
                 aria-labelledby={`${ariaLabelledBy} ${optionId}`}
                 aria-describedby={ariaDescribedBy}
-                onChange={() => onChange(option.key)}
+                onChange={() => onChange(option.token)}
               />
               <span id={optionId}>{option.label}</span>
             </CheckboxLabel>
-            {renderErrors ? renderErrors(option.key) : null}
+            {renderErrors ? renderErrors(option.token) : null}
           </CheckboxOption>
         );
       })}

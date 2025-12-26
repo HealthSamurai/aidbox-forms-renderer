@@ -2,7 +2,7 @@ import type { SelectInputProps } from "@aidbox-forms/theme";
 
 export function SelectInput({
   options,
-  value,
+  token,
   onChange,
   legacyOption,
   id,
@@ -19,7 +19,7 @@ export function SelectInput({
         <select
           id={id}
           className="nhsuk-select"
-          value={value}
+          value={token}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled || isLoading}
           aria-labelledby={ariaLabelledBy}
@@ -27,12 +27,16 @@ export function SelectInput({
         >
           <option value="">Select an option</option>
           {legacyOption ? (
-            <option value={legacyOption.key} disabled>
+            <option value={legacyOption.token} disabled>
               {legacyOption.label}
             </option>
           ) : null}
           {options.map((entry) => (
-            <option key={entry.key} value={entry.key} disabled={entry.disabled}>
+            <option
+              key={entry.token}
+              value={entry.token}
+              disabled={entry.disabled}
+            >
               {entry.label}
             </option>
           ))}

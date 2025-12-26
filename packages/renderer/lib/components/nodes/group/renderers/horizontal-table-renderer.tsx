@@ -42,33 +42,32 @@ export const HorizontalTableRenderer = observer(
         .filter(Boolean);
 
       const rows = store.columns.map((column, columnIndex) => ({
-        key: column.key,
+        key: column.token,
         label: column.label,
         cells: store.rowStates.map((row) => {
           const cell = row.cells[columnIndex];
           if (!cell || !cell.entry || !cell.toggleSelection) {
             return {
-              key: `${row.question.key}-${column.key}`,
+              key: `${row.question.key}-${column.token}`,
               content: cell?.placeholder ?? "—",
             };
           }
 
           if (row.question.repeats) {
             return {
-              key: `${row.question.key}-${column.key}`,
+              key: `${row.question.key}-${column.token}`,
               content: (
                 <CheckboxList
                   options={[
                     {
-                      key: column.key,
+                      token: column.token,
                       label: cell.entry.label,
-                      value: cell.entry.value,
                       disabled: cell.disabled,
                     },
                   ]}
-                  value={row.selectedKeys}
+                  tokens={row.selectedKeys}
                   onChange={(key) => {
-                    if (key === column.key) {
+                    if (key === column.token) {
                       cell.toggleSelection?.();
                     }
                   }}
@@ -82,20 +81,20 @@ export const HorizontalTableRenderer = observer(
           }
 
           return {
-            key: `${row.question.key}-${column.key}`,
+            key: `${row.question.key}-${column.token}`,
             content: (
               <RadioButtonList
                 options={[
                   {
-                    key: column.key,
+                    token: column.token,
                     label: cell.entry.label,
                     disabled: cell.disabled,
                   },
                 ]}
-                value={row.selectedKey}
+                token={row.selectedKey}
                 legacyOption={null}
                 onChange={(key) => {
-                  if (key === column.key) {
+                  if (key === column.token) {
                     cell.toggleSelection?.();
                   }
                 }}

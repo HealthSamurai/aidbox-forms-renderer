@@ -1,25 +1,11 @@
 import { styled } from "@linaria/react";
-import type { OptionItem } from "@aidbox-forms/theme";
+import type { SelectInputProps } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
-type SelectInputProps = {
-  options: readonly OptionItem[];
-  value: string;
-  legacyOption: { key: string; label: string } | null;
-  onChange: (value: string) => void;
-  id: string;
-  ariaLabelledBy: string;
-  ariaDescribedBy?: string | undefined;
-  disabled: boolean;
-  isLoading?: boolean;
-  onClear?: (() => void) | undefined;
-  clearLabel?: string | undefined;
-};
-
 export function SelectInput({
   options,
-  value,
+  token,
   legacyOption,
   onChange,
   id,
@@ -36,7 +22,7 @@ export function SelectInput({
         <select
           id={id}
           className={inputClass}
-          value={value}
+          value={token}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
           aria-labelledby={ariaLabelledBy}
@@ -45,12 +31,20 @@ export function SelectInput({
         >
           <option value="">Select an option</option>
           {legacyOption ? (
-            <option key={legacyOption.key} value={legacyOption.key} disabled>
+            <option
+              key={legacyOption.token}
+              value={legacyOption.token}
+              disabled
+            >
               {legacyOption.label}
             </option>
           ) : null}
           {options.map((entry) => (
-            <option key={entry.key} value={entry.key} disabled={entry.disabled}>
+            <option
+              key={entry.token}
+              value={entry.token}
+              disabled={entry.disabled}
+            >
               {entry.label}
             </option>
           ))}
