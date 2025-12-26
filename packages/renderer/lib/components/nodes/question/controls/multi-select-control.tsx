@@ -34,7 +34,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     if (value == null) return [];
     return [
       {
-        key: item.key,
+        token: item.token,
         content: <ValueDisplay value={value} />,
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
@@ -48,7 +48,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     if (item.inlineString) {
       return [
         {
-          key: item.key,
+          token: item.token,
           content: renderInlineCustomInput(node, item.answer),
           errors: <AnswerErrors answer={item.answer} />,
           onRemove: () => store.handleRemoveAnswer(item.answer),
@@ -61,7 +61,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     if (value == null) return [];
     return [
       {
-        key: item.key,
+        token: item.token,
         content: <ValueDisplay value={value} />,
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
@@ -76,7 +76,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
   const customAction =
     store.hasCustomAction && !showOptions ? (
       <MultiSelectSpecifyOtherButton
-        onClick={() => store.handleSelectChange(store.specifyOtherKey)}
+        onClick={() => store.handleSelectChange(store.specifyOtherToken)}
         disabled={!store.canAddSelection || store.isLoading}
       >
         Specify other

@@ -29,7 +29,7 @@ export function TabContainer({
           const selected = idx === clampedIndex;
           return (
             <TabButton
-              key={item.key}
+              key={item.token}
               type="button"
               role="tab"
               aria-selected={selected}

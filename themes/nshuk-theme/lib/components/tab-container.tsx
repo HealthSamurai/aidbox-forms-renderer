@@ -31,7 +31,7 @@ export function TabContainer({
           const selected = idx === clampedIndex;
           return (
             <li
-              key={item.key}
+              key={item.token}
               className={classNames("nhsuk-tabs__list-item", {
                 "nhsuk-tabs__list-item--selected": selected,
               })}
@@ -55,7 +55,7 @@ export function TabContainer({
         const selected = idx === clampedIndex;
         return (
           <div
-            key={item.key}
+            key={item.token}
             className="nhsuk-tabs__panel"
             role="tabpanel"
             id={item.panelId}

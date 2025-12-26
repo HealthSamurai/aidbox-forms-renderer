@@ -48,7 +48,7 @@ export const ListSelectControl = observer(function ListSelectControl<
         >
           {state.nonOptionAnswers.map((answer) => (
             <AnswerScaffold
-              key={answer.key}
+              key={answer.token}
               answer={answer}
               control={Control}
             />
@@ -59,15 +59,15 @@ export const ListSelectControl = observer(function ListSelectControl<
     return (
       <CheckboxList
         options={state.uiOptions}
-        tokens={state.selectedKeys}
+        tokens={state.selectedTokens}
         onChange={store.handleCheckboxToggle}
-        id={node.key}
+        id={node.token}
         ariaLabelledBy={getNodeLabelId(node)}
         ariaDescribedBy={getNodeDescribedBy(node)}
         disabled={node.readOnly}
         isLoading={store.isLoading}
         renderErrors={(token) => {
-          const answer = state.answerByKey.get(token);
+          const answer = state.answerByToken.get(token);
           return answer ? <AnswerErrors answer={answer} /> : null;
         }}
         after={customControl}

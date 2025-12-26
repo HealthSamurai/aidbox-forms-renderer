@@ -34,7 +34,7 @@ export class GroupWrapper
   implements IGroupWrapper
 {
   readonly scope: IScope;
-  readonly key: string;
+  readonly token: string;
 
   @observable.shallow
   readonly nodes = observable.array<IGroupNode>([], {
@@ -56,13 +56,13 @@ export class GroupWrapper
     template: QuestionnaireItem,
     parentStore: INode | null,
     scope: IScope,
-    key: string,
+    token: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ) {
     super(form, template, parentStore);
 
     this.scope = scope;
-    this.key = key;
+    this.token = token;
 
     this.validator = new GroupWrapperValidator(this);
 
@@ -160,7 +160,7 @@ export class GroupWrapper
       this.template,
       this,
       this.scope.extend(true),
-      `${this.key}_/_${this.lastIndex++}`,
+      `${this.token}_/_${this.lastIndex++}`,
       responseItem,
     );
     this.nodes.push(node);

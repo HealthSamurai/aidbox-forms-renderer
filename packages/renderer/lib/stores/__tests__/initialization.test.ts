@@ -98,7 +98,7 @@ describe("initialization", () => {
       const form = createStore();
       const introStore = form.scope.lookupNode("intro");
       assertDisplayNode(introStore);
-      expect(introStore.key).toBe("_/_intro");
+      expect(introStore.token).toBe("_/_intro");
     });
   });
 
@@ -243,7 +243,7 @@ describe("initialization", () => {
       const singleGroupStore = getGroupStore();
       assertGroupNode(singleGroupStore);
       const groupQuestion = singleGroupStore.nodes.at(0);
-      expect(groupQuestion?.key).toBe("_/_single-group_/_group-question");
+      expect(groupQuestion?.token).toBe("_/_single-group_/_group-question");
       expect(groupQuestion && isQuestionNode(groupQuestion)).toBe(true);
       assertQuestionNode(groupQuestion);
       expect(groupQuestion.answers).toHaveLength(1);
@@ -255,7 +255,7 @@ describe("initialization", () => {
       assertGroupNode(singleGroupStore);
       const groupNote = singleGroupStore.nodes.at(1);
       expect(groupNote && isDisplayNode(groupNote)).toBe(true);
-      expect(groupNote?.key).toBe("_/_single-group_/_group-note");
+      expect(groupNote?.token).toBe("_/_single-group_/_group-note");
     });
 
     describe("when response omits the group", () => {
@@ -459,7 +459,7 @@ describe("initialization", () => {
       const groupWrapper = getGroupWrapper();
       assertGroupWrapper(groupWrapper);
       const childPaths = groupWrapper.nodes
-        .map((node) => node.nodes.at(0)?.key)
+        .map((node) => node.nodes.at(0)?.token)
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
       childPaths.forEach((path) => {
@@ -483,7 +483,7 @@ describe("initialization", () => {
       assertQuestionNode(firstChild);
       assertDefined(secondChild);
       assertQuestionNode(secondChild);
-      expect(firstChild.key).not.toBe(secondChild.key);
+      expect(firstChild.token).not.toBe(secondChild.token);
     });
 
     describe("when response omits items", () => {
@@ -939,10 +939,10 @@ describe("initialization", () => {
         expect(scopedSecond && isQuestionNode(scopedSecond)).toBe(true);
         assertQuestionNode(scopedFirst);
         assertQuestionNode(scopedSecond);
-        expect(scopedFirst.key).toMatch(
+        expect(scopedFirst.token).toMatch(
           /^_\/_repeating-question_\/_\d+_\/_follow-up$/,
         );
-        expect(scopedFirst.key).not.toBe(scopedSecond.key);
+        expect(scopedFirst.token).not.toBe(scopedSecond.token);
         expect(scopedFirst.answers.at(0)?.value).toBe("alice@example.org");
         expect(scopedSecond.answers.at(0)?.value).toBeNull();
       });
@@ -1110,7 +1110,9 @@ describe("initialization", () => {
       const parentQuestionStore = getParentStore();
       assertQuestionNode(parentQuestionStore);
       const childStore = parentQuestionStore.answers.at(0)?.nodes?.at(0);
-      expect(childStore?.key).toBe("_/_parent-question_/_0_/_child-follow-up");
+      expect(childStore?.token).toBe(
+        "_/_parent-question_/_0_/_child-follow-up",
+      );
     });
 
     it("hydrates nested child answers", () => {
@@ -1233,7 +1235,7 @@ describe("initialization", () => {
         expect(group && isGroupNode(group)).toBe(true);
         assertGroupNode(group);
         const grandchild = group.nodes.at(0);
-        expect(grandchild?.key).toBe(
+        expect(grandchild?.token).toBe(
           "_/_parent-question_/_0_/_child-group_/_grandchild-question",
         );
       });

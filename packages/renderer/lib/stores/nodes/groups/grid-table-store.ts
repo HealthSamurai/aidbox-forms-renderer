@@ -8,18 +8,18 @@ import type {
 import { isQuestionNode } from "../questions/question-store.ts";
 
 export type GridTableColumnState = {
-  key: string;
+  token: string;
   label: string;
 };
 
 export type GridTableCellState = {
-  key: string;
+  token: string;
   question?: IQuestionNode | undefined;
   action?: "remove" | undefined;
 };
 
 export type GridTableRowState = {
-  key: string;
+  token: string;
   label: string;
   node: IGroupNode;
   cells: GridTableCellState[];
@@ -65,16 +65,16 @@ export class GridTableStore implements IGridTableStore {
     });
 
     return columns.map((column) => ({
-      key: column.linkId,
+      token: column.linkId,
       label: column.label,
     }));
   }
 
   @computed
   get gridColumns(): GridTableColumnState[] {
-    const columns = [{ key: "node", label: "Node" }, ...this.columns];
+    const columns = [{ token: "node", label: "Node" }, ...this.columns];
     if (this.wrapper.canRemove) {
-      columns.push({ key: "actions", label: "Actions" });
+      columns.push({ token: "actions", label: "Actions" });
     }
     return columns;
   }
@@ -89,19 +89,19 @@ export class GridTableStore implements IGridTableStore {
           .map((question) => [question.linkId, question]),
       );
       const cells: GridTableCellState[] = columns.map((column) => ({
-        key: `${node.key}-${column.key}`,
-        question: questionMap.get(column.key),
+        token: `${node.token}-${column.token}`,
+        question: questionMap.get(column.token),
       }));
 
       if (this.wrapper.canRemove) {
         cells.push({
-          key: `${node.key}-actions`,
+          token: `${node.token}-actions`,
           action: "remove",
         });
       }
 
       return {
-        key: node.key,
+        token: node.token,
         node,
         label: `${this.wrapper.template.text ?? "Entry"} #${index + 1}`,
         cells,

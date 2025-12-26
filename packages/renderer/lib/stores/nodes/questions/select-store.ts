@@ -53,7 +53,7 @@ type PendingDialog<T extends AnswerType> = {
 };
 
 export type MultiSelectChipItem<T extends AnswerType> = {
-  key: string;
+  token: string;
   answer: IAnswerInstance<T>;
   kind: "option" | "custom";
   inlineString: boolean;
@@ -68,14 +68,14 @@ export type MultiSelectDialogState<T extends AnswerType> = {
 export type ListSelectCheckboxState<T extends AnswerType> = {
   options: ReadonlyArray<AnswerOptionEntry<T>>;
   uiOptions: Array<OptionItem>;
-  selectedKeys: Set<string>;
-  answerByKey: Map<string, IAnswerInstance<T>>;
+  selectedTokens: Set<string>;
+  answerByToken: Map<string, IAnswerInstance<T>>;
   nonOptionAnswers: IAnswerInstance<T>[];
   customAnswers: IAnswerInstance<T>[];
   availableAnswers: IAnswerInstance<T>[];
   canAddSelection: boolean;
   isCustomActive: boolean;
-  specifyOtherKey: string;
+  specifyOtherToken: string;
 };
 
 export class SelectStore<
@@ -97,7 +97,7 @@ export class SelectStore<
   >();
 
   @observable.ref
-  private pendingCustomKeys = new Set<string>();
+  private pendingCustomTokens = new Set<string>();
 
   @observable
   selectValue = "";
@@ -160,9 +160,9 @@ export class SelectStore<
   @computed
   get checkboxState(): ListSelectCheckboxState<T> {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
-    const selectedKeys = new Set<string>();
-    const answerByKey = new Map<string, IAnswerInstance<T>>();
-    const matchedAnswerKeys = new Set<string>();
+    const selectedTokens = new Set<string>();
+    const answerByToken = new Map<string, IAnswerInstance<T>>();
+    const matchedAnswerTokens = new Set<string>();
 
     this.options.forEach((option) => {
       const match = this.node.answers.find((answer) => {
@@ -172,14 +172,14 @@ export class SelectStore<
         return areValuesEqual(dataType, answer.value, option.value);
       });
       if (match) {
-        selectedKeys.add(option.token);
-        answerByKey.set(option.token, match);
-        matchedAnswerKeys.add(match.key);
+        selectedTokens.add(option.token);
+        answerByToken.set(option.token, match);
+        matchedAnswerTokens.add(match.token);
       }
     });
 
     const nonOptionAnswers = this.node.answers.filter(
-      (answer) => !matchedAnswerKeys.has(answer.key),
+      (answer) => !matchedAnswerTokens.has(answer.token),
     );
     const customAnswers = nonOptionAnswers.filter(answerHasContent);
     const availableAnswers = nonOptionAnswers.filter(
@@ -190,14 +190,14 @@ export class SelectStore<
     const hasCustomAnswers = this.allowCustom && customAnswers.length > 0;
     const isCustomActive =
       this.allowCustom && (this.customActive || hasCustomAnswers);
-    const specifyOtherKey = this.specifyOtherKey;
+    const specifyOtherToken = this.specifyOtherToken;
 
     if (isCustomActive) {
-      selectedKeys.add(specifyOtherKey);
+      selectedTokens.add(specifyOtherToken);
     }
 
     const uiOptions = this.options.map((option) => {
-      const isSelected = selectedKeys.has(option.token);
+      const isSelected = selectedTokens.has(option.token);
       return {
         token: option.token,
         label: option.label,
@@ -210,7 +210,7 @@ export class SelectStore<
 
     if (this.allowCustom) {
       uiOptions.push({
-        token: specifyOtherKey,
+        token: specifyOtherToken,
         label: "Specify other",
         disabled:
           (!isCustomActive && !canAddSelection) ||
@@ -221,14 +221,14 @@ export class SelectStore<
     return {
       options: this.options,
       uiOptions,
-      selectedKeys,
-      answerByKey,
+      selectedTokens,
+      answerByToken,
       nonOptionAnswers,
       customAnswers,
       availableAnswers,
       canAddSelection,
       isCustomActive,
-      specifyOtherKey,
+      specifyOtherToken,
     };
   }
 
@@ -253,10 +253,10 @@ export class SelectStore<
   }
 
   @action.bound
-  handleCheckboxToggle(key: string): void {
+  handleCheckboxToggle(token: string): void {
     const state = this.checkboxState;
 
-    if (this.allowCustom && key === state.specifyOtherKey) {
+    if (this.allowCustom && token === state.specifyOtherToken) {
       if (state.isCustomActive) {
         if (!this.node.canRemove) return;
         state.nonOptionAnswers.forEach((answer) =>
@@ -270,9 +270,9 @@ export class SelectStore<
       return;
     }
 
-    const option = state.options.find((entry) => entry.token === key);
+    const option = state.options.find((entry) => entry.token === token);
     if (!option) return;
-    const existing = state.answerByKey.get(key);
+    const existing = state.answerByToken.get(token);
     if (existing) {
       if (!this.node.canRemove) return;
       this.node.removeAnswer(existing);
@@ -315,8 +315,8 @@ export class SelectStore<
   }
 
   @computed
-  get specifyOtherKey(): string {
-    return `${this.node.key}::__specify_other__`;
+  get specifyOtherToken(): string {
+    return `${this.node.token}::__specify_other__`;
   }
 
   @computed
@@ -328,12 +328,12 @@ export class SelectStore<
   get selectedOptionAnswers(): Map<string, IAnswerInstance<T>> {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
     const selectedOptionAnswers = new Map<string, IAnswerInstance<T>>();
-    const usedAnswerKeys = new Set<string>();
+    const usedAnswerTokens = new Set<string>();
 
     this.node.options.entries.forEach((option) => {
       const match = this.node.answers.find((answer) => {
         if (answer.value == null) return false;
-        if (usedAnswerKeys.has(answer.key)) return false;
+        if (usedAnswerTokens.has(answer.token)) return false;
         if (option.value == null) return false;
         return areValuesEqual(
           dataType,
@@ -343,7 +343,7 @@ export class SelectStore<
       });
       if (match) {
         selectedOptionAnswers.set(option.token, match);
-        usedAnswerKeys.add(match.key);
+        usedAnswerTokens.add(match.token);
       }
     });
 
@@ -351,9 +351,9 @@ export class SelectStore<
   }
 
   @computed
-  private get usedAnswerKeys(): Set<string> {
+  private get usedAnswerTokens(): Set<string> {
     const used = new Set<string>();
-    this.selectedOptionAnswers.forEach((answer) => used.add(answer.key));
+    this.selectedOptionAnswers.forEach((answer) => used.add(answer.token));
     return used;
   }
 
@@ -361,9 +361,10 @@ export class SelectStore<
   get customAnswers(): IAnswerInstance<T>[] {
     const isTypeCustom = this.node.options.constraint === "optionsOrType";
     return this.node.answers.filter((answer) => {
-      if (this.usedAnswerKeys.has(answer.key)) return false;
-      if (isTypeCustom && this.pendingCustomKeys.has(answer.key)) return false;
-      if (this.pendingCustomKeys.has(answer.key)) return true;
+      if (this.usedAnswerTokens.has(answer.token)) return false;
+      if (isTypeCustom && this.pendingCustomTokens.has(answer.token))
+        return false;
+      if (this.pendingCustomTokens.has(answer.token)) return true;
       return answer.value != null;
     });
   }
@@ -371,8 +372,8 @@ export class SelectStore<
   @computed
   get availableAnswers(): IAnswerInstance<T>[] {
     return this.node.answers.filter((answer) => {
-      if (this.usedAnswerKeys.has(answer.key)) return false;
-      if (this.pendingCustomKeys.has(answer.key)) return false;
+      if (this.usedAnswerTokens.has(answer.token)) return false;
+      if (this.pendingCustomTokens.has(answer.token)) return false;
       return answer.value == null;
     });
   }
@@ -395,7 +396,7 @@ export class SelectStore<
     }
 
     const customOption: AnswerOptionEntry<T> = {
-      token: this.specifyOtherKey,
+      token: this.specifyOtherToken,
       label: "Specify other",
       value: null,
       option: EMPTY_ANSWER_OPTION,
@@ -408,7 +409,7 @@ export class SelectStore<
   @computed
   get selectedChipItems(): MultiSelectChipItem<T>[] {
     return [...this.selectedOptionAnswers.values()].map((answer) => ({
-      key: answer.key,
+      token: answer.token,
       answer,
       kind: "option",
       inlineString: false,
@@ -419,7 +420,7 @@ export class SelectStore<
   get customChipItems(): MultiSelectChipItem<T>[] {
     const inlineString = this.node.options.constraint === "optionsOrString";
     return this.customAnswers.map((answer) => ({
-      key: answer.key,
+      token: answer.token,
       answer,
       kind: "custom",
       inlineString,
@@ -448,19 +449,19 @@ export class SelectStore<
   }
 
   @action.bound
-  addPendingKey(key: string): void {
-    if (this.pendingCustomKeys.has(key)) return;
-    const next = new Set(this.pendingCustomKeys);
-    next.add(key);
-    this.pendingCustomKeys = next;
+  addPendingToken(token: string): void {
+    if (this.pendingCustomTokens.has(token)) return;
+    const next = new Set(this.pendingCustomTokens);
+    next.add(token);
+    this.pendingCustomTokens = next;
   }
 
   @action.bound
-  removePendingKey(key: string): void {
-    if (!this.pendingCustomKeys.has(key)) return;
-    const next = new Set(this.pendingCustomKeys);
-    next.delete(key);
-    this.pendingCustomKeys = next;
+  removePendingToken(token: string): void {
+    if (!this.pendingCustomTokens.has(token)) return;
+    const next = new Set(this.pendingCustomTokens);
+    next.delete(token);
+    this.pendingCustomTokens = next;
   }
 
   @action.bound
@@ -471,7 +472,7 @@ export class SelectStore<
   @action.bound
   handleRemoveAnswer(answer: IAnswerInstance<T>): void {
     if (!this.canRemoveSelection) return;
-    this.removePendingKey(answer.key);
+    this.removePendingToken(answer.token);
     this.node.removeAnswer(answer);
   }
 
@@ -482,15 +483,15 @@ export class SelectStore<
   }
 
   @action.bound
-  handleSelectOption(key: string): void {
+  handleSelectOption(token: string): void {
     this.selectValue = "";
-    this.handleSelectChange(key);
+    this.handleSelectChange(token);
   }
 
   @action.bound
-  handleSelectChange(key: string): void {
-    if (!key) return;
-    if (key === this.specifyOtherKey) {
+  handleSelectChange(token: string): void {
+    if (!token) return;
+    if (token === this.specifyOtherToken) {
       if (this.node.options.constraint === "optionsOrString") {
         this.addCustomStringAnswer();
       } else if (this.node.options.constraint === "optionsOrType") {
@@ -499,7 +500,7 @@ export class SelectStore<
       return;
     }
     const option = this.node.options.entries.find(
-      (entry) => entry.token === key,
+      (entry) => entry.token === token,
     );
     if (option) {
       this.addOptionAnswer(option);
@@ -510,7 +511,7 @@ export class SelectStore<
   cancelCustomDialog(): void {
     const dialog = this.customDialog;
     if (!dialog) return;
-    this.removePendingKey(dialog.answer.key);
+    this.removePendingToken(dialog.answer.token);
     if (dialog.isNew) {
       this.node.removeAnswer(dialog.answer);
     } else {
@@ -523,7 +524,7 @@ export class SelectStore<
   confirmCustomDialog(): void {
     const dialog = this.customDialog;
     if (!dialog) return;
-    this.removePendingKey(dialog.answer.key);
+    this.removePendingToken(dialog.answer.token);
     this.customDialog = null;
   }
 
@@ -541,7 +542,7 @@ export class SelectStore<
       describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
     return {
-      id: sanitizeForId(`${answer.key}-${suffix}`),
+      id: sanitizeForId(`${answer.token}-${suffix}`),
       ariaLabelledBy: getNodeLabelId(this.node),
       ariaDescribedBy,
       answer,
@@ -572,12 +573,12 @@ export class SelectStore<
     const slot = this.takeAvailableAnswer();
     if (slot) {
       slot.setValueByUser("" as never);
-      this.addPendingKey(slot.key);
+      this.addPendingToken(slot.token);
       return;
     }
     const created = this.node.addAnswer("" as never);
     if (created) {
-      this.addPendingKey(created.key);
+      this.addPendingToken(created.token);
     }
   }
 
@@ -585,13 +586,13 @@ export class SelectStore<
     if (!this.canAddSelection || this.isLoading) return;
     const slot = this.takeAvailableAnswer();
     if (slot) {
-      this.addPendingKey(slot.key);
+      this.addPendingToken(slot.token);
       this.customDialog = { answer: slot, isNew: false };
       return;
     }
     const created = this.node.addAnswer(null);
     if (created) {
-      this.addPendingKey(created.key);
+      this.addPendingToken(created.token);
       this.customDialog = {
         answer: created as IAnswerInstance<T>,
         isNew: true,
@@ -614,7 +615,7 @@ class ListSelectRowState<T extends AnswerType> {
   }
 
   @computed
-  get selectKey(): string {
+  get selectToken(): string {
     if (this.parent.isBooleanFallback) {
       const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.parent.node.type];
       if (this.answer.value == null) {
@@ -630,7 +631,7 @@ class ListSelectRowState<T extends AnswerType> {
       );
       return match?.token ?? "";
     }
-    return this.parent.node.options.getKeyForValue(
+    return this.parent.node.options.getTokenForValue(
       this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );
   }
@@ -639,23 +640,23 @@ class ListSelectRowState<T extends AnswerType> {
   get legacyOption(): OptionItem | null {
     if (this.parent.allowCustom) return null;
     if (this.parent.isBooleanFallback) return null;
-    if (this.selectKey || this.answer.value == null) return null;
+    if (this.selectToken || this.answer.value == null) return null;
     return this.parent.node.options.getLegacyEntryForValue(
-      this.answer.key,
+      this.answer.token,
       this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );
   }
 
   @computed
-  get specifyOtherKey(): string {
-    return `${this.parent.node.key}::__specify_other__`;
+  get specifyOtherToken(): string {
+    return `${this.parent.node.token}::__specify_other__`;
   }
 
   @computed
   get isCustomValue(): boolean {
     return (
       this.parent.allowCustom &&
-      this.selectKey === "" &&
+      this.selectToken === "" &&
       this.answer.value != null
     );
   }
@@ -663,16 +664,16 @@ class ListSelectRowState<T extends AnswerType> {
   @computed
   get isCustomActive(): boolean {
     if (!this.parent.allowCustom) return false;
-    if (this.selectKey) return false;
+    if (this.selectToken) return false;
     return this.isCustomValue || this.forceCustom;
   }
 
   @computed
   get selectValue(): string {
     if (this.isCustomActive) {
-      return this.specifyOtherKey;
+      return this.specifyOtherToken;
     }
-    return this.selectKey || this.legacyOption?.token || "";
+    return this.selectToken || this.legacyOption?.token || "";
   }
 
   @computed
@@ -687,13 +688,13 @@ class ListSelectRowState<T extends AnswerType> {
     }
     return [
       ...baseOptions,
-      { token: this.specifyOtherKey, label: "Specify other" },
+      { token: this.specifyOtherToken, label: "Specify other" },
     ];
   }
 
   @action.bound
-  handleChange(key: string): void {
-    if (this.parent.allowCustom && key === this.specifyOtherKey) {
+  handleChange(token: string): void {
+    if (this.parent.allowCustom && token === this.specifyOtherToken) {
       this.forceCustom = true;
       if (!this.isCustomValue) {
         this.answer.setValueByUser(null);
@@ -704,8 +705,10 @@ class ListSelectRowState<T extends AnswerType> {
     this.forceCustom = false;
     if (this.parent.isBooleanFallback) {
       const nextValue = (() => {
-        if (!key) return null;
-        const match = this.parent.options.find((entry) => entry.token === key);
+        if (!token) return null;
+        const match = this.parent.options.find(
+          (entry) => entry.token === token,
+        );
         if (!match) return null;
         return match.value === undefined ? null : cloneValue(match.value);
       })();
@@ -714,7 +717,9 @@ class ListSelectRowState<T extends AnswerType> {
       );
       return;
     }
-    const nextValue = key ? this.parent.node.options.getValueForKey(key) : null;
+    const nextValue = token
+      ? this.parent.node.options.getValueForToken(token)
+      : null;
     this.answer.setValueByUser(
       nextValue as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );
@@ -735,8 +740,8 @@ class DropdownRowState<T extends AnswerType> {
   }
 
   @computed
-  get optionKey(): string {
-    return this.parent.node.options.getKeyForValue(
+  get optionToken(): string {
+    return this.parent.node.options.getTokenForValue(
       this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );
   }
@@ -744,28 +749,28 @@ class DropdownRowState<T extends AnswerType> {
   @computed
   get legacyOption(): OptionItem | null {
     if (this.parent.allowCustom) return null;
-    if (this.optionKey || this.answer.value == null) return null;
+    if (this.optionToken || this.answer.value == null) return null;
     return this.parent.node.options.getLegacyEntryForValue(
-      this.answer.key,
+      this.answer.token,
       this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );
   }
 
   @computed
   get selectValue(): string {
-    return this.optionKey || this.legacyOption?.token || "";
+    return this.optionToken || this.legacyOption?.token || "";
   }
 
   @computed
-  get customKey(): string {
-    return `${this.parent.node.key}::__specify_other__`;
+  get customToken(): string {
+    return `${this.parent.node.token}::__specify_other__`;
   }
 
   @computed
   get isCustomValue(): boolean {
     return (
       this.parent.allowCustom &&
-      this.optionKey === "" &&
+      this.optionToken === "" &&
       this.answer.value != null
     );
   }
@@ -773,7 +778,7 @@ class DropdownRowState<T extends AnswerType> {
   @computed
   get isCustomActive(): boolean {
     if (!this.parent.allowCustom) return false;
-    if (this.optionKey) return false;
+    if (this.optionToken) return false;
     return this.isCustomValue || this.forceCustom;
   }
 
@@ -785,7 +790,7 @@ class DropdownRowState<T extends AnswerType> {
     return [
       ...this.parent.node.options.entries,
       {
-        key: this.customKey,
+        token: this.customToken,
         label: "Specify other",
         value: null,
         option: EMPTY_ANSWER_OPTION,
@@ -811,14 +816,16 @@ class DropdownRowState<T extends AnswerType> {
   }
 
   @action.bound
-  handleSelect(key: string): void {
-    if (this.parent.allowCustom && key === this.customKey) {
+  handleSelect(token: string): void {
+    if (this.parent.allowCustom && token === this.customToken) {
       this.forceCustom = true;
       this.answer.setValueByUser(null);
       return;
     }
     this.forceCustom = false;
-    const nextValue = key ? this.parent.node.options.getValueForKey(key) : null;
+    const nextValue = token
+      ? this.parent.node.options.getValueForToken(token)
+      : null;
     this.answer.setValueByUser(
       nextValue as DataTypeToType<AnswerTypeToDataType<T>> | null,
     );

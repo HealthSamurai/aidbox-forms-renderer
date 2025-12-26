@@ -24,7 +24,7 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   return (
     <ThemedAnswerList toolbar={toolbar}>
       {answers.map((answer) => (
-        <AnswerScaffold key={answer.key} answer={answer} control={control} />
+        <AnswerScaffold key={answer.token} answer={answer} control={control} />
       ))}
     </ThemedAnswerList>
   );

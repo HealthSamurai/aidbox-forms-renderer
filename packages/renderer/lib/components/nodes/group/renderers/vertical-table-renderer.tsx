@@ -25,26 +25,26 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
     const detailBlocks = store.detailQuestions
       .map((question) => (
         <TableQuestionDetails
-          key={`${question.key}-details`}
+          key={`${question.token}-details`}
           question={question}
         />
       ))
       .filter(Boolean);
 
     const rows = store.rowStates.map((row) => ({
-      key: row.key,
+      token: row.token,
       label: <NodeHeader node={row.question} />,
       cells: row.cells.map((cell) => {
         if (!cell.entry || !cell.toggleSelection) {
           return {
-            key: `${row.key}-${cell.token}`,
+            token: `${row.token}-${cell.token}`,
             content: cell.placeholder ?? "—",
           };
         }
 
         if (row.question.repeats) {
           return {
-            key: `${row.key}-${cell.token}`,
+            token: `${row.token}-${cell.token}`,
             content: (
               <CheckboxList
                 options={[
@@ -54,9 +54,9 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                     disabled: cell.disabled,
                   },
                 ]}
-                tokens={row.selectedKeys}
-                onChange={(key) => {
-                  if (key === cell.token) {
+                tokens={row.selectedTokens}
+                onChange={(token) => {
+                  if (token === cell.token) {
                     cell.toggleSelection?.();
                   }
                 }}
@@ -70,7 +70,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
         }
 
         return {
-          key: `${row.key}-${cell.token}`,
+          token: `${row.token}-${cell.token}`,
           content: (
             <RadioButtonList
               options={[
@@ -80,10 +80,10 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
                   disabled: cell.disabled,
                 },
               ]}
-              token={row.selectedKey}
+              token={row.selectedToken}
               legacyOption={null}
-              onChange={(key) => {
-                if (key === cell.token) {
+              onChange={(token) => {
+                if (token === cell.token) {
                   cell.toggleSelection?.();
                 }
               }}
@@ -99,13 +99,7 @@ export const VerticalTableRenderer = observer(function VerticalTableRenderer({
 
     content = (
       <>
-        <GridTable
-          columns={store.columns.map((column) => ({
-            key: column.token,
-            label: column.label,
-          }))}
-          rows={rows}
-        />
+        <GridTable columns={store.columns} rows={rows} />
         {detailBlocks.length > 0 ? detailBlocks : null}
       </>
     );

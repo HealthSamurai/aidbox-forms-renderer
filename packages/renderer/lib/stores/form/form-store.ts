@@ -151,7 +151,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     item: QuestionnaireItem,
     parentStore: INode | null,
     parentScope: IScope,
-    parentKey: string,
+    parentToken: string,
     parentResponseItems: QuestionnaireResponseItem[] | undefined,
   ): IPresentableNode {
     switch (item.type) {
@@ -161,7 +161,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           item,
           parentStore,
           parentScope.extend(false),
-          `${parentKey}_/_${item.linkId}`,
+          `${parentToken}_/_${item.linkId}`,
         );
         parentScope.registerNode(store);
         return store;
@@ -174,7 +174,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             item,
             parentStore,
             parentScope.extend(false),
-            `${parentKey}_/_${item.linkId}`,
+            `${parentToken}_/_${item.linkId}`,
             parentResponseItems?.filter(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -185,7 +185,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             item,
             parentStore,
             parentScope.extend(false),
-            `${parentKey}_/_${item.linkId}`,
+            `${parentToken}_/_${item.linkId}`,
             parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -211,7 +211,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           item,
           parentStore,
           parentScope.extend(false),
-          `${parentKey}_/_${item.linkId}`,
+          `${parentToken}_/_${item.linkId}`,
           parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
         );
         parentScope.registerNode(store);

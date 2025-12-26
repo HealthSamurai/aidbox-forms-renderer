@@ -4,17 +4,17 @@ import { isGroupNode } from "./group-store.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 
 export type GridColumnState = {
-  key: string;
+  token: string;
   label: string;
 };
 
 export type GridCellState = {
-  key: string;
+  token: string;
   question?: IQuestionNode | undefined;
 };
 
 export type GridRowState = {
-  key: string;
+  token: string;
   label: string;
   cells: GridCellState[];
 };
@@ -58,7 +58,7 @@ export class GridStore implements IGridStore {
     });
 
     return columns.map((column) => ({
-      key: column.linkId,
+      token: column.linkId,
       label: column.label,
     }));
   }
@@ -76,11 +76,11 @@ export class GridStore implements IGridStore {
       const label = row.text ?? row.linkId ?? "Row";
 
       return {
-        key: row.key,
+        token: row.token,
         label,
         cells: columns.map((column) => ({
-          key: `${row.key}-${column.key}`,
-          question: questionMap.get(column.key),
+          token: `${row.token}-${column.token}`,
+          question: questionMap.get(column.token),
         })),
       };
     });

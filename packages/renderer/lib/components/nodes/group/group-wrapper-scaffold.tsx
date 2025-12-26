@@ -31,7 +31,7 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
       {children ??
         wrapper.visibleNodes.map((node) => (
           <GroupWrapperScaffoldItem
-            key={node.key}
+            key={node.token}
             node={node}
             wrapper={wrapper}
           />

@@ -27,7 +27,7 @@ import { QuantityAnswer } from "./quantity-answer.ts";
 export class AnswerInstance<
   T extends AnswerType,
 > implements IAnswerInstance<T> {
-  readonly key: string;
+  readonly token: string;
   readonly scope: IScope;
 
   readonly question: IQuestionNode<T>;
@@ -58,13 +58,13 @@ export class AnswerInstance<
   constructor(
     question: IQuestionNode<T>,
     scope: IScope,
-    key: string,
+    token: string,
     initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {
     makeObservable(this);
 
-    this.key = key;
+    this.token = token;
     this.scope = scope.extend(question.repeats);
     this.question = question;
 
@@ -76,7 +76,7 @@ export class AnswerInstance<
             item,
             question,
             this.scope,
-            this.key,
+            this.token,
             responseItems,
           ),
         ) ?? [];

@@ -424,7 +424,7 @@ export interface IPresentableNode {
 
   readonly form: IForm;
   readonly scope: IScope;
-  readonly key: string;
+  readonly token: string;
   readonly parentStore: INode | null;
 
   readonly linkId: string;
@@ -487,17 +487,17 @@ export interface GroupControlDefinition {
 }
 
 type GridColumnState = {
-  key: string;
+  token: string;
   label: string;
 };
 
 type GridCellState = {
-  key: string;
+  token: string;
   question?: IQuestionNode | undefined;
 };
 
 type GridRowState = {
-  key: string;
+  token: string;
   label: string;
   cells: Array<GridCellState>;
 };
@@ -523,13 +523,13 @@ type TableCellState = {
 };
 
 type TableRowState = {
-  key: string;
+  token: string;
   question: IQuestionNode;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   id: string;
-  selectedKey: string;
-  selectedKeys: Set<string>;
+  selectedToken: string;
+  selectedTokens: Set<string>;
   cells: Array<TableCellState>;
   hasDetails: boolean;
 };
@@ -543,18 +543,18 @@ export interface ITableStore {
 }
 
 type GridTableColumnState = {
-  key: string;
+  token: string;
   label: string;
 };
 
 type GridTableCellState = {
-  key: string;
+  token: string;
   question?: IQuestionNode | undefined;
   action?: "remove" | undefined;
 };
 
 type GridTableRowState = {
-  key: string;
+  token: string;
   label: string;
   node: IGroupNode;
   cells: Array<GridTableCellState>;
@@ -597,7 +597,7 @@ export interface ValueBounds<T extends AnswerType = AnswerType> {
 }
 
 export interface IAnswerInstance<T extends AnswerType = AnswerType> {
-  readonly key: string;
+  readonly token: string;
   readonly question: IQuestionNode<T>;
   readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
@@ -626,10 +626,14 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly error: string | null;
   readonly entries: ReadonlyArray<AnswerOptionEntry<T>>;
   readonly constraint: QuestionnaireItem["answerConstraint"];
-  getKeyForValue(value: DataTypeToType<AnswerTypeToDataType<T>> | null): string;
-  getValueForKey(key: string): DataTypeToType<AnswerTypeToDataType<T>> | null;
+  getTokenForValue(
+    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+  ): string;
+  getValueForToken(
+    token: string,
+  ): DataTypeToType<AnswerTypeToDataType<T>> | null;
   getLegacyEntryForValue(
-    answerKey: string,
+    answerToken: string,
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ): OptionItem | null;
 }
@@ -654,18 +658,18 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
 type SelectCheckboxState<T extends AnswerType> = {
   options: ReadonlyArray<AnswerOptionEntry<T>>;
   uiOptions: Array<OptionItem>;
-  selectedKeys: Set<string>;
-  answerByKey: Map<string, IAnswerInstance<T>>;
+  selectedTokens: Set<string>;
+  answerByToken: Map<string, IAnswerInstance<T>>;
   nonOptionAnswers: IAnswerInstance<T>[];
   customAnswers: IAnswerInstance<T>[];
   availableAnswers: IAnswerInstance<T>[];
   canAddSelection: boolean;
   isCustomActive: boolean;
-  specifyOtherKey: string;
+  specifyOtherToken: string;
 };
 
 type SelectChipItem<T extends AnswerType> = {
-  key: string;
+  token: string;
   answer: IAnswerInstance<T>;
   inlineString: boolean;
   kind: "option" | "custom";
@@ -686,7 +690,7 @@ type ListSelectRowState = {
 };
 
 type DropdownRowState<T extends AnswerType> = {
-  optionKey: string;
+  optionToken: string;
   extendedOptions: ReadonlyArray<AnswerOptionEntry<T>>;
   isCustomActive: boolean;
   exitCustom: () => void;
@@ -706,7 +710,7 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly selectedChipItems: Array<SelectChipItem<T>>;
   readonly customChipItems: Array<SelectChipItem<T>>;
   readonly hasCustomAction: boolean;
-  readonly specifyOtherKey: string;
+  readonly specifyOtherToken: string;
   readonly canAddSelection: boolean;
   readonly canRemoveSelection: boolean;
   readonly hasSelections: boolean;
@@ -716,11 +720,11 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly ariaLabelledBy: string;
   readonly ariaDescribedBy: string | undefined;
 
-  handleCheckboxToggle(key: string): void;
+  handleCheckboxToggle(token: string): void;
   getListRowState(answer: IAnswerInstance<T>): ListSelectRowState;
   getDropdownRowState(answer: IAnswerInstance<T>): DropdownRowState<T>;
-  handleSelectOption(key: string): void;
-  handleSelectChange(key: string): void;
+  handleSelectOption(token: string): void;
+  handleSelectChange(token: string): void;
   handleRemoveAnswer(answer: IAnswerInstance<T>): void;
   handleClearAll(): void;
   cancelCustomDialog(): void;
@@ -794,7 +798,7 @@ export interface IForm {
     item: QuestionnaireItem,
     parentStore: INode | null,
     parentScope: IScope,
-    parentKey: string,
+    parentToken: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ): IPresentableNode;
   reset(): void;

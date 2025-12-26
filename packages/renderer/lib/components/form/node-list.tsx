@@ -12,7 +12,7 @@ export const NodesList = observer(function NodesList({
       {nodes
         .filter((node) => !node.hidden)
         .map((node) => (
-          <Node key={node.key} node={node} />
+          <Node key={node.token} node={node} />
         ))}
     </>
   );

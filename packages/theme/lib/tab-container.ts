@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type TabItem = {
-  key: string;
+  token: string;
   label: ReactNode;
   buttonId: string;
   panelId: string;

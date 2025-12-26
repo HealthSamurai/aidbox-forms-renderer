@@ -35,27 +35,27 @@ export function sanitizeForId(value: string) {
 }
 
 export function getNodeLabelId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.key}-label`);
+  return sanitizeForId(`af-${node.token}-label`);
 }
 
 export function getNodeHelpId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.key}-help`);
+  return sanitizeForId(`af-${node.token}-help`);
 }
 
 export function getNodeLegalId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.key}-legal`);
+  return sanitizeForId(`af-${node.token}-legal`);
 }
 
 export function getNodeFlyoverId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.key}-flyover`);
+  return sanitizeForId(`af-${node.token}-flyover`);
 }
 
 export function getNodeErrorId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.key}-errors`);
+  return sanitizeForId(`af-${node.token}-errors`);
 }
 
 export function getAnswerErrorId(answer: IAnswerInstance): string {
-  return sanitizeForId(`af-${answer.key}-errors`);
+  return sanitizeForId(`af-${answer.token}-errors`);
 }
 
 export function getNodeDescribedBy<T extends AnswerType>(

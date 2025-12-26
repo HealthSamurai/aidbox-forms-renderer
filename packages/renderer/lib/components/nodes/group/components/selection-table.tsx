@@ -31,21 +31,21 @@ export const TableQuestionDetails = observer(function TableQuestionDetails({
   const details = [
     showStatus ? (
       <OptionsState
-        key={`${question.key}-status`}
+        key={`${question.token}-status`}
         isLoading={question.options.loading}
         error={question.options.error ?? undefined}
       />
     ) : null,
-    <NodeErrors key={`${question.key}-errors`} node={question} />,
+    <NodeErrors key={`${question.token}-errors`} node={question} />,
     ...answers
       .filter((answer) => answer.nodes.length > 0)
       .map((answer) => (
-        <NodesList key={`${answer.key}-children`} nodes={answer.nodes} />
+        <NodesList key={`${answer.token}-children`} nodes={answer.nodes} />
       )),
     ...answers
       .filter((answer) => answer.issues.length > 0)
       .map((answer) => (
-        <AnswerErrors key={`${answer.key}-issues`} answer={answer} />
+        <AnswerErrors key={`${answer.token}-issues`} answer={answer} />
       )),
   ].filter(Boolean);
 

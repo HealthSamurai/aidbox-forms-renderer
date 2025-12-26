@@ -43,13 +43,13 @@ export type TableCellState = {
 };
 
 export type TableRowState = {
-  key: string;
+  token: string;
   question: IQuestionNode;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   id: string;
-  selectedKey: string;
-  selectedKeys: Set<string>;
+  selectedToken: string;
+  selectedTokens: Set<string>;
   cells: TableCellState[];
   hasDetails: boolean;
 };
@@ -82,9 +82,9 @@ export class TableStore implements ITableStore {
     return this.model.rows.map((row) => {
       const ariaLabelledBy = getNodeLabelId(row.question);
       const ariaDescribedBy = getNodeDescribedBy(row.question);
-      const id = sanitizeForId(`${row.question.key}-table`);
-      const selectedKeys = new Set<string>();
-      let selectedKey = "";
+      const id = sanitizeForId(`${row.question.token}-table`);
+      const selectedTokens = new Set<string>();
+      let selectedToken = "";
 
       const cells = this.columns.map((column) => {
         const entry = row.optionMap.get(column.token);
@@ -141,8 +141,8 @@ export class TableStore implements ITableStore {
           };
         })();
         if (cell.selected) {
-          selectedKeys.add(column.token);
-          selectedKey = column.token;
+          selectedTokens.add(column.token);
+          selectedToken = column.token;
         }
         return {
           token: column.token,
@@ -163,13 +163,13 @@ export class TableStore implements ITableStore {
         );
 
       return {
-        key: row.question.key,
+        token: row.question.token,
         question: row.question,
         ariaLabelledBy,
         ariaDescribedBy,
         id,
-        selectedKey,
-        selectedKeys,
+        selectedToken,
+        selectedTokens,
         cells,
         hasDetails,
       };

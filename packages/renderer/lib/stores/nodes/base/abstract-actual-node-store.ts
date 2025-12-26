@@ -35,7 +35,7 @@ export abstract class AbstractActualNodeStore
   implements IActualNode, IExpressionEnvironmentProvider
 {
   protected _scope: IScope;
-  protected _key: string;
+  protected _token: string;
   abstract readonly expressionRegistry: NodeExpressionRegistry;
   protected validator: INodeValidator | undefined;
 
@@ -47,22 +47,22 @@ export abstract class AbstractActualNodeStore
     template: QuestionnaireItem,
     parentStore: INode | null,
     scope: IScope,
-    key: string,
+    token: string,
   ) {
     super(form, template, parentStore);
 
     makeObservable(this);
 
     this._scope = scope;
-    this._key = key;
+    this._token = token;
   }
 
   get scope(): IScope {
     return this._scope;
   }
 
-  get key(): string {
-    return this._key;
+  get token(): string {
+    return this._token;
   }
 
   @computed

@@ -23,7 +23,11 @@ export function GridTable({
               Row
             </th>
             {columns.map((column) => (
-              <th key={column.key} scope="col" className="nhsuk-table__header">
+              <th
+                key={column.token}
+                scope="col"
+                className="nhsuk-table__header"
+              >
                 {column.label}
               </th>
             ))}
@@ -31,12 +35,12 @@ export function GridTable({
         </thead>
         <tbody className="nhsuk-table__body">
           {rows.map((row) => (
-            <tr key={row.key} className="nhsuk-table__row">
+            <tr key={row.token} className="nhsuk-table__row">
               <th scope="row" className="nhsuk-table__header">
                 {row.label}
               </th>
               {row.cells.map((cell) => (
-                <td key={cell.key} className="nhsuk-table__cell">
+                <td key={cell.token} className="nhsuk-table__cell">
                   {cell.content}
                 </td>
               ))}

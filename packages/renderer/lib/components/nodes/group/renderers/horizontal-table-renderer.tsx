@@ -35,27 +35,27 @@ export const HorizontalTableRenderer = observer(
       const detailBlocks = store.detailQuestions
         .map((question) => (
           <TableQuestionDetails
-            key={`${question.key}-details`}
+            key={`${question.token}-details`}
             question={question}
           />
         ))
         .filter(Boolean);
 
       const rows = store.columns.map((column, columnIndex) => ({
-        key: column.token,
+        token: column.token,
         label: column.label,
         cells: store.rowStates.map((row) => {
           const cell = row.cells[columnIndex];
           if (!cell || !cell.entry || !cell.toggleSelection) {
             return {
-              key: `${row.question.key}-${column.token}`,
+              token: `${row.token}-${column.token}`,
               content: cell?.placeholder ?? "—",
             };
           }
 
           if (row.question.repeats) {
             return {
-              key: `${row.question.key}-${column.token}`,
+              token: `${row.token}-${column.token}`,
               content: (
                 <CheckboxList
                   options={[
@@ -65,9 +65,9 @@ export const HorizontalTableRenderer = observer(
                       disabled: cell.disabled,
                     },
                   ]}
-                  tokens={row.selectedKeys}
-                  onChange={(key) => {
-                    if (key === column.token) {
+                  tokens={row.selectedTokens}
+                  onChange={(token) => {
+                    if (token === column.token) {
                       cell.toggleSelection?.();
                     }
                   }}
@@ -81,7 +81,7 @@ export const HorizontalTableRenderer = observer(
           }
 
           return {
-            key: `${row.question.key}-${column.token}`,
+            token: `${row.token}-${column.token}`,
             content: (
               <RadioButtonList
                 options={[
@@ -91,10 +91,10 @@ export const HorizontalTableRenderer = observer(
                     disabled: cell.disabled,
                   },
                 ]}
-                token={row.selectedKey}
+                token={row.selectedToken}
                 legacyOption={null}
-                onChange={(key) => {
-                  if (key === column.token) {
+                onChange={(token) => {
+                  if (token === column.token) {
                     cell.toggleSelection?.();
                   }
                 }}
@@ -112,7 +112,7 @@ export const HorizontalTableRenderer = observer(
         <>
           <GridTable
             columns={store.rowStates.map((row) => ({
-              key: row.key,
+              token: row.token,
               label: <NodeHeader node={row.question} />,
             }))}
             rows={rows}

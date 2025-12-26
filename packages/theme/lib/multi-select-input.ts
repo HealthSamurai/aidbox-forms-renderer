@@ -2,7 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 import type { OptionItem } from "./option-item.ts";
 
 export type MultiSelectChip = {
-  key: string;
+  token: string;
   content: ReactNode;
   errors?: ReactNode;
   onRemove?: (() => void) | undefined;

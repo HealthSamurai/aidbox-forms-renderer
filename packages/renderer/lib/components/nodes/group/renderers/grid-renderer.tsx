@@ -18,15 +18,12 @@ export const GridRenderer = observer(function GridRenderer({
   } else {
     children = (
       <GridTable
-        columns={store.columns.map((column) => ({
-          key: column.key,
-          label: column.label,
-        }))}
+        columns={store.columns}
         rows={store.rows.map((row) => ({
-          key: row.key,
+          token: row.token,
           label: row.label,
           cells: row.cells.map((cell) => ({
-            key: cell.key,
+            token: cell.token,
             content: cell.question ? <Node node={cell.question} /> : "—",
           })),
         }))}

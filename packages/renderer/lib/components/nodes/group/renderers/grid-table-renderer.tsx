@@ -11,12 +11,12 @@ export const GridTableRenderer = observer(function GridTableRenderer({
   const store = wrapper.gridTableStore;
   const gridColumns = store.gridColumns;
   const rows = store.rows.map((row) => ({
-    key: row.key,
+    token: row.token,
     label: row.label,
     cells: row.cells.map((cell) => {
       if (cell.action === "remove") {
         return {
-          key: cell.key,
+          token: cell.token,
           content: (
             <GroupRemoveButton
               onClick={() => wrapper.removeNode(row.node)}
@@ -29,7 +29,7 @@ export const GridTableRenderer = observer(function GridTableRenderer({
       }
 
       return {
-        key: cell.key,
+        token: cell.token,
         content: cell.question ? <Node node={cell.question} /> : "—",
       };
     }),
@@ -40,7 +40,7 @@ export const GridTableRenderer = observer(function GridTableRenderer({
       {rows.length === 0 ? (
         <GridTable
           columns={gridColumns}
-          rows={[{ key: "empty", label: "Node", cells: [] }]}
+          rows={[{ token: "empty", label: "Node", cells: [] }]}
           empty={<EmptyState>No nodes yet.</EmptyState>}
         />
       ) : (

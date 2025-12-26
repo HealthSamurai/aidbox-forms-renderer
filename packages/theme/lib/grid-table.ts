@@ -1,17 +1,17 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type GridTableColumn = {
-  key: string;
+  token: string;
   label: ReactNode;
 };
 
 export type GridTableCell = {
-  key: string;
+  token: string;
   content: ReactNode;
 };
 
 export type GridTableRow = {
-  key: string;
+  token: string;
   label: ReactNode;
   cells: GridTableCell[];
 };

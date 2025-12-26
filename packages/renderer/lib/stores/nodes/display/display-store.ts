@@ -24,9 +24,9 @@ export class DisplayStore
     template: QuestionnaireItem,
     parentStore: INode | null,
     scope: IScope,
-    key: string,
+    token: string,
   ) {
-    super(form, template, parentStore, scope, key);
+    super(form, template, parentStore, scope, token);
 
     this.expressionRegistry = new NodeExpressionRegistry(
       this.form.coordinator,

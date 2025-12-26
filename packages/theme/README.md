@@ -761,7 +761,7 @@ Minimal FHIR Attachment shape used by `FileInput` to display metadata and stored
 
 | Field            | Type         | Required | Description                                                        |
 | ---------------- | ------------ | -------- | ------------------------------------------------------------------ |
-| `key`            | `string`     | Yes      | Use as a stable identifier when rendering and updating chip lists. |
+| `token`          | `string`     | Yes      | Use as a stable identifier when rendering and updating chip lists. |
 | `content`        | `ReactNode`  | Yes      | Render as the chip’s visible content (usually a value display).    |
 | `errors`         | `ReactNode`  | No       | Render as error content associated with this chip.                 |
 | `onRemove`       | `() => void` | No       | Call when the user activates the chip’s remove action.             |
@@ -781,14 +781,14 @@ Minimal FHIR Attachment shape used by `FileInput` to display metadata and stored
 
 | Field   | Type        | Required | Description                                |
 | ------- | ----------- | -------- | ------------------------------------------ |
-| `key`   | `string`    | Yes      | Use as a stable identifier for the column. |
+| `token` | `string`    | Yes      | Use as a stable identifier for the column. |
 | `label` | `ReactNode` | Yes      | Render as the column header content.       |
 
 ### GridTableRow
 
 | Field   | Type              | Required | Description                                         |
 | ------- | ----------------- | -------- | --------------------------------------------------- |
-| `key`   | `string`          | Yes      | Use as a stable identifier for the row.             |
+| `token` | `string`          | Yes      | Use as a stable identifier for the row.             |
 | `label` | `ReactNode`       | Yes      | Render as the row label or header cell content.     |
 | `cells` | `GridTableCell[]` | Yes      | Render these cells for the row, aligned to columns. |
 
@@ -796,14 +796,14 @@ Minimal FHIR Attachment shape used by `FileInput` to display metadata and stored
 
 | Field     | Type        | Required | Description                              |
 | --------- | ----------- | -------- | ---------------------------------------- |
-| `key`     | `string`    | Yes      | Use as a stable identifier for the cell. |
+| `token`   | `string`    | Yes      | Use as a stable identifier for the cell. |
 | `content` | `ReactNode` | Yes      | Render as the cell content.              |
 
 ### TabItem
 
 | Field      | Type        | Required | Description                                                  |
 | ---------- | ----------- | -------- | ------------------------------------------------------------ |
-| `key`      | `string`    | Yes      | Use as a stable identifier for the tab.                      |
+| `token`    | `string`    | Yes      | Use as a stable identifier for the tab.                      |
 | `label`    | `ReactNode` | Yes      | Render as the tab button label.                              |
 | `buttonId` | `string`    | Yes      | Apply as the tab button id to wire aria-labelledby/controls. |
 | `panelId`  | `string`    | Yes      | Apply as the tab panel id to wire aria controls.             |

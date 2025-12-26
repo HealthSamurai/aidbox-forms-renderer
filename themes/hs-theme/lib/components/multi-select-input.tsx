@@ -65,7 +65,7 @@ export function MultiSelectInput({
       ) : null}
       <ChipList>
         {chips.map((chip) => (
-          <ChipColumn key={chip.key}>
+          <ChipColumn key={chip.token}>
             <Chip>
               <ChipContent>{chip.content}</ChipContent>
               {chip.onRemove ? (

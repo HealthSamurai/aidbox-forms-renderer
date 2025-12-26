@@ -121,7 +121,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   return (
     <SelectInput
       options={options}
-      token={rowStore.optionKey}
+      token={rowStore.optionToken}
       legacyOption={null}
       onChange={rowStore.handleSelect}
       id={rowProps.id}

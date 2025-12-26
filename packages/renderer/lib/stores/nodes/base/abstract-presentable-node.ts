@@ -168,7 +168,7 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
 
   abstract get scope(): IScope;
 
-  abstract get key(): string;
+  abstract get token(): string;
 
   protected abstract get _isEnabled(): boolean;
 

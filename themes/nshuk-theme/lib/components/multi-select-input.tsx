@@ -69,7 +69,7 @@ export function MultiSelectInput({
         <div className="nhsuk-u-margin-bottom-3">
           {chips.map((chip) => (
             <div
-              key={chip.key}
+              key={chip.token}
               className="nhsuk-u-margin-bottom-2"
               style={{
                 border: "1px solid #d8dde0",

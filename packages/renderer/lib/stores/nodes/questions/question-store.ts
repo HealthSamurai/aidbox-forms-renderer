@@ -89,10 +89,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     template: QuestionnaireItem,
     parentStore: INode | null,
     scope: IScope,
-    key: string,
+    token: string,
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
-    super(form, template, parentStore, scope, key);
+    super(form, template, parentStore, scope, token);
 
     this.expressionRegistry = new NodeExpressionRegistry(
       this.form.coordinator,
@@ -260,7 +260,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         () => [this.canAdd, this.minOccurs, this.repeats, this.answers.length],
         () => this.ensureBaselineAnswers(),
         {
-          name: `${this.key}:ensure-baseline-answers`,
+          name: `${this.token}:ensure-baseline-answers`,
           equals: comparer.structural,
           fireImmediately: true,
         },
@@ -280,7 +280,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           }
         },
         {
-          name: `${this.key}:apply-initial-value-reaction`,
+          name: `${this.token}:apply-initial-value-reaction`,
           equals: comparer.structural,
           fireImmediately: true,
         },
@@ -293,7 +293,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         () => [this.isEnabled, this.lifecycle, calculated.value],
         () => this.applyCalculatedExpressionValue(),
         {
-          name: `${this.key}:apply-calculated-value-reaction`,
+          name: `${this.token}:apply-calculated-value-reaction`,
           equals: comparer.structural,
           fireImmediately: true,
         },
@@ -485,7 +485,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const answer = new AnswerInstance(
       this,
       this.scope,
-      `${this.key}_/_${this.lastIndex++}`,
+      `${this.token}_/_${this.lastIndex++}`,
       initial,
       responseItems,
     );

@@ -25,5 +25,5 @@ function getPrimaryControlId(node: IPresentableNode): string | undefined {
     return undefined;
   }
 
-  return sanitizeForId(firstAnswer.key);
+  return sanitizeForId(firstAnswer.token);
 }

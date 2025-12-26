@@ -16,10 +16,10 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
   const activeIndex = Math.min(activeTab, maxIndex);
   const header = <NodeHeader node={node} />;
   const items = visibleNodes.map((child, idx) => ({
-    key: child.key,
+    token: child.token,
     label: <NodeHeader node={child} />,
-    buttonId: `${node.key}-tab-${idx}`,
-    panelId: `${node.key}-panel-${idx}`,
+    buttonId: `${node.token}-tab-${idx}`,
+    panelId: `${node.token}-panel-${idx}`,
     content: <Node node={child} />,
   }));
 

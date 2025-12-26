@@ -103,7 +103,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
       return [
         {
-          token: `${this.question.key}_/_${index}`,
+          token: `${this.question.token}_/_${index}`,
           label,
           value,
           option,
@@ -133,7 +133,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     return map;
   }
 
-  getKeyForValue(
+  getTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ): string {
     if (value == null) {
@@ -149,13 +149,15 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     return match?.token ?? "";
   }
 
-  getValueForKey(key: string): DataTypeToType<AnswerTypeToDataType<T>> | null {
-    const value = this.valueMap.get(key);
+  getValueForToken(
+    token: string,
+  ): DataTypeToType<AnswerTypeToDataType<T>> | null {
+    const value = this.valueMap.get(token);
     return value == null ? null : cloneValue(value);
   }
 
   getLegacyEntryForValue(
-    answerKey: string,
+    answerToken: string,
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ): OptionItem | null {
     if (value == null) {
@@ -172,7 +174,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     }
 
     return {
-      token: `${answerKey}::__legacy__`,
+      token: `${answerToken}::__legacy__`,
       label,
     };
   }

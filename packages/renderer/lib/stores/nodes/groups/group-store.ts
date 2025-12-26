@@ -46,10 +46,10 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
     template: QuestionnaireItem,
     parentStore: INode | null,
     scope: IScope,
-    key: string,
+    token: string,
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
-    super(form, template, parentStore, scope, key);
+    super(form, template, parentStore, scope, token);
 
     this.expressionRegistry = new NodeExpressionRegistry(
       this.form.coordinator,
@@ -67,7 +67,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
             item,
             this,
             this.scope,
-            this.key,
+            this.token,
             responseItem?.item,
           ),
         ),
