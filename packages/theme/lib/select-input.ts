@@ -1,7 +1,8 @@
 import type { ComponentType } from "react";
+import type { OptionItem } from "./option-entry.ts";
 
 export type SelectInputProps = {
-  options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
+  options: OptionItem[];
   value: string;
   onChange: (key: string) => void;
   legacyOption: { key: string; label: string } | null;

@@ -18,7 +18,13 @@ export type MultiSelectControlProps<T extends AnswerType> = {
 export const MultiSelectControl = observer(function MultiSelectControl<
   T extends AnswerType,
 >({ node, valueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
-  const { Button, MultiSelectInput } = useTheme();
+  const {
+    MultiSelectInput,
+    MultiSelectSpecifyOtherButton,
+    MultiSelectClearAllButton,
+    MultiSelectDialogCancelButton,
+    MultiSelectDialogAddButton,
+  } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const ValueDisplay = valueDisplay;
@@ -69,25 +75,21 @@ export const MultiSelectControl = observer(function MultiSelectControl<
 
   const customAction =
     store.hasCustomAction && !showOptions ? (
-      <Button
-        type="button"
-        variant="secondary"
+      <MultiSelectSpecifyOtherButton
         onClick={() => store.handleSelectChange(store.specifyOtherKey)}
         disabled={!store.canAddSelection || store.isLoading}
       >
         Specify other
-      </Button>
+      </MultiSelectSpecifyOtherButton>
     ) : null;
 
   const clearAction = store.hasSelections ? (
-    <Button
-      type="button"
-      variant="secondary"
+    <MultiSelectClearAllButton
       onClick={store.handleClearAll}
       disabled={!store.canRemoveSelection}
     >
       Clear all
-    </Button>
+    </MultiSelectClearAllButton>
   ) : null;
 
   const actions =
@@ -119,21 +121,18 @@ export const MultiSelectControl = observer(function MultiSelectControl<
           ),
           actions: (
             <>
-              <Button
-                type="button"
-                variant="secondary"
+              <MultiSelectDialogCancelButton
                 onClick={store.cancelCustomDialog}
+                disabled={false}
               >
                 Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="success"
+              </MultiSelectDialogCancelButton>
+              <MultiSelectDialogAddButton
                 onClick={store.confirmCustomDialog}
                 disabled={!dialogState.canConfirm}
               >
                 Add
-              </Button>
+              </MultiSelectDialogAddButton>
             </>
           ),
         };

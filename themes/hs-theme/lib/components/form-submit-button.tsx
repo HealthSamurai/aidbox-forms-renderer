@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { GroupAddButtonProps } from "@aidbox-forms/theme";
+import type { FormSubmitButtonProps } from "@aidbox-forms/theme";
 
 const ButtonRoot = styled.button`
   cursor: pointer;
@@ -16,19 +16,19 @@ const ButtonRoot = styled.button`
     opacity: 0.6;
   }
 
-  background: #38a169;
+  background: #2563eb;
   color: #fff;
-  border-color: #2f855a;
+  border-color: #1d4ed8;
 `;
 
-export function GroupAddButton({
-  onClick,
+export function FormSubmitButton({
   disabled,
+  onClick,
   children,
-}: GroupAddButtonProps) {
-  const label = children ?? "Add section";
+}: FormSubmitButtonProps) {
+  const label = children ?? "Submit";
   return (
-    <ButtonRoot type="button" onClick={onClick} disabled={disabled}>
+    <ButtonRoot type="submit" disabled={disabled} onClick={onClick}>
       {label}
     </ButtonRoot>
   );

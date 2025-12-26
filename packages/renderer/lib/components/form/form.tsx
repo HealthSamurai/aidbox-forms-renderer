@@ -7,7 +7,7 @@ import type {
 import { IForm } from "../../types.ts";
 import { NodesList } from "./node-list.tsx";
 import { Node } from "./node.tsx";
-import { useEffect, useState, type FormEventHandler } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../../ui/theme.tsx";
 import { isGroupNode } from "../../stores/nodes/groups/group-store.ts";
 import { isGroupWrapper } from "../../stores/nodes/groups/group-wrapper.ts";
@@ -17,10 +17,9 @@ export const Form = observer(function Form({
   onSubmit,
 }: {
   store: IForm;
-  onSubmit?: FormEventHandler<HTMLFormElement> | undefined;
+  onSubmit?: (() => void) | undefined;
 }) {
   const {
-    Button,
     Form: ThemedForm,
     FormHeader,
     FormErrors,
@@ -30,9 +29,10 @@ export const Form = observer(function Form({
     PageNavigation,
     EmptyState,
     FormActions,
+    FormSubmitButton,
+    FormResetButton,
   } = useTheme();
   const [activePage, setActivePage] = useState(0);
-
   const issueMessages = store.issues
     .map((issue) => issue.diagnostics?.trim() || issue.details?.text?.trim())
     .filter((message): message is string => Boolean(message));
@@ -137,10 +137,10 @@ export const Form = observer(function Form({
         ) : null}
       </NodeList>
       <FormActions>
-        <Button type="submit">Submit</Button>
-        <Button type="button" variant="secondary" onClick={() => store.reset()}>
+        <FormSubmitButton onClick={onSubmit}>Submit</FormSubmitButton>
+        <FormResetButton onClick={() => store.reset()} disabled={false}>
           Reset
-        </Button>
+        </FormResetButton>
       </FormActions>
     </ThemedForm>
   );

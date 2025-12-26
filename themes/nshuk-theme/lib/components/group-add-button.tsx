@@ -1,15 +1,19 @@
 import type { GroupAddButtonProps } from "@aidbox-forms/theme";
-import { Button } from "./button.tsx";
 
-export function GroupAddButton({ onClick, disabled }: GroupAddButtonProps) {
+export function GroupAddButton({
+  onClick,
+  disabled,
+  children,
+}: GroupAddButtonProps) {
+  const label = children ?? "Add section";
   return (
-    <Button
+    <button
       type="button"
-      variant="success"
       onClick={onClick}
       disabled={disabled}
+      className="nhsuk-button nhsuk-button--secondary"
     >
-      Add section
-    </Button>
+      {label}
+    </button>
   );
 }

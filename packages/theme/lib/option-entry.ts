@@ -1,6 +1,9 @@
-export type OptionEntry<TValue> = {
+export type OptionItem = {
   key: string;
   label: string;
-  value?: TValue;
   disabled?: boolean;
+};
+
+export type OptionEntry<TValue> = OptionItem & {
+  value?: TValue;
 };

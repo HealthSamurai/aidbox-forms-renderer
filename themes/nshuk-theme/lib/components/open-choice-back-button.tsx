@@ -1,11 +1,11 @@
-import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import type { OpenChoiceBackButtonProps } from "@aidbox-forms/theme";
 
-export function AnswerAddButton({
+export function OpenChoiceBackButton({
   onClick,
   disabled,
   children,
-}: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
+}: OpenChoiceBackButtonProps) {
+  const label = children ?? "Back to options";
   return (
     <button
       type="button"

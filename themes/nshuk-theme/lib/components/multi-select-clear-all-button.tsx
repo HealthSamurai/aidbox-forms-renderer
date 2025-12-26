@@ -1,11 +1,11 @@
-import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import type { MultiSelectClearAllButtonProps } from "@aidbox-forms/theme";
 
-export function AnswerAddButton({
+export function MultiSelectClearAllButton({
   onClick,
   disabled,
   children,
-}: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
+}: MultiSelectClearAllButtonProps) {
+  const label = children ?? "Clear all";
   return (
     <button
       type="button"

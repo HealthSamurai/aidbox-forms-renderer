@@ -21,7 +21,9 @@ export const GridTableRenderer = observer(function GridTableRenderer({
             <GroupRemoveButton
               onClick={() => wrapper.removeNode(row.node)}
               disabled={!wrapper.canRemove}
-            />
+            >
+              Remove section
+            </GroupRemoveButton>
           ),
         };
       }

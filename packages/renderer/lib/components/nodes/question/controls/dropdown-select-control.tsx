@@ -84,7 +84,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
-  const { SelectInput, Button } = useTheme();
+  const { SelectInput, OpenChoiceBackButton } = useTheme();
 
   if (rowStore.isCustomActive) {
     const Control = getValueControl(node.type);
@@ -96,14 +96,12 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
           ariaLabelledBy={rowProps.ariaLabelledBy}
           ariaDescribedBy={rowProps.ariaDescribedBy}
         />
-        <Button
-          type="button"
-          variant="secondary"
+        <OpenChoiceBackButton
           onClick={rowStore.exitCustom}
           disabled={node.readOnly}
         >
           Back to options
-        </Button>
+        </OpenChoiceBackButton>
       </>
     );
   }

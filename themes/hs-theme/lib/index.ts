@@ -1,5 +1,3 @@
-export { Button } from "./components/button.tsx";
-export type { ButtonProps } from "./components/button.tsx";
 export { TextInput } from "./components/text-input.tsx";
 export { TextArea } from "./components/text-area.tsx";
 export { NumberInput } from "./components/number-input.tsx";
@@ -32,10 +30,17 @@ export { PageStatus } from "./components/page-status.tsx";
 export { PageNavigation } from "./components/page-navigation.tsx";
 export { EmptyState } from "./components/empty-state.tsx";
 export { FormActions } from "./components/form-actions.tsx";
+export { FormSubmitButton } from "./components/form-submit-button.tsx";
+export { FormResetButton } from "./components/form-reset-button.tsx";
 export { GroupAddButton } from "./components/group-add-button.tsx";
 export { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 export { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 export { GroupRemoveButton } from "./components/group-remove-button.tsx";
+export { OpenChoiceBackButton } from "./components/open-choice-back-button.tsx";
+export { MultiSelectSpecifyOtherButton } from "./components/multi-select-specify-other-button.tsx";
+export { MultiSelectClearAllButton } from "./components/multi-select-clear-all-button.tsx";
+export { MultiSelectDialogCancelButton } from "./components/multi-select-dialog-cancel-button.tsx";
+export { MultiSelectDialogAddButton } from "./components/multi-select-dialog-add-button.tsx";
 export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { GroupActions } from "./components/group-actions.tsx";
 export { GridTable } from "./components/grid-table.tsx";
@@ -45,7 +50,6 @@ export { TabContainer } from "./components/tab-container.tsx";
 export { DisplayRenderer } from "./components/display-renderer.tsx";
 export { Link } from "./components/link.tsx";
 
-import { Button } from "./components/button.tsx";
 import { TextInput } from "./components/text-input.tsx";
 import { TextArea } from "./components/text-area.tsx";
 import { NumberInput } from "./components/number-input.tsx";
@@ -79,10 +83,17 @@ import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import { AnswerRemoveButton } from "./components/answer-remove-button.tsx";
 import { AnswerScaffold } from "./components/answer-scaffold.tsx";
+import { FormSubmitButton } from "./components/form-submit-button.tsx";
+import { FormResetButton } from "./components/form-reset-button.tsx";
 import { GroupAddButton } from "./components/group-add-button.tsx";
 import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 import { GroupRemoveButton } from "./components/group-remove-button.tsx";
+import { OpenChoiceBackButton } from "./components/open-choice-back-button.tsx";
+import { MultiSelectSpecifyOtherButton } from "./components/multi-select-specify-other-button.tsx";
+import { MultiSelectClearAllButton } from "./components/multi-select-clear-all-button.tsx";
+import { MultiSelectDialogCancelButton } from "./components/multi-select-dialog-cancel-button.tsx";
+import { MultiSelectDialogAddButton } from "./components/multi-select-dialog-add-button.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
@@ -93,7 +104,6 @@ import { Link } from "./components/link.tsx";
 import type { Theme } from "@aidbox-forms/theme";
 
 export const theme: Theme = {
-  Button,
   TextInput,
   TextArea,
   NumberInput,
@@ -123,6 +133,8 @@ export const theme: Theme = {
   PageNavigation,
   EmptyState,
   FormActions,
+  FormSubmitButton,
+  FormResetButton,
   AnswerList,
   AnswerRemoveButton,
   AnswerScaffold,
@@ -130,6 +142,11 @@ export const theme: Theme = {
   GroupWrapperScaffold,
   GroupWrapperScaffoldItem,
   GroupRemoveButton,
+  OpenChoiceBackButton,
+  MultiSelectSpecifyOtherButton,
+  MultiSelectClearAllButton,
+  MultiSelectDialogCancelButton,
+  MultiSelectDialogAddButton,
   GroupScaffold,
   GroupActions,
   GridTable,

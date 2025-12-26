@@ -2,7 +2,7 @@ import type { TabContainerProps } from "@aidbox-forms/theme";
 import classNames from "classnames";
 
 export function TabContainer({
-  legend,
+  header,
   items,
   value,
   onChange,
@@ -25,7 +25,7 @@ export function TabContainer({
 
   return (
     <div className="nhsuk-tabs" data-linkid={linkId}>
-      {legend ? <h2 className="nhsuk-tabs__title">{legend}</h2> : null}
+      {header ? <h2 className="nhsuk-tabs__title">{header}</h2> : null}
       <ul className="nhsuk-tabs__list" role="tablist">
         {items.map((item, idx) => {
           const selected = idx === clampedIndex;

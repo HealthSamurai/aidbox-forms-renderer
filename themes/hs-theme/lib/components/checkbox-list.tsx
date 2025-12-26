@@ -10,7 +10,7 @@ type OptionEntry<TValue> = {
 };
 
 export type CheckboxListProps<TValue> = {
-  options: ReadonlyArray<OptionEntry<TValue>>;
+  options: OptionEntry<TValue>[];
   value: Set<string>;
   onChange: (key: string) => void;
   id: string;

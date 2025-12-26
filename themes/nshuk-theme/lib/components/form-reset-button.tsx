@@ -1,11 +1,11 @@
-import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import type { FormResetButtonProps } from "@aidbox-forms/theme";
 
-export function AnswerAddButton({
+export function FormResetButton({
   onClick,
   disabled,
   children,
-}: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
+}: FormResetButtonProps) {
+  const label = children ?? "Reset";
   return (
     <button
       type="button"

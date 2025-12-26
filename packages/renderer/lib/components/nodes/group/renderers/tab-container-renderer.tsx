@@ -14,7 +14,7 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
   const visibleNodes = node.visibleNodes;
   const maxIndex = Math.max(visibleNodes.length - 1, 0);
   const activeIndex = Math.min(activeTab, maxIndex);
-  const legend = <NodeHeader node={node} />;
+  const header = <NodeHeader node={node} />;
   const items = visibleNodes.map((child, idx) => ({
     key: child.key,
     label: <NodeHeader node={child} />,
@@ -25,7 +25,7 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
 
   return (
     <TabContainer
-      legend={legend}
+      header={header}
       items={items}
       value={activeIndex}
       onChange={setActiveTab}

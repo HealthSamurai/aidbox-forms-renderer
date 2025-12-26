@@ -3,7 +3,7 @@ import type { TabContainerProps } from "@aidbox-forms/theme";
 import { EmptyState } from "./empty-state.tsx";
 
 export function TabContainer({
-  legend,
+  header,
   items,
   value,
   onChange,
@@ -23,7 +23,7 @@ export function TabContainer({
 
   return (
     <Shell data-linkid={linkId}>
-      {legend ? <Legend>{legend}</Legend> : null}
+      {header ? <Header>{header}</Header> : null}
       <TabList role="tablist">
         {items.map((item, idx) => {
           const selected = idx === clampedIndex;
@@ -64,7 +64,7 @@ const Shell = styled.div`
   gap: 0.75rem;
 `;
 
-const Legend = styled.div`
+const Header = styled.div`
   font-weight: 700;
 `;
 

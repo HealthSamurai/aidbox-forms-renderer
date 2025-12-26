@@ -1,5 +1,11 @@
+import type { FormEvent } from "react";
 import type { FormProps } from "@aidbox-forms/theme";
 
 export function Form({ onSubmit, children }: FormProps) {
-  return <form onSubmit={onSubmit}>{children}</form>;
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onSubmit?.();
+  };
+
+  return <form onSubmit={handleSubmit}>{children}</form>;
 }

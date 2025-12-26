@@ -61,7 +61,9 @@ export const AnswerScaffold = observer(function AnswerScaffold<
           <AnswerRemoveButton
             onClick={handleRemove}
             disabled={!answer.question.canRemove}
-          />
+          >
+            Remove
+          </AnswerRemoveButton>
         ) : undefined
       }
       children={

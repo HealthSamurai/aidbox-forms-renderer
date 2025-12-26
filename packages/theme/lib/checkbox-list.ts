@@ -1,12 +1,12 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type CheckboxListProps<TValue = unknown> = {
-  options: ReadonlyArray<{
+  options: {
     key: string;
     label: string;
     value: TValue;
     disabled?: boolean;
-  }>;
+  }[];
   value: Set<string>;
   onChange: (key: string) => void;
   id: string;

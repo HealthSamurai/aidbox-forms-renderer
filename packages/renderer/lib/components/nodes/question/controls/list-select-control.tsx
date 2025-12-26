@@ -40,7 +40,9 @@ export const ListSelectControl = observer(function ListSelectControl<
               <AnswerAddButton
                 onClick={addCustomAnswer}
                 disabled={!node.canAdd}
-              />
+              >
+                Add another
+              </AnswerAddButton>
             ) : undefined
           }
         >

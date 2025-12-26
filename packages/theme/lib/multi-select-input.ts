@@ -18,7 +18,7 @@ export type MultiSelectDialog = {
 };
 
 export type MultiSelectInputProps = {
-  options: ReadonlyArray<OptionEntry<unknown>>;
+  options: OptionEntry<unknown>[];
   value?: string | undefined;
   onChange: (key: string) => void;
   ariaLabelledBy?: string | undefined;
@@ -26,7 +26,7 @@ export type MultiSelectInputProps = {
   disabled?: boolean | undefined;
   isLoading?: boolean | undefined;
   showOptions?: boolean | undefined;
-  chips: ReadonlyArray<MultiSelectChip>;
+  chips: MultiSelectChip[];
   actions?: ReactNode;
   dialog?: MultiSelectDialog;
   placeholder?: string | undefined;

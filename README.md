@@ -42,47 +42,7 @@ import { theme } from "@aidbox-forms/nshuk-theme";
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```
 
-| Renderer component       | Theme slots used                                                                                                 |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| Form                     | Button, Form, FormHeader, FormErrors, NodeList, FormSection, PageStatus, PageNavigation, EmptyState, FormActions |
-| NodeHeader               | NodeHeader                                                                                                       |
-| NodeErrors               | Errors                                                                                                           |
-| NodeFlyover              | NodeFlyover                                                                                                      |
-| NodeLegal                | NodeLegal                                                                                                        |
-| NodeHelp                 | NodeHelp                                                                                                         |
-| DisplayRenderer          | DisplayRenderer                                                                                                  |
-| GroupScaffold            | GroupScaffold, NodeList                                                                                          |
-| GroupWrapperScaffold     | GroupWrapperScaffold, Button                                                                                     |
-| GroupWrapperScaffoldItem | GroupWrapperScaffoldItem, Button                                                                                 |
-| TabContainerRenderer     | TabContainer                                                                                                     |
-| GridRenderer             | GridTable, EmptyState                                                                                            |
-| GridTableRenderer        | Button, GridTable, EmptyState                                                                                    |
-| VerticalTableRenderer    | GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList                                               |
-| HorizontalTableRenderer  | GroupActions, GridTable, EmptyState, RadioButtonList, CheckboxList                                               |
-| TableQuestionDetails     | NodeList, OptionsState                                                                                           |
-| QuestionScaffold         | QuestionScaffold, OptionsState                                                                                   |
-| AnswerList               | Button, AnswerList                                                                                               |
-| AnswerScaffold           | Button, AnswerScaffold                                                                                           |
-| AnswerErrors             | Errors                                                                                                           |
-| TextInput                | TextArea                                                                                                         |
-| StringInput              | TextInput                                                                                                        |
-| IntegerInput             | NumberInput                                                                                                      |
-| DecimalInput             | NumberInput                                                                                                      |
-| BooleanInput             | RadioButtonList                                                                                                  |
-| QuantityInput            | InputGroup, NumberInput, SelectInput, TextInput                                                                  |
-| DateInput                | DateInput                                                                                                        |
-| DateTimeInput            | DateTimeInput                                                                                                    |
-| TimeInput                | TimeInput                                                                                                        |
-| UrlInput                 | TextInput                                                                                                        |
-| UrlDisplay               | Link                                                                                                             |
-| CodingInput              | InputGroup, TextInput                                                                                            |
-| ReferenceInput           | InputGroup, TextInput                                                                                            |
-| AttachmentInput          | FileInput                                                                                                        |
-| DropdownSelectControl    | SelectInput, Button                                                                                              |
-| ListSelectControl        | CheckboxList, AnswerList, Button, RadioButtonList                                                                |
-| MultiSelectControl       | Button, MultiSelectInput                                                                                         |
-| SliderControl            | SliderInput                                                                                                      |
-| SpinnerControl           | SpinnerInput                                                                                                     |
+Bring your own theme is supported; see the theme contract and component reference in [packages/theme/README.md](packages/theme/README.md).
 
 Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle), `npm test`, `npm run lint`.
 Packages live under `packages/` and the workspace uses pnpm:

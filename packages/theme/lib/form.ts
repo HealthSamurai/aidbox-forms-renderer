@@ -1,7 +1,7 @@
-import type { ComponentType, FormEventHandler, ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type FormProps = {
-  onSubmit?: FormEventHandler<HTMLFormElement> | undefined;
+  onSubmit?: (() => void) | undefined;
   children: ReactNode;
 };
 

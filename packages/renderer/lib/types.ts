@@ -686,9 +686,15 @@ type SelectDialogState<T extends AnswerType> = {
   canConfirm: boolean;
 };
 
+type OptionItem = {
+  key: string;
+  label: string;
+  disabled?: boolean;
+};
+
 type ListSelectRowState = {
   isCustomActive: boolean;
-  radioOptions: Array<{ key: string; label: string; disabled?: boolean }>;
+  radioOptions: OptionItem[];
   selectValue: string;
   legacyOption: { key: string; label: string } | null;
   handleChange: (key: string) => void;

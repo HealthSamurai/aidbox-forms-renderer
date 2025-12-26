@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { GroupAddButtonProps } from "@aidbox-forms/theme";
+import type { OpenChoiceBackButtonProps } from "@aidbox-forms/theme";
 
 const ButtonRoot = styled.button`
   cursor: pointer;
@@ -16,17 +16,17 @@ const ButtonRoot = styled.button`
     opacity: 0.6;
   }
 
-  background: #38a169;
-  color: #fff;
-  border-color: #2f855a;
+  background: #edf2f7;
+  color: #1a202c;
+  border-color: #cbd5e0;
 `;
 
-export function GroupAddButton({
+export function OpenChoiceBackButton({
   onClick,
   disabled,
   children,
-}: GroupAddButtonProps) {
-  const label = children ?? "Add section";
+}: OpenChoiceBackButtonProps) {
+  const label = children ?? "Back to options";
   return (
     <ButtonRoot type="button" onClick={onClick} disabled={disabled}>
       {label}

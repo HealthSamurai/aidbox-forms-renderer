@@ -1,18 +1,19 @@
 import type { GroupRemoveButtonProps } from "@aidbox-forms/theme";
-import { Button } from "./button.tsx";
 
 export function GroupRemoveButton({
   onClick,
   disabled,
+  children,
 }: GroupRemoveButtonProps) {
+  const label = children ?? "Remove section";
   return (
-    <Button
+    <button
       type="button"
-      variant="danger"
       onClick={onClick}
       disabled={disabled}
+      className="nhsuk-button nhsuk-button--warning"
     >
-      Remove section
-    </Button>
+      {label}
+    </button>
   );
 }

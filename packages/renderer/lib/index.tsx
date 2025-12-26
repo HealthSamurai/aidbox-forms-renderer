@@ -1,7 +1,7 @@
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "./stores/form/form-store.ts";
 import { Form } from "./components/form/form.tsx";
-import { FormEvent, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { autorun } from "mobx";
 import type { Theme } from "@aidbox-forms/theme";
 import { ThemeProvider } from "./ui/theme.tsx";
@@ -44,22 +44,11 @@ function Renderer({
     };
   }, [onChange, store]);
 
-  const handleValidSubmit = useCallback(() => {
-    if (onSubmit) {
-      onSubmit(store.response);
+  const handleSubmit = useCallback(() => {
+    if (store.validateAll()) {
+      onSubmit?.(store.response);
     }
   }, [onSubmit, store]);
-
-  const handleSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const isValid = store.validateAll();
-      if (isValid) {
-        handleValidSubmit();
-      }
-    },
-    [handleValidSubmit, store],
-  );
 
   return (
     <ThemeProvider theme={theme}>

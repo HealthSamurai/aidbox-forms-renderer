@@ -1,11 +1,11 @@
-import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import type { MultiSelectDialogCancelButtonProps } from "@aidbox-forms/theme";
 
-export function AnswerAddButton({
+export function MultiSelectDialogCancelButton({
   onClick,
   disabled,
   children,
-}: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
+}: MultiSelectDialogCancelButtonProps) {
+  const label = children ?? "Cancel";
   return (
     <button
       type="button"

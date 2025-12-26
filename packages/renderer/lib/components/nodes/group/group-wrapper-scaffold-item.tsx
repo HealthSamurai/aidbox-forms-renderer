@@ -25,7 +25,9 @@ export const GroupWrapperScaffoldItem = observer(
             <GroupRemoveButton
               onClick={() => wrapper.removeNode(node)}
               disabled={!wrapper.canRemove}
-            />
+            >
+              Remove section
+            </GroupRemoveButton>
           ) : null
         }
       >

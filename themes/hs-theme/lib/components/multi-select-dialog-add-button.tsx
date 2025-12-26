@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { GroupAddButtonProps } from "@aidbox-forms/theme";
+import type { MultiSelectDialogAddButtonProps } from "@aidbox-forms/theme";
 
 const ButtonRoot = styled.button`
   cursor: pointer;
@@ -21,12 +21,12 @@ const ButtonRoot = styled.button`
   border-color: #2f855a;
 `;
 
-export function GroupAddButton({
+export function MultiSelectDialogAddButton({
   onClick,
   disabled,
   children,
-}: GroupAddButtonProps) {
-  const label = children ?? "Add section";
+}: MultiSelectDialogAddButtonProps) {
+  const label = children ?? "Add";
   return (
     <ButtonRoot type="button" onClick={onClick} disabled={disabled}>
       {label}

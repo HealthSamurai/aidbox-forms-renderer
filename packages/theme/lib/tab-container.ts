@@ -9,13 +9,13 @@ export type TabItem = {
 };
 
 export type TabContainerProps = {
-  legend?: ReactNode;
+  header?: ReactNode;
   items: TabItem[];
   value: number;
   onChange: (index: number) => void;
   errors?: ReactNode;
   empty?: ReactNode;
-  linkId?: string | undefined;
+  linkId: string;
 };
 
 export type TabContainerComponent = ComponentType<TabContainerProps>;

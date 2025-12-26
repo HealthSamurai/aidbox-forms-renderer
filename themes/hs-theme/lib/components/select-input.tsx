@@ -1,9 +1,10 @@
 import { styled } from "@linaria/react";
+import type { OptionItem } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
 import { inputClass } from "./tokens.ts";
 
 type SelectInputProps = {
-  options: ReadonlyArray<{ key: string; label: string; disabled?: boolean }>;
+  options: OptionItem[];
   value: string;
   legacyOption: { key: string; label: string } | null;
   onChange: (value: string) => void;

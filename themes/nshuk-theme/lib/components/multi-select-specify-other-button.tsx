@@ -1,11 +1,11 @@
-import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import type { MultiSelectSpecifyOtherButtonProps } from "@aidbox-forms/theme";
 
-export function AnswerAddButton({
+export function MultiSelectSpecifyOtherButton({
   onClick,
   disabled,
   children,
-}: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
+}: MultiSelectSpecifyOtherButtonProps) {
+  const label = children ?? "Specify other";
   return (
     <button
       type="button"
