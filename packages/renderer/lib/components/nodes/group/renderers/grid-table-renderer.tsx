@@ -7,7 +7,7 @@ import { useTheme } from "../../../../ui/theme.tsx";
 export const GridTableRenderer = observer(function GridTableRenderer({
   wrapper,
 }: GroupWrapperControlProps) {
-  const { Button, GridTable, EmptyState } = useTheme();
+  const { GroupRemoveButton, GridTable, EmptyState } = useTheme();
   const store = wrapper.gridTableStore;
   const gridColumns = store.gridColumns;
   const rows = store.rows.map((row) => ({
@@ -18,14 +18,10 @@ export const GridTableRenderer = observer(function GridTableRenderer({
         return {
           key: cell.key,
           content: (
-            <Button
-              type="button"
-              variant="danger"
+            <GroupRemoveButton
               onClick={() => wrapper.removeNode(row.node)}
               disabled={!wrapper.canRemove}
-            >
-              Remove
-            </Button>
+            />
           ),
         };
       }

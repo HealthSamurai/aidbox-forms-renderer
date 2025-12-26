@@ -11,20 +11,13 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   node: IQuestionNode<T>;
   control: AnswerRenderCallback<T>;
 }) {
-  const { Button, AnswerList: ThemedAnswerList } = useTheme();
+  const { AnswerAddButton, AnswerList: ThemedAnswerList } = useTheme();
   const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
   const addAnswer = useCallback(() => node.addAnswer(), [node]);
 
-  const toolbar = node.repeats && (
-    <Button
-      type="button"
-      variant="success"
-      onClick={addAnswer}
-      disabled={!node.canAdd}
-    >
-      Add another
-    </Button>
-  );
+  const toolbar = node.repeats ? (
+    <AnswerAddButton onClick={addAnswer} disabled={!node.canAdd} />
+  ) : undefined;
 
   return (
     <ThemedAnswerList toolbar={toolbar}>

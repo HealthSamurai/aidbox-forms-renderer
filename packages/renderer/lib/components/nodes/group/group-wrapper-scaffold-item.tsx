@@ -11,8 +11,10 @@ export const GroupWrapperScaffoldItem = observer(
     wrapper: IGroupWrapper;
     node: IGroupNode;
   }) {
-    const { Button, GroupWrapperScaffoldItem: ThemedGroupWrapperScaffoldItem } =
-      useTheme();
+    const {
+      GroupRemoveButton,
+      GroupWrapperScaffoldItem: ThemedGroupWrapperScaffoldItem,
+    } = useTheme();
     const Renderer = node.renderer;
 
     return Renderer ? (
@@ -20,14 +22,10 @@ export const GroupWrapperScaffoldItem = observer(
         errors={<NodeErrors node={node} />}
         toolbar={
           wrapper.canRemove ? (
-            <Button
-              type="button"
-              variant="danger"
+            <GroupRemoveButton
               onClick={() => wrapper.removeNode(node)}
               disabled={!wrapper.canRemove}
-            >
-              Remove section
-            </Button>
+            />
           ) : null
         }
       >

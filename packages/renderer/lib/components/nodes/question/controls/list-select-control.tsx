@@ -19,7 +19,11 @@ export type ListSelectControlProps<T extends AnswerType> = {
 export const ListSelectControl = observer(function ListSelectControl<
   T extends AnswerType,
 >({ node }: ListSelectControlProps<T>) {
-  const { CheckboxList, AnswerList: ThemedAnswerList, Button } = useTheme();
+  const {
+    AnswerAddButton,
+    CheckboxList,
+    AnswerList: ThemedAnswerList,
+  } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
   const addCustomAnswer = useCallback(() => {
@@ -33,14 +37,10 @@ export const ListSelectControl = observer(function ListSelectControl<
         <ThemedAnswerList
           toolbar={
             node.repeats ? (
-              <Button
-                type="button"
-                variant="success"
+              <AnswerAddButton
                 onClick={addCustomAnswer}
                 disabled={!node.canAdd}
-              >
-                Add another
-              </Button>
+              />
             ) : undefined
           }
         >

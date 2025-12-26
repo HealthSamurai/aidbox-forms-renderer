@@ -28,7 +28,8 @@ export const AnswerScaffold = observer(function AnswerScaffold<
   answer: IAnswerInstance<T>;
   control: AnswerRenderCallback<T>;
 }) {
-  const { Button, AnswerScaffold: ThemedAnswerScaffold } = useTheme();
+  const { AnswerRemoveButton, AnswerScaffold: ThemedAnswerScaffold } =
+    useTheme();
   const handleRemove = useCallback(() => {
     answer.question.removeAnswer(answer);
   }, [answer]);
@@ -57,14 +58,10 @@ export const AnswerScaffold = observer(function AnswerScaffold<
       }
       toolbar={
         answer.question.repeats ? (
-          <Button
-            type="button"
-            variant="danger"
+          <AnswerRemoveButton
             onClick={handleRemove}
             disabled={!answer.question.canRemove}
-          >
-            Remove
-          </Button>
+          />
         ) : undefined
       }
       children={
