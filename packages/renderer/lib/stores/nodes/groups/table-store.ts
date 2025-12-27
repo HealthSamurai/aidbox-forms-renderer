@@ -1,11 +1,18 @@
 import { computed, makeObservable } from "mobx";
 import type {
-  AnswerOptionEntry,
   AnswerType,
-  ITableStore,
+  AnswerTypeToDataType,
+  DataTypeToType,
   IGroupNode,
-  IPresentableNode,
   IQuestionNode,
+  ITableStore,
+  OptionAxisItem,
+  ResolvedAnswerOption,
+  TableCellState,
+  TableAxisModel,
+  QuestionAxisEntry,
+  QuestionAxisSelection,
+  QuestionAxisItem,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
@@ -14,45 +21,9 @@ import {
   getNodeDescribedBy,
   getNodeLabelId,
   sanitizeForId,
-  stringifyValue,
+  tokenify,
 } from "../../../utils.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-
-type TableOptionColumn = {
-  token: string;
-  label: string;
-};
-
-type TableRow = {
-  question: IQuestionNode;
-  optionMap: Map<string, AnswerOptionEntry<AnswerType>>;
-};
-
-type TableModel = {
-  columns: TableOptionColumn[];
-  rows: TableRow[];
-};
-
-export type TableCellState = {
-  token: string;
-  entry: AnswerOptionEntry<AnswerType> | undefined;
-  placeholder?: string;
-  selected: boolean;
-  disabled: boolean;
-  toggleSelection?: () => void;
-};
-
-export type TableRowState = {
-  token: string;
-  question: IQuestionNode;
-  ariaLabelledBy: string;
-  ariaDescribedBy?: string | undefined;
-  id: string;
-  selectedToken: string;
-  selectedTokens: Set<string>;
-  cells: TableCellState[];
-  hasDetails: boolean;
-};
 
 export class TableStore implements ITableStore {
   private readonly group: IGroupNode;
@@ -68,109 +39,35 @@ export class TableStore implements ITableStore {
   }
 
   @computed
-  get others(): IPresentableNode[] {
-    return this.group.visibleNodes.filter((node) => !isQuestionNode(node));
+  get optionAxis(): OptionAxisItem[] {
+    return this.model.optionAxis;
   }
 
   @computed
-  get columns(): TableOptionColumn[] {
-    return this.model.columns;
-  }
+  get questionAxis(): QuestionAxisItem[] {
+    return this.model.questionAxis.map((entry) => {
+      const question = entry.question;
+      const ariaLabelledBy = getNodeLabelId(question);
+      const ariaDescribedBy = getNodeDescribedBy(question);
+      const id = sanitizeForId(`${question.token}-table`);
 
-  @computed
-  get rowStates(): TableRowState[] {
-    return this.model.rows.map((row) => {
-      const ariaLabelledBy = getNodeLabelId(row.question);
-      const ariaDescribedBy = getNodeDescribedBy(row.question);
-      const id = sanitizeForId(`${row.question.token}-table`);
-      const selectedTokens = new Set<string>();
-      let selectedToken = "";
-
-      const cells = this.columns.map((column) => {
-        const entry = row.optionMap.get(column.token);
-        const cell = (() => {
-          if (!entry) {
-            return {
-              placeholder: "—",
-              selected: false,
-              disabled: false,
-            };
-          }
-
-          const dataType = ANSWER_TYPE_TO_DATA_TYPE[row.question.type];
-          const selectedAnswer = row.question.answers.find((answer) => {
-            if (answer.value == null || entry.value == null) {
-              return false;
-            }
-            return areValuesEqual(dataType, answer.value, entry.value);
-          });
-          const isSelected = Boolean(selectedAnswer);
-          const disableNewSelection =
-            row.question.readOnly ||
-            row.question.options.loading ||
-            (!isSelected &&
-              (entry.disabled ||
-                (row.question.repeats && !row.question.canAdd)));
-
-          const toggleSelection = () => {
-            if (disableNewSelection && !isSelected) {
-              return;
-            }
-
-            if (row.question.repeats) {
-              if (selectedAnswer) {
-                row.question.removeAnswer(selectedAnswer);
-                return;
-              }
-
-              if (!row.question.canAdd) return;
-              row.question.addAnswer(cloneValue(entry.value));
-              return;
-            }
-
-            const target = row.question.answers[0];
-            if (target) target.setValueByUser(cloneValue(entry.value));
-          };
-
-          const isDisabled = disableNewSelection && !isSelected;
-
-          return {
-            selected: isSelected,
-            disabled: isDisabled,
-            toggleSelection,
-          };
-        })();
-        if (cell.selected) {
-          selectedTokens.add(column.token);
-          selectedToken = column.token;
-        }
-        return {
-          token: column.token,
-          entry,
-          ...cell,
-        };
-      });
-
-      const visibleAnswers = row.question.repeats
-        ? row.question.answers
-        : row.question.answers.slice(0, 1);
+      const visibleAnswers = question.repeats
+        ? question.answers
+        : question.answers.slice(0, 1);
       const hasDetails =
-        row.question.hasErrors ||
-        row.question.options.loading ||
-        Boolean(row.question.options.error) ||
+        question.hasErrors ||
+        question.options.loading ||
+        Boolean(question.options.error) ||
         visibleAnswers.some(
           (answer) => answer.nodes.length > 0 || answer.issues.length > 0,
         );
 
       return {
-        token: row.question.token,
-        question: row.question,
+        token: question.token,
+        question,
         ariaLabelledBy,
         ariaDescribedBy,
         id,
-        selectedToken,
-        selectedTokens,
-        cells,
         hasDetails,
       };
     });
@@ -178,43 +75,158 @@ export class TableStore implements ITableStore {
 
   @computed
   get detailQuestions(): IQuestionNode[] {
-    return this.rowStates
-      .filter((row) => row.hasDetails)
-      .map((row) => row.question);
+    return this.questionAxis
+      .filter((questionAxis) => questionAxis.hasDetails)
+      .map((questionAxis) => questionAxis.question);
+  }
+
+  getQuestionSelection(questionToken: string): QuestionAxisSelection {
+    const entry = this.questionByToken.get(questionToken);
+    if (!entry) {
+      return { selectedTokens: new Set(), selectedToken: "" };
+    }
+
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
+    const selectedTokens = new Set<string>();
+    let selectedToken = "";
+
+    this.optionAxis.forEach((option) => {
+      const optionEntry = entry.optionMap.get(option.token);
+      if (!optionEntry) {
+        return;
+      }
+      const selectedAnswer = entry.question.answers.find((answer) => {
+        if (answer.value == null || optionEntry.value == null) {
+          return false;
+        }
+        return areValuesEqual(dataType, answer.value, optionEntry.value);
+      });
+      if (selectedAnswer) {
+        selectedTokens.add(option.token);
+        selectedToken = option.token;
+      }
+    });
+
+    return { selectedTokens, selectedToken };
+  }
+
+  getCellState(questionToken: string, optionToken: string): TableCellState {
+    const entry = this.questionByToken.get(questionToken);
+    if (!entry) {
+      return { hasOption: false, selected: false, disabled: false };
+    }
+
+    const optionEntry = entry.optionMap.get(optionToken);
+    if (!optionEntry) {
+      return { hasOption: false, selected: false, disabled: false };
+    }
+
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
+    const selectedAnswer = entry.question.answers.find((answer) => {
+      if (answer.value == null || optionEntry.value == null) {
+        return false;
+      }
+      return areValuesEqual(dataType, answer.value, optionEntry.value);
+    });
+    const isSelected = Boolean(selectedAnswer);
+    const disableNewSelection =
+      entry.question.readOnly ||
+      entry.question.options.loading ||
+      (!isSelected &&
+        (optionEntry.disabled ||
+          (entry.question.repeats && !entry.question.canAdd)));
+
+    return {
+      hasOption: true,
+      selected: isSelected,
+      disabled: disableNewSelection && !isSelected,
+    };
+  }
+
+  toggleCell(questionToken: string, optionToken: string): void {
+    const entry = this.questionByToken.get(questionToken);
+    if (!entry) return;
+
+    const optionEntry = entry.optionMap.get(optionToken);
+    if (!optionEntry) return;
+
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
+    const selectedAnswer = entry.question.answers.find((answer) => {
+      if (answer.value == null || optionEntry.value == null) {
+        return false;
+      }
+      return areValuesEqual(dataType, answer.value, optionEntry.value);
+    });
+    const isSelected = Boolean(selectedAnswer);
+    const disableNewSelection =
+      entry.question.readOnly ||
+      entry.question.options.loading ||
+      (!isSelected &&
+        (optionEntry.disabled ||
+          (entry.question.repeats && !entry.question.canAdd)));
+
+    if (disableNewSelection && !isSelected) {
+      return;
+    }
+
+    if (entry.question.repeats) {
+      if (selectedAnswer) {
+        entry.question.removeAnswer(selectedAnswer);
+        return;
+      }
+
+      if (!entry.question.canAdd) return;
+      entry.question.addAnswer(cloneValue(optionEntry.value));
+      return;
+    }
+
+    const target = entry.question.answers[0];
+    if (target) target.setValueByUser(cloneValue(optionEntry.value));
   }
 
   @computed
-  private get model(): TableModel {
-    const columns: TableOptionColumn[] = [];
-    const columnMap = new Map<string, TableOptionColumn>();
-    const rows: TableRow[] = [];
+  private get model(): TableAxisModel {
+    const optionAxis: OptionAxisItem[] = [];
+    const optionMap = new Map<string, OptionAxisItem>();
+    const questionAxis: QuestionAxisEntry[] = [];
 
     this.questions.forEach((question) => {
-      const optionMap = new Map<string, AnswerOptionEntry<AnswerType>>();
-      question.options.entries.forEach((entry) => {
+      const optionEntryMap = new Map<
+        string,
+        ResolvedAnswerOption<AnswerType>
+      >();
+      question.options.resolvedOptions.forEach((entry) => {
+        if (entry.value == null) {
+          return;
+        }
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
-        const valueLabel = stringifyValue(type, entry.value, entry.label);
-        let encodedValue = entry.label;
-        try {
-          encodedValue = JSON.stringify(entry.value ?? entry.label);
-        } catch {
-          encodedValue = entry.label;
-        }
-        const token = `${type}::${valueLabel}::${encodedValue}`;
+        const token = `${type}::${tokenify(type, entry.value)}`;
 
-        if (!columnMap.has(token)) {
-          const column: TableOptionColumn = {
+        if (!optionMap.has(token)) {
+          const option: OptionAxisItem = {
             token,
-            label: entry.label,
+            type: question.type,
+            value: entry.value as DataTypeToType<
+              AnswerTypeToDataType<AnswerType>
+            >,
           };
-          columnMap.set(token, column);
-          columns.push(column);
+          optionMap.set(token, option);
+          optionAxis.push(option);
         }
-        optionMap.set(token, entry);
+        optionEntryMap.set(token, entry);
       });
-      rows.push({ question, optionMap });
+      questionAxis.push({ question, optionMap: optionEntryMap });
     });
 
-    return { columns, rows };
+    return { optionAxis, questionAxis };
+  }
+
+  @computed
+  private get questionByToken(): Map<string, QuestionAxisEntry> {
+    const map = new Map<string, QuestionAxisEntry>();
+    this.model.questionAxis.forEach((entry) =>
+      map.set(entry.question.token, entry),
+    );
+    return map;
   }
 }

@@ -19,6 +19,7 @@ import {
   getValue,
   normalizeExpressionValues,
   stringifyValue,
+  tokenify,
 } from "../utils.ts";
 
 describe("getValue", () => {
@@ -259,6 +260,78 @@ describe("stringifyValue", () => {
         "https://file",
       );
     });
+  });
+});
+
+describe("tokenify", () => {
+  it("ignores coding display when code is present", () => {
+    const first = tokenify("Coding", {
+      system: "urn:test",
+      code: "A",
+      display: "Alpha",
+    });
+    const second = tokenify("Coding", {
+      system: "urn:test",
+      code: "A",
+      display: "Beta",
+    });
+
+    expect(first).toBe(second);
+  });
+
+  it("uses coding display when code is missing", () => {
+    const first = tokenify("Coding", {
+      system: "urn:test",
+      display: "Gamma",
+    });
+    const second = tokenify("Coding", {
+      system: "urn:test",
+      display: "Delta",
+    });
+
+    expect(first).not.toBe(second);
+  });
+
+  it("drops reference display but keeps identifier", () => {
+    const first = tokenify("Reference", {
+      reference: "Patient/1",
+      display: "Alice",
+      identifier: { system: "sys", value: "1" },
+    });
+    const second = tokenify("Reference", {
+      reference: "Patient/1",
+      display: "Bob",
+      identifier: { system: "sys", value: "1" },
+    });
+
+    expect(first).toBe(second);
+  });
+
+  it("prefers quantity code over unit display", () => {
+    const withUnit = tokenify("Quantity", {
+      value: 1,
+      unit: "kg",
+      code: "kg",
+      system: "http://unitsofmeasure.org",
+    });
+    const withoutUnit = tokenify("Quantity", {
+      value: 1,
+      code: "kg",
+      system: "http://unitsofmeasure.org",
+    });
+
+    expect(withUnit).toBe(withoutUnit);
+  });
+
+  it("normalizes dateTime by epoch when timezone is present", () => {
+    const utc = tokenify("dateTime", "2024-01-01T00:00:00Z");
+    const offset = tokenify("dateTime", "2023-12-31T19:00:00-05:00");
+
+    expect(utc).toBe(offset);
+  });
+
+  it("keeps time precision differences", () => {
+    expect(tokenify("time", "13:30")).not.toBe(tokenify("time", "13:30:00"));
   });
 });
 

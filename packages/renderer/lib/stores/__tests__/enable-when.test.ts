@@ -9,7 +9,7 @@ import type {
 } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
-import type { AnswerType } from "../../types.ts";
+import type { AnswerType, EnableWhenAnswer } from "../../types.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
 import {
   assertQuestionNode,
@@ -20,15 +20,6 @@ import {
   isGroupWrapper,
 } from "../nodes/groups/group-wrapper.ts";
 import { assertDefined } from "../../utils.ts";
-
-type EnableWhenAnswer =
-  | boolean
-  | number
-  | string
-  | Coding
-  | Quantity
-  | Reference
-  | null;
 
 function makeCondition(
   type: AnswerType,

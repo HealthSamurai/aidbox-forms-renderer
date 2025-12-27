@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { Questionnaire, QuestionnaireItemAnswerOption } from "fhir/r5";
+import type {
+  Coding,
+  Questionnaire,
+  QuestionnaireItemAnswerOption,
+} from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
@@ -71,9 +75,10 @@ describe("answerOptionsToggleExpression", () => {
     assertQuestionNode(color);
 
     const getEntry = (code: string) =>
-      color.options.entries.find(
-        (entry) => entry.option.valueCoding?.code === code,
-      );
+      color.options.resolvedOptions.find((entry) => {
+        const coding = entry.value as Coding | null;
+        return coding?.code === code;
+      });
 
     expect(getEntry("red")?.disabled).toBe(true);
     expect(getEntry("green")?.disabled).toBe(false);
@@ -126,7 +131,7 @@ describe("answerOptionsToggleExpression", () => {
     assertQuestionNode(color);
 
     const getEntry = (value: string) =>
-      color.options.entries.find((entry) => entry.option.valueString === value);
+      color.options.resolvedOptions.find((entry) => entry.value === value);
 
     expect(getEntry("Red")?.disabled).toBe(false);
     expect(getEntry("Green")?.disabled).toBe(false);

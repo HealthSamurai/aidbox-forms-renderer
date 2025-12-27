@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   AnswerType,
   IQuestionNode,
@@ -11,6 +11,10 @@ import { useTheme } from "../../../../ui/theme.tsx";
 import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
+import { ValueDisplay } from "../fhir/value-display.tsx";
+
+const SPECIFY_OTHER_LABEL = "Specify other";
+const UNANSWERED_LABEL = "Unanswered";
 
 export type ListSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -32,6 +36,31 @@ export const ListSelectControl = observer(function ListSelectControl<
 
   if (store.useCheckboxes) {
     const state = store.checkboxState;
+    const uiOptions = state.options.map((option) => {
+      const isSelected = state.selectedTokens.has(option.token);
+      return {
+        token: option.token,
+        label:
+          option.value == null ? (
+            UNANSWERED_LABEL
+          ) : (
+            <ValueDisplay type={node.type} value={option.value} />
+          ),
+        disabled:
+          option.disabled ||
+          (!isSelected && !state.canAddSelection) ||
+          (isSelected && !node.canRemove),
+      };
+    });
+    if (store.allowCustom) {
+      uiOptions.push({
+        token: state.specifyOtherToken,
+        label: SPECIFY_OTHER_LABEL,
+        disabled:
+          (!state.isCustomActive && !state.canAddSelection) ||
+          (state.isCustomActive && !node.canRemove),
+      });
+    }
     const customControl =
       store.allowCustom && state.isCustomActive ? (
         <ThemedAnswerList
@@ -58,7 +87,7 @@ export const ListSelectControl = observer(function ListSelectControl<
 
     return (
       <CheckboxList
-        options={state.uiOptions}
+        options={uiOptions}
         tokens={state.selectedTokens}
         onChange={store.handleCheckboxToggle}
         id={node.token}
@@ -93,10 +122,63 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   const { RadioButtonList } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
-  const rowStore = store.getListRowState(rowProps.answer);
-  const customInput = rowStore.isCustomActive ? (
+  const answer = rowProps.answer;
+  const [isCustomForced, setIsCustomForced] = useState(false);
+  const selectToken = store.resolveTokenForValue(answer.value);
+  const isBooleanFallback =
+    node.type === "boolean" && node.options.resolvedOptions.length === 0;
+  const legacyOption =
+    store.allowCustom ||
+    isBooleanFallback ||
+    selectToken ||
+    answer.value == null
+      ? null
+      : {
+          token: `${answer.token}::__legacy__`,
+          label: <ValueDisplay type={node.type} value={answer.value} />,
+        };
+  const isCustomValue =
+    store.allowCustom && selectToken === "" && answer.value != null;
+  const isCustomActive =
+    store.allowCustom && !selectToken && (isCustomValue || isCustomForced);
+  const selectValue = isCustomActive
+    ? store.specifyOtherToken
+    : selectToken || legacyOption?.token || "";
+  const radioOptions = store.resolvedOptions.map((option) => ({
+    token: option.token,
+    label:
+      option.value == null ? (
+        UNANSWERED_LABEL
+      ) : (
+        <ValueDisplay type={node.type} value={option.value} />
+      ),
+    disabled: option.disabled,
+  }));
+  if (store.allowCustom) {
+    radioOptions.push({
+      token: store.specifyOtherToken,
+      label: SPECIFY_OTHER_LABEL,
+      disabled: !store.canAddSelection,
+    });
+  }
+
+  const handleChange = (token: string) => {
+    if (store.allowCustom && token === store.specifyOtherToken) {
+      setIsCustomForced(true);
+      if (!isCustomValue) {
+        answer.setValueByUser(null);
+      }
+      return;
+    }
+
+    setIsCustomForced(false);
+    const nextValue = store.resolveValueForToken(token);
+    answer.setValueByUser(nextValue);
+  };
+
+  const customInput = isCustomActive ? (
     <Control
-      answer={rowProps.answer}
+      answer={answer}
       id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
@@ -105,10 +187,10 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
 
   return (
     <RadioButtonList
-      options={rowStore.radioOptions}
-      token={rowStore.selectValue}
-      legacyOption={rowStore.legacyOption}
-      onChange={rowStore.handleChange}
+      options={radioOptions}
+      token={selectValue}
+      legacyOption={legacyOption}
+      onChange={handleChange}
       id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}

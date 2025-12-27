@@ -1,23 +1,13 @@
 import { computed, makeObservable } from "mobx";
-import type { IGridStore, IGroupNode, IQuestionNode } from "../../../types.ts";
+import type {
+  GridColumnState,
+  GridRowState,
+  IGridStore,
+  IGroupNode,
+  IQuestionNode,
+} from "../../../types.ts";
 import { isGroupNode } from "./group-store.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-
-export type GridColumnState = {
-  token: string;
-  label: string;
-};
-
-export type GridCellState = {
-  token: string;
-  question?: IQuestionNode | undefined;
-};
-
-export type GridRowState = {
-  token: string;
-  label: string;
-  cells: GridCellState[];
-};
 
 export class GridStore implements IGridStore {
   private readonly group: IGroupNode;

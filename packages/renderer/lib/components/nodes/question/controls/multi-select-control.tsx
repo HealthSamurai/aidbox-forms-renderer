@@ -3,21 +3,23 @@ import type {
   AnswerType,
   IAnswerInstance,
   IQuestionNode,
-  ValueDisplayComponent,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
+import { ValueDisplay } from "../fhir/value-display.tsx";
+
+const SPECIFY_OTHER_LABEL = "Specify other";
+const UNANSWERED_LABEL = "Unanswered";
 
 export type MultiSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
-  valueDisplay: ValueDisplayComponent<T>;
   showOptions?: boolean;
 };
 
 export const MultiSelectControl = observer(function MultiSelectControl<
   T extends AnswerType,
->({ node, valueDisplay, showOptions = true }: MultiSelectControlProps<T>) {
+>({ node, showOptions = true }: MultiSelectControlProps<T>) {
   const {
     MultiSelectInput,
     MultiSelectSpecifyOtherButton,
@@ -27,7 +29,6 @@ export const MultiSelectControl = observer(function MultiSelectControl<
   } = useTheme();
   const store = node.selectStore;
   const Control = getValueControl(node.type);
-  const ValueDisplay = valueDisplay;
 
   const selectedChips = store.selectedChipItems.flatMap((item) => {
     const value = item.answer.value;
@@ -35,7 +36,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     return [
       {
         token: item.token,
-        content: <ValueDisplay value={value} />,
+        content: <ValueDisplay type={node.type} value={value} />,
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
         removeDisabled: !store.canRemoveSelection,
@@ -62,7 +63,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
     return [
       {
         token: item.token,
-        content: <ValueDisplay value={value} />,
+        content: <ValueDisplay type={node.type} value={value} />,
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
         removeDisabled: !store.canRemoveSelection,
@@ -138,16 +139,23 @@ export const MultiSelectControl = observer(function MultiSelectControl<
         };
       })()
     : undefined;
-  const options = store.extendedOptions.map((option) => ({
+  const options = store.optionsWithSpecifyOther.map((option) => ({
     token: option.token,
-    label: option.label,
+    label:
+      option.token === store.specifyOtherToken ? (
+        SPECIFY_OTHER_LABEL
+      ) : option.value == null ? (
+        UNANSWERED_LABEL
+      ) : (
+        <ValueDisplay type={node.type} value={option.value} />
+      ),
     disabled: option.disabled,
   }));
 
   return (
     <MultiSelectInput
       options={options}
-      token={store.selectValue}
+      token={store.pendingSelectToken}
       onChange={store.handleSelectOption}
       ariaLabelledBy={store.ariaLabelledBy}
       ariaDescribedBy={store.ariaDescribedBy}

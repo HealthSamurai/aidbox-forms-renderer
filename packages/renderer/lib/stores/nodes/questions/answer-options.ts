@@ -1,12 +1,11 @@
 import { computed, makeObservable } from "mobx";
 import type {
-  AnswerOptionEntry,
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
   IAnswerOptions,
   IQuestionNode,
-  OptionItem,
+  ResolvedAnswerOption,
 } from "../../../types.ts";
 import type {
   Coding,
@@ -20,7 +19,6 @@ import {
   booleanify,
   cloneValue,
   getValue,
-  stringifyValue,
 } from "../../../utils.ts";
 import type { IPromiseBasedObservable } from "mobx-utils";
 import { fromPromise } from "mobx-utils";
@@ -90,7 +88,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  get entries(): AnswerOptionEntry<T>[] {
+  get resolvedOptions(): ResolvedAnswerOption<T>[] {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
     return this.answerOptions.flatMap((option, index) => {
       const value = getValue(option, dataType);
@@ -98,17 +96,14 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
         return [];
       }
 
-      const label = stringifyValue(dataType, value, `Option ${index + 1}`);
       const disabled = !this.isOptionEnabled(option);
 
       return [
         {
           token: `${this.question.token}_/_${index}`,
-          label,
           value,
-          option,
           disabled,
-        } satisfies AnswerOptionEntry<T>,
+        } satisfies ResolvedAnswerOption<T>,
       ];
     });
   }
@@ -127,7 +122,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
       string,
       DataTypeToType<AnswerTypeToDataType<T>> | null
     >();
-    for (const entry of this.entries) {
+    for (const entry of this.resolvedOptions) {
       map.set(entry.token, entry.value);
     }
     return map;
@@ -141,7 +136,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
-    const match = this.entries.find((entry) =>
+    const match = this.resolvedOptions.find((entry) =>
       entry.value == null
         ? false
         : areValuesEqual(dataType, value, entry.value),
@@ -154,29 +149,6 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   ): DataTypeToType<AnswerTypeToDataType<T>> | null {
     const value = this.valueMap.get(token);
     return value == null ? null : cloneValue(value);
-  }
-
-  getLegacyEntryForValue(
-    answerToken: string,
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): OptionItem | null {
-    if (value == null) {
-      return null;
-    }
-
-    const label = stringifyValue(
-      ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
-      value,
-      "Legacy answer",
-    );
-    if (!label) {
-      return null;
-    }
-
-    return {
-      token: `${answerToken}::__legacy__`,
-      label,
-    };
   }
 
   private isOptionEnabled(option: QuestionnaireItemAnswerOption): boolean {

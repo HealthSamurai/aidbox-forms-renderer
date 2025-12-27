@@ -10,6 +10,7 @@ import {
 import {
   AnswerType,
   type AnswerTypeToDataType,
+  AnswerLifecycle,
   DataTypeToType,
   IAnswerInstance,
   IForm,
@@ -47,13 +48,6 @@ import type { HTMLAttributes } from "react";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { AnswerOptions } from "./answer-options.ts";
 import { SelectStore } from "./select-store.ts";
-
-type AnswerLifecycle =
-  | "pristine"
-  | "template"
-  | "response"
-  | "expression"
-  | "manual";
 
 export class QuestionStore<T extends AnswerType = AnswerType>
   extends AbstractActualNodeStore

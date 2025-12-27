@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import {
   AnswerType,
   IQuestionNode,
@@ -7,6 +8,10 @@ import {
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/index.ts";
+import { ValueDisplay } from "../fhir/value-display.tsx";
+
+const SPECIFY_OTHER_LABEL = "Specify other";
+const UNANSWERED_LABEL = "Unanswered";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -26,14 +31,12 @@ export const DropdownSelectControl = observer(function DropdownSelectControl<
           <OpenChoiceRow
             node={node}
             rowProps={props}
-            rowStore={store.getDropdownRowState(props.answer)}
             isLoading={store.isLoading}
           />
         ) : (
           <OptionsRow
             node={node}
             rowProps={props}
-            rowStore={store.getDropdownRowState(props.answer)}
             isLoading={store.isLoading}
           />
         )
@@ -45,28 +48,49 @@ export const DropdownSelectControl = observer(function DropdownSelectControl<
 const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
   node,
   rowProps,
-  rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: ValueControlProps<T>;
-  rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
   const { SelectInput } = useTheme();
-  const options = node.options.entries.map((option) => ({
+  const store = node.selectStore;
+  const answer = rowProps.answer;
+  const optionToken = store.resolveTokenForValue(answer.value);
+  const legacyOption =
+    store.allowCustom || optionToken || answer.value == null
+      ? null
+      : {
+          token: `${answer.token}::__legacy__`,
+          label: <ValueDisplay type={node.type} value={answer.value} />,
+        };
+  const selectValue = optionToken || legacyOption?.token || "";
+  const options = store.resolvedOptions.map((option) => ({
     token: option.token,
-    label: option.label,
+    label:
+      option.value == null ? (
+        UNANSWERED_LABEL
+      ) : (
+        <ValueDisplay type={node.type} value={option.value} />
+      ),
     disabled: option.disabled,
   }));
-  const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
+  const clearHandler =
+    answer.value != null && !node.readOnly
+      ? () => answer.setValueByUser(null)
+      : undefined;
+  const handleSelect = (token: string) => {
+    const nextValue = store.resolveValueForToken(token);
+    answer.setValueByUser(nextValue);
+  };
 
   return (
     <SelectInput
       options={options}
-      token={rowStore.selectValue}
-      legacyOption={rowStore.legacyOption}
-      onChange={rowStore.handleSelect}
+      token={selectValue}
+      legacyOption={legacyOption}
+      onChange={handleSelect}
       id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}
@@ -81,28 +105,37 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
 const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   node,
   rowProps,
-  rowStore,
   isLoading,
 }: {
   node: IQuestionNode<T>;
   rowProps: ValueControlProps<T>;
-  rowStore: ReturnType<IQuestionNode<T>["selectStore"]["getDropdownRowState"]>;
   isLoading: boolean;
 }) {
   const { SelectInput, OpenChoiceBackButton } = useTheme();
+  const store = node.selectStore;
+  const answer = rowProps.answer;
+  const [isCustomForced, setIsCustomForced] = useState(false);
+  const optionToken = store.resolveTokenForValue(answer.value);
+  const isCustomValue =
+    store.allowCustom && optionToken === "" && answer.value != null;
+  const isCustomActive =
+    store.allowCustom && !optionToken && (isCustomValue || isCustomForced);
 
-  if (rowStore.isCustomActive) {
+  if (isCustomActive) {
     const Control = getValueControl(node.type);
     return (
       <>
         <Control
-          answer={rowProps.answer}
+          answer={answer}
           id={rowProps.id}
           ariaLabelledBy={rowProps.ariaLabelledBy}
           ariaDescribedBy={rowProps.ariaDescribedBy}
         />
         <OpenChoiceBackButton
-          onClick={rowStore.exitCustom}
+          onClick={() => {
+            setIsCustomForced(false);
+            answer.setValueByUser(null);
+          }}
           disabled={node.readOnly}
         >
           Back to options
@@ -111,19 +144,44 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
     );
   }
 
-  const clearHandler = rowStore.canClear ? rowStore.clearValue : undefined;
-  const options = rowStore.extendedOptions.map((option) => ({
+  const clearHandler =
+    answer.value != null && !node.readOnly
+      ? () => answer.setValueByUser(null)
+      : undefined;
+  const options = store.resolvedOptions.map((option) => ({
     token: option.token,
-    label: option.label,
+    label:
+      option.value == null ? (
+        UNANSWERED_LABEL
+      ) : (
+        <ValueDisplay type={node.type} value={option.value} />
+      ),
     disabled: option.disabled,
   }));
+  if (store.allowCustom) {
+    options.push({
+      token: store.specifyOtherToken,
+      label: SPECIFY_OTHER_LABEL,
+      disabled: !store.canAddSelection,
+    });
+  }
+  const handleSelect = (token: string) => {
+    if (store.allowCustom && token === store.specifyOtherToken) {
+      setIsCustomForced(true);
+      answer.setValueByUser(null);
+      return;
+    }
+    setIsCustomForced(false);
+    const nextValue = store.resolveValueForToken(token);
+    answer.setValueByUser(nextValue);
+  };
 
   return (
     <SelectInput
       options={options}
-      token={rowStore.optionToken}
+      token={optionToken}
       legacyOption={null}
-      onChange={rowStore.handleSelect}
+      onChange={handleSelect}
       id={rowProps.id}
       ariaLabelledBy={rowProps.ariaLabelledBy}
       ariaDescribedBy={rowProps.ariaDescribedBy}

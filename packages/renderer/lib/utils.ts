@@ -1663,6 +1663,143 @@ export function cloneValue<T>(value: T): T {
   return value;
 }
 
+function normalizeCodingKey(value: Coding) {
+  const system = value.system ?? null;
+  if (value.code) {
+    return { system, code: value.code };
+  }
+  if (value.display) {
+    return { system, display: value.display };
+  }
+  return { system };
+}
+
+function normalizeQuantityKey(value: Quantity) {
+  const unitCode = getUcumUnitCode(value) ?? null;
+  const quantityValue = typeof value.value === "number" ? value.value : null;
+  return {
+    value: quantityValue,
+    comparator: value.comparator ?? null,
+    system: value.system ?? null,
+    code: unitCode,
+  };
+}
+
+function normalizeReferenceKey(value: Reference) {
+  const identifierSystem = value.identifier?.system ?? null;
+  const identifierValue = value.identifier?.value ?? null;
+  const identifier =
+    identifierSystem != null || identifierValue != null
+      ? { system: identifierSystem, value: identifierValue }
+      : undefined;
+
+  return {
+    reference: value.reference ?? null,
+    type: value.type ?? null,
+    ...(identifier ? { identifier } : {}),
+  };
+}
+
+type AttachmentKey = {
+  contentType: string | null;
+  url: string | null;
+  size: number | string | null;
+  hash: string | null;
+  creation: string | null;
+  language: string | null;
+  data?: string;
+};
+
+function normalizeAttachmentKey(value: Attachment): AttachmentKey {
+  const normalized: AttachmentKey = {
+    contentType: value.contentType ?? null,
+    url: value.url ?? null,
+    size: value.size ?? null,
+    hash: value.hash ?? null,
+    creation: value.creation ?? null,
+    language: value.language ?? null,
+  };
+
+  if (!normalized.url && !normalized.hash && value.data) {
+    normalized.data = value.data;
+  }
+
+  return normalized;
+}
+
+function normalizeValueKey<T extends DataType>(
+  type: T,
+  value: DataTypeToType<T> | null,
+) {
+  if (value == null) {
+    return null;
+  }
+
+  switch (type) {
+    case "dateTime": {
+      if (typeof value !== "string") {
+        return value;
+      }
+      const parsed = parseFhirDateTime(value);
+      if (!parsed) {
+        return value;
+      }
+      if (parsed.epochMillis !== undefined) {
+        return {
+          epochMillis: parsed.epochMillis,
+          precision: parsed.precision,
+          hasTimezone: parsed.hasTimezone,
+        };
+      }
+      return {
+        value,
+        precision: parsed.precision,
+        hasTimezone: parsed.hasTimezone,
+      };
+    }
+    case "time": {
+      if (typeof value !== "string") {
+        return value;
+      }
+      const parsed = parseFhirTime(value);
+      return parsed
+        ? { millis: parsed.millis, precision: parsed.precision }
+        : value;
+    }
+    case "date":
+    case "string":
+    case "uri":
+    case "url":
+    case "boolean":
+    case "decimal":
+    case "integer":
+      return value;
+    case "Coding":
+      return isCoding(value) ? normalizeCodingKey(value) : value;
+    case "Quantity":
+      return isQuantity(value) ? normalizeQuantityKey(value) : value;
+    case "Reference":
+      return isReference(value) ? normalizeReferenceKey(value) : value;
+    case "Attachment":
+      return isAttachment(value) ? normalizeAttachmentKey(value) : value;
+    default:
+      return value;
+  }
+}
+
+export function tokenify<T extends DataType>(
+  type: T,
+  value: DataTypeToType<T> | null,
+): string {
+  try {
+    const normalized = normalizeValueKey(type, value);
+    const encoded = JSON.stringify(normalized);
+    return encoded ?? "";
+  } catch {
+    return String(value ?? "");
+  }
+}
+
 export function stringifyValue<T extends DataType>(
   type: T,
   value: DataTypeToType<T> | null,

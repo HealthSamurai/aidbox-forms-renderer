@@ -1,13 +1,16 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import {
-  AnswerOptionEntry,
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
   IAnswerInstance,
   IQuestionNode,
   ISelectStore,
-  OptionItem,
+  ResolvedAnswerOption,
+  SelectCheckboxState,
+  SelectChipItem,
+  SelectDialogState,
+  SelectPendingDialog,
   ValueControlProps,
 } from "../../../types.ts";
 import {
@@ -21,62 +24,23 @@ import {
   sanitizeForId,
 } from "../../../utils.ts";
 
-const EMPTY_ANSWER_OPTION: AnswerOptionEntry<AnswerType>["option"] = {};
-
-const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOptionEntry<"boolean">> = [
+const BOOLEAN_FALLBACK_OPTIONS: Array<ResolvedAnswerOption<"boolean">> = [
   {
     token: "yes",
-    label: "Yes",
     value: true,
-    option: EMPTY_ANSWER_OPTION,
     disabled: false,
   },
   {
     token: "no",
-    label: "No",
     value: false,
-    option: EMPTY_ANSWER_OPTION,
     disabled: false,
   },
   {
     token: "unanswered",
-    label: "Unanswered",
     value: null,
-    option: EMPTY_ANSWER_OPTION,
     disabled: false,
   },
 ];
-
-type PendingDialog<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
-  isNew: boolean;
-};
-
-export type MultiSelectChipItem<T extends AnswerType> = {
-  token: string;
-  answer: IAnswerInstance<T>;
-  kind: "option" | "custom";
-  inlineString: boolean;
-};
-
-export type MultiSelectDialogState<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
-  isNew: boolean;
-  canConfirm: boolean;
-};
-
-export type ListSelectCheckboxState<T extends AnswerType> = {
-  options: ReadonlyArray<AnswerOptionEntry<T>>;
-  uiOptions: Array<OptionItem>;
-  selectedTokens: Set<string>;
-  answerByToken: Map<string, IAnswerInstance<T>>;
-  nonOptionAnswers: IAnswerInstance<T>[];
-  customAnswers: IAnswerInstance<T>[];
-  availableAnswers: IAnswerInstance<T>[];
-  canAddSelection: boolean;
-  isCustomActive: boolean;
-  specifyOtherToken: string;
-};
 
 export class SelectStore<
   T extends AnswerType = AnswerType,
@@ -84,26 +48,16 @@ export class SelectStore<
   readonly node: IQuestionNode<T>;
 
   @observable
-  private customActive = false;
-
-  private readonly listRowStoreCache = new WeakMap<
-    IAnswerInstance<T>,
-    ListSelectRowState<T>
-  >();
-
-  private readonly dropdownRowStoreCache = new WeakMap<
-    IAnswerInstance<T>,
-    DropdownRowState<T>
-  >();
+  private isCustomSelected = false;
 
   @observable.ref
-  private pendingCustomTokens = new Set<string>();
+  private pendingCustomAnswerTokens = new Set<string>();
 
   @observable
-  selectValue = "";
+  pendingSelectToken = "";
 
   @observable
-  private customDialog: PendingDialog<T> | null = null;
+  private pendingCustomDialog: SelectPendingDialog<T> | null = null;
 
   constructor(node: IQuestionNode<T>) {
     this.node = node;
@@ -126,17 +80,18 @@ export class SelectStore<
   @computed
   get isBooleanFallback(): boolean {
     return (
-      this.node.type === "boolean" && this.node.options.entries.length === 0
+      this.node.type === "boolean" &&
+      this.node.options.resolvedOptions.length === 0
     );
   }
 
   @computed
-  get options(): ReadonlyArray<AnswerOptionEntry<T>> {
+  get resolvedOptions(): ReadonlyArray<ResolvedAnswerOption<T>> {
     return (
       this.isBooleanFallback
         ? BOOLEAN_FALLBACK_OPTIONS
-        : this.node.options.entries
-    ) as ReadonlyArray<AnswerOptionEntry<T>>;
+        : this.node.options.resolvedOptions
+    ) as ReadonlyArray<ResolvedAnswerOption<T>>;
   }
 
   @computed
@@ -158,13 +113,13 @@ export class SelectStore<
   }
 
   @computed
-  get checkboxState(): ListSelectCheckboxState<T> {
+  get checkboxState(): SelectCheckboxState<T> {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
     const selectedTokens = new Set<string>();
     const answerByToken = new Map<string, IAnswerInstance<T>>();
     const matchedAnswerTokens = new Set<string>();
 
-    this.options.forEach((option) => {
+    this.resolvedOptions.forEach((option) => {
       const match = this.node.answers.find((answer) => {
         if (answer.value == null || option.value == null) {
           return answer.value == null && option.value == null;
@@ -189,38 +144,15 @@ export class SelectStore<
       !this.node.readOnly && (this.node.canAdd || availableAnswers.length > 0);
     const hasCustomAnswers = this.allowCustom && customAnswers.length > 0;
     const isCustomActive =
-      this.allowCustom && (this.customActive || hasCustomAnswers);
+      this.allowCustom && (this.isCustomSelected || hasCustomAnswers);
     const specifyOtherToken = this.specifyOtherToken;
 
     if (isCustomActive) {
       selectedTokens.add(specifyOtherToken);
     }
 
-    const uiOptions = this.options.map((option) => {
-      const isSelected = selectedTokens.has(option.token);
-      return {
-        token: option.token,
-        label: option.label,
-        disabled:
-          option.disabled ||
-          (!isSelected && !canAddSelection) ||
-          (isSelected && !this.node.canRemove),
-      };
-    });
-
-    if (this.allowCustom) {
-      uiOptions.push({
-        token: specifyOtherToken,
-        label: "Specify other",
-        disabled:
-          (!isCustomActive && !canAddSelection) ||
-          (isCustomActive && !this.node.canRemove),
-      });
-    }
-
     return {
-      options: this.options,
-      uiOptions,
+      options: this.resolvedOptions,
       selectedTokens,
       answerByToken,
       nonOptionAnswers,
@@ -230,26 +162,6 @@ export class SelectStore<
       isCustomActive,
       specifyOtherToken,
     };
-  }
-
-  getListRowState(answer: IAnswerInstance<T>): ListSelectRowState<T> {
-    const existing = this.listRowStoreCache.get(answer);
-    if (existing) {
-      return existing;
-    }
-    const store = new ListSelectRowState(this, answer);
-    this.listRowStoreCache.set(answer, store);
-    return store;
-  }
-
-  getDropdownRowState(answer: IAnswerInstance<T>): DropdownRowState<T> {
-    const existing = this.dropdownRowStoreCache.get(answer);
-    if (existing) {
-      return existing;
-    }
-    const store = new DropdownRowState(this, answer);
-    this.dropdownRowStoreCache.set(answer, store);
-    return store;
   }
 
   @action.bound
@@ -262,11 +174,11 @@ export class SelectStore<
         state.nonOptionAnswers.forEach((answer) =>
           this.node.removeAnswer(answer),
         );
-        this.customActive = false;
+        this.isCustomSelected = false;
         return;
       }
       if (!state.canAddSelection) return;
-      this.customActive = true;
+      this.isCustomSelected = true;
       return;
     }
 
@@ -280,7 +192,7 @@ export class SelectStore<
     }
     if (!state.canAddSelection) return;
     const next =
-      option.value === undefined
+      option.value == null
         ? null
         : (cloneValue(option.value) as DataTypeToType<AnswerTypeToDataType<T>>);
     const slot = state.availableAnswers[0];
@@ -319,6 +231,35 @@ export class SelectStore<
     return `${this.node.token}::__specify_other__`;
   }
 
+  resolveTokenForValue(
+    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+  ): string {
+    if (value == null) {
+      if (this.isBooleanFallback) {
+        const unanswered = this.resolvedOptions.find(
+          (entry) => entry.value == null,
+        );
+        return unanswered?.token ?? "";
+      }
+      return "";
+    }
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
+    const match = this.resolvedOptions.find((entry) => {
+      if (entry.value == null) return false;
+      return areValuesEqual(dataType, value, entry.value);
+    });
+    return match?.token ?? "";
+  }
+
+  resolveValueForToken(
+    token: string,
+  ): DataTypeToType<AnswerTypeToDataType<T>> | null {
+    if (!token) return null;
+    const entry = this.resolvedOptions.find((option) => option.token === token);
+    if (!entry || entry.value == null) return null;
+    return cloneValue(entry.value);
+  }
+
   @computed
   get hasCustomAction(): boolean {
     return this.allowCustom;
@@ -330,7 +271,7 @@ export class SelectStore<
     const selectedOptionAnswers = new Map<string, IAnswerInstance<T>>();
     const usedAnswerTokens = new Set<string>();
 
-    this.node.options.entries.forEach((option) => {
+    this.resolvedOptions.forEach((option) => {
       const match = this.node.answers.find((answer) => {
         if (answer.value == null) return false;
         if (usedAnswerTokens.has(answer.token)) return false;
@@ -362,9 +303,9 @@ export class SelectStore<
     const isTypeCustom = this.node.options.constraint === "optionsOrType";
     return this.node.answers.filter((answer) => {
       if (this.usedAnswerTokens.has(answer.token)) return false;
-      if (isTypeCustom && this.pendingCustomTokens.has(answer.token))
+      if (isTypeCustom && this.pendingCustomAnswerTokens.has(answer.token))
         return false;
-      if (this.pendingCustomTokens.has(answer.token)) return true;
+      if (this.pendingCustomAnswerTokens.has(answer.token)) return true;
       return answer.value != null;
     });
   }
@@ -373,14 +314,14 @@ export class SelectStore<
   get availableAnswers(): IAnswerInstance<T>[] {
     return this.node.answers.filter((answer) => {
       if (this.usedAnswerTokens.has(answer.token)) return false;
-      if (this.pendingCustomTokens.has(answer.token)) return false;
+      if (this.pendingCustomAnswerTokens.has(answer.token)) return false;
       return answer.value == null;
     });
   }
 
   @computed
-  get preparedOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
-    return this.node.options.entries.map((entry) => {
+  get selectableOptions(): ReadonlyArray<ResolvedAnswerOption<T>> {
+    return this.resolvedOptions.map((entry) => {
       const isSelected = this.selectedOptionAnswers.has(entry.token);
       return {
         ...entry,
@@ -390,24 +331,22 @@ export class SelectStore<
   }
 
   @computed
-  get extendedOptions(): ReadonlyArray<AnswerOptionEntry<T>> {
+  get optionsWithSpecifyOther(): ReadonlyArray<ResolvedAnswerOption<T>> {
     if (!this.hasCustomAction) {
-      return this.preparedOptions;
+      return this.selectableOptions;
     }
 
-    const customOption: AnswerOptionEntry<T> = {
+    const customOption: ResolvedAnswerOption<T> = {
       token: this.specifyOtherToken,
-      label: "Specify other",
       value: null,
-      option: EMPTY_ANSWER_OPTION,
       disabled: !this.canAddSelection,
     };
 
-    return [...this.preparedOptions, customOption];
+    return [...this.selectableOptions, customOption];
   }
 
   @computed
-  get selectedChipItems(): MultiSelectChipItem<T>[] {
+  get selectedChipItems(): SelectChipItem<T>[] {
     return [...this.selectedOptionAnswers.values()].map((answer) => ({
       token: answer.token,
       answer,
@@ -417,7 +356,7 @@ export class SelectStore<
   }
 
   @computed
-  get customChipItems(): MultiSelectChipItem<T>[] {
+  get customChipItems(): SelectChipItem<T>[] {
     const inlineString = this.node.options.constraint === "optionsOrString";
     return this.customAnswers.map((answer) => ({
       token: answer.token,
@@ -434,39 +373,39 @@ export class SelectStore<
   }
 
   @computed
-  get dialogState(): MultiSelectDialogState<T> | null {
+  get dialogState(): SelectDialogState<T> | null {
     if (
-      !this.customDialog ||
+      !this.pendingCustomDialog ||
       this.node.options.constraint !== "optionsOrType"
     ) {
       return null;
     }
     return {
-      answer: this.customDialog.answer,
-      isNew: this.customDialog.isNew,
-      canConfirm: answerHasContent(this.customDialog.answer),
+      answer: this.pendingCustomDialog.answer,
+      isNew: this.pendingCustomDialog.isNew,
+      canConfirm: answerHasContent(this.pendingCustomDialog.answer),
     };
   }
 
   @action.bound
   addPendingToken(token: string): void {
-    if (this.pendingCustomTokens.has(token)) return;
-    const next = new Set(this.pendingCustomTokens);
+    if (this.pendingCustomAnswerTokens.has(token)) return;
+    const next = new Set(this.pendingCustomAnswerTokens);
     next.add(token);
-    this.pendingCustomTokens = next;
+    this.pendingCustomAnswerTokens = next;
   }
 
   @action.bound
   removePendingToken(token: string): void {
-    if (!this.pendingCustomTokens.has(token)) return;
-    const next = new Set(this.pendingCustomTokens);
+    if (!this.pendingCustomAnswerTokens.has(token)) return;
+    const next = new Set(this.pendingCustomAnswerTokens);
     next.delete(token);
-    this.pendingCustomTokens = next;
+    this.pendingCustomAnswerTokens = next;
   }
 
   @action.bound
-  setCustomDialog(dialog: PendingDialog<T> | null): void {
-    this.customDialog = dialog;
+  setCustomDialog(dialog: SelectPendingDialog<T> | null): void {
+    this.pendingCustomDialog = dialog;
   }
 
   @action.bound
@@ -484,7 +423,7 @@ export class SelectStore<
 
   @action.bound
   handleSelectOption(token: string): void {
-    this.selectValue = "";
+    this.pendingSelectToken = "";
     this.handleSelectChange(token);
   }
 
@@ -499,9 +438,7 @@ export class SelectStore<
       }
       return;
     }
-    const option = this.node.options.entries.find(
-      (entry) => entry.token === token,
-    );
+    const option = this.resolvedOptions.find((entry) => entry.token === token);
     if (option) {
       this.addOptionAnswer(option);
     }
@@ -509,7 +446,7 @@ export class SelectStore<
 
   @action.bound
   cancelCustomDialog(): void {
-    const dialog = this.customDialog;
+    const dialog = this.pendingCustomDialog;
     if (!dialog) return;
     this.removePendingToken(dialog.answer.token);
     if (dialog.isNew) {
@@ -517,15 +454,15 @@ export class SelectStore<
     } else {
       dialog.answer.setValueByUser(null);
     }
-    this.customDialog = null;
+    this.pendingCustomDialog = null;
   }
 
   @action.bound
   confirmCustomDialog(): void {
-    const dialog = this.customDialog;
+    const dialog = this.pendingCustomDialog;
     if (!dialog) return;
     this.removePendingToken(dialog.answer.token);
-    this.customDialog = null;
+    this.pendingCustomDialog = null;
   }
 
   buildRowProps(
@@ -553,11 +490,11 @@ export class SelectStore<
     return this.availableAnswers[0];
   }
 
-  private addOptionAnswer(option: AnswerOptionEntry<T>): void {
+  private addOptionAnswer(option: ResolvedAnswerOption<T>): void {
     if (!this.canAddSelection || this.isLoading) return;
     if (this.selectedOptionAnswers.has(option.token)) return;
     const nextValue =
-      option.value === undefined
+      option.value == null
         ? null
         : (cloneValue(option.value) as DataTypeToType<AnswerTypeToDataType<T>>);
     const slot = this.takeAvailableAnswer();
@@ -587,247 +524,16 @@ export class SelectStore<
     const slot = this.takeAvailableAnswer();
     if (slot) {
       this.addPendingToken(slot.token);
-      this.customDialog = { answer: slot, isNew: false };
+      this.pendingCustomDialog = { answer: slot, isNew: false };
       return;
     }
     const created = this.node.addAnswer(null);
     if (created) {
       this.addPendingToken(created.token);
-      this.customDialog = {
+      this.pendingCustomDialog = {
         answer: created as IAnswerInstance<T>,
         isNew: true,
       };
     }
-  }
-}
-
-class ListSelectRowState<T extends AnswerType> {
-  private readonly parent: SelectStore<T>;
-  private readonly answer: IAnswerInstance<T>;
-
-  @observable
-  private forceCustom = false;
-
-  constructor(parent: SelectStore<T>, answer: IAnswerInstance<T>) {
-    this.parent = parent;
-    this.answer = answer;
-    makeObservable(this);
-  }
-
-  @computed
-  get selectToken(): string {
-    if (this.parent.isBooleanFallback) {
-      const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.parent.node.type];
-      if (this.answer.value == null) {
-        const unanswered = this.parent.options.find(
-          (entry) => entry.token === "unanswered",
-        );
-        return unanswered?.token ?? "";
-      }
-      const match = this.parent.options.find(
-        (entry) =>
-          entry.value != null &&
-          areValuesEqual(dataType, entry.value, this.answer.value as never),
-      );
-      return match?.token ?? "";
-    }
-    return this.parent.node.options.getTokenForValue(
-      this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
-  }
-
-  @computed
-  get legacyOption(): OptionItem | null {
-    if (this.parent.allowCustom) return null;
-    if (this.parent.isBooleanFallback) return null;
-    if (this.selectToken || this.answer.value == null) return null;
-    return this.parent.node.options.getLegacyEntryForValue(
-      this.answer.token,
-      this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
-  }
-
-  @computed
-  get specifyOtherToken(): string {
-    return `${this.parent.node.token}::__specify_other__`;
-  }
-
-  @computed
-  get isCustomValue(): boolean {
-    return (
-      this.parent.allowCustom &&
-      this.selectToken === "" &&
-      this.answer.value != null
-    );
-  }
-
-  @computed
-  get isCustomActive(): boolean {
-    if (!this.parent.allowCustom) return false;
-    if (this.selectToken) return false;
-    return this.isCustomValue || this.forceCustom;
-  }
-
-  @computed
-  get selectValue(): string {
-    if (this.isCustomActive) {
-      return this.specifyOtherToken;
-    }
-    return this.selectToken || this.legacyOption?.token || "";
-  }
-
-  @computed
-  get radioOptions(): OptionItem[] {
-    const baseOptions = this.parent.options.map((option) => ({
-      token: option.token,
-      label: option.label,
-      disabled: option.disabled,
-    }));
-    if (!this.parent.allowCustom) {
-      return baseOptions;
-    }
-    return [
-      ...baseOptions,
-      { token: this.specifyOtherToken, label: "Specify other" },
-    ];
-  }
-
-  @action.bound
-  handleChange(token: string): void {
-    if (this.parent.allowCustom && token === this.specifyOtherToken) {
-      this.forceCustom = true;
-      if (!this.isCustomValue) {
-        this.answer.setValueByUser(null);
-      }
-      return;
-    }
-
-    this.forceCustom = false;
-    if (this.parent.isBooleanFallback) {
-      const nextValue = (() => {
-        if (!token) return null;
-        const match = this.parent.options.find(
-          (entry) => entry.token === token,
-        );
-        if (!match) return null;
-        return match.value === undefined ? null : cloneValue(match.value);
-      })();
-      this.answer.setValueByUser(
-        nextValue as DataTypeToType<AnswerTypeToDataType<T>> | null,
-      );
-      return;
-    }
-    const nextValue = token
-      ? this.parent.node.options.getValueForToken(token)
-      : null;
-    this.answer.setValueByUser(
-      nextValue as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
-  }
-}
-
-class DropdownRowState<T extends AnswerType> {
-  private readonly parent: SelectStore<T>;
-  private readonly answer: IAnswerInstance<T>;
-
-  @observable
-  private forceCustom = false;
-
-  constructor(parent: SelectStore<T>, answer: IAnswerInstance<T>) {
-    this.parent = parent;
-    this.answer = answer;
-    makeObservable(this);
-  }
-
-  @computed
-  get optionToken(): string {
-    return this.parent.node.options.getTokenForValue(
-      this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
-  }
-
-  @computed
-  get legacyOption(): OptionItem | null {
-    if (this.parent.allowCustom) return null;
-    if (this.optionToken || this.answer.value == null) return null;
-    return this.parent.node.options.getLegacyEntryForValue(
-      this.answer.token,
-      this.answer.value as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
-  }
-
-  @computed
-  get selectValue(): string {
-    return this.optionToken || this.legacyOption?.token || "";
-  }
-
-  @computed
-  get customToken(): string {
-    return `${this.parent.node.token}::__specify_other__`;
-  }
-
-  @computed
-  get isCustomValue(): boolean {
-    return (
-      this.parent.allowCustom &&
-      this.optionToken === "" &&
-      this.answer.value != null
-    );
-  }
-
-  @computed
-  get isCustomActive(): boolean {
-    if (!this.parent.allowCustom) return false;
-    if (this.optionToken) return false;
-    return this.isCustomValue || this.forceCustom;
-  }
-
-  @computed
-  get extendedOptions() {
-    if (!this.parent.allowCustom) {
-      return this.parent.node.options.entries;
-    }
-    return [
-      ...this.parent.node.options.entries,
-      {
-        token: this.customToken,
-        label: "Specify other",
-        value: null,
-        option: EMPTY_ANSWER_OPTION,
-        disabled: !this.parent.canAddSelection,
-      },
-    ];
-  }
-
-  @computed
-  get canClear(): boolean {
-    return this.answer.value != null && !this.parent.node.readOnly;
-  }
-
-  @action.bound
-  clearValue(): void {
-    this.answer.setValueByUser(null);
-  }
-
-  @action.bound
-  exitCustom(): void {
-    this.forceCustom = false;
-    this.answer.setValueByUser(null);
-  }
-
-  @action.bound
-  handleSelect(token: string): void {
-    if (this.parent.allowCustom && token === this.customToken) {
-      this.forceCustom = true;
-      this.answer.setValueByUser(null);
-      return;
-    }
-    this.forceCustom = false;
-    const nextValue = token
-      ? this.parent.node.options.getValueForToken(token)
-      : null;
-    this.answer.setValueByUser(
-      nextValue as DataTypeToType<AnswerTypeToDataType<T>> | null,
-    );
   }
 }

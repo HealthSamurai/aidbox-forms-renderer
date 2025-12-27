@@ -31,10 +31,12 @@ describe("answerExpression", () => {
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual(["Red", "Green", "Blue"]);
 
-    expect(color.options.entries).toHaveLength(3);
-    expect(
-      color.options.entries.map((entry) => entry.option.valueString),
-    ).toEqual(["Red", "Green", "Blue"]);
+    expect(color.options.resolvedOptions).toHaveLength(3);
+    expect(color.options.resolvedOptions.map((entry) => entry.value)).toEqual([
+      "Red",
+      "Green",
+      "Blue",
+    ]);
   });
 
   it("reacts when referenced answers change", () => {
@@ -80,22 +82,22 @@ describe("answerExpression", () => {
     expect(slot?.error).toBeUndefined();
     expect(slot?.value).toEqual([]);
 
-    expect(mirror.options.entries).toHaveLength(0);
+    expect(mirror.options.resolvedOptions).toHaveLength(0);
 
     const sourceAnswer = source.answers[0];
     assertDefined(sourceAnswer);
     sourceAnswer.setValueByUser("Alpha");
     expect(slot?.value).toEqual(["Alpha"]);
-    expect(
-      mirror.options.entries.map((entry) => entry.option.valueString),
-    ).toEqual(["Alpha"]);
+    expect(mirror.options.resolvedOptions.map((entry) => entry.value)).toEqual([
+      "Alpha",
+    ]);
 
     const updatedSourceAnswer = source.answers[0];
     assertDefined(updatedSourceAnswer);
     updatedSourceAnswer.setValueByUser("Beta");
     expect(slot?.value).toEqual(["Beta"]);
-    expect(
-      mirror.options.entries.map((entry) => entry.option.valueString),
-    ).toEqual(["Beta"]);
+    expect(mirror.options.resolvedOptions.map((entry) => entry.value)).toEqual([
+      "Beta",
+    ]);
   });
 });

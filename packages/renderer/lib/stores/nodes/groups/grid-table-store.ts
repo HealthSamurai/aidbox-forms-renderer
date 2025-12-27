@@ -1,29 +1,13 @@
 import { computed, makeObservable } from "mobx";
 import type {
+  GridTableCellState,
+  GridTableColumnState,
+  GridTableRowState,
   IGridTableStore,
-  IGroupNode,
   IGroupWrapper,
   IQuestionNode,
 } from "../../../types.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-
-export type GridTableColumnState = {
-  token: string;
-  label: string;
-};
-
-export type GridTableCellState = {
-  token: string;
-  question?: IQuestionNode | undefined;
-  action?: "remove" | undefined;
-};
-
-export type GridTableRowState = {
-  token: string;
-  label: string;
-  node: IGroupNode;
-  cells: GridTableCellState[];
-};
 
 export class GridTableStore implements IGridTableStore {
   private readonly wrapper: IGroupWrapper;
