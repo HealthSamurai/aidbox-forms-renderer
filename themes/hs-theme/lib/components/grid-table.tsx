@@ -18,7 +18,7 @@ export function GridTable({
           <tr>
             <Header scope="col">Row</Header>
             {columns.map((column) => (
-              <Header key={column.token} scope="col">
+              <Header key={column.token} scope="col" id={column.labelId}>
                 {column.label}
               </Header>
             ))}
@@ -27,7 +27,9 @@ export function GridTable({
         <tbody>
           {rows.map((row) => (
             <tr key={row.token}>
-              <RowHeader scope="row">{row.label}</RowHeader>
+              <RowHeader scope="row" id={row.labelId}>
+                {row.label}
+              </RowHeader>
               {row.cells.map((cell) => (
                 <Cell key={cell.token}>{cell.content}</Cell>
               ))}

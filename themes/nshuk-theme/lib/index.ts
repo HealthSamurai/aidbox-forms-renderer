@@ -8,13 +8,15 @@ import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectInput } from "./components/select-input.tsx";
+import { RadioButton } from "./components/radio-button.tsx";
 import { RadioButtonList } from "./components/radio-button-list.tsx";
+import { Checkbox } from "./components/checkbox.tsx";
 import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
-import { OptionsState } from "./components/options-state.tsx";
+import { OptionsLoading } from "./components/options-loading.tsx";
 import { NodeHelp } from "./components/node-help.tsx";
 import { NodeLegal } from "./components/node-legal.tsx";
 import { NodeFlyover } from "./components/node-flyover.tsx";
@@ -64,13 +66,15 @@ const passthrough: Theme = {
   SliderInput,
   SpinnerInput,
   SelectInput,
+  RadioButton,
   RadioButtonList,
+  Checkbox,
   CheckboxList,
   MultiSelectInput,
   Errors,
   NodeHeader,
   QuestionScaffold,
-  OptionsState,
+  OptionsLoading,
   NodeHelp,
   NodeLegal,
   NodeFlyover,

@@ -11,7 +11,7 @@
   - [Link](#link)
   - [EmptyState](#emptystate)
   - [Errors](#errors)
-  - [OptionsState](#optionsstate)
+- [OptionsLoading](#optionsloading)
   - [NodeHelp](#nodehelp)
   - [NodeLegal](#nodelegal)
   - [NodeFlyover](#nodeflyover)
@@ -149,15 +149,14 @@ input.
 | `id`       | `string`   | No       | Apply as the container id so inputs can reference it via aria-describedby. |
 | `messages` | `string[]` | Yes      | Render each string as a distinct message line.                             |
 
-### OptionsState
+### OptionsLoading
 
-Status UI for option-backed controls while options are loading or failed. Use it to show a spinner, skeleton, or error
-message where options would appear.
+Loading UI for option-backed controls while options are fetching. Use it to show a spinner or skeleton where options
+would appear.
 
-| Prop        | Type      | Required | Description                                                   |
-| ----------- | --------- | -------- | ------------------------------------------------------------- |
-| `isLoading` | `boolean` | Yes      | When true, show a loading indicator instead of options.       |
-| `error`     | `string`  | No       | When provided, render the error message for the options list. |
+| Prop        | Type      | Required | Description                                             |
+| ----------- | --------- | -------- | ------------------------------------------------------- |
+| `isLoading` | `boolean` | Yes      | When true, show a loading indicator instead of options. |
 
 ### NodeHelp
 

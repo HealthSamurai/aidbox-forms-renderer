@@ -525,6 +525,17 @@ export function makeIssue(
   };
 }
 
+export const OPTIONS_ISSUE_EXPRESSION = "options";
+
+export function getIssueMessage(issue: OperationOutcomeIssue): string | null {
+  const message = issue.details?.text ?? issue.diagnostics;
+  if (!message) {
+    return null;
+  }
+  const trimmed = message.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export function answerHasOwnValue(answer: IAnswerInstance): boolean {
   const value = answer.value;
   if (value == null) {

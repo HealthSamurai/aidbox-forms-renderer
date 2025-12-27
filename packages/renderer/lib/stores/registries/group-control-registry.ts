@@ -7,10 +7,9 @@ import { DefaultRenderer } from "../../components/nodes/group/renderers/default-
 import { FooterRenderer } from "../../components/nodes/group/renderers/footer-renderer.tsx";
 import { GridRenderer } from "../../components/nodes/group/renderers/grid-renderer.tsx";
 import { HeaderRenderer } from "../../components/nodes/group/renderers/header-renderer.tsx";
-import { HorizontalTableRenderer } from "../../components/nodes/group/renderers/horizontal-table-renderer.tsx";
+import { SelectionTableRenderer } from "../../components/nodes/group/renderers/selection-table-renderer.tsx";
 import { PageRenderer } from "../../components/nodes/group/renderers/page-renderer.tsx";
 import { TabContainerRenderer } from "../../components/nodes/group/renderers/tab-container-renderer.tsx";
-import { VerticalTableRenderer } from "../../components/nodes/group/renderers/vertical-table-renderer.tsx";
 import { GridTableRenderer } from "../../components/nodes/group/renderers/grid-table-renderer.tsx";
 import { GroupWrapperScaffold } from "../../components/nodes/group/group-wrapper-scaffold.tsx";
 
@@ -85,14 +84,14 @@ export const defaultGroupControlDefinitions: GroupControlDefinition[] = [
     name: "group-htable",
     priority: 10,
     matcher: (node) => node.control === "htable",
-    groupComponent: HorizontalTableRenderer,
+    groupComponent: SelectionTableRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {
     name: "group-table",
     priority: 10,
     matcher: (node) => node.control === "table",
-    groupComponent: VerticalTableRenderer,
+    groupComponent: SelectionTableRenderer,
     wrapperComponent: GroupWrapperScaffold,
   },
   {

@@ -10,7 +10,7 @@ export const DropdownRenderer = observer(function DropdownRenderer<
   const isMultiSelect = node.selectStore.isMultiSelect;
 
   return (
-    <QuestionScaffold node={node} showOptionsState>
+    <QuestionScaffold node={node} showOptionsLoading>
       {isMultiSelect ? (
         <MultiSelectControl node={node} />
       ) : (

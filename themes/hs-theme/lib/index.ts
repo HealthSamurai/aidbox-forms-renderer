@@ -7,13 +7,15 @@ export { TimeInput } from "./components/time-input.tsx";
 export { SliderInput } from "./components/slider-input.tsx";
 export { SpinnerInput } from "./components/spinner-input.tsx";
 export { SelectInput } from "./components/select-input.tsx";
+export { RadioButton } from "./components/radio-button.tsx";
 export { RadioButtonList } from "./components/radio-button-list.tsx";
+export { Checkbox } from "./components/checkbox.tsx";
 export { CheckboxList } from "./components/checkbox-list.tsx";
 export { MultiSelectInput } from "./components/multi-select-input.tsx";
 export { Errors } from "./components/errors.tsx";
 export { NodeHeader } from "./components/node-header.tsx";
 export { QuestionScaffold } from "./components/question-scaffold.tsx";
-export { OptionsState } from "./components/options-state.tsx";
+export { OptionsLoading } from "./components/options-loading.tsx";
 export { NodeHelp } from "./components/node-help.tsx";
 export { NodeLegal } from "./components/node-legal.tsx";
 export { NodeFlyover } from "./components/node-flyover.tsx";
@@ -59,13 +61,15 @@ import { TimeInput } from "./components/time-input.tsx";
 import { SliderInput } from "./components/slider-input.tsx";
 import { SpinnerInput } from "./components/spinner-input.tsx";
 import { SelectInput } from "./components/select-input.tsx";
+import { RadioButton } from "./components/radio-button.tsx";
 import { RadioButtonList } from "./components/radio-button-list.tsx";
+import { Checkbox } from "./components/checkbox.tsx";
 import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
-import { OptionsState } from "./components/options-state.tsx";
+import { OptionsLoading } from "./components/options-loading.tsx";
 import { NodeHelp } from "./components/node-help.tsx";
 import { NodeLegal } from "./components/node-legal.tsx";
 import { NodeFlyover } from "./components/node-flyover.tsx";
@@ -113,13 +117,15 @@ export const theme: Theme = {
   SliderInput,
   SpinnerInput,
   SelectInput,
+  RadioButton,
   RadioButtonList,
+  Checkbox,
   CheckboxList,
   MultiSelectInput,
   Errors,
   NodeHeader,
   QuestionScaffold,
-  OptionsState,
+  OptionsLoading,
   NodeHelp,
   NodeLegal,
   NodeFlyover,

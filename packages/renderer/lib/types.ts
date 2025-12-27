@@ -544,7 +544,6 @@ export type QuestionAxisItem = {
   question: IQuestionNode;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
-  id: string;
   hasDetails: boolean;
 };
 
@@ -649,7 +648,7 @@ export interface IQuantityAnswer {
 
 export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly loading: boolean;
-  readonly error: string | null;
+  readonly error: OperationOutcomeIssue | null;
   readonly resolvedOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
   readonly constraint: QuestionnaireItem["answerConstraint"];
   getTokenForValue(

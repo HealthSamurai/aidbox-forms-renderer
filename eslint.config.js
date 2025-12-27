@@ -40,6 +40,20 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "JSXOpeningElement[name.type='JSXIdentifier'][name.name=/^[a-z]/]",
+          message:
+            "Renderer should not use DOM elements; use theme components instead.",
+        },
+        {
+          selector: "JSXAttribute[name.name=/^(className|style)$/]",
+          message:
+            "Renderer should not set className/style; use theme components instead.",
+        },
+      ],
     },
   },
   storybook.configs["flat/recommended"],

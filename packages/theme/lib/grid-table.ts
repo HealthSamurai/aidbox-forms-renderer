@@ -3,6 +3,7 @@ import type { ComponentType, ReactNode } from "react";
 export type GridTableColumn = {
   token: string;
   label: ReactNode;
+  labelId?: string;
 };
 
 export type GridTableCell = {
@@ -13,6 +14,7 @@ export type GridTableCell = {
 export type GridTableRow = {
   token: string;
   label: ReactNode;
+  labelId?: string;
   cells: GridTableCell[];
 };
 

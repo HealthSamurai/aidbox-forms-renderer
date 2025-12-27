@@ -9,6 +9,7 @@ import type {
 } from "../../../types.ts";
 import type {
   Coding,
+  OperationOutcomeIssue,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
 } from "fhir/r5";
@@ -19,9 +20,31 @@ import {
   booleanify,
   cloneValue,
   getValue,
+  OPTIONS_ISSUE_EXPRESSION,
 } from "../../../utils.ts";
 import type { IPromiseBasedObservable } from "mobx-utils";
 import { fromPromise } from "mobx-utils";
+
+function getOptionsErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (error == null) {
+    return "Unknown error";
+  }
+  return String(error);
+}
+
+function toOptionsIssue(error: unknown): OperationOutcomeIssue {
+  const message = getOptionsErrorMessage(error);
+  return {
+    severity: "error",
+    code: "invalid",
+    diagnostics: message,
+    details: { text: message },
+    expression: [OPTIONS_ISSUE_EXPRESSION],
+  };
+}
 
 export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   constructor(private readonly question: IQuestionNode<T>) {
@@ -74,15 +97,10 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  get error(): string | null {
+  get error(): OperationOutcomeIssue | null {
     return (
       this.expansion?.case({
-        rejected: (error) =>
-          error instanceof Error
-            ? error.message
-            : error
-              ? String(error)
-              : "Unknown error",
+        rejected: (error) => toOptionsIssue(error),
       }) ?? null
     );
   }

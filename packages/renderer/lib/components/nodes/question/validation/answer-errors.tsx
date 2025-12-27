@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import type { IAnswerInstance } from "../../../../types.ts";
-import { getAnswerErrorId } from "../../../../utils.ts";
+import { getAnswerErrorId, getIssueMessage } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export const AnswerErrors = observer(function AnswerErrors({
@@ -15,7 +15,7 @@ export const AnswerErrors = observer(function AnswerErrors({
   }
 
   const messages = answer.issues
-    .map((issue) => issue.details?.text ?? issue.diagnostics)
+    .map((issue) => getIssueMessage(issue))
     .filter((message): message is string => Boolean(message));
 
   if (messages.length === 0) {

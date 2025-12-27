@@ -8,21 +8,21 @@ import {
   reaction,
 } from "mobx";
 import {
+  AnswerLifecycle,
   AnswerType,
   type AnswerTypeToDataType,
-  AnswerLifecycle,
   DataTypeToType,
   IAnswerInstance,
+  IAnswerOptions,
   IForm,
   INode,
   IPresentableNode,
   IQuestionNode,
   IScope,
-  SnapshotKind,
-  IAnswerOptions,
   QUESTION_ITEM_CONTROLS,
-  type QuestionItemControl,
   type QuestionControlDefinition,
+  type QuestionItemControl,
+  SnapshotKind,
 } from "../../../types.ts";
 import {
   QuestionnaireItem,
@@ -39,9 +39,9 @@ import {
   booleanify,
   EXT,
   extractExtensionValue,
+  getItemControlCode,
   getValue,
   normalizeExpressionValues,
-  getItemControlCode,
   withQuestionnaireResponseItemMeta,
 } from "../../../utils.ts";
 import type { HTMLAttributes } from "react";
@@ -156,6 +156,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed({ keepAlive: true })
   get options(): IAnswerOptions<T> {
     return new AnswerOptions<T>(this);
+  }
+
+  @override
+  override get issues() {
+    return this.options.error
+      ? [...super.issues, this.options.error]
+      : super.issues;
   }
 
   @override

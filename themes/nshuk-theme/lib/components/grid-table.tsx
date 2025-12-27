@@ -27,6 +27,7 @@ export function GridTable({
                 key={column.token}
                 scope="col"
                 className="nhsuk-table__header"
+                id={column.labelId}
               >
                 {column.label}
               </th>
@@ -36,7 +37,7 @@ export function GridTable({
         <tbody className="nhsuk-table__body">
           {rows.map((row) => (
             <tr key={row.token} className="nhsuk-table__row">
-              <th scope="row" className="nhsuk-table__header">
+              <th scope="row" className="nhsuk-table__header" id={row.labelId}>
                 {row.label}
               </th>
               {row.cells.map((cell) => (

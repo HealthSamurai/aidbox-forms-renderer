@@ -20,7 +20,6 @@ import {
   cloneValue,
   getNodeDescribedBy,
   getNodeLabelId,
-  sanitizeForId,
   tokenify,
 } from "../../../utils.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
@@ -49,25 +48,19 @@ export class TableStore implements ITableStore {
       const question = entry.question;
       const ariaLabelledBy = getNodeLabelId(question);
       const ariaDescribedBy = getNodeDescribedBy(question);
-      const id = sanitizeForId(`${question.token}-table`);
 
       const visibleAnswers = question.repeats
         ? question.answers
         : question.answers.slice(0, 1);
-      const hasDetails =
-        question.hasErrors ||
-        question.options.loading ||
-        Boolean(question.options.error) ||
-        visibleAnswers.some(
-          (answer) => answer.nodes.length > 0 || answer.issues.length > 0,
-        );
+      const hasDetails = visibleAnswers.some(
+        (answer) => answer.nodes.length > 0 || answer.issues.length > 0,
+      );
 
       return {
         token: question.token,
         question,
         ariaLabelledBy,
         ariaDescribedBy,
-        id,
         hasDetails,
       };
     });

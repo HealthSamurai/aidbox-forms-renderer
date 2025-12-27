@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { INode } from "../../types.ts";
-import { getNodeErrorId } from "../../utils.ts";
+import { getIssueMessage, getNodeErrorId } from "../../utils.ts";
 import { useTheme } from "../../ui/theme.tsx";
 
 export const NodeErrors = observer(function NodeErrors({
@@ -13,7 +13,7 @@ export const NodeErrors = observer(function NodeErrors({
   if (!node.hasErrors) return null;
 
   const messages = node.issues
-    .map((issue) => issue.diagnostics?.trim() || issue.details?.text?.trim())
+    .map((issue) => getIssueMessage(issue))
     .filter((message): message is string => Boolean(message));
 
   if (messages.length === 0) {
