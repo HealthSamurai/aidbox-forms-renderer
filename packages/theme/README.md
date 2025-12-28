@@ -746,7 +746,7 @@ Alias of OptionItem.
 
 ### Attachment
 
-Minimal FHIR Attachment shape used by `FileInput` to display metadata and stored content.
+Attachment shape used by `FileInput` to display metadata and stored content.
 
 | Field         | Type               | Required | Description                                             |
 | ------------- | ------------------ | -------- | ------------------------------------------------------- |

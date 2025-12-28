@@ -529,7 +529,6 @@ export type OptionAxisItem = {
 };
 
 export type TableCellState = {
-  hasOption: boolean;
   selected: boolean;
   disabled: boolean;
 };
@@ -563,7 +562,10 @@ export interface ITableStore {
   readonly questionAxis: Array<QuestionAxisItem>;
   readonly detailQuestions: Array<IQuestionNode>;
   getQuestionSelection(questionToken: string): QuestionAxisSelection;
-  getCellState(questionToken: string, optionToken: string): TableCellState;
+  getCellState(
+    questionToken: string,
+    optionToken: string,
+  ): TableCellState | null;
   toggleCell(questionToken: string, optionToken: string): void;
 }
 

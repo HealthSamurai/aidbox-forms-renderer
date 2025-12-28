@@ -70,7 +70,7 @@ export class GridStore implements IGridStore {
         token: row.token,
         label,
         cells: columns.map((column) => ({
-          token: `${row.token}-${column.token}`,
+          token: `${row.token}_/_${column.token}`,
           question: questionMap.get(column.token),
         })),
       };

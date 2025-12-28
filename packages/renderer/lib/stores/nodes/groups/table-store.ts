@@ -102,15 +102,18 @@ export class TableStore implements ITableStore {
     return { selectedTokens, selectedToken };
   }
 
-  getCellState(questionToken: string, optionToken: string): TableCellState {
+  getCellState(
+    questionToken: string,
+    optionToken: string,
+  ): TableCellState | null {
     const entry = this.questionByToken.get(questionToken);
     if (!entry) {
-      return { hasOption: false, selected: false, disabled: false };
+      return null;
     }
 
     const optionEntry = entry.optionMap.get(optionToken);
     if (!optionEntry) {
-      return { hasOption: false, selected: false, disabled: false };
+      return null;
     }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
@@ -121,17 +124,16 @@ export class TableStore implements ITableStore {
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
+    const isReadOnly =
+      entry.question.readOnly || entry.question.options.loading;
     const disableNewSelection =
-      entry.question.readOnly ||
-      entry.question.options.loading ||
-      (!isSelected &&
-        (optionEntry.disabled ||
-          (entry.question.repeats && !entry.question.canAdd)));
+      !isSelected &&
+      (optionEntry.disabled ||
+        (entry.question.repeats && !entry.question.canAdd));
 
     return {
-      hasOption: true,
       selected: isSelected,
-      disabled: disableNewSelection && !isSelected,
+      disabled: isReadOnly || disableNewSelection,
     };
   }
 
@@ -150,14 +152,14 @@ export class TableStore implements ITableStore {
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
+    const isReadOnly =
+      entry.question.readOnly || entry.question.options.loading;
     const disableNewSelection =
-      entry.question.readOnly ||
-      entry.question.options.loading ||
-      (!isSelected &&
-        (optionEntry.disabled ||
-          (entry.question.repeats && !entry.question.canAdd)));
+      !isSelected &&
+      (optionEntry.disabled ||
+        (entry.question.repeats && !entry.question.canAdd));
 
-    if (disableNewSelection && !isSelected) {
+    if (isReadOnly || disableNewSelection) {
       return;
     }
 

@@ -80,7 +80,7 @@ export class GridTableStore implements IGridTableStore {
           .map((question) => [question.linkId, question]),
       );
       const cells: GridTableCellState[] = columns.map((column) => ({
-        token: `${node.token}-${column.token}`,
+        token: `${node.token}_/_${column.token}`,
         question: questionMap.get(column.token),
       }));
 

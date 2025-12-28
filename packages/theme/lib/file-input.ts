@@ -1,5 +1,12 @@
-import type { Attachment } from "./fhir-shims.ts";
 import type { ComponentType } from "react";
+
+export type Attachment = {
+  title?: string | undefined;
+  url?: string | undefined;
+  size?: number | string | undefined;
+  contentType?: string | undefined;
+  data?: string | undefined;
+};
 
 export type FileInputProps = {
   value: Attachment | null;
