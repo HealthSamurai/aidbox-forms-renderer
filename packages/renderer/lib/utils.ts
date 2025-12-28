@@ -14,6 +14,7 @@ import {
   ValueCarrierFor,
   ValueKeyFor,
 } from "./types.ts";
+import { strings } from "./strings.ts";
 import {
   Attachment,
   Coding,
@@ -1683,13 +1684,6 @@ export function booleanify(value: unknown): boolean {
   return value != null;
 }
 
-export function cloneValue<T>(value: T): T {
-  if (value && typeof value === "object") {
-    return structuredClone(value);
-  }
-  return value;
-}
-
 function normalizeCodingKey(value: Coding) {
   const system = value.system ?? null;
   if (value.code) {
@@ -1856,7 +1850,7 @@ export function stringifyValue<T extends DataType>(
   }
 
   if (typeof value === "boolean") {
-    return value ? "Yes" : "No";
+    return value ? strings.boolean.yes : strings.boolean.no;
   }
 
   if (type === "Coding" && isCoding(value)) {

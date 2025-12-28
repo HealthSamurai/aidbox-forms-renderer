@@ -17,7 +17,6 @@ import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
   areValuesEqual,
-  cloneValue,
   getAnswerErrorId,
   getNodeDescribedBy,
   getNodeLabelId,
@@ -189,7 +188,9 @@ export class SelectStore<
     const next =
       option.value == null
         ? null
-        : (cloneValue(option.value) as DataTypeToType<AnswerTypeToDataType<T>>);
+        : (structuredClone(option.value) as DataTypeToType<
+            AnswerTypeToDataType<T>
+          >);
     const slot = state.availableAnswers[0];
     if (slot) {
       slot.setValueByUser(next);
@@ -246,7 +247,7 @@ export class SelectStore<
     if (!token) return null;
     const entry = this.resolvedOptions.find((option) => option.token === token);
     if (!entry || entry.value == null) return null;
-    return cloneValue(entry.value);
+    return structuredClone(entry.value);
   }
 
   @computed
@@ -485,7 +486,9 @@ export class SelectStore<
     const nextValue =
       option.value == null
         ? null
-        : (cloneValue(option.value) as DataTypeToType<AnswerTypeToDataType<T>>);
+        : (structuredClone(option.value) as DataTypeToType<
+            AnswerTypeToDataType<T>
+          >);
     const slot = this.takeAvailableAnswer();
     if (slot) {
       slot.setValueByUser(nextValue);

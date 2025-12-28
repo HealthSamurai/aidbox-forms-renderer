@@ -839,28 +839,6 @@ describe("normalizeExpressionValues", () => {
   });
 });
 
-describe("cloneValue", () => {
-  it("returns string primitives unchanged", () => {
-    expect(cloneValue("text")).toBe("text");
-  });
-
-  it("returns number primitives unchanged", () => {
-    expect(cloneValue(42)).toBe(42);
-  });
-
-  it("returns boolean primitives unchanged", () => {
-    expect(cloneValue(true)).toBe(true);
-  });
-
-  it("clones structured values", () => {
-    const original: Quantity = { value: 5, unit: "kg" };
-    const cloned = cloneValue(original);
-
-    expect(cloned).toEqual(original);
-    expect(cloned).not.toBe(original);
-  });
-});
-
 describe("date", () => {
   it("formats date values for display", () => {
     const formatted = stringifyValue("date", "2025-11-03", "fallback");

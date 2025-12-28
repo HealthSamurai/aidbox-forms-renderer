@@ -7,17 +7,16 @@ import type {
   IQuestionNode,
   ITableStore,
   OptionAxisItem,
-  ResolvedAnswerOption,
-  TableCellState,
-  TableAxisModel,
   QuestionAxisEntry,
-  QuestionAxisSelection,
   QuestionAxisItem,
+  QuestionAxisSelection,
+  ResolvedAnswerOption,
+  TableAxisModel,
+  TableCellState,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   areValuesEqual,
-  cloneValue,
   getNodeDescribedBy,
   getNodeLabelId,
   tokenify,
@@ -169,12 +168,12 @@ export class TableStore implements ITableStore {
       }
 
       if (!entry.question.canAdd) return;
-      entry.question.addAnswer(cloneValue(optionEntry.value));
+      entry.question.addAnswer(structuredClone(optionEntry.value));
       return;
     }
 
     const target = entry.question.answers[0];
-    if (target) target.setValueByUser(cloneValue(optionEntry.value));
+    if (target) target.setValueByUser(structuredClone(optionEntry.value));
   }
 
   @computed

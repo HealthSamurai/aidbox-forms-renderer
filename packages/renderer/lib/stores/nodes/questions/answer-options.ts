@@ -18,9 +18,9 @@ import {
   answerify,
   areValuesEqual,
   booleanify,
-  cloneValue,
   getValue,
   OPTIONS_ISSUE_EXPRESSION,
+  tokenify,
 } from "../../../utils.ts";
 import type { IPromiseBasedObservable } from "mobx-utils";
 import { fromPromise } from "mobx-utils";
@@ -109,17 +109,24 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   @computed
   get resolvedOptions(): ResolvedAnswerOption<T>[] {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
-    return this.answerOptions.flatMap((option, index) => {
+    const seen = new Set<string>();
+    return this.answerOptions.flatMap((option) => {
       const value = getValue(option, dataType);
       if (value === undefined) {
         return [];
       }
 
+      const token = tokenify(dataType, value);
+      if (seen.has(token)) {
+        return [];
+      }
+      seen.add(token);
+
       const disabled = !this.isOptionEnabled(option);
 
       return [
         {
-          token: `${this.question.token}_/_${index}`,
+          token,
           value,
           disabled,
         } satisfies ResolvedAnswerOption<T>,
@@ -167,7 +174,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     token: string,
   ): DataTypeToType<AnswerTypeToDataType<T>> | null {
     const value = this.valueMap.get(token);
-    return value == null ? null : cloneValue(value);
+    return value == null ? null : structuredClone(value);
   }
 
   private isOptionEnabled(option: QuestionnaireItemAnswerOption): boolean {
