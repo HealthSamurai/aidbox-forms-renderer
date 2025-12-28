@@ -8,7 +8,6 @@ import {
   getAnswerErrorId,
   getNodeDescribedBy,
   getNodeLabelId,
-  sanitizeForId,
 } from "../../../../utils.ts";
 import {
   AnswerType,
@@ -50,7 +49,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
     <ThemedAnswerScaffold
       control={
         <Component
-          id={sanitizeForId(answer.token)}
+          id={answer.token}
           ariaLabelledBy={getNodeLabelId(answer.question)}
           ariaDescribedBy={ariaDescribedBy}
           answer={answer as IAnswerInstance<T>}

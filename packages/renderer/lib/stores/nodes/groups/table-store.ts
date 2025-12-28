@@ -192,7 +192,7 @@ export class TableStore implements ITableStore {
           return;
         }
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
-        const token = `${type}::${tokenify(type, entry.value)}`;
+        const token = tokenify(type, entry.value);
 
         if (!optionMap.has(token)) {
           const option: OptionAxisItem = {

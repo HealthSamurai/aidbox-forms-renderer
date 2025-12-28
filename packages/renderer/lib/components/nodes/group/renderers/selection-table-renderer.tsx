@@ -12,7 +12,6 @@ import { NodesList } from "../../../form/node-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { JSX, ReactNode } from "react";
 import { ValueDisplay } from "../../question/fhir/value-display.tsx";
-import { sanitizeForId } from "../../../../utils.ts";
 import { SelectionTableCell } from "../components/selection-table-cell.tsx";
 import { AnswerErrors } from "../../question/validation/answer-errors.tsx";
 import { strings } from "../../../../strings.ts";
@@ -113,20 +112,17 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
     const optionLabelIds = new Map(
       optionAxis.map((option) => [
         option.token,
-        sanitizeForId(`${node.token}-${option.token}`),
+        `${node.token}_/_${option.token}`,
       ]),
     );
     const groupNames = new Map(
-      questionAxis.map((entry) => [
-        entry.token,
-        sanitizeForId(`${entry.token}-table`),
-      ]),
+      questionAxis.map((entry) => [entry.token, `${entry.token}_/_table`]),
     );
 
     const getOptionLabelId = (token: string) =>
-      optionLabelIds.get(token) ?? sanitizeForId(`${node.token}-${token}`);
+      optionLabelIds.get(token) ?? `${node.token}_/_${token}`;
     const getGroupName = (token: string) =>
-      groupNames.get(token) ?? sanitizeForId(`${token}-table`);
+      groupNames.get(token) ?? `${token}_/_table`;
     const renderOptionLabel = (option: OptionAxisItem) => (
       <ValueDisplay type={option.type} value={option.value} />
     );

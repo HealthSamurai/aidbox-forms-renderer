@@ -58,15 +58,15 @@ importers:
       '@aidbox-forms/nshuk-theme':
         specifier: workspace:*
         version: link:../../themes/nshuk-theme
-      '@lhncbc/ucum-lhc':
-        specifier: ^7.1.3
-        version: 7.1.3(patch_hash=3179673f53a760a3c5663751809c2249ed644eea25ed87626d45d753f6c0b11c)
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
       fhirpath:
         specifier: ^4.6.0
         version: 4.8.2
+      hashery:
+        specifier: ^1.3.0
+        version: 1.3.0
       mobx:
         specifier: ^6.15.0
         version: 6.15.0
@@ -80,6 +80,9 @@ importers:
       '@aidbox-forms/theme':
         specifier: workspace:*
         version: link:../theme
+      '@lhncbc/ucum-lhc':
+        specifier: 7.1.3
+        version: 7.1.3(patch_hash=3179673f53a760a3c5663751809c2249ed644eea25ed87626d45d753f6c0b11c)
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -2043,6 +2046,10 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
+  hashery@1.3.0:
+    resolution: {integrity: sha512-fWltioiy5zsSAs9ouEnvhsVJeAXRybGCNNv0lvzpzNOSDbULXRy7ivFWwCCv4I5Am6kSo75hmbsCduOoc2/K4w==}
+    engines: {node: '>=20'}
+
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
@@ -2056,6 +2063,9 @@ packages:
 
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
+
+  hookified@1.14.0:
+    resolution: {integrity: sha512-pi1ynXIMFx/uIIwpWJ/5CEtOHLGtnUB0WhGeeYT+fKcQ+WCQbm3/rrkAXnpfph++PgepNqPdTC2WTj8A6k6zoQ==}
 
   html-element-attributes@1.3.1:
     resolution: {integrity: sha512-UrRKgp5sQmRnDy4TEwAUsu14XBUlzKB8U3hjIYDjcZ3Hbp86Jtftzxfgrv6E/ii/h78tsaZwAnAE8HwnHr0dPA==}
@@ -4896,6 +4906,10 @@ snapshots:
 
   has-flag@4.0.0: {}
 
+  hashery@1.3.0:
+    dependencies:
+      hookified: 1.14.0
+
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
@@ -4907,6 +4921,8 @@ snapshots:
   hermes-parser@0.25.1:
     dependencies:
       hermes-estree: 0.25.1
+
+  hookified@1.14.0: {}
 
   html-element-attributes@1.3.1: {}
 

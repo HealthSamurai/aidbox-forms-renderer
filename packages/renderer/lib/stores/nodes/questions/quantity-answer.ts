@@ -5,15 +5,9 @@ import type {
   IQuantityAnswer,
   OptionItem,
 } from "../../../types.ts";
-import { areCodingsEqual, isEmptyObject } from "../../../utils.ts";
+import { areCodingsEqual, isEmptyObject, tokenify } from "../../../utils.ts";
 
-const LEGACY_UNIT_PREFIX = "__legacy_unit__";
-
-function makeUnitToken(coding: Coding): string {
-  return [coding.system ?? "", coding.code ?? "", coding.display ?? ""].join(
-    "::",
-  );
-}
+const LEGACY_UNIT_PREFIX = "_/_legacy_unit_/_";
 
 export class QuantityAnswer implements IQuantityAnswer {
   private readonly answer: IAnswerInstance<"quantity">;
@@ -34,7 +28,7 @@ export class QuantityAnswer implements IQuantityAnswer {
   private get unitEntries(): ReadonlyArray<readonly [string, Coding]> {
     const map = new Map<string, Coding>();
     for (const coding of this.answer.question.unitOptions) {
-      const token = makeUnitToken(coding);
+      const token = tokenify("Coding", coding);
       if (!map.has(token)) {
         map.set(token, coding);
       }

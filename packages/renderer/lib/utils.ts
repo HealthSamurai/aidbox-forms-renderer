@@ -15,6 +15,7 @@ import {
   ValueKeyFor,
 } from "./types.ts";
 import { strings } from "./strings.ts";
+import { Hashery } from "hashery";
 import {
   Attachment,
   Coding,
@@ -30,10 +31,6 @@ import {
 } from "fhir/r5";
 import r5 from "fhirpath/fhir-context/r5";
 import { UcumLhcUtils } from "@lhncbc/ucum-lhc";
-
-export function sanitizeForId(value: string) {
-  return value.replace(/[^a-zA-Z0-9_-]/g, "-");
-}
 
 export type ExtractPlaceholders<T extends string> =
   T extends `${string}{${infer Key}}${infer Rest}`
@@ -52,27 +49,27 @@ export function formatString<T extends string>(
 }
 
 export function getNodeLabelId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.token}-label`);
+  return `af_/_${node.token}_/_label`;
 }
 
 export function getNodeHelpId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.token}-help`);
+  return `af_/_${node.token}_/_help`;
 }
 
 export function getNodeLegalId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.token}-legal`);
+  return `af_/_${node.token}_/_legal`;
 }
 
 export function getNodeFlyoverId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.token}-flyover`);
+  return `af_/_${node.token}_/_flyover`;
 }
 
 export function getNodeErrorId(node: IPresentableNode): string {
-  return sanitizeForId(`af-${node.token}-errors`);
+  return `af_/_${node.token}_/_errors`;
 }
 
 export function getAnswerErrorId(answer: IAnswerInstance): string {
-  return sanitizeForId(`af-${answer.token}-errors`);
+  return `af_/_${answer.token}_/_errors`;
 }
 
 export function getNodeDescribedBy<T extends AnswerType>(
@@ -1807,16 +1804,25 @@ function normalizeValueKey<T extends DataType>(
   return value;
 }
 
+const tokenHasher = new Hashery({
+  defaultAlgorithmSync: "djb2",
+  cache: { enabled: true },
+});
+
 export function tokenify<T extends DataType>(
   type: T,
   value: DataTypeToType<T> | null,
 ): string {
   try {
     const normalized = normalizeValueKey(type, value);
-    const encoded = JSON.stringify(normalized);
-    return encoded ?? "";
+    if (normalized === undefined) {
+      return "";
+    }
+    return tokenHasher.toHashSync({ type, value: normalized });
   } catch {
-    return String(value ?? "");
+    const fallback = value == null ? null : value;
+    const fallbackString = fallback == null ? "" : String(fallback);
+    return fallbackString ? tokenHasher.toHashSync(fallbackString) : "";
   }
 }
 
@@ -1904,18 +1910,10 @@ export function areValuesEqual<T extends DataType>(
     case "decimal":
     case "integer":
     case "url":
-      return a === b;
-    case "date":
-      return areDateValuesEqual(a, b);
-    case "dateTime":
-      return areDateTimeValuesEqual(a, b);
-    case "time":
-      return areTimeValuesEqual(a, b);
     case "base64Binary":
     case "canonical":
     case "code":
     case "id":
-    case "instant":
     case "integer64":
     case "markdown":
     case "oid":
@@ -1923,6 +1921,15 @@ export function areValuesEqual<T extends DataType>(
     case "unsignedInt":
     case "uri":
     case "uuid":
+      return a === b;
+    case "instant":
+      return areDateTimeValuesEqual(a, b);
+    case "date":
+      return areDateValuesEqual(a, b);
+    case "dateTime":
+      return areDateTimeValuesEqual(a, b);
+    case "time":
+      return areTimeValuesEqual(a, b);
     case "Address":
     case "Age":
     case "Annotation":

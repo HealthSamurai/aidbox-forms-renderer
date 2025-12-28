@@ -61,7 +61,7 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
     store.allowCustom || optionToken || answer.value == null
       ? null
       : {
-          token: `${answer.token}::__legacy__`,
+          token: `${answer.token}_/_legacy`,
           label: <ValueDisplay type={node.type} value={answer.value} />,
         };
   const selectValue = optionToken || legacyOption?.token || "";

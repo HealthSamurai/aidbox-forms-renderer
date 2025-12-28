@@ -133,7 +133,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
     answer.value == null
       ? null
       : {
-          token: `${answer.token}::__legacy__`,
+          token: `${answer.token}_/_legacy`,
           label: <ValueDisplay type={node.type} value={answer.value} />,
         };
   const isCustomValue =

@@ -20,7 +20,6 @@ import {
   getAnswerErrorId,
   getNodeDescribedBy,
   getNodeLabelId,
-  sanitizeForId,
 } from "../../../utils.ts";
 
 const BOOLEAN_FALLBACK_OPTIONS: Array<ResolvedAnswerOption<"boolean">> = [
@@ -224,7 +223,7 @@ export class SelectStore<
 
   @computed
   get specifyOtherToken(): string {
-    return `${this.node.token}::__specify_other__`;
+    return `${this.node.token}_/_specify_other`;
   }
 
   resolveTokenForValue(
@@ -469,7 +468,7 @@ export class SelectStore<
       describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
 
     return {
-      id: sanitizeForId(`${answer.token}-${suffix}`),
+      id: `${answer.token}_/_${suffix}`,
       ariaLabelledBy: getNodeLabelId(this.node),
       ariaDescribedBy,
       answer,

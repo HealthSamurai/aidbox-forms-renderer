@@ -1,5 +1,5 @@
 import type { IPresentableNode, IQuestionNode } from "../../types.ts";
-import { getNodeLabelId, sanitizeForId } from "../../utils.ts";
+import { getNodeLabelId } from "../../utils.ts";
 import { isQuestionNode } from "../../stores/nodes/questions/question-store.ts";
 
 export function getNodeLabelParts(node: IPresentableNode) {
@@ -25,5 +25,5 @@ function getPrimaryControlId(node: IPresentableNode): string | undefined {
     return undefined;
   }
 
-  return sanitizeForId(firstAnswer.token);
+  return firstAnswer.token;
 }
