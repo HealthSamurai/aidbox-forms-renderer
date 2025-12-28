@@ -1,5 +1,6 @@
 import type { Coding } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
+import { strings } from "../../../../../strings.ts";
 
 export type CodingInputProps = {
   value: Coding | null;
@@ -41,7 +42,7 @@ export function CodingInput({
         value={coding.system ?? ""}
         onChange={(next) => handleChange("system", next)}
         disabled={disabled}
-        placeholder="System (e.g. http://loinc.org)"
+        placeholder={strings.inputs.codingSystemPlaceholder}
       />
       <TextInput
         id={codeId}
@@ -50,7 +51,7 @@ export function CodingInput({
         value={coding.code ?? ""}
         onChange={(next) => handleChange("code", next)}
         disabled={disabled}
-        placeholder="Code"
+        placeholder={strings.inputs.codingCodePlaceholder}
       />
       <TextInput
         id={displayId}
@@ -59,7 +60,7 @@ export function CodingInput({
         value={coding.display ?? ""}
         onChange={(next) => handleChange("display", next)}
         disabled={disabled}
-        placeholder="Display"
+        placeholder={strings.inputs.codingDisplayPlaceholder}
       />
     </InputGroup>
   );

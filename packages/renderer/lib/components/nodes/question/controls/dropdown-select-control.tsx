@@ -3,15 +3,14 @@ import { useState } from "react";
 import {
   AnswerType,
   IQuestionNode,
+  OptionItem,
   ValueControlProps,
 } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
-
-const SPECIFY_OTHER_LABEL = "Specify other";
-const UNANSWERED_LABEL = "Unanswered";
+import { strings } from "../../../../strings.ts";
 
 export type DropdownSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -66,16 +65,18 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
           label: <ValueDisplay type={node.type} value={answer.value} />,
         };
   const selectValue = optionToken || legacyOption?.token || "";
-  const options = store.resolvedOptions.map((option) => ({
-    token: option.token,
-    label:
-      option.value == null ? (
-        UNANSWERED_LABEL
-      ) : (
-        <ValueDisplay type={node.type} value={option.value} />
-      ),
-    disabled: option.disabled,
-  }));
+  const options: OptionItem[] = store.resolvedOptions.flatMap((option) => {
+    if (option.value == null) {
+      return [];
+    }
+    return [
+      {
+        token: option.token,
+        label: <ValueDisplay type={node.type} value={option.value} />,
+        disabled: option.disabled,
+      },
+    ];
+  });
   const clearHandler =
     answer.value != null && !node.readOnly
       ? () => answer.setValueByUser(null)
@@ -97,7 +98,7 @@ const OptionsRow = observer(function OptionsRow<T extends AnswerType>({
       disabled={node.readOnly}
       isLoading={isLoading}
       onClear={clearHandler}
-      clearLabel="Clear"
+      clearLabel={strings.selection.clear}
     />
   );
 });
@@ -138,7 +139,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
           }}
           disabled={node.readOnly}
         >
-          Back to options
+          {strings.selection.backToOptions}
         </OpenChoiceBackButton>
       </>
     );
@@ -148,20 +149,22 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
     answer.value != null && !node.readOnly
       ? () => answer.setValueByUser(null)
       : undefined;
-  const options = store.resolvedOptions.map((option) => ({
-    token: option.token,
-    label:
-      option.value == null ? (
-        UNANSWERED_LABEL
-      ) : (
-        <ValueDisplay type={node.type} value={option.value} />
-      ),
-    disabled: option.disabled,
-  }));
+  const options: OptionItem[] = store.resolvedOptions.flatMap((option) => {
+    if (option.value == null) {
+      return [];
+    }
+    return [
+      {
+        token: option.token,
+        label: <ValueDisplay type={node.type} value={option.value} />,
+        disabled: option.disabled,
+      },
+    ];
+  });
   if (store.allowCustom) {
     options.push({
       token: store.specifyOtherToken,
-      label: SPECIFY_OTHER_LABEL,
+      label: strings.selection.specifyOther,
       disabled: !store.canAddSelection,
     });
   }
@@ -188,7 +191,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
       disabled={node.readOnly}
       isLoading={isLoading}
       onClear={clearHandler}
-      clearLabel="Clear"
+      clearLabel={strings.selection.clear}
     />
   );
 });

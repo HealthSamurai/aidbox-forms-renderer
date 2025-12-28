@@ -1,10 +1,12 @@
 import type { Attachment } from "fhir/r5";
 import type { FileInputProps as ThemeFileInputProps } from "@aidbox-forms/theme";
 import {
+  formatString,
   prepareAttachmentFromFile,
   pruneAttachment,
 } from "../../../../../utils.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
+import { strings } from "../../../../../strings.ts";
 
 export type AttachmentInputProps = {
   value: Attachment | null;
@@ -42,7 +44,7 @@ export function AttachmentInput({
       : undefined;
 
   const displayLabel =
-    attachment.title ?? attachment.url ?? "Attachment selected";
+    attachment.title ?? attachment.url ?? strings.inputs.attachmentSelected;
 
   const inputIdentifier = `${id ?? "attachment"}-file`;
 
@@ -53,7 +55,13 @@ export function AttachmentInput({
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}
       filename={displayLabel}
-      sizeLabel={sizeKb !== undefined ? `${sizeKb} KB` : undefined}
+      sizeLabel={
+        sizeKb !== undefined
+          ? formatString(strings.file.sizeLabelKb, {
+              sizeKb,
+            })
+          : undefined
+      }
       value={value as ThemeAttachment}
       onFileSelect={(file) => {
         void handleFileSelect(file);

@@ -3,6 +3,7 @@ import type { GroupWrapperControlProps } from "../../../../types.ts";
 import { Node } from "../../../form/node.tsx";
 import { GroupWrapperScaffold } from "../group-wrapper-scaffold.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
+import { strings } from "../../../../strings.ts";
 
 export const GridTableRenderer = observer(function GridTableRenderer({
   wrapper,
@@ -22,7 +23,7 @@ export const GridTableRenderer = observer(function GridTableRenderer({
               onClick={() => wrapper.removeNode(row.node)}
               disabled={!wrapper.canRemove}
             >
-              Remove section
+              {strings.group.removeSection}
             </GroupRemoveButton>
           ),
         };
@@ -30,7 +31,11 @@ export const GridTableRenderer = observer(function GridTableRenderer({
 
       return {
         token: cell.token,
-        content: cell.question ? <Node node={cell.question} /> : "—",
+        content: cell.question ? (
+          <Node node={cell.question} />
+        ) : (
+          strings.placeholders.emptyCell
+        ),
       };
     }),
   }));
@@ -40,8 +45,8 @@ export const GridTableRenderer = observer(function GridTableRenderer({
       {rows.length === 0 ? (
         <GridTable
           columns={gridColumns}
-          rows={[{ token: "empty", label: "Node", cells: [] }]}
-          empty={<EmptyState>No nodes yet.</EmptyState>}
+          rows={[]}
+          empty={<EmptyState>{strings.group.noNodesYet}</EmptyState>}
         />
       ) : (
         <GridTable columns={gridColumns} rows={rows} />

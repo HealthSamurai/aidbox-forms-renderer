@@ -1,5 +1,6 @@
 import type { IAnswerInstance } from "../../../../../types.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
+import { strings } from "../../../../../strings.ts";
 
 export type QuantityInputProps = {
   answer: IAnswerInstance<"quantity">;
@@ -52,7 +53,7 @@ export function QuantityInput({
           value={unitValue}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
           disabled={disabled}
-          placeholder="unit"
+          placeholder={strings.inputs.quantityUnitPlaceholder}
         />
       ) : (
         <SelectInput

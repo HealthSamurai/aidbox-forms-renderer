@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { IGroupNode, IGroupWrapper } from "../../../types.ts";
 import { NodeErrors } from "../../form/node-errors.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
+import { strings } from "../../../strings.ts";
 
 export const GroupWrapperScaffoldItem = observer(
   function GroupWrapperScaffoldItem({
@@ -26,7 +27,7 @@ export const GroupWrapperScaffoldItem = observer(
               onClick={() => wrapper.removeNode(node)}
               disabled={!wrapper.canRemove}
             >
-              Remove section
+              {strings.group.removeSection}
             </GroupRemoveButton>
           ) : null
         }

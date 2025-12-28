@@ -9,6 +9,7 @@ import {
   countDecimalPlaces,
   estimateAttachmentSize,
   EXT,
+  formatString,
   extractExtensionValue,
   findExtensions,
   isQuantity,
@@ -25,6 +26,7 @@ import type {
   IQuestionNode,
   ValueBounds,
 } from "../../types.ts";
+import { strings } from "../../strings.ts";
 
 export class AnswerValidator<
   T extends AnswerType = AnswerType,
@@ -78,7 +80,7 @@ export class AnswerValidator<
           stringIssues.push(
             makeIssue(
               "invalid",
-              `Response must be at least ${minLength} characters long.`,
+              formatString(strings.validation.answer.minLength, { minLength }),
             ),
           );
         }
@@ -87,7 +89,7 @@ export class AnswerValidator<
           stringIssues.push(
             makeIssue(
               "invalid",
-              `Response exceeds the maximum length of ${maxLength}.`,
+              formatString(strings.validation.answer.maxLength, { maxLength }),
             ),
           );
         }
@@ -199,7 +201,9 @@ export class AnswerValidator<
               quantityIssues.push(
                 makeIssue(
                   "invalid",
-                  `Quantity must be greater than or equal to ${formattedMin}.`,
+                  formatString(strings.validation.answer.quantityMin, {
+                    formatted: formattedMin,
+                  }),
                 ),
               );
             }
@@ -212,7 +216,9 @@ export class AnswerValidator<
               quantityIssues.push(
                 makeIssue(
                   "invalid",
-                  `Quantity must be less than or equal to ${formattedMax}.`,
+                  formatString(strings.validation.answer.quantityMax, {
+                    formatted: formattedMax,
+                  }),
                 ),
               );
             }
@@ -239,14 +245,20 @@ export class AnswerValidator<
               attachmentIssues.push(
                 makeIssue(
                   "invalid",
-                  `Attachment must declare a content type from the allowed list (${normalizedAllowed.join(", ")}).`,
+                  formatString(
+                    strings.validation.answer.attachmentTypeRequired,
+                    { allowed: normalizedAllowed.join(", ") },
+                  ),
                 ),
               );
             } else if (!normalizedAllowed.includes(actualType)) {
               attachmentIssues.push(
                 makeIssue(
                   "invalid",
-                  `Attachment must be one of the allowed content types (${normalizedAllowed.join(", ")}).`,
+                  formatString(
+                    strings.validation.answer.attachmentTypeAllowed,
+                    { allowed: normalizedAllowed.join(", ") },
+                  ),
                 ),
               );
             }
@@ -259,7 +271,9 @@ export class AnswerValidator<
               attachmentIssues.push(
                 makeIssue(
                   "invalid",
-                  `Attachment must not exceed ${maxAttachmentSize} bytes.`,
+                  formatString(strings.validation.answer.attachmentSizeMax, {
+                    maxSize: maxAttachmentSize,
+                  }),
                 ),
               );
             }
@@ -297,7 +311,9 @@ export class AnswerValidator<
       issues.push(
         makeIssue(
           "invalid",
-          `Value must be greater than or equal to ${formattedMin}.`,
+          formatString(strings.validation.answer.valueMin, {
+            formatted: formattedMin,
+          }),
         ),
       );
     }
@@ -307,7 +323,9 @@ export class AnswerValidator<
       issues.push(
         makeIssue(
           "invalid",
-          `Value must be less than or equal to ${formattedMax}.`,
+          formatString(strings.validation.answer.valueMax, {
+            formatted: formattedMax,
+          }),
         ),
       );
     }
@@ -318,7 +336,9 @@ export class AnswerValidator<
         issues.push(
           makeIssue(
             "invalid",
-            `Value must not exceed ${maxDecimalPlaces} decimal place(s).`,
+            formatString(strings.validation.answer.valueDecimalPlaces, {
+              maxPlaces: maxDecimalPlaces,
+            }),
           ),
         );
       }
@@ -399,14 +419,16 @@ export class AnswerValidator<
     const issues: OperationOutcomeIssue[] = [];
 
     if (value.trim().length === 0) {
-      issues.push(makeIssue("invalid", "Response must not be blank."));
+      issues.push(makeIssue("invalid", strings.validation.answer.blank));
     }
 
     if (constraints.minLength != null && value.length < constraints.minLength) {
       issues.push(
         makeIssue(
           "invalid",
-          `Response must be at least ${constraints.minLength} characters to capture the required precision.`,
+          formatString(strings.validation.answer.minPrecision, {
+            minLength: constraints.minLength,
+          }),
         ),
       );
     }
@@ -415,7 +437,9 @@ export class AnswerValidator<
       issues.push(
         makeIssue(
           "invalid",
-          `Response must not exceed ${constraints.maxLength} characters.`,
+          formatString(strings.validation.answer.maxPrecision, {
+            maxLength: constraints.maxLength,
+          }),
         ),
       );
     }
@@ -431,7 +455,9 @@ export class AnswerValidator<
         issues.push(
           makeIssue(
             "invalid",
-            `Value must not be earlier than ${formattedMin}.`,
+            formatString(strings.validation.answer.valueNotEarlier, {
+              formatted: formattedMin,
+            }),
           ),
         );
       }
@@ -446,7 +472,12 @@ export class AnswerValidator<
       if (comparison != null && comparison > 0) {
         const formattedMax = stringifyValue(type, constraints.comparableMax);
         issues.push(
-          makeIssue("invalid", `Value must not be later than ${formattedMax}.`),
+          makeIssue(
+            "invalid",
+            formatString(strings.validation.answer.valueNotLater, {
+              formatted: formattedMax,
+            }),
+          ),
         );
       }
     }

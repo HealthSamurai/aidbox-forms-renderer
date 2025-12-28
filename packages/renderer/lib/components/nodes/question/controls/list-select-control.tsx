@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import {
   AnswerType,
   IQuestionNode,
+  OptionItem,
   ValueControlProps,
 } from "../../../../types.ts";
 import { AnswerList } from "../answers/answer-list.tsx";
@@ -12,9 +13,7 @@ import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
-
-const SPECIFY_OTHER_LABEL = "Specify other";
-const UNANSWERED_LABEL = "Unanswered";
+import { strings } from "../../../../strings.ts";
 
 export type ListSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -36,26 +35,26 @@ export const ListSelectControl = observer(function ListSelectControl<
 
   if (store.useCheckboxes) {
     const state = store.checkboxState;
-    const uiOptions = state.options.map((option) => {
+    const uiOptions: OptionItem[] = state.options.flatMap((option) => {
+      if (option.value == null) {
+        return [];
+      }
       const isSelected = state.selectedTokens.has(option.token);
-      return {
-        token: option.token,
-        label:
-          option.value == null ? (
-            UNANSWERED_LABEL
-          ) : (
-            <ValueDisplay type={node.type} value={option.value} />
-          ),
-        disabled:
-          option.disabled ||
-          (!isSelected && !state.canAddSelection) ||
-          (isSelected && !node.canRemove),
-      };
+      return [
+        {
+          token: option.token,
+          label: <ValueDisplay type={node.type} value={option.value} />,
+          disabled:
+            option.disabled ||
+            (!isSelected && !state.canAddSelection) ||
+            (isSelected && !node.canRemove),
+        },
+      ];
     });
     if (store.allowCustom) {
       uiOptions.push({
         token: state.specifyOtherToken,
-        label: SPECIFY_OTHER_LABEL,
+        label: strings.selection.specifyOther,
         disabled:
           (!state.isCustomActive && !state.canAddSelection) ||
           (state.isCustomActive && !node.canRemove),
@@ -70,7 +69,7 @@ export const ListSelectControl = observer(function ListSelectControl<
                 onClick={addCustomAnswer}
                 disabled={!node.canAdd}
               >
-                Add another
+                {strings.selection.addAnother}
               </AnswerAddButton>
             ) : undefined
           }
@@ -144,20 +143,22 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   const selectValue = isCustomActive
     ? store.specifyOtherToken
     : selectToken || legacyOption?.token || "";
-  const radioOptions = store.resolvedOptions.map((option) => ({
-    token: option.token,
-    label:
-      option.value == null ? (
-        UNANSWERED_LABEL
-      ) : (
-        <ValueDisplay type={node.type} value={option.value} />
-      ),
-    disabled: option.disabled,
-  }));
+  const radioOptions: OptionItem[] = store.resolvedOptions.flatMap((option) => {
+    if (option.value == null) {
+      return [];
+    }
+    return [
+      {
+        token: option.token,
+        label: <ValueDisplay type={node.type} value={option.value} />,
+        disabled: option.disabled,
+      },
+    ];
+  });
   if (store.allowCustom) {
     radioOptions.push({
       token: store.specifyOtherToken,
-      label: SPECIFY_OTHER_LABEL,
+      label: strings.selection.specifyOther,
       disabled: !store.canAddSelection,
     });
   }

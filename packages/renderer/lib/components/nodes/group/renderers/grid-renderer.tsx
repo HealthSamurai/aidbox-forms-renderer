@@ -4,6 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { Node } from "../../../form/node.tsx";
 import { JSX } from "react";
+import { strings } from "../../../../strings.ts";
 
 export const GridRenderer = observer(function GridRenderer({
   node,
@@ -24,7 +25,11 @@ export const GridRenderer = observer(function GridRenderer({
           label: row.label,
           cells: row.cells.map((cell) => ({
             token: cell.token,
-            content: cell.question ? <Node node={cell.question} /> : "—",
+            content: cell.question ? (
+              <Node node={cell.question} />
+            ) : (
+              strings.placeholders.emptyCell
+            ),
           })),
         }))}
       />

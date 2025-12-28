@@ -24,13 +24,14 @@ import {
 } from "../../../utils.ts";
 import type { IPromiseBasedObservable } from "mobx-utils";
 import { fromPromise } from "mobx-utils";
+import { strings } from "../../../strings.ts";
 
 function getOptionsErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
   if (error == null) {
-    return "Unknown error";
+    return strings.errors.unknown;
   }
   return String(error);
 }

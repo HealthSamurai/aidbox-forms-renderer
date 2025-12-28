@@ -1,4 +1,5 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
+import { strings } from "../../../../../strings.ts";
 
 export type BooleanInputProps = {
   value: boolean | null;
@@ -10,9 +11,8 @@ export type BooleanInputProps = {
 };
 
 const BOOLEAN_OPTIONS = [
-  { token: "yes", label: "Yes" },
-  { token: "no", label: "No" },
-  { token: "unanswered", label: "Unanswered" },
+  { token: "yes", label: strings.boolean.yes },
+  { token: "no", label: strings.boolean.no },
 ];
 
 export function BooleanInput({
@@ -24,8 +24,7 @@ export function BooleanInput({
   disabled,
 }: BooleanInputProps) {
   const { RadioButtonList } = useTheme();
-  const selectedToken =
-    value === true ? "yes" : value === false ? "no" : "unanswered";
+  const selectedToken = value === true ? "yes" : value === false ? "no" : "";
   const fallbackInputId = id ?? "boolean";
   const fallbackAriaLabelledBy = ariaLabelledBy ?? fallbackInputId;
 

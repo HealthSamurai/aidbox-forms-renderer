@@ -1,8 +1,9 @@
 import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue } from "fhir/r5";
 
-import { groupHasResponses, makeIssue } from "../../utils.ts";
+import { formatString, groupHasResponses, makeIssue } from "../../utils.ts";
 import type { INodeValidator, IGroupWrapper } from "../../types.ts";
+import { strings } from "../../strings.ts";
 
 export class GroupWrapperValidator implements INodeValidator {
   private readonly wrapper: IGroupWrapper;
@@ -35,7 +36,9 @@ export class GroupWrapperValidator implements INodeValidator {
       issues.push(
         makeIssue(
           "required",
-          `At least ${wrapper.minOccurs} occurrence(s) required.`,
+          formatString(strings.validation.groupWrapper.minOccurs, {
+            minOccurs: wrapper.minOccurs,
+          }),
         ),
       );
     }
@@ -44,7 +47,9 @@ export class GroupWrapperValidator implements INodeValidator {
       issues.push(
         makeIssue(
           "structure",
-          `No more than ${wrapper.maxOccurs} occurrence(s) permitted.`,
+          formatString(strings.validation.groupWrapper.maxOccurs, {
+            maxOccurs: wrapper.maxOccurs,
+          }),
         ),
       );
     }

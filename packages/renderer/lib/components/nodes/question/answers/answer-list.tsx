@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerScaffold, AnswerRenderCallback } from "./answer-scaffold.tsx";
+import { strings } from "../../../../strings.ts";
 
 export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   node,
@@ -17,7 +18,7 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
 
   const toolbar = node.repeats ? (
     <AnswerAddButton onClick={addAnswer} disabled={!node.canAdd}>
-      Add another
+      {strings.selection.addAnother}
     </AnswerAddButton>
   ) : undefined;
 

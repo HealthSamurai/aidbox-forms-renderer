@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { IPresentableNode } from "../../types.ts";
 import { getNodeLegalId } from "../../utils.ts";
 import { useTheme } from "../../ui/theme.tsx";
+import { strings } from "../../strings.ts";
 
 export const NodeLegal = observer(function NodeLegal({
   node,
@@ -17,7 +18,7 @@ export const NodeLegal = observer(function NodeLegal({
   const legalId = getNodeLegalId(node);
 
   return (
-    <ThemedNodeLegal id={legalId} ariaLabel="Legal information">
+    <ThemedNodeLegal id={legalId} ariaLabel={strings.aria.legal}>
       {node.legal}
     </ThemedNodeLegal>
   );

@@ -5,6 +5,7 @@ import { Node } from "../../../form/node.tsx";
 import { NodeHeader } from "../../../form/node-header.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
+import { strings } from "../../../../strings.ts";
 
 export const TabContainerRenderer = observer(function TabContainerRenderer({
   node,
@@ -30,7 +31,7 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
       value={activeIndex}
       onChange={setActiveTab}
       errors={<NodeErrors node={node} />}
-      empty="No tab content"
+      empty={strings.tab.empty}
       linkId={node.linkId}
     />
   );

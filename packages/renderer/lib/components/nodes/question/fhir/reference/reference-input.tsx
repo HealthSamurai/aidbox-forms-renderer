@@ -1,5 +1,6 @@
 import type { Reference } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
+import { strings } from "../../../../../strings.ts";
 
 export type ReferenceInputProps = {
   value: Reference | null;
@@ -42,7 +43,7 @@ export function ReferenceInput({
         value={reference.reference ?? ""}
         onChange={(next) => setField("reference", next)}
         disabled={disabled}
-        placeholder={placeholder ?? "Resource/type/id"}
+        placeholder={placeholder ?? strings.inputs.referencePlaceholder}
       />
       <TextInput
         id={displayId}
@@ -51,7 +52,7 @@ export function ReferenceInput({
         value={reference.display ?? ""}
         onChange={(next) => setField("display", next)}
         disabled={disabled}
-        placeholder="Display label"
+        placeholder={strings.inputs.referenceDisplayPlaceholder}
       />
     </InputGroup>
   );

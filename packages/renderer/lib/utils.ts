@@ -34,6 +34,22 @@ export function sanitizeForId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
+export type ExtractPlaceholders<T extends string> =
+  T extends `${string}{${infer Key}}${infer Rest}`
+    ? Key | ExtractPlaceholders<Rest>
+    : never;
+
+export function formatString<T extends string>(
+  template: T,
+  values: Record<ExtractPlaceholders<T>, string | number>,
+): string {
+  const mapped = values as Record<string, string | number>;
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => {
+    const value = mapped[key];
+    return value === undefined || value === null ? "" : String(value);
+  });
+}
+
 export function getNodeLabelId(node: IPresentableNode): string {
   return sanitizeForId(`af-${node.token}-label`);
 }
@@ -1746,56 +1762,55 @@ function normalizeValueKey<T extends DataType>(
     return null;
   }
 
-  switch (type) {
-    case "dateTime": {
-      if (typeof value !== "string") {
-        return value;
-      }
-      const parsed = parseFhirDateTime(value);
-      if (!parsed) {
-        return value;
-      }
-      if (parsed.epochMillis !== undefined) {
-        return {
-          epochMillis: parsed.epochMillis,
-          precision: parsed.precision,
-          hasTimezone: parsed.hasTimezone,
-        };
-      }
+  if (type === "dateTime") {
+    if (typeof value !== "string") {
+      return value;
+    }
+    const parsed = parseFhirDateTime(value);
+    if (!parsed) {
+      return value;
+    }
+    if (parsed.epochMillis !== undefined) {
       return {
-        value,
+        epochMillis: parsed.epochMillis,
         precision: parsed.precision,
         hasTimezone: parsed.hasTimezone,
       };
     }
-    case "time": {
-      if (typeof value !== "string") {
-        return value;
-      }
-      const parsed = parseFhirTime(value);
-      return parsed
-        ? { millis: parsed.millis, precision: parsed.precision }
-        : value;
-    }
-    case "date":
-    case "string":
-    case "uri":
-    case "url":
-    case "boolean":
-    case "decimal":
-    case "integer":
-      return value;
-    case "Coding":
-      return isCoding(value) ? normalizeCodingKey(value) : value;
-    case "Quantity":
-      return isQuantity(value) ? normalizeQuantityKey(value) : value;
-    case "Reference":
-      return isReference(value) ? normalizeReferenceKey(value) : value;
-    case "Attachment":
-      return isAttachment(value) ? normalizeAttachmentKey(value) : value;
-    default:
-      return value;
+    return {
+      value,
+      precision: parsed.precision,
+      hasTimezone: parsed.hasTimezone,
+    };
   }
+
+  if (type === "time") {
+    if (typeof value !== "string") {
+      return value;
+    }
+    const parsed = parseFhirTime(value);
+    return parsed
+      ? { millis: parsed.millis, precision: parsed.precision }
+      : value;
+  }
+
+  if (type === "Coding") {
+    return isCoding(value) ? normalizeCodingKey(value) : value;
+  }
+
+  if (type === "Quantity") {
+    return isQuantity(value) ? normalizeQuantityKey(value) : value;
+  }
+
+  if (type === "Reference") {
+    return isReference(value) ? normalizeReferenceKey(value) : value;
+  }
+
+  if (type === "Attachment") {
+    return isAttachment(value) ? normalizeAttachmentKey(value) : value;
+  }
+
+  return value;
 }
 
 export function tokenify<T extends DataType>(

@@ -35,11 +35,6 @@ const BOOLEAN_FALLBACK_OPTIONS: Array<ResolvedAnswerOption<"boolean">> = [
     value: false,
     disabled: false,
   },
-  {
-    token: "unanswered",
-    value: null,
-    disabled: false,
-  },
 ];
 
 export class SelectStore<
@@ -235,12 +230,6 @@ export class SelectStore<
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ): string {
     if (value == null) {
-      if (this.isBooleanFallback) {
-        const unanswered = this.resolvedOptions.find(
-          (entry) => entry.value == null,
-        );
-        return unanswered?.token ?? "";
-      }
       return "";
     }
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];

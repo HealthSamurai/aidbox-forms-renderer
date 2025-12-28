@@ -1,8 +1,9 @@
 import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue } from "fhir/r5";
 
-import { answerHasContent, makeIssue } from "../../utils.ts";
+import { answerHasContent, formatString, makeIssue } from "../../utils.ts";
 import type { INodeValidator, IQuestionNode } from "../../types.ts";
+import { strings } from "../../strings.ts";
 
 export class QuestionValidator implements INodeValidator {
   private readonly question: IQuestionNode;
@@ -39,8 +40,10 @@ export class QuestionValidator implements INodeValidator {
         makeIssue(
           "required",
           this.question.minOccurs === 1
-            ? "At least one  non-empty answer is required."
-            : `At least ${this.question.minOccurs} non-empty answers are required.`,
+            ? strings.validation.question.minOccursSingle
+            : formatString(strings.validation.question.minOccursMultiple, {
+                minOccurs: this.question.minOccurs,
+              }),
         ),
       );
     }
@@ -52,7 +55,9 @@ export class QuestionValidator implements INodeValidator {
       issues.push(
         makeIssue(
           "structure",
-          `No more than ${this.question.maxOccurs} answers are permitted.`,
+          formatString(strings.validation.question.maxOccurs, {
+            maxOccurs: this.question.maxOccurs,
+          }),
         ),
       );
     }

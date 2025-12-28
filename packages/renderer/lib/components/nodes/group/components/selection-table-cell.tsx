@@ -8,6 +8,7 @@ import type {
   OptionAxisItem,
   QuestionAxisItem,
 } from "../../../../types.ts";
+import { strings } from "../../../../strings.ts";
 
 type SelectionTableCellProps = {
   store: ITableStore;
@@ -31,7 +32,7 @@ export const SelectionTableCell = observer(function SelectionTableCell({
   const cell = store.getCellState(questionAxis.token, option.token);
 
   if (!cell.hasOption) {
-    return "—";
+    return strings.placeholders.emptyCell;
   }
 
   const ariaLabelledBy = `${questionAxis.ariaLabelledBy} ${optionLabelId}`;

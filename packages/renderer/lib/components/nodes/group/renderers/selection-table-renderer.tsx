@@ -15,6 +15,7 @@ import { ValueDisplay } from "../../question/fhir/value-display.tsx";
 import { sanitizeForId } from "../../../../utils.ts";
 import { SelectionTableCell } from "../components/selection-table-cell.tsx";
 import { AnswerErrors } from "../../question/validation/answer-errors.tsx";
+import { strings } from "../../../../strings.ts";
 
 export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   node,
@@ -35,13 +36,13 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   let content: JSX.Element;
   if (store.questions.length === 0) {
     const message = isHorizontal
-      ? "No choice questions available for horizontal table."
-      : "No choice questions available.";
+      ? strings.table.noChoiceQuestionsHorizontal
+      : strings.table.noChoiceQuestions;
     content = <EmptyState>{message}</EmptyState>;
   } else if (optionAxis.length === 0) {
     const message = isHorizontal
-      ? "No answer options available for horizontal table layout."
-      : "No answer options available for table layout.";
+      ? strings.table.noAnswerOptionsHorizontal
+      : strings.table.noAnswerOptions;
     content = <EmptyState>{message}</EmptyState>;
   } else {
     const renderQuestionHeader = (entry: QuestionAxisItem) => {

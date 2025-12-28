@@ -8,6 +8,7 @@ import type {
   IQuestionNode,
 } from "../../../types.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
+import { strings } from "../../../strings.ts";
 
 export class GridTableStore implements IGridTableStore {
   private readonly wrapper: IGroupWrapper;
@@ -56,9 +57,15 @@ export class GridTableStore implements IGridTableStore {
 
   @computed
   get gridColumns(): GridTableColumnState[] {
-    const columns = [{ token: "node", label: "Node" }, ...this.columns];
+    const columns = [
+      { token: "node", label: strings.gridTable.headerNode },
+      ...this.columns,
+    ];
     if (this.wrapper.canRemove) {
-      columns.push({ token: "actions", label: "Actions" });
+      columns.push({
+        token: "actions",
+        label: strings.gridTable.headerActions,
+      });
     }
     return columns;
   }
@@ -87,7 +94,7 @@ export class GridTableStore implements IGridTableStore {
       return {
         token: node.token,
         node,
-        label: `${this.wrapper.template.text ?? "Entry"} #${index + 1}`,
+        label: `${this.wrapper.template.text ?? strings.gridTable.entryFallback} #${index + 1}`,
         cells,
       };
     });

@@ -8,6 +8,7 @@ import type {
 } from "../../../types.ts";
 import { isGroupNode } from "./group-store.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
+import { strings } from "../../../strings.ts";
 
 export class GridStore implements IGridStore {
   private readonly group: IGroupNode;
@@ -63,7 +64,7 @@ export class GridStore implements IGridStore {
       const questionMap = new Map<string, IQuestionNode>(
         questions.map((question) => [question.linkId, question]),
       );
-      const label = row.text ?? row.linkId ?? "Row";
+      const label = row.text ?? row.linkId ?? strings.grid.rowLabelFallback;
 
       return {
         token: row.token,
@@ -79,15 +80,15 @@ export class GridStore implements IGridStore {
   @computed
   get emptyMessage(): string | null {
     if (this.rowGroups.length === 0) {
-      return "No row groups configured for this grid.";
+      return strings.grid.emptyNoRowGroups;
     }
 
     if (this.visibleRows.length === 0) {
-      return "All rows are currently hidden.";
+      return strings.grid.emptyAllHidden;
     }
 
     if (this.columns.length === 0) {
-      return "Grid rows have no questions to render.";
+      return strings.grid.emptyNoQuestions;
     }
 
     return null;

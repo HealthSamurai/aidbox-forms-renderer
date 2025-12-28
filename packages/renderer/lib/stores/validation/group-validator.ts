@@ -3,6 +3,7 @@ import type { OperationOutcomeIssue } from "fhir/r5";
 
 import { makeIssue } from "../../utils.ts";
 import type { IGroupNode, INodeValidator } from "../../types.ts";
+import { strings } from "../../strings.ts";
 
 export class GroupValidator implements INodeValidator {
   private readonly group: IGroupNode;
@@ -33,8 +34,6 @@ export class GroupValidator implements INodeValidator {
       return [];
     }
 
-    return [
-      makeIssue("required", "At least one answer is required in this group."),
-    ];
+    return [makeIssue("required", strings.validation.group.atLeastOneAnswer)];
   }
 }

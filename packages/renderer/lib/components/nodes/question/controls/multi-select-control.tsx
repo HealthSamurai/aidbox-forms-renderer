@@ -3,14 +3,13 @@ import type {
   AnswerType,
   IAnswerInstance,
   IQuestionNode,
+  OptionItem,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
-
-const SPECIFY_OTHER_LABEL = "Specify other";
-const UNANSWERED_LABEL = "Unanswered";
+import { strings } from "../../../../strings.ts";
 
 export type MultiSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -40,7 +39,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
         removeDisabled: !store.canRemoveSelection,
-        removeLabel: "Remove selection",
+        removeLabel: strings.selection.removeSelection,
       },
     ];
   });
@@ -54,7 +53,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
           errors: <AnswerErrors answer={item.answer} />,
           onRemove: () => store.handleRemoveAnswer(item.answer),
           removeDisabled: !store.canRemoveSelection,
-          removeLabel: "Remove custom value",
+          removeLabel: strings.selection.removeCustomValue,
         },
       ];
     }
@@ -67,7 +66,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
         errors: <AnswerErrors answer={item.answer} />,
         onRemove: () => store.handleRemoveAnswer(item.answer),
         removeDisabled: !store.canRemoveSelection,
-        removeLabel: "Remove custom value",
+        removeLabel: strings.selection.removeCustomValue,
       },
     ];
   });
@@ -80,7 +79,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
         onClick={() => store.handleSelectChange(store.specifyOtherToken)}
         disabled={!store.canAddSelection || store.isLoading}
       >
-        Specify other
+        {strings.selection.specifyOther}
       </MultiSelectSpecifyOtherButton>
     ) : null;
 
@@ -89,7 +88,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
       onClick={store.handleClearAll}
       disabled={!store.canRemoveSelection}
     >
-      Clear all
+      {strings.selection.clearAll}
     </MultiSelectClearAllButton>
   ) : null;
 
@@ -108,7 +107,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
 
         return {
           open: true,
-          title: "Specify other",
+          title: strings.dialog.specifyOtherTitle,
           content: (
             <>
               <Control
@@ -126,31 +125,38 @@ export const MultiSelectControl = observer(function MultiSelectControl<
                 onClick={store.cancelCustomDialog}
                 disabled={false}
               >
-                Cancel
+                {strings.dialog.cancel}
               </MultiSelectDialogCancelButton>
               <MultiSelectDialogAddButton
                 onClick={store.confirmCustomDialog}
                 disabled={!dialogState.canConfirm}
               >
-                Add
+                {strings.dialog.add}
               </MultiSelectDialogAddButton>
             </>
           ),
         };
       })()
     : undefined;
-  const options = store.optionsWithSpecifyOther.map((option) => ({
-    token: option.token,
-    label:
-      option.token === store.specifyOtherToken ? (
-        SPECIFY_OTHER_LABEL
-      ) : option.value == null ? (
-        UNANSWERED_LABEL
-      ) : (
-        <ValueDisplay type={node.type} value={option.value} />
-      ),
-    disabled: option.disabled,
-  }));
+  const options: OptionItem[] = [];
+  store.optionsWithSpecifyOther.forEach((option) => {
+    if (option.token === store.specifyOtherToken) {
+      options.push({
+        token: option.token,
+        label: strings.selection.specifyOther,
+        disabled: option.disabled,
+      });
+      return;
+    }
+    if (option.value == null) {
+      return;
+    }
+    options.push({
+      token: option.token,
+      label: <ValueDisplay type={node.type} value={option.value} />,
+      disabled: option.disabled,
+    });
+  });
 
   return (
     <MultiSelectInput
@@ -165,7 +171,7 @@ export const MultiSelectControl = observer(function MultiSelectControl<
       chips={chips}
       actions={actions}
       {...(dialog ? { dialog } : {})}
-      placeholder="Select an option"
+      placeholder={strings.selection.selectPlaceholder}
     />
   );
 });

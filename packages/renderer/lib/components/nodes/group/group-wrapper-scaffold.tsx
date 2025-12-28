@@ -4,6 +4,7 @@ import type { IGroupWrapper } from "../../../types.ts";
 import { NodeHeader } from "../../form/node-header.tsx";
 import { GroupWrapperScaffoldItem } from "./group-wrapper-scaffold-item.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
+import { strings } from "../../../strings.ts";
 
 export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper,
@@ -24,7 +25,7 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
           onClick={() => wrapper.addNode()}
           disabled={!wrapper.canAdd}
         >
-          Add section
+          {strings.group.addSection}
         </GroupAddButton>
       }
     >
