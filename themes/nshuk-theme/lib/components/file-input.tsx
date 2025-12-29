@@ -6,6 +6,7 @@ export function FileInput({
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
+  accept,
   filename,
   sizeLabel,
   onFileSelect,
@@ -41,6 +42,7 @@ export function FileInput({
         type="file"
         style={{ display: "none" }}
         onChange={handleFileChange}
+        accept={accept}
       />
       {hasAttachment ? (
         <div

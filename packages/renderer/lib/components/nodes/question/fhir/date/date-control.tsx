@@ -7,6 +7,10 @@ export function DateControl({
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"date">) {
+  const bounds = answer.bounds;
+  const min = typeof bounds.min === "string" ? bounds.min : undefined;
+  const max = typeof bounds.max === "string" ? bounds.max : undefined;
+
   return (
     <DateInput
       id={id}
@@ -16,6 +20,8 @@ export function DateControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      min={min}
+      max={max}
     />
   );
 }

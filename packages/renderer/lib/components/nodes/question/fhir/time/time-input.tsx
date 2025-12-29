@@ -8,6 +8,8 @@ export type TimeInputProps = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  min?: string | undefined;
+  max?: string | undefined;
 };
 
 export function TimeInput({
@@ -18,6 +20,8 @@ export function TimeInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  min,
+  max,
 }: TimeInputProps) {
   const { TimeInput: ThemedTimeInput } = useTheme();
   return (
@@ -29,6 +33,8 @@ export function TimeInput({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      min={min}
+      max={max}
     />
   );
 }

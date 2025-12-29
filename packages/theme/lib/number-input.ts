@@ -7,6 +7,8 @@ export type NumberInputProps = {
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
   step?: number | "any";
+  min?: number | undefined;
+  max?: number | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   unitLabel?: string | undefined;

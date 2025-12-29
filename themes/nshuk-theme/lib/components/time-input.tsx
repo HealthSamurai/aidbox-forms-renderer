@@ -8,6 +8,8 @@ export function TimeInput({
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
+  min,
+  max,
 }: TimeInputProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
@@ -26,6 +28,8 @@ export function TimeInput({
         placeholder={placeholder}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy}
+        min={min}
+        max={max}
       />
     </div>
   );

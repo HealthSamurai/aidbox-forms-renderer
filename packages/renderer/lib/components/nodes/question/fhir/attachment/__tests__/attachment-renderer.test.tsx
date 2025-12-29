@@ -6,6 +6,7 @@ import type { Questionnaire } from "fhir/r5";
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
 import { AttachmentRenderer } from "../attachment-renderer.tsx";
+import { EXT } from "../../../../../../utils.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 
 function getAttachmentQuestion(form: FormStore, linkId: string) {
@@ -54,6 +55,49 @@ describe("attachment-renderer", () => {
       await user.click(clearButton);
 
       expect(question.answers[0]?.value).toBeNull();
+    });
+  });
+
+  describe("constraints", () => {
+    it("applies mimeType extension to file input accept attribute", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "upload",
+            text: "Upload document",
+            type: "attachment",
+            extension: [
+              {
+                url: EXT.MIME_TYPE,
+                valueCode: "image/png",
+              },
+              {
+                url: EXT.MIME_TYPE,
+                valueCode: "application/pdf",
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getAttachmentQuestion(form, "upload");
+
+      const { container } = render(<AttachmentRenderer node={question} />);
+
+      const input = container.querySelector(
+        "input[type='file']",
+      ) as HTMLInputElement | null;
+      expect(input).not.toBeNull();
+      if (!input) {
+        throw new Error("Missing file input");
+      }
+
+      const accept = input.getAttribute("accept") ?? "";
+      expect(accept).toContain("image/png");
+      expect(accept).toContain("application/pdf");
     });
   });
 });

@@ -10,6 +10,8 @@ export type TextInputProps = {
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 };
 
 export function TextInput({
@@ -21,6 +23,8 @@ export function TextInput({
   placeholder,
   disabled,
   inputMode,
+  minLength,
+  maxLength,
 }: TextInputProps) {
   const { TextArea: ThemedTextArea } = useTheme();
   return (
@@ -33,6 +37,8 @@ export function TextInput({
       onChange={onChange}
       disabled={disabled}
       inputMode={inputMode}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

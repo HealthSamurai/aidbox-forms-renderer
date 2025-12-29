@@ -7,6 +7,10 @@ export function DateTimeControl({
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"dateTime">) {
+  const bounds = answer.bounds;
+  const min = typeof bounds.min === "string" ? bounds.min : undefined;
+  const max = typeof bounds.max === "string" ? bounds.max : undefined;
+
   return (
     <DateTimeInput
       id={id}
@@ -16,6 +20,8 @@ export function DateTimeControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      min={min}
+      max={max}
     />
   );
 }

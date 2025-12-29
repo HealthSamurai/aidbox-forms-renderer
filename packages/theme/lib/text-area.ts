@@ -9,6 +9,8 @@ export type TextAreaProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 };
 
 export type TextAreaComponent = ComponentType<TextAreaProps>;

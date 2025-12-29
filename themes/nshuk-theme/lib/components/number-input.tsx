@@ -8,6 +8,8 @@ export function NumberInput({
   disabled,
   placeholder,
   step,
+  min,
+  max,
   ariaLabelledBy,
   ariaDescribedBy,
   unitLabel,
@@ -31,6 +33,8 @@ export function NumberInput({
             disabled={disabled}
             placeholder={placeholder}
             step={step}
+            min={min}
+            max={max}
             aria-labelledby={ariaLabelledBy}
             aria-describedby={
               [describedBy, unitLabel ? `${id}-unit` : undefined]
@@ -55,6 +59,8 @@ export function NumberInput({
           disabled={disabled}
           placeholder={placeholder}
           step={step}
+          min={min}
+          max={max}
           aria-labelledby={ariaLabelledBy}
           aria-describedby={describedBy}
         />

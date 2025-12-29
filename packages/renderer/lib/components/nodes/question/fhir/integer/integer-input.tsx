@@ -9,6 +9,8 @@ export type IntegerInputProps = {
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   unitLabel?: string | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
 };
 
 export function IntegerInput({
@@ -20,6 +22,8 @@ export function IntegerInput({
   placeholder,
   disabled,
   unitLabel,
+  min,
+  max,
 }: IntegerInputProps) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
@@ -33,6 +37,8 @@ export function IntegerInput({
       disabled={disabled}
       step={1}
       unitLabel={unitLabel}
+      min={min}
+      max={max}
     />
   );
 }

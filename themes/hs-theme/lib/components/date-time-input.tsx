@@ -8,6 +8,8 @@ export function DateTimeInput({
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
+  min,
+  max,
 }: {
   id?: string | undefined;
   value: string;
@@ -16,6 +18,8 @@ export function DateTimeInput({
   placeholder?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
+  min?: string | undefined;
+  max?: string | undefined;
 }) {
   return (
     <input
@@ -28,6 +32,8 @@ export function DateTimeInput({
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      min={min}
+      max={max}
     />
   );
 }

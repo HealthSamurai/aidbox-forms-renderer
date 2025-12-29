@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
@@ -78,9 +83,8 @@ describe("coding-renderer", () => {
         strings.inputs.codingCodePlaceholder,
       );
 
-      const user = userEvent.setup();
-      await user.type(systemInput, "http://loinc.org");
-      await user.type(codeInput, "1234-5");
+      fireEvent.change(systemInput, { target: { value: "http://loinc.org" } });
+      fireEvent.change(codeInput, { target: { value: "1234-5" } });
 
       await waitFor(() =>
         expect(question.answers[0]?.value).toEqual({
@@ -89,8 +93,8 @@ describe("coding-renderer", () => {
         }),
       );
 
-      await user.clear(systemInput);
-      await user.clear(codeInput);
+      fireEvent.change(systemInput, { target: { value: "" } });
+      fireEvent.change(codeInput, { target: { value: "" } });
 
       await waitFor(() => expect(question.answers[0]?.value).toBeNull());
     });

@@ -15,6 +15,7 @@ export type FileInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
+  accept?: string | undefined;
   sizeLabel?: string | undefined;
   filename?: string | undefined;
   onFileSelect?: ((file: File) => void) | undefined;

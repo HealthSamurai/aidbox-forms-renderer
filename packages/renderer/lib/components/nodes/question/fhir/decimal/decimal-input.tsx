@@ -9,6 +9,9 @@ export type DecimalInputProps = {
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
   unitLabel?: string | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  step?: number | "any";
 };
 
 export function DecimalInput({
@@ -20,6 +23,9 @@ export function DecimalInput({
   placeholder,
   disabled,
   unitLabel,
+  min,
+  max,
+  step,
 }: DecimalInputProps) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
@@ -31,8 +37,10 @@ export function DecimalInput({
       value={value ?? null}
       onChange={onChange}
       disabled={disabled}
-      step="any"
+      step={step ?? "any"}
       unitLabel={unitLabel}
+      min={min}
+      max={max}
     />
   );
 }

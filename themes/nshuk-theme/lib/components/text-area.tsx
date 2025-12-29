@@ -9,6 +9,8 @@ export function TextArea({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
+  minLength,
+  maxLength,
 }: TextAreaProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
@@ -27,6 +29,8 @@ export function TextArea({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy}
         inputMode={inputMode}
+        minLength={minLength}
+        maxLength={maxLength}
       />
     </div>
   );

@@ -7,6 +7,7 @@ export function FileInput({
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
+  accept,
   filename,
   sizeLabel,
   onFileSelect,
@@ -40,6 +41,7 @@ export function FileInput({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
         disabled={disabled}
+        accept={accept}
       />
       {hasAttachment ? (
         <Summary

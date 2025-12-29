@@ -7,6 +7,9 @@ export function UrlControl({
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"url">) {
+  const maxLength = answer.question.maxLength;
+  const minLength = answer.question.minLength;
+
   return (
     <UrlInput
       id={id}
@@ -16,6 +19,8 @@ export function UrlControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

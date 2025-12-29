@@ -39,6 +39,7 @@ import {
   booleanify,
   EXT,
   extractExtensionValue,
+  extractExtensionsValues,
   getItemControlCode,
   getValue,
   normalizeExpressionValues,
@@ -76,6 +77,43 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed({ keepAlive: true })
   get selectStore(): SelectStore<T> {
     return new SelectStore(this);
+  }
+
+  @computed
+  get minLength(): number | undefined {
+    return extractExtensionValue(this.template, EXT.MIN_LENGTH, "integer");
+  }
+
+  @computed
+  get maxLength(): number | undefined {
+    return this.template.maxLength;
+  }
+
+  @computed
+  get maxDecimalPlaces(): number | undefined {
+    return extractExtensionValue(
+      this.template,
+      EXT.MAX_DECIMAL_PLACES,
+      "integer",
+    );
+  }
+
+  @computed
+  get mimeTypes(): readonly string[] {
+    if (this.type !== "attachment") {
+      return [];
+    }
+
+    return extractExtensionsValues(this.template, EXT.MIME_TYPE, "code");
+  }
+
+  @computed
+  get maxSize(): number | undefined {
+    if (this.type !== "attachment") {
+      return undefined;
+    }
+
+    return extractExtensionValue(this.template, EXT.MAX_SIZE, "decimal");
   }
 
   constructor(

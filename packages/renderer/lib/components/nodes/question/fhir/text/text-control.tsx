@@ -7,6 +7,9 @@ export function TextControl({
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProps<"text">) {
+  const maxLength = answer.question.maxLength;
+  const minLength = answer.question.minLength;
+
   return (
     <TextInput
       id={id}
@@ -17,6 +20,8 @@ export function TextControl({
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
       inputMode={answer.question.keyboardType}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

@@ -24,6 +24,8 @@ export function TextArea({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
+  minLength,
+  maxLength,
 }: TextAreaProps) {
   return (
     <textarea
@@ -36,6 +38,8 @@ export function TextArea({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
       inputMode={inputMode}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

@@ -89,4 +89,61 @@ describe("integer-renderer", () => {
       expect(describedBy.split(" ")).toContain(unit.id);
     });
   });
+
+  describe("constraints", () => {
+    it("uses a step of 1 for integer inputs", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "count",
+            text: "Count",
+            type: "integer",
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getIntegerQuestion(form, "count");
+
+      render(<IntegerRenderer node={question} />);
+
+      const input = screen.getByLabelText("Count") as HTMLInputElement;
+      expect(input).toHaveAttribute("step", "1");
+    });
+
+    it("applies min and max value constraints as input attributes", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "pills",
+            text: "Pills per day",
+            type: "integer",
+            extension: [
+              {
+                url: EXT.MIN_VALUE,
+                valueInteger: 1,
+              },
+              {
+                url: EXT.MAX_VALUE,
+                valueInteger: 12,
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getIntegerQuestion(form, "pills");
+
+      render(<IntegerRenderer node={question} />);
+
+      const input = screen.getByLabelText("Pills per day") as HTMLInputElement;
+      expect(input).toHaveAttribute("min", "1");
+      expect(input).toHaveAttribute("max", "12");
+    });
+  });
 });

@@ -440,4 +440,47 @@ describe("quantity-renderer", () => {
       expect(unitInput).toHaveValue("fl oz");
     });
   });
+
+  describe("constraints", () => {
+    it("applies min and max quantity values as input attributes", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "weight",
+            text: "Weight",
+            type: "quantity",
+            extension: [
+              {
+                url: EXT.SDC_MIN_QUANTITY,
+                valueQuantity: {
+                  value: 40,
+                  unit: "kg",
+                },
+              },
+              {
+                url: EXT.SDC_MAX_QUANTITY,
+                valueQuantity: {
+                  value: 200,
+                  unit: "kg",
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getQuantityQuestion(form, "weight");
+
+      render(<QuantityRenderer node={question} />);
+
+      const input = screen.getByRole("spinbutton", {
+        name: /weight/i,
+      }) as HTMLInputElement;
+      expect(input).toHaveAttribute("min", "40");
+      expect(input).toHaveAttribute("max", "200");
+    });
+  });
 });

@@ -5,6 +5,7 @@ import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
 import { DateRenderer } from "../date-renderer.tsx";
+import { EXT } from "../../../../../../utils.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 
 function getDateQuestion(form: FormStore, linkId: string) {
@@ -55,6 +56,41 @@ describe("date-renderer", () => {
       const input = screen.getByLabelText("Date of birth") as HTMLInputElement;
       expect(input.type).toBe("date");
       expect(input.value).toBe("1984-11-02");
+    });
+  });
+
+  describe("constraints", () => {
+    it("applies min and max date bounds as input attributes", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "visit",
+            text: "Visit date",
+            type: "date",
+            extension: [
+              {
+                url: EXT.MIN_VALUE,
+                valueDate: "2024-01-01",
+              },
+              {
+                url: EXT.MAX_VALUE,
+                valueDate: "2024-12-31",
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getDateQuestion(form, "visit");
+
+      render(<DateRenderer node={question} />);
+
+      const input = screen.getByLabelText("Visit date") as HTMLInputElement;
+      expect(input).toHaveAttribute("min", "2024-01-01");
+      expect(input).toHaveAttribute("max", "2024-12-31");
     });
   });
 });

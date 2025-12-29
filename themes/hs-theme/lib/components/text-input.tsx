@@ -11,6 +11,8 @@ export function TextInput({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
+  minLength,
+  maxLength,
 }: {
   id?: string | undefined;
   type?: string | undefined;
@@ -21,6 +23,8 @@ export function TextInput({
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 }) {
   return (
     <input
@@ -34,6 +38,8 @@ export function TextInput({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
       inputMode={inputMode}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

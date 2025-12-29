@@ -8,6 +8,8 @@ export type UrlInputProps = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 };
 
 export function UrlInput({
@@ -18,6 +20,8 @@ export function UrlInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  minLength,
+  maxLength,
 }: UrlInputProps) {
   const { TextInput: ThemedTextInput } = useTheme();
   return (
@@ -30,6 +34,8 @@ export function UrlInput({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

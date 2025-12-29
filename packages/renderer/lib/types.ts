@@ -759,6 +759,11 @@ export interface IQuestionNode<
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;
   readonly renderer: QuestionControlDefinition["renderer"] | undefined;
+  readonly minLength: number | undefined;
+  readonly maxLength: number | undefined;
+  readonly maxDecimalPlaces: number | undefined;
+  readonly mimeTypes: readonly string[];
+  readonly maxSize: number | undefined;
 
   readonly canAdd: boolean;
   readonly canRemove: boolean;

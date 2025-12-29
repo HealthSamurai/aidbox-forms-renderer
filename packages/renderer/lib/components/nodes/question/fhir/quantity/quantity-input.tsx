@@ -20,6 +20,22 @@ export function QuantityInput({
   disabled,
 }: QuantityInputProps) {
   const { InputGroup, NumberInput, SelectInput, TextInput } = useTheme();
+  const bounds = answer.bounds;
+  const minBound = bounds.min;
+  const maxBound = bounds.max;
+  let minValue =
+    typeof minBound?.value === "number" && Number.isFinite(minBound.value)
+      ? minBound.value
+      : undefined;
+  let maxValue =
+    typeof maxBound?.value === "number" && Number.isFinite(maxBound.value)
+      ? maxBound.value
+      : undefined;
+  if (minValue != null && maxValue != null && minValue > maxValue) {
+    minValue = undefined;
+    maxValue = undefined;
+  }
+
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitToken;
@@ -44,6 +60,8 @@ export function QuantityInput({
         disabled={disabled}
         placeholder={placeholder}
         step="any"
+        min={minValue}
+        max={maxValue}
       />
       {answer.quantity.isUnitFreeForm ? (
         <TextInput

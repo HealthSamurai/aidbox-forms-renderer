@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
@@ -75,9 +80,12 @@ describe("reference-renderer", () => {
         strings.inputs.referenceDisplayPlaceholder,
       );
 
-      const user = userEvent.setup();
-      await user.type(referenceInput, "Patient/123");
-      await user.type(displayInput, "Jane Doe");
+      fireEvent.change(referenceInput, {
+        target: { value: "Patient/123" },
+      });
+      fireEvent.change(displayInput, {
+        target: { value: "Jane Doe" },
+      });
 
       await waitFor(() =>
         expect(question.answers[0]?.value).toEqual({
@@ -86,8 +94,8 @@ describe("reference-renderer", () => {
         }),
       );
 
-      await user.clear(referenceInput);
-      await user.clear(displayInput);
+      fireEvent.change(referenceInput, { target: { value: "" } });
+      fireEvent.change(displayInput, { target: { value: "" } });
 
       await waitFor(() => expect(question.answers[0]?.value).toBeNull());
     });

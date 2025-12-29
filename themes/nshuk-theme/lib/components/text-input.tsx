@@ -10,6 +10,8 @@ export function TextInput({
   ariaLabelledBy,
   ariaDescribedBy,
   inputMode,
+  minLength,
+  maxLength,
 }: TextInputProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
@@ -28,6 +30,8 @@ export function TextInput({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={describedBy}
       inputMode={inputMode}
+      minLength={minLength}
+      maxLength={maxLength}
     />
   );
 }

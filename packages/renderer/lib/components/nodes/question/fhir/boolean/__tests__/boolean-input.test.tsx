@@ -1,13 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 import { BooleanInput } from "../boolean-input.tsx";
 import { strings } from "../../../../../../strings.ts";
 
 describe("boolean-input", () => {
   describe("value mapping", () => {
-    it("maps yes/no selections to boolean values", async () => {
+    it("maps yes/no selections to boolean values", () => {
       const handleChange = vi.fn();
 
       render(
@@ -19,9 +18,8 @@ describe("boolean-input", () => {
         />,
       );
 
-      const user = userEvent.setup();
-      await user.click(screen.getByLabelText(strings.boolean.yes));
-      await user.click(screen.getByLabelText(strings.boolean.no));
+      fireEvent.click(screen.getByLabelText(strings.boolean.yes));
+      fireEvent.click(screen.getByLabelText(strings.boolean.no));
 
       expect(handleChange).toHaveBeenCalledWith(true);
       expect(handleChange).toHaveBeenCalledWith(false);

@@ -8,6 +8,8 @@ export type DateInputProps = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  min?: string | undefined;
+  max?: string | undefined;
 };
 
 export function DateInput({
@@ -18,6 +20,8 @@ export function DateInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  min,
+  max,
 }: DateInputProps) {
   const { DateInput: ThemedDateInput } = useTheme();
   return (
@@ -29,6 +33,8 @@ export function DateInput({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      min={min}
+      max={max}
     />
   );
 }

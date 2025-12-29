@@ -11,7 +11,6 @@ import {
   EXT,
   formatString,
   extractExtensionValue,
-  findExtensions,
   isQuantity,
   makeIssue,
   normalizeExpressionValues,
@@ -61,13 +60,7 @@ export class AnswerValidator<
       case "text": {
         const template = this.question.template;
         const maxLength = template.maxLength;
-        const configuredMinLength = this.getMinLength();
-        const minLength =
-          configuredMinLength != null &&
-          maxLength != null &&
-          configuredMinLength > maxLength
-            ? undefined
-            : configuredMinLength;
+        const minLength = this.question.minLength;
 
         if (typeof value !== "string") {
           issues = [];
@@ -121,10 +114,7 @@ export class AnswerValidator<
             numberMin = undefined;
             numberMax = undefined;
           }
-          let maxDecimalPlaces = this.getMaxDecimalPlaces();
-          if (maxDecimalPlaces != null && maxDecimalPlaces < 0) {
-            maxDecimalPlaces = undefined;
-          }
+          const maxDecimalPlaces = this.question.maxDecimalPlaces;
           issues = this.validateNumericValue(
             value as DataTypeToType<"decimal"> | null,
             numberMin,
@@ -139,13 +129,7 @@ export class AnswerValidator<
       case "time": {
         const template = this.question.template;
         const maxLength = template.maxLength;
-        const configuredMinLength = this.getMinLength();
-        const minLength =
-          configuredMinLength != null &&
-          maxLength != null &&
-          configuredMinLength > maxLength
-            ? undefined
-            : configuredMinLength;
+        const minLength = this.question.minLength;
         let comparableMin = this.resolveTemporalBound("min", type);
         let comparableMax = this.resolveTemporalBound("max", type);
         if (
@@ -236,7 +220,7 @@ export class AnswerValidator<
           }
 
           const attachmentIssues: OperationOutcomeIssue[] = [];
-          const mimeTypes = this.getAttachmentMimeTypes();
+          const mimeTypes = this.question.mimeTypes;
           const normalizedAllowed = mimeTypes.map((type) => type.toLowerCase());
 
           if (normalizedAllowed.length > 0) {
@@ -264,7 +248,7 @@ export class AnswerValidator<
             }
           }
 
-          const maxAttachmentSize = this.getAttachmentMaxSize();
+          const maxAttachmentSize = this.question.maxSize;
           if (maxAttachmentSize != null) {
             const effectiveSize = estimateAttachmentSize(attachment);
             if (effectiveSize != null && effectiveSize > maxAttachmentSize) {
@@ -510,42 +494,6 @@ export class AnswerValidator<
     }
 
     return comparison;
-  }
-
-  private getAttachmentMimeTypes(): string[] {
-    const template = this.question.template;
-    return findExtensions(template, EXT.MIME_TYPE)
-      .map((extension) => extension.valueCode)
-      .filter(
-        (code): code is string => typeof code === "string" && code.length > 0,
-      );
-  }
-
-  private getAttachmentMaxSize(): number | undefined {
-    const template = this.question.template;
-    const value = extractExtensionValue(template, EXT.MAX_SIZE, "decimal");
-    return typeof value === "number" && Number.isFinite(value) && value >= 0
-      ? value
-      : undefined;
-  }
-
-  private getMinLength(): number | undefined {
-    const value = extractExtensionValue(
-      this.question.template,
-      EXT.MIN_LENGTH,
-      "integer",
-    );
-    return typeof value === "number" ? value : undefined;
-  }
-
-  private getMaxDecimalPlaces(): number | undefined {
-    const template = this.question.template;
-    const value = extractExtensionValue(
-      template,
-      EXT.MAX_DECIMAL_PLACES,
-      "integer",
-    );
-    return typeof value === "number" ? value : undefined;
   }
 
   private resolveNumberBound(

@@ -15,6 +15,7 @@ export type AttachmentInputProps = {
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
+  accept?: string | undefined;
 };
 
 export function AttachmentInput({
@@ -24,6 +25,7 @@ export function AttachmentInput({
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
+  accept,
 }: AttachmentInputProps) {
   const { FileInput: ThemedFileInput } = useTheme();
   const attachment = value ?? {};
@@ -54,6 +56,7 @@ export function AttachmentInput({
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}
+      accept={accept}
       filename={displayLabel}
       sizeLabel={
         sizeKb !== undefined

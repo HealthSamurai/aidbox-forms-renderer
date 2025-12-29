@@ -58,4 +58,67 @@ describe("decimal-renderer", () => {
       expect(describedBy.split(" ")).toContain(unit.id);
     });
   });
+
+  describe("constraints", () => {
+    it("applies min and max value constraints as input attributes", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "dosage",
+            text: "Dosage",
+            type: "decimal",
+            extension: [
+              {
+                url: EXT.MIN_VALUE,
+                valueDecimal: 0.5,
+              },
+              {
+                url: EXT.MAX_VALUE,
+                valueDecimal: 12.5,
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getDecimalQuestion(form, "dosage");
+
+      render(<DecimalRenderer node={question} />);
+
+      const input = screen.getByLabelText("Dosage") as HTMLInputElement;
+      expect(input).toHaveAttribute("min", "0.5");
+      expect(input).toHaveAttribute("max", "12.5");
+    });
+
+    it("derives step from maxDecimalPlaces", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "glucose",
+            text: "Glucose",
+            type: "decimal",
+            extension: [
+              {
+                url: EXT.MAX_DECIMAL_PLACES,
+                valueInteger: 2,
+              },
+            ],
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getDecimalQuestion(form, "glucose");
+
+      render(<DecimalRenderer node={question} />);
+
+      const input = screen.getByLabelText("Glucose") as HTMLInputElement;
+      expect(input).toHaveAttribute("step", "0.01");
+    });
+  });
 });
