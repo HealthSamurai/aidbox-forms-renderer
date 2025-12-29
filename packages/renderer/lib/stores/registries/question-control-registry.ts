@@ -12,31 +12,40 @@ import { AttachmentRenderer } from "../../components/nodes/question/fhir/attachm
 import { ListSelectRenderer } from "../../components/nodes/question/renderers/list-select-renderer.tsx";
 import { DropdownRenderer } from "../../components/nodes/question/renderers/dropdown-renderer.tsx";
 import { UnsupportedRenderer } from "../../components/nodes/question/renderers/unsupported-renderer.tsx";
-import { SliderRenderer } from "../../components/nodes/question/renderers/slider-renderer.tsx";
-import { SpinnerRenderer } from "../../components/nodes/question/renderers/spinner-renderer.tsx";
+import { NumberSliderRenderer } from "../../components/nodes/question/renderers/number-slider-renderer.tsx";
+import { NumberSpinnerRenderer } from "../../components/nodes/question/renderers/number-spinner-renderer.tsx";
+import { QuantitySliderRenderer } from "../../components/nodes/question/renderers/quantity-slider-renderer.tsx";
+import { QuantitySpinnerRenderer } from "../../components/nodes/question/renderers/quantity-spinner-renderer.tsx";
 
 export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
   {
-    name: "numeric-with-slider",
-    priority: 120,
-    matcher: (
-      node,
-    ): node is IQuestionNode<"integer" | "decimal" | "quantity"> =>
-      node.control === "slider" &&
-      (node.type === "integer" ||
-        node.type === "decimal" ||
-        node.type === "quantity"),
-    renderer: SliderRenderer,
+    name: "quantity-with-slider",
+    priority: 121,
+    matcher: (node): node is IQuestionNode<"quantity"> =>
+      node.control === "slider" && node.type === "quantity",
+    renderer: QuantitySliderRenderer,
   },
   {
-    name: "numeric-with-spinner",
+    name: "quantity-with-spinner",
+    priority: 116,
+    matcher: (node) => node.control === "spinner" && node.type === "quantity",
+    renderer: QuantitySpinnerRenderer,
+  },
+  {
+    name: "number-with-slider",
+    priority: 120,
+    matcher: (node): node is IQuestionNode<"integer" | "decimal"> =>
+      node.control === "slider" &&
+      (node.type === "integer" || node.type === "decimal"),
+    renderer: NumberSliderRenderer,
+  },
+  {
+    name: "number-with-spinner",
     priority: 115,
     matcher: (node) =>
       node.control === "spinner" &&
-      (node.type === "integer" ||
-        node.type === "decimal" ||
-        node.type === "quantity"),
-    renderer: SpinnerRenderer,
+      (node.type === "integer" || node.type === "decimal"),
+    renderer: NumberSpinnerRenderer,
   },
   {
     name: "list-select",

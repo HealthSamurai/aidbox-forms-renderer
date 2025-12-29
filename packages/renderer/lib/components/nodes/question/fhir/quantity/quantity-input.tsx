@@ -25,7 +25,7 @@ export function QuantityInput({
     : answer.quantity.displayUnitToken;
   const inputBaseId = id;
   const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
-  const unitInputId = `${inputBaseId}-unit`;
+  const unitInputId = `${inputBaseId}_/_unit`;
 
   const handleValueChange = (nextValue: number | null) => {
     answer.quantity.handleNumberInput(

@@ -11,7 +11,6 @@ import type {
 import {
   answerify,
   areValuesEqual,
-  cloneValue,
   compareQuantities,
   countDecimalPlaces,
   estimateAttachmentSize,

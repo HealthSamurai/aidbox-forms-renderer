@@ -32,7 +32,7 @@ export function ReferenceInput({
   };
 
   const referenceId = id;
-  const displayId = id ? `${id}-display` : undefined;
+  const displayId = id ? `${id}_/_display` : undefined;
 
   return (
     <InputGroup layout="grid">

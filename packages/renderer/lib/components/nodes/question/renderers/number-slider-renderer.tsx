@@ -2,16 +2,16 @@ import { observer } from "mobx-react-lite";
 import type { IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
 import { AnswerList } from "../answers/answer-list.tsx";
-import { SliderControl } from "../controls/slider-control.tsx";
+import { NumberSliderControl } from "../controls/number-slider-control.tsx";
 
-export const SliderRenderer = observer(function SliderRenderer({
+export const NumberSliderRenderer = observer(function SliderRenderer({
   node,
 }: {
-  node: IQuestionNode<"integer" | "decimal" | "quantity">;
+  node: IQuestionNode<"integer" | "decimal">;
 }) {
   return (
     <QuestionScaffold node={node}>
-      <AnswerList node={node} control={SliderControl} />
+      <AnswerList node={node} control={NumberSliderControl} />
     </QuestionScaffold>
   );
 });

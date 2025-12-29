@@ -4,11 +4,11 @@ import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
 
-export const SliderControl = observer(function SliderControl({
+export const NumberSliderControl = observer(function SliderControl({
   answer,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"integer" | "decimal" | "quantity">) {
+}: ValueControlProps<"integer" | "decimal">) {
   const { SliderInput } = useTheme();
   const { min, max } = answer.bounds;
   const step =
@@ -17,11 +17,6 @@ export const SliderControl = observer(function SliderControl({
 
   const onChange = useCallback(
     (next: number | null) => {
-      if (answer.question.type === "quantity") {
-        answer.quantity.handleNumberInput(next == null ? "" : String(next));
-        return;
-      }
-
       if (answer.question.type === "integer") {
         answer.setValueByUser(next != null ? Math.round(next) : null);
         return;

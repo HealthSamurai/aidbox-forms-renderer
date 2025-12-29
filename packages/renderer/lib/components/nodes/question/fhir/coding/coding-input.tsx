@@ -30,8 +30,8 @@ export function CodingInput({
   };
 
   const systemId = id;
-  const codeId = id ? `${id}-code` : undefined;
-  const displayId = id ? `${id}-display` : undefined;
+  const codeId = id ? `${id}_/_code` : undefined;
+  const displayId = id ? `${id}_/_display` : undefined;
 
   return (
     <InputGroup layout="grid">

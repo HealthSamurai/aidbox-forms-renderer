@@ -4,21 +4,16 @@ import { getNumericValue } from "../../../../utils.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
 
-export const SpinnerControl = observer(function SpinnerControl({
+export const NumberSpinnerControl = observer(function SpinnerControl({
   answer,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"integer" | "decimal" | "quantity">) {
+}: ValueControlProps<"integer" | "decimal">) {
   const { SpinnerInput } = useTheme();
   const { min, max } = answer.bounds;
 
   const onChange = useCallback(
     (next: number | null) => {
-      if (answer.question.type === "quantity") {
-        answer.quantity.handleNumberInput(next == null ? "" : String(next));
-        return;
-      }
-
       if (answer.question.type === "integer") {
         answer.setValueByUser(next != null ? Math.round(next) : null);
         return;

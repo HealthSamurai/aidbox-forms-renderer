@@ -46,7 +46,7 @@ export function AttachmentInput({
   const displayLabel =
     attachment.title ?? attachment.url ?? strings.inputs.attachmentSelected;
 
-  const inputIdentifier = `${id ?? "attachment"}-file`;
+  const inputIdentifier = `${id ?? "attachment"}_/_file`;
 
   return (
     <ThemedFileInput
