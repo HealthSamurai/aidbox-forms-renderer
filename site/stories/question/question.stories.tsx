@@ -1,29 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
-  Extension,
-  Questionnaire,
-  QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
-} from "fhir/r5";
-import type {
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
-  IPresentableNode,
   QuestionItemControl,
 } from "@aidbox-forms/renderer/types.ts";
 import {
-  ANSWER_TYPE_TO_DATA_TYPE,
-  asAnswerFragment,
-  EXT,
-  ITEM_CONTROL_SYSTEM,
-} from "@aidbox-forms/renderer/utils.ts";
-import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
-import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
-import { useEffect, useMemo } from "react";
-import {
-  useQuestionnaireBroadcaster,
-  useQuestionnaireResponseBroadcaster,
+  buildQuestionItem,
+  buildQuestionnaire,
+  makeAnswerOptions,
+  Renderer,
 } from "../helpers.tsx";
 
 type PlaygroundArgs = {
@@ -90,122 +76,6 @@ const playgroundArgTypes = {
     if: { arg: "hasAnswerOptions", truthy: true },
   },
 } as const;
-
-function buildQuestionItem<T extends AnswerType>(options: {
-  linkId: string;
-  text: string;
-  type: T;
-  control?: QuestionItemControl | undefined;
-  answerConstraint?: QuestionnaireItem["answerConstraint"];
-  answerOption?: QuestionnaireItemAnswerOption[] | undefined;
-  repeats?: boolean | undefined;
-  extensions?: Extension[] | undefined;
-  item?: QuestionnaireItem[] | undefined;
-}): QuestionnaireItem {
-  const extensions = [...(options.extensions ?? [])];
-  if (options.control) {
-    extensions.push({
-      url: EXT.ITEM_CONTROL,
-      valueCodeableConcept: {
-        coding: [
-          {
-            system: ITEM_CONTROL_SYSTEM,
-            code: options.control,
-          },
-        ],
-      },
-    });
-  }
-  if (options.repeats) {
-    extensions.push({
-      url: EXT.MIN_OCCURS,
-      valueInteger: 1,
-    });
-  }
-
-  return {
-    linkId: options.linkId,
-    text: options.text,
-    type: options.type,
-    repeats: options.repeats,
-    answerOption:
-      options.answerOption && options.answerOption.length > 0
-        ? options.answerOption
-        : undefined,
-    answerConstraint: options.answerConstraint,
-    extension: extensions.length > 0 ? extensions : undefined,
-    item: options.item,
-  };
-}
-
-function makeAnswerOptions<T extends AnswerType>(
-  type: T,
-  values: Array<DataTypeToType<AnswerTypeToDataType<T>>>,
-): QuestionnaireItemAnswerOption[] {
-  const dataType = ANSWER_TYPE_TO_DATA_TYPE[type];
-  return values.map(
-    (value) =>
-      asAnswerFragment(dataType, value) as QuestionnaireItemAnswerOption,
-  );
-}
-
-function buildQuestionnaire<T extends AnswerType>({
-  answerType,
-  label,
-  itemControl,
-  repeats,
-  hasAnswerOptions,
-  answerConstraint,
-  answerValues,
-}: PlaygroundArgs & {
-  answerType: T;
-  label: string;
-  answerValues: Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-}): Questionnaire {
-  return {
-    resourceType: "Questionnaire",
-    status: "active",
-    item: [
-      buildQuestionItem({
-        linkId: `${answerType}-playground`,
-        text: label,
-        type: answerType,
-        repeats,
-        control: itemControl === "none" ? undefined : itemControl,
-        answerConstraint: hasAnswerOptions ? answerConstraint : undefined,
-        answerOption: hasAnswerOptions
-          ? makeAnswerOptions(answerType, answerValues)
-          : undefined,
-      }),
-    ],
-  };
-}
-
-function Renderer({
-  questionnaire,
-  storyId,
-}: {
-  questionnaire: Questionnaire;
-  storyId: string;
-}) {
-  const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
-  useEffect(() => () => store.dispose(), [store]);
-
-  const node = store.nodes[0];
-
-  useQuestionnaireResponseBroadcaster(store, storyId);
-  useQuestionnaireBroadcaster(questionnaire, storyId);
-
-  if (!node) {
-    return <p>Questionnaire did not produce a node.</p>;
-  }
-
-  return (
-    <div className="af-form" style={{ maxWidth: 760 }}>
-      <Node node={node as IPresentableNode} />
-    </div>
-  );
-}
 
 type PlaygroundConfig<T extends AnswerType> = {
   key: string;
@@ -365,12 +235,20 @@ function makeStory<T extends AnswerType>(
   return {
     name: config.label,
     render: (args, context) => {
-      const questionnaire: Questionnaire = buildQuestionnaire({
-        answerType: config.answerType,
-        label: config.label,
-        answerValues: config.samples,
-        ...args,
+      const item = buildQuestionItem({
+        linkId: `${config.answerType}-playground`,
+        text: config.label,
+        type: config.answerType,
+        repeats: args.repeats,
+        control: args.itemControl === "none" ? undefined : args.itemControl,
+        answerConstraint: args.hasAnswerOptions
+          ? args.answerConstraint
+          : undefined,
+        answerOption: args.hasAnswerOptions
+          ? makeAnswerOptions(config.answerType, config.samples)
+          : undefined,
       });
+      const questionnaire = buildQuestionnaire(item);
 
       return <Renderer questionnaire={questionnaire} storyId={context.id} />;
     },

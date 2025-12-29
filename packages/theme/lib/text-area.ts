@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, HTMLAttributes } from "react";
 
 export type TextAreaProps = {
   id?: string | undefined;
@@ -8,6 +8,7 @@ export type TextAreaProps = {
   placeholder?: string | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
+  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
 };
 
 export type TextAreaComponent = ComponentType<TextAreaProps>;

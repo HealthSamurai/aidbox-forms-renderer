@@ -1,8 +1,11 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from "@storybook/react-vite";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import linaria from "@wyw-in-js/vite";
 import tsconfig from "../../tsconfig.base.json" with { type: "json" };
+
+const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -14,7 +17,7 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
-  async viteFinal(config) {
+  async viteFinal(config, { configType }) {
     const rootDir = resolve(__dirname, "..", "..");
 
     const pathAliases = Object.entries(
@@ -47,6 +50,9 @@ const config: StorybookConfig = {
             plugins: ["typescript", "jsx", "importAssertions"],
           },
         },
+        ...(configType === "DEVELOPMENT"
+          ? { classNameSlug: "[file]__[title]__[index]" }
+          : {}),
       }),
     ];
 

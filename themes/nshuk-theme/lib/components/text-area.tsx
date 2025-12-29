@@ -8,6 +8,7 @@ export function TextArea({
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
+  inputMode,
 }: TextAreaProps) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
@@ -25,6 +26,7 @@ export function TextArea({
         placeholder={placeholder}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy}
+        inputMode={inputMode}
       />
     </div>
   );

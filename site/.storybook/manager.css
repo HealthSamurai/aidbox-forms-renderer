@@ -17,3 +17,8 @@
   height: 28px;
   border-radius: 6px;
 }
+
+div[role="tabpanel"][id*="tabpanel-aidbox/questionnaire"],
+div[role="tabpanel"][id*="tabpanel-aidbox/questionnaire-response"] {
+  overflow: auto;
+}

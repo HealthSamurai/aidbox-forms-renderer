@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from "react";
 import { useTheme } from "../../../../../ui/theme.tsx";
 
 export type TextInputProps = {
@@ -8,6 +9,7 @@ export type TextInputProps = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
 };
 
 export function TextInput({
@@ -18,6 +20,7 @@ export function TextInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  inputMode,
 }: TextInputProps) {
   const { TextArea: ThemedTextArea } = useTheme();
   return (
@@ -29,6 +32,7 @@ export function TextInput({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      inputMode={inputMode}
     />
   );
 }

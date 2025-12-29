@@ -16,6 +16,7 @@ export function TextControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      inputMode={answer.question.keyboardType}
     />
   );
 }

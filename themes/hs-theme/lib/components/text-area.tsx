@@ -1,4 +1,5 @@
 import { css } from "@linaria/core";
+import type { TextAreaProps } from "@aidbox-forms/theme";
 
 const textAreaClass = css`
   width: 100%;
@@ -22,15 +23,8 @@ export function TextArea({
   placeholder,
   ariaLabelledBy,
   ariaDescribedBy,
-}: {
-  id?: string | undefined;
-  value: string;
-  onChange: (v: string) => void;
-  disabled?: boolean | undefined;
-  placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-}) {
+  inputMode,
+}: TextAreaProps) {
   return (
     <textarea
       id={id}
@@ -41,6 +35,7 @@ export function TextArea({
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      inputMode={inputMode}
     />
   );
 }
