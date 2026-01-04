@@ -420,21 +420,17 @@ should display selections as chips and allow removal when permitted.
 
 ### FileInput
 
-Attachment picker that handles file selection, display of the selected file, and clearing. Call onFileSelect for the raw
-file and onChange when the Attachment value changes.
+Attachment picker that handles file selection, display of the selected file, and clearing. Call onChange for the raw
+file (or null when clearing) so the renderer can update the Attachment.
 
-| Prop              | Type                                  | Required | Description                                                                          |
-| ----------------- | ------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
-| `value`           | `Attachment \| null`                  | Yes      | Render this attachment as the current value; null means no file is selected.         |
-| `onChange`        | `(value: Attachment \| null) => void` | Yes      | Call with the updated attachment value when you transform the file or clear it.      |
-| `id`              | `string`                              | No       | Set as the input id so labels can target the underlying file input.                  |
-| `ariaLabelledBy`  | `string`                              | No       | Forward to aria-labelledby for the file input and any summary region.                |
-| `ariaDescribedBy` | `string`                              | No       | Forward to aria-describedby for the file input and any summary region.               |
-| `disabled`        | `boolean`                             | No       | When true, disable file selection and related actions.                               |
-| `sizeLabel`       | `string`                              | No       | Display this formatted size string alongside the filename when provided.             |
-| `filename`        | `string`                              | No       | Display this filename or title when a file is selected.                              |
-| `onFileSelect`    | `(file: File) => void`                | No       | Call when the user selects a file so the renderer can convert it into an Attachment. |
-| `onClear`         | `() => void`                          | No       | Call when the user requests clearing the current file.                               |
+| Prop              | Type                           | Required | Description                                                                  |
+| ----------------- | ------------------------------ | -------- | ---------------------------------------------------------------------------- |
+| `value`           | `Attachment \| null`           | Yes      | Render this attachment as the current value; null means no file is selected. |
+| `id`              | `string`                       | No       | Set as the input id so labels can target the underlying file input.          |
+| `ariaLabelledBy`  | `string`                       | No       | Forward to aria-labelledby for the file input and any summary region.        |
+| `ariaDescribedBy` | `string`                       | No       | Forward to aria-describedby for the file input and any summary region.       |
+| `disabled`        | `boolean`                      | No       | When true, disable file selection and related actions.                       |
+| `onChange`        | `(file: File \| null) => void` | No       | Call with the selected file, or null when clearing the current file.         |
 
 ### AnswerAddButton
 
@@ -748,13 +744,13 @@ Alias of OptionItem.
 
 Attachment shape used by `FileInput` to display metadata and stored content.
 
-| Field         | Type               | Required | Description                                             |
-| ------------- | ------------------ | -------- | ------------------------------------------------------- |
-| `title`       | `string`           | No       | Display name or title to show for the attachment.       |
-| `url`         | `string`           | No       | Link target for downloaded or referenced files.         |
-| `size`        | `number \| string` | No       | Byte size or preformatted size string used for display. |
-| `contentType` | `string`           | No       | MIME type used for labeling or preview decisions.       |
-| `data`        | `string`           | No       | Base64-encoded file content for inline attachments.     |
+| Field         | Type     | Required | Description                                         |
+| ------------- | -------- | -------- | --------------------------------------------------- |
+| `title`       | `string` | No       | Display name or title to show for the attachment.   |
+| `url`         | `string` | No       | Link target for downloaded or referenced files.     |
+| `size`        | `number` | No       | Byte size for the attachment used for display.      |
+| `contentType` | `string` | No       | MIME type used for labeling or preview decisions.   |
+| `data`        | `string` | No       | Base64-encoded file content for inline attachments. |
 
 ### MultiSelectChip
 

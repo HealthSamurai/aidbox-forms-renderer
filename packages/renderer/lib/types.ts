@@ -742,6 +742,7 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   handleClearAll(): void;
   cancelCustomDialog(): void;
   confirmCustomDialog(): void;
+  addPendingToken(token: string): void;
   buildRowProps(
     answer: IAnswerInstance<T>,
     suffix: string,

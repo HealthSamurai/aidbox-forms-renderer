@@ -38,9 +38,10 @@ export function QuestionnairePanel() {
       customStyle={{
         flex: 1,
         margin: 0,
+        fontSize: "13px",
         maxHeight: "100%",
         boxSizing: "border-box",
-        padding: "12px",
+        padding: "13px",
       }}
     >
       {value}

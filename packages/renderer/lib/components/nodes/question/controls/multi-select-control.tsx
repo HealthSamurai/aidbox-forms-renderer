@@ -180,9 +180,10 @@ function renderInlineCustomInput<T extends AnswerType>(
   node: IQuestionNode<T>,
   answer: IAnswerInstance<T>,
 ) {
-  const store = node.selectStore;
-  const rowProps = store.buildRowProps(answer, "custom-inline");
-  const Control = getValueControl(node.type);
+  const rowProps = node.selectStore.buildRowProps(answer, "custom-inline");
+  const Control = getValueControl(
+    node.options.constraint === "optionsOrString" ? "string" : node.type,
+  );
   return (
     <Control
       answer={rowProps.answer}

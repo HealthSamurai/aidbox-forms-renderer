@@ -38,8 +38,8 @@ import {
   answerHasContent,
   booleanify,
   EXT,
-  extractExtensionValue,
   extractExtensionsValues,
+  extractExtensionValue,
   getItemControlCode,
   getValue,
   normalizeExpressionValues,
@@ -349,10 +349,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const values = entries
-      .map((entry) => getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]))
+      .map((entry) => {
+        const value = getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
+        if (
+          value === undefined &&
+          this.options.constraint === "optionsOrString"
+        ) {
+          return getValue(entry, "string");
+        }
+        return value;
+      })
       .filter(
-        (value): value is DataTypeToType<AnswerTypeToDataType<T>> =>
-          value !== undefined && value !== null,
+        (value): value is DataTypeToType<AnswerTypeToDataType<T>> | string => {
+          return value != null;
+        },
       );
 
     if (values.length === 0) {
@@ -364,9 +374,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (this.repeats) {
       const cappedLength = Math.min(values.length, this.maxOccurs);
       for (let index = 0; index < cappedLength; index += 1) {
-        const value = values[index];
         this.pushAnswer(
-          value && typeof value === "object" ? structuredClone(value) : value,
+          structuredClone(values[index]) as DataTypeToType<
+            AnswerTypeToDataType<T>
+          >,
         );
         seeded = true;
       }
@@ -376,11 +387,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       if (!answer) {
         return;
       }
-      const initialValue = values[0];
+
       answer.setValueBySystem(
-        initialValue && typeof initialValue === "object"
-          ? structuredClone(initialValue)
-          : initialValue,
+        structuredClone(values[0]) as DataTypeToType<AnswerTypeToDataType<T>>,
       );
       seeded = true;
     }
@@ -434,8 +443,15 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     answers.forEach((answer) => {
+      const typedValue = getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
+      const stringValue =
+        this.options.constraint === "optionsOrString"
+          ? getValue(answer, "string")
+          : undefined;
       this.pushAnswer(
-        getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]) ?? null,
+        (typedValue ?? stringValue ?? null) as DataTypeToType<
+          AnswerTypeToDataType<T>
+        >,
         answer.item,
       );
     });

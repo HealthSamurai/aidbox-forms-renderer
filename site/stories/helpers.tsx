@@ -127,10 +127,14 @@ export function buildQuestionItem<T extends AnswerType>(
   }
 
   if (options.repeats) {
-    extensions.push({
-      url: EXT.MIN_OCCURS,
-      valueInteger: 1,
-    });
+    // extensions.push({
+    //   url: EXT.MIN_OCCURS,
+    //   valueInteger: 1,
+    // });
+    // extensions.push({
+    //   url: EXT.MAX_OCCURS,
+    //   valueInteger: 3,
+    // });
   }
 
   return {

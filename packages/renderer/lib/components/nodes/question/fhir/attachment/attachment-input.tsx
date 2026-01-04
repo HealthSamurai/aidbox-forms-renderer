@@ -1,12 +1,8 @@
 import type { Attachment } from "fhir/r5";
-import type { FileInputProps as ThemeFileInputProps } from "@aidbox-forms/theme";
-import {
-  formatString,
-  prepareAttachmentFromFile,
-  pruneAttachment,
-} from "../../../../../utils.ts";
+import type { Attachment as ThemeAttachment } from "@aidbox-forms/theme";
+import { useCallback, useMemo } from "react";
+import { prepareAttachmentFromFile } from "../../../../../utils.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
-import { strings } from "../../../../../strings.ts";
 
 export type AttachmentInputProps = {
   value: Attachment | null;
@@ -28,27 +24,28 @@ export function AttachmentInput({
   accept,
 }: AttachmentInputProps) {
   const { FileInput: ThemedFileInput } = useTheme();
-  const attachment = value ?? {};
-  type ThemeAttachment = ThemeFileInputProps["value"];
 
-  const handleFileSelect = async (file: File) => {
-    const updated = await prepareAttachmentFromFile(file, attachment);
-    onChange(pruneAttachment(updated));
-  };
-
-  const handleClearFile = () => {
-    onChange(null);
-  };
-
-  const sizeKb =
-    typeof attachment.size === "number"
-      ? Math.round(attachment.size / 1024)
-      : undefined;
-
-  const displayLabel =
-    attachment.title ?? attachment.url ?? strings.inputs.attachmentSelected;
+  const handleFileChange = useCallback(
+    async (file: File | null) => {
+      if (file) {
+        onChange(await prepareAttachmentFromFile(file));
+      } else {
+        onChange(null);
+      }
+    },
+    [onChange],
+  );
 
   const inputIdentifier = `${id ?? "attachment"}_/_file`;
+
+  const themeValue = useMemo<ThemeAttachment | null>(() => {
+    return (
+      value && {
+        ...value,
+        size: Number(value.size),
+      }
+    );
+  }, [value]);
 
   return (
     <ThemedFileInput
@@ -57,20 +54,10 @@ export function AttachmentInput({
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}
       accept={accept}
-      filename={displayLabel}
-      sizeLabel={
-        sizeKb !== undefined
-          ? formatString(strings.file.sizeLabelKb, {
-              sizeKb,
-            })
-          : undefined
-      }
-      value={value as ThemeAttachment}
-      onFileSelect={(file) => {
-        void handleFileSelect(file);
+      value={themeValue}
+      onChange={(file) => {
+        void handleFileChange(file);
       }}
-      onClear={handleClearFile}
-      onChange={(next) => onChange(next as Attachment | null)}
     />
   );
 }

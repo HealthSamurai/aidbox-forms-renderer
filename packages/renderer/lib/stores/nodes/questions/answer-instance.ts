@@ -1,17 +1,18 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import type {
   AnswerType,
+  AnswerTypeToDataType,
   DataTypeToType,
   IAnswerInstance,
-  IQuantityAnswer,
-  IScope,
   IPresentableNode,
+  IQuantityAnswer,
   IQuestionNode,
+  IScope,
   SnapshotKind,
-  AnswerTypeToDataType,
   ValueBounds,
 } from "../../../types.ts";
 import type {
+  OperationOutcomeIssue,
   QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from "fhir/r5";
@@ -20,7 +21,6 @@ import {
   asAnswerFragment,
   shouldCreateStore,
 } from "../../../utils.ts";
-import type { OperationOutcomeIssue } from "fhir/r5";
 import { AnswerValidator } from "../../validation/answer-validator.ts";
 import { QuantityAnswer } from "./quantity-answer.ts";
 
@@ -123,10 +123,20 @@ export class AnswerInstance<
       return null;
     }
 
-    const answer: QuestionnaireResponseItemAnswer =
-      value == null
-        ? {}
-        : asAnswerFragment(ANSWER_TYPE_TO_DATA_TYPE[this.question.type], value);
+    const answer: QuestionnaireResponseItemAnswer = {};
+
+    if (value != null) {
+      Object.assign(
+        answer,
+        this.question.options.constraint === "optionsOrString" &&
+          typeof value === "string"
+          ? asAnswerFragment("string", value)
+          : asAnswerFragment(
+              ANSWER_TYPE_TO_DATA_TYPE[this.question.type],
+              value,
+            ),
+      );
+    }
 
     if (childItems.length > 0) {
       answer.item = childItems;

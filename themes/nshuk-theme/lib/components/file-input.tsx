@@ -1,5 +1,5 @@
 import type { FileInputProps } from "@aidbox-forms/theme";
-import { useRef, type ChangeEvent } from "react";
+import { type ChangeEvent, useRef } from "react";
 
 export function FileInput({
   id,
@@ -7,12 +7,12 @@ export function FileInput({
   ariaDescribedBy,
   disabled,
   accept,
-  filename,
-  sizeLabel,
-  onFileSelect,
-  onClear,
+  value,
+  onChange,
 }: FileInputProps) {
-  const hasAttachment = Boolean(filename);
+  const displayLabel = value?.title ?? value?.url ?? "Attachment selected";
+  const displaySizeLabel =
+    value?.size != null ? `${Math.round(value.size / 1024)} KB` : undefined;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handlePickFile = () => {
@@ -24,7 +24,7 @@ export function FileInput({
     const file = event.currentTarget.files?.[0];
     if (!file) return;
     try {
-      onFileSelect?.(file);
+      onChange?.(file);
     } finally {
       event.currentTarget.value = "";
     }
@@ -44,16 +44,18 @@ export function FileInput({
         onChange={handleFileChange}
         accept={accept}
       />
-      {hasAttachment ? (
+      {value != null ? (
         <div
           className="nhsuk-u-margin-top-2"
           role="group"
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         >
-          <p className="nhsuk-body">{filename}</p>
-          {sizeLabel ? (
-            <p className="nhsuk-hint nhsuk-u-margin-bottom-2">{sizeLabel}</p>
+          <p className="nhsuk-body">{displayLabel}</p>
+          {displaySizeLabel ? (
+            <p className="nhsuk-hint nhsuk-u-margin-bottom-2">
+              {displaySizeLabel}
+            </p>
           ) : null}
           <div className="nhsuk-button-group">
             {!disabled ? (
@@ -68,7 +70,7 @@ export function FileInput({
             <button
               className="nhsuk-button nhsuk-button--secondary"
               type="button"
-              onClick={onClear}
+              onClick={() => onChange?.(null)}
               disabled={disabled}
             >
               Clear attachment

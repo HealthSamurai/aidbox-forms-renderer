@@ -1,6 +1,6 @@
 import type { FileInputProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
-import { useRef, type ChangeEvent } from "react";
+import { type ChangeEvent, useRef } from "react";
 
 export function FileInput({
   id,
@@ -8,12 +8,12 @@ export function FileInput({
   ariaDescribedBy,
   disabled,
   accept,
-  filename,
-  sizeLabel,
-  onFileSelect,
-  onClear,
+  value,
+  onChange,
 }: FileInputProps) {
-  const hasAttachment = Boolean(filename);
+  const displayLabel = value?.title ?? value?.url ?? "Attachment selected";
+  const displaySizeLabel =
+    value?.size != null ? `${Math.round(value.size / 1024)} KB` : undefined;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handlePickFile = () => {
@@ -25,7 +25,7 @@ export function FileInput({
     const file = event.currentTarget.files?.[0];
     if (!file) return;
     try {
-      onFileSelect?.(file);
+      onChange?.(file);
     } finally {
       event.currentTarget.value = "";
     }
@@ -43,22 +43,26 @@ export function FileInput({
         disabled={disabled}
         accept={accept}
       />
-      {hasAttachment ? (
+      {value != null ? (
         <Summary
           role="group"
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         >
           <Label>
-            {filename}
-            {sizeLabel ? ` (${sizeLabel})` : ""}
+            {displayLabel}
+            {displaySizeLabel ? ` (${displaySizeLabel})` : ""}
           </Label>
           {!disabled ? (
             <Action type="button" onClick={handlePickFile}>
               Change file
             </Action>
           ) : null}
-          <Action type="button" onClick={onClear} disabled={disabled}>
+          <Action
+            type="button"
+            onClick={() => onChange?.(null)}
+            disabled={disabled}
+          >
             Clear attachment
           </Action>
         </Summary>

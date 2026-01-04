@@ -98,45 +98,102 @@ function getSelectionSamples<T extends AnswerType>(
     case "boolean":
       return [true, false] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "integer":
-      return [0, 1, 2, 3, 5, 8] as Array<
+      return [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144] as Array<
         DataTypeToType<AnswerTypeToDataType<T>>
       >;
     case "decimal":
-      return [0.5, 1.25, 2.75, 3.5, 4.25, 5.75] as Array<
-        DataTypeToType<AnswerTypeToDataType<T>>
-      >;
+      return [
+        0.5, 1.25, 2.75, 3.5, 4.25, 5.75, 6.5, 7.25, 8.5, 9.75, 10.25, 11.5,
+      ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "string":
-      return ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot"] as Array<
-        DataTypeToType<AnswerTypeToDataType<T>>
-      >;
+      return [
+        "Alpha",
+        "Bravo",
+        "Charlie",
+        "Delta",
+        "Echo",
+        "Foxtrot",
+        "Golf",
+        "Hotel",
+        "India",
+        "Juliet",
+        "Kilo",
+        "Lima",
+      ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "text":
       return [
         "Short note",
         "Longer text",
         "Multiple words",
         "Another option",
+        "Additional detail",
+        "Summary statement",
+        "Narrative entry",
+        "Follow-up note",
+        "Context snippet",
+        "Supplemental info",
+        "Clarifying remark",
+        "Closing comment",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "date":
-      return ["2024-01-01", "2024-02-14", "2024-06-01", "2024-12-31"] as Array<
-        DataTypeToType<AnswerTypeToDataType<T>>
-      >;
+      return [
+        "2024-01-01",
+        "2024-02-14",
+        "2024-06-01",
+        "2024-12-31",
+        "2025-01-05",
+        "2025-02-10",
+        "2025-03-20",
+        "2025-04-15",
+        "2025-05-25",
+        "2025-06-30",
+        "2025-07-12",
+        "2025-08-08",
+      ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "dateTime":
       return [
         "2024-01-01T09:00:00Z",
         "2024-03-15T13:15:00Z",
         "2024-07-04T18:45:00Z",
         "2024-12-31T23:59:00Z",
+        "2025-01-01T08:30:00Z",
+        "2025-02-14T11:00:00Z",
+        "2025-03-21T14:20:00Z",
+        "2025-04-05T16:40:00Z",
+        "2025-05-12T10:10:00Z",
+        "2025-06-18T19:05:00Z",
+        "2025-07-22T07:50:00Z",
+        "2025-08-30T21:30:00Z",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "time":
-      return ["08:00:00", "12:30:00", "18:45:00", "23:15:00"] as Array<
-        DataTypeToType<AnswerTypeToDataType<T>>
-      >;
+      return [
+        "08:00:00",
+        "09:15:00",
+        "10:30:00",
+        "11:45:00",
+        "12:30:00",
+        "14:00:00",
+        "15:15:00",
+        "16:30:00",
+        "18:00:00",
+        "19:15:00",
+        "21:00:00",
+        "23:15:00",
+      ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "url":
       return [
         "https://example.org/alpha",
         "https://example.org/bravo",
         "https://example.org/charlie",
         "https://example.org/delta",
+        "https://example.org/echo",
+        "https://example.org/foxtrot",
+        "https://example.org/golf",
+        "https://example.org/hotel",
+        "https://example.org/india",
+        "https://example.org/juliet",
+        "https://example.org/kilo",
+        "https://example.org/lima",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "quantity":
       return [
@@ -164,6 +221,54 @@ function getSelectionSamples<T extends AnswerType>(
           system: "http://unitsofmeasure.org",
           code: "mmol",
         },
+        {
+          value: 30,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 35,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 40,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 45,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 50,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 55,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 60,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
+        {
+          value: 65,
+          unit: "mg",
+          system: "http://unitsofmeasure.org",
+          code: "mg",
+        },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "coding":
       return [
@@ -182,12 +287,68 @@ function getSelectionSamples<T extends AnswerType>(
           code: "11110000",
           display: "Option C",
         },
+        {
+          system: "http://loinc.org",
+          code: "2222-2",
+          display: "Option D",
+        },
+        {
+          system: "http://loinc.org",
+          code: "3333-3",
+          display: "Option E",
+        },
+        {
+          system: "http://loinc.org",
+          code: "4444-4",
+          display: "Option F",
+        },
+        {
+          system: "http://loinc.org",
+          code: "5555-5",
+          display: "Option G",
+        },
+        {
+          system: "http://loinc.org",
+          code: "6666-6",
+          display: "Option H",
+        },
+        {
+          system: "http://loinc.org",
+          code: "7777-7",
+          display: "Option I",
+        },
+        {
+          system: "http://loinc.org",
+          code: "8888-8",
+          display: "Option J",
+        },
+        {
+          system: "http://loinc.org",
+          code: "9999-9",
+          display: "Option K",
+        },
+        {
+          system: "http://loinc.org",
+          code: "1010-1",
+          display: "Option L",
+        },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "reference":
       return [
         { reference: "Patient/example", display: "Jane Doe" },
         { reference: "Patient/alpha", display: "John Doe" },
         { reference: "Patient/bravo", display: "Chris Doe" },
+        { reference: "Patient/charlie", display: "Taylor Doe" },
+        { reference: "Patient/delta", display: "Morgan Doe" },
+        { reference: "Patient/echo", display: "Alex Doe" },
+        { reference: "Patient/foxtrot", display: "Jordan Doe" },
+        { reference: "Patient/golf", display: "Riley Doe" },
+        { reference: "Patient/hotel", display: "Casey Doe" },
+        { reference: "Patient/india", display: "Drew Doe" },
+        { reference: "Patient/juliet", display: "Skyler Doe" },
+        { reference: "Patient/kilo", display: "Avery Doe" },
+        { reference: "Patient/lima", display: "Quinn Doe" },
+        { reference: "Patient/mike", display: "Parker Doe" },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     case "attachment":
       return [
@@ -200,6 +361,56 @@ function getSelectionSamples<T extends AnswerType>(
           contentType: "image/png",
           url: "https://example.org/image-b.png",
           title: "Image B",
+        },
+        {
+          contentType: "application/pdf",
+          url: "https://example.org/doc-c.pdf",
+          title: "Document C",
+        },
+        {
+          contentType: "image/jpeg",
+          url: "https://example.org/image-d.jpg",
+          title: "Image D",
+        },
+        {
+          contentType: "text/plain",
+          url: "https://example.org/doc-e.txt",
+          title: "Document E",
+        },
+        {
+          contentType: "application/pdf",
+          url: "https://example.org/doc-f.pdf",
+          title: "Document F",
+        },
+        {
+          contentType: "image/png",
+          url: "https://example.org/image-g.png",
+          title: "Image G",
+        },
+        {
+          contentType: "text/plain",
+          url: "https://example.org/doc-h.txt",
+          title: "Document H",
+        },
+        {
+          contentType: "application/pdf",
+          url: "https://example.org/doc-i.pdf",
+          title: "Document I",
+        },
+        {
+          contentType: "image/jpeg",
+          url: "https://example.org/image-j.jpg",
+          title: "Image J",
+        },
+        {
+          contentType: "text/plain",
+          url: "https://example.org/doc-k.txt",
+          title: "Document K",
+        },
+        {
+          contentType: "application/pdf",
+          url: "https://example.org/doc-l.pdf",
+          title: "Document L",
         },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
     default:

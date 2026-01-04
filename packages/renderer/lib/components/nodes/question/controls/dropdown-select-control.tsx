@@ -113,21 +113,29 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   isLoading: boolean;
 }) {
   const { SelectInput, OpenChoiceBackButton } = useTheme();
-  const store = node.selectStore;
-  const answer = rowProps.answer;
   const [isCustomForced, setIsCustomForced] = useState(false);
-  const optionToken = store.resolveTokenForValue(answer.value);
+
+  const optionToken = node.selectStore.resolveTokenForValue(
+    rowProps.answer.value,
+  );
+
   const isCustomValue =
-    store.allowCustom && optionToken === "" && answer.value != null;
+    node.selectStore.allowCustom &&
+    optionToken === "" &&
+    rowProps.answer.value != null;
+
   const isCustomActive =
-    store.allowCustom && !optionToken && (isCustomValue || isCustomForced);
+    node.selectStore.allowCustom &&
+    (isCustomForced || (!optionToken && isCustomValue));
 
   if (isCustomActive) {
-    const Control = getValueControl(node.type);
+    const Control = getValueControl(
+      node.options.constraint === "optionsOrString" ? "string" : node.type,
+    );
     return (
       <>
         <Control
-          answer={answer}
+          answer={rowProps.answer}
           id={rowProps.id}
           ariaLabelledBy={rowProps.ariaLabelledBy}
           ariaDescribedBy={rowProps.ariaDescribedBy}
@@ -135,7 +143,7 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
         <OpenChoiceBackButton
           onClick={() => {
             setIsCustomForced(false);
-            answer.setValueByUser(null);
+            rowProps.answer.setValueByUser(null);
           }}
           disabled={node.readOnly}
         >
@@ -146,37 +154,45 @@ const OpenChoiceRow = observer(function OpenChoiceRow<T extends AnswerType>({
   }
 
   const clearHandler =
-    answer.value != null && !node.readOnly
-      ? () => answer.setValueByUser(null)
+    rowProps.answer.value != null && !node.readOnly
+      ? () => rowProps.answer.setValueByUser(null)
       : undefined;
-  const options: OptionItem[] = store.resolvedOptions.flatMap((option) => {
-    if (option.value == null) {
-      return [];
-    }
-    return [
-      {
-        token: option.token,
-        label: <ValueDisplay type={node.type} value={option.value} />,
-        disabled: option.disabled,
-      },
-    ];
-  });
-  if (store.allowCustom) {
+
+  const options: OptionItem[] = node.selectStore.resolvedOptions.flatMap(
+    (option) => {
+      if (option.value == null) {
+        return [];
+      }
+      return [
+        {
+          token: option.token,
+          label: <ValueDisplay type={node.type} value={option.value} />,
+          disabled: option.disabled,
+        },
+      ];
+    },
+  );
+
+  if (node.selectStore.allowCustom) {
     options.push({
-      token: store.specifyOtherToken,
+      token: node.selectStore.specifyOtherToken,
       label: strings.selection.specifyOther,
-      disabled: !store.canAddSelection,
+      disabled: false,
     });
   }
+
   const handleSelect = (token: string) => {
-    if (store.allowCustom && token === store.specifyOtherToken) {
+    if (
+      node.selectStore.allowCustom &&
+      token === node.selectStore.specifyOtherToken
+    ) {
       setIsCustomForced(true);
-      answer.setValueByUser(null);
+      rowProps.answer.setValueByUser(null);
       return;
     }
     setIsCustomForced(false);
-    const nextValue = store.resolveValueForToken(token);
-    answer.setValueByUser(nextValue);
+    const nextValue = node.selectStore.resolveValueForToken(token);
+    rowProps.answer.setValueByUser(nextValue);
   };
 
   return (

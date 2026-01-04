@@ -483,8 +483,7 @@ export function estimateAttachmentSize(
 
 export async function prepareAttachmentFromFile(
   file: File,
-  existing: Attachment,
-): Promise<Attachment> {
+): Promise<Attachment | null> {
   const result = await new Promise<string | ArrayBuffer | null>((resolve) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
@@ -492,36 +491,16 @@ export async function prepareAttachmentFromFile(
   });
 
   if (typeof result !== "string") {
-    return existing;
+    return null;
   }
 
   const [, base64] = result.split(",");
-  const updated: Attachment = {
-    ...existing,
+  return {
     data: base64 ?? undefined,
-    title: existing.title ?? file.name,
+    title: file.name,
+    size: String(file.size),
+    contentType: file.type,
   };
-
-  const contentType = file.type || existing.contentType;
-  updated.contentType = contentType || undefined;
-
-  return updated;
-}
-
-export function pruneAttachment(value: Attachment): Attachment | null {
-  const next: Attachment = { ...value };
-  for (const key of Object.keys(next) as (keyof Attachment)[]) {
-    const candidate = next[key];
-    const shouldDrop =
-      candidate === undefined ||
-      candidate === null ||
-      candidate === "" ||
-      (Array.isArray(candidate) && candidate.length === 0);
-    if (shouldDrop) {
-      delete next[key];
-    }
-  }
-  return Object.keys(next).length > 0 ? next : null;
 }
 
 export function groupHasResponses(group: IGroupNode): boolean {

@@ -111,9 +111,13 @@ export class SelectStore<
     const selectedTokens = new Set<string>();
     const answerByToken = new Map<string, IAnswerInstance<T>>();
     const matchedAnswerTokens = new Set<string>();
+    const customAnswerTokens = this.pendingCustomAnswerTokens;
 
     this.resolvedOptions.forEach((option) => {
       const match = this.node.answers.find((answer) => {
+        if (customAnswerTokens.has(answer.token)) {
+          return false;
+        }
         if (answer.value == null || option.value == null) {
           return answer.value == null && option.value == null;
         }
@@ -136,8 +140,9 @@ export class SelectStore<
     const canAddSelection =
       !this.node.readOnly && (this.node.canAdd || availableAnswers.length > 0);
     const hasCustomAnswers = this.allowCustom && customAnswers.length > 0;
+    const hasCustomSlots = this.allowCustom && nonOptionAnswers.length > 0;
     const isCustomActive =
-      this.allowCustom && (this.isCustomSelected || hasCustomAnswers);
+      hasCustomAnswers || (this.isCustomSelected && hasCustomSlots);
     const specifyOtherToken = this.specifyOtherToken;
 
     if (isCustomActive) {
@@ -164,14 +169,26 @@ export class SelectStore<
     if (this.allowCustom && token === state.specifyOtherToken) {
       if (state.isCustomActive) {
         if (!this.node.canRemove) return;
-        state.nonOptionAnswers.forEach((answer) =>
-          this.node.removeAnswer(answer),
-        );
+        state.nonOptionAnswers.forEach((answer) => {
+          this.removePendingToken(answer.token);
+          this.node.removeAnswer(answer);
+        });
         this.isCustomSelected = false;
         return;
       }
       if (!state.canAddSelection) return;
       this.isCustomSelected = true;
+      const availableAnswer = state.availableAnswers[0];
+      if (availableAnswer) {
+        this.addPendingToken(availableAnswer.token);
+        return;
+      }
+      if (this.node.canAdd) {
+        const created = this.node.addAnswer();
+        if (created) {
+          this.addPendingToken(created.token);
+        }
+      }
       return;
     }
 

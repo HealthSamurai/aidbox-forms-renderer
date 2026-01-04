@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { type ComponentType, useCallback, useState } from "react";
 import {
   AnswerType,
   IQuestionNode,
@@ -28,13 +28,24 @@ export const ListSelectControl = observer(function ListSelectControl<
     AnswerList: ThemedAnswerList,
   } = useTheme();
   const store = node.selectStore;
-  const Control = getValueControl(node.type);
+  const Control = getValueControl(
+    node.options.constraint === "optionsOrString" ? "string" : node.type,
+  );
   const addCustomAnswer = useCallback(() => {
-    node.addAnswer();
-  }, [node]);
+    const created = node.addAnswer();
+    if (created) {
+      store.addPendingToken(created.token);
+    }
+  }, [node, store]);
 
   if (store.useCheckboxes) {
     const state = store.checkboxState;
+    const legacyAnswers = store.allowCustom
+      ? []
+      : state.nonOptionAnswers.filter((answer) => answer.value != null);
+    const legacyAnswerByToken = new Map(
+      legacyAnswers.map((answer) => [`${answer.token}_/_legacy`, answer]),
+    );
     const uiOptions: OptionItem[] = state.options.flatMap((option) => {
       if (option.value == null) {
         return [];
@@ -51,6 +62,17 @@ export const ListSelectControl = observer(function ListSelectControl<
         },
       ];
     });
+    if (legacyAnswers.length > 0) {
+      legacyAnswers.forEach((answer) => {
+        if (answer.value !== null) {
+          uiOptions.push({
+            token: `${answer.token}_/_legacy`,
+            label: <ValueDisplay type={node.type} value={answer.value} />,
+            disabled: true,
+          });
+        }
+      });
+    }
     if (store.allowCustom) {
       uiOptions.push({
         token: state.specifyOtherToken,
@@ -78,16 +100,21 @@ export const ListSelectControl = observer(function ListSelectControl<
             <AnswerScaffold
               key={answer.token}
               answer={answer}
-              control={Control}
+              control={Control as ComponentType<ValueControlProps<T>>}
             />
           ))}
         </ThemedAnswerList>
       ) : null;
 
+    const selectedTokens = new Set(state.selectedTokens);
+    legacyAnswerByToken.forEach((_answer, token) => {
+      selectedTokens.add(token);
+    });
+
     return (
       <CheckboxList
         options={uiOptions}
-        tokens={state.selectedTokens}
+        tokens={selectedTokens}
         onChange={store.handleCheckboxToggle}
         id={node.token}
         ariaLabelledBy={getNodeLabelId(node)}
@@ -95,7 +122,8 @@ export const ListSelectControl = observer(function ListSelectControl<
         disabled={node.readOnly}
         isLoading={store.isLoading}
         renderErrors={(token) => {
-          const answer = state.answerByToken.get(token);
+          const answer =
+            state.answerByToken.get(token) ?? legacyAnswerByToken.get(token);
           return answer ? <AnswerErrors answer={answer} /> : null;
         }}
         after={customControl}
@@ -120,7 +148,9 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
 }) {
   const { RadioButtonList } = useTheme();
   const store = node.selectStore;
-  const Control = getValueControl(node.type);
+  const customControlType =
+    node.options.constraint === "optionsOrString" ? "string" : node.type;
+  const Control = getValueControl(customControlType);
   const answer = rowProps.answer;
   const [isCustomForced, setIsCustomForced] = useState(false);
   const selectToken = store.resolveTokenForValue(answer.value);
@@ -139,7 +169,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
   const isCustomValue =
     store.allowCustom && selectToken === "" && answer.value != null;
   const isCustomActive =
-    store.allowCustom && !selectToken && (isCustomValue || isCustomForced);
+    store.allowCustom && (isCustomForced || (!selectToken && isCustomValue));
   const selectValue = isCustomActive
     ? store.specifyOtherToken
     : selectToken || legacyOption?.token || "";
@@ -159,7 +189,7 @@ const OptionRadioRow = observer(function OptionRadioRow<T extends AnswerType>({
     radioOptions.push({
       token: store.specifyOtherToken,
       label: strings.selection.specifyOther,
-      disabled: !store.canAddSelection,
+      disabled: false,
     });
   }
 

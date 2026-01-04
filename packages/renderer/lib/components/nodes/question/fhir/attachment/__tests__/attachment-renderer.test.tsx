@@ -32,7 +32,7 @@ describe("attachment-renderer", () => {
             initial: [
               {
                 valueAttachment: {
-                  size: 2048,
+                  size: "2048",
                 },
               },
             ],
