@@ -112,7 +112,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     const seen = new Set<string>();
     return this.answerOptions.flatMap((option) => {
       const value = getValue(option, dataType);
-      if (value === undefined) {
+      if (value == null) {
         return [];
       }
 
@@ -140,14 +140,8 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  private get valueMap(): Map<
-    string,
-    DataTypeToType<AnswerTypeToDataType<T>> | null
-  > {
-    const map = new Map<
-      string,
-      DataTypeToType<AnswerTypeToDataType<T>> | null
-    >();
+  private get valueMap(): Map<string, DataTypeToType<AnswerTypeToDataType<T>>> {
+    const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();
     for (const entry of this.resolvedOptions) {
       map.set(entry.token, entry.value);
     }
@@ -163,9 +157,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
     const match = this.resolvedOptions.find((entry) =>
-      entry.value == null
-        ? false
-        : areValuesEqual(dataType, value, entry.value),
+      areValuesEqual(dataType, value, entry.value),
     );
     return match?.token ?? "";
   }

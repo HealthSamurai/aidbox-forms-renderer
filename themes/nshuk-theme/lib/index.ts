@@ -13,6 +13,7 @@ import { RadioButtonList } from "./components/radio-button-list.tsx";
 import { Checkbox } from "./components/checkbox.tsx";
 import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
+import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -40,10 +41,6 @@ import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 import { GroupRemoveButton } from "./components/group-remove-button.tsx";
 import { OpenChoiceBackButton } from "./components/open-choice-back-button.tsx";
-import { MultiSelectSpecifyOtherButton } from "./components/multi-select-specify-other-button.tsx";
-import { MultiSelectClearAllButton } from "./components/multi-select-clear-all-button.tsx";
-import { MultiSelectDialogCancelButton } from "./components/multi-select-dialog-cancel-button.tsx";
-import { MultiSelectDialogAddButton } from "./components/multi-select-dialog-add-button.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
@@ -71,6 +68,7 @@ const passthrough: Theme = {
   Checkbox,
   CheckboxList,
   MultiSelectInput,
+  CustomOptionForm,
   Errors,
   NodeHeader,
   QuestionScaffold,
@@ -98,10 +96,6 @@ const passthrough: Theme = {
   GroupWrapperScaffoldItem,
   GroupRemoveButton,
   OpenChoiceBackButton,
-  MultiSelectSpecifyOtherButton,
-  MultiSelectClearAllButton,
-  MultiSelectDialogCancelButton,
-  MultiSelectDialogAddButton,
   GroupScaffold,
   GroupActions,
   GridTable,

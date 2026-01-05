@@ -29,6 +29,7 @@
   - [RadioButtonList](#radiobuttonlist)
   - [CheckboxList](#checkboxlist)
   - [MultiSelectInput](#multiselectinput)
+  - [CustomOptionForm](#customoptionform)
   - [FileInput](#fileinput)
   - [AnswerAddButton](#answeraddbutton)
   - [AnswerRemoveButton](#answerremovebutton)
@@ -37,10 +38,6 @@
   - [FormSubmitButton](#formsubmitbutton)
   - [FormResetButton](#formresetbutton)
   - [OpenChoiceBackButton](#openchoicebackbutton)
-  - [MultiSelectSpecifyOtherButton](#multiselectspecifyotherbutton)
-  - [MultiSelectClearAllButton](#multiselectclearallbutton)
-  - [MultiSelectDialogCancelButton](#multiselectdialogcancelbutton)
-  - [MultiSelectDialogAddButton](#multiselectdialogaddbutton)
   - [AnswerList](#answerlist)
   - [AnswerScaffold](#answerscaffold)
   - [QuestionScaffold](#questionscaffold)
@@ -61,10 +58,9 @@
   - [TabContainer](#tabcontainer)
 - [Data types](#data-types)
   - [OptionItem](#optionitem)
-  - [OptionEntry](#optionentry)
+  - [SelectedOptionItem](#selectedoptionitem)
+  - [CustomOptionAction](#customoptionaction)
   - [Attachment](#attachment)
-  - [MultiSelectChip](#multiselectchip)
-  - [MultiSelectDialog](#multiselectdialog)
   - [GridTableColumn](#gridtablecolumn)
   - [GridTableRow](#gridtablerow)
   - [GridTableCell](#gridtablecell)
@@ -104,16 +100,15 @@ every component must be provided.
 
 ## Conventions
 
-- Controlled props: text/number/date inputs use value and onChange. Option selectors use token and onChange, and
-  checkbox lists use tokens for the selected set. onChange receives the next value, never a DOM event.
+- Controlled props: text/number/date inputs use value and onChange. Single-selects pass selectedOption, multi-selects
+  pass selectedOptions with onSelect/onDeselect, and checkbox lists use tokens for the selected set. onChange receives
+  the next value, never a DOM event.
 - Disabled states: the renderer uses disabled to indicate non editable inputs. Prefer disabled over readOnly in theme
   components.
 - Accessibility: ariaLabelledBy and ariaDescribedBy are string ids. Wire them to the relevant elements.
 - Ids: when id is provided, pass it through to the focusable control.
-- children is the slot name for single content. Data types may still use content for internal fragments (for example
-  MultiSelectChip).
-- Option fallback: legacyOption is provided when a stored answer does not match current options. Surface it so data is
-  not lost.
+- children is the slot name for single content. Option data types use label for the display content.
+- Option fallback: include disabled legacy options in the options list so stored answers stay visible.
 - Props marked No in Required can be omitted. Treat undefined as not provided.
 
 ## Component reference
@@ -344,26 +339,26 @@ Numeric control with stepper affordances for small ranges. It should support typ
 
 ### SelectInput
 
-Single-select dropdown for option lists. Include legacyOption as a disabled entry when present and show a clear control
-when provided.
+Single-select dropdown for option lists. Include disabled legacy entries in the options list when needed and allow
+clearing the selection when applicable.
 
-| Prop              | Type                      | Required | Description                                                                              |
-| ----------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`            | Yes      | Render these entries as selectable options in the dropdown.                              |
-| `token`           | `string`                  | Yes      | Render this option token as the current selection.                                       |
-| `onChange`        | `(token: string) => void` | Yes      | Call with the newly selected option token when the user changes the selection.           |
-| `legacyOption`    | `OptionItem \| null`      | Yes      | Include a non-selectable option that represents a stored value not present in `options`. |
-| `id`              | `string`                  | Yes      | Set as the select element id so labels can target it.                                    |
-| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the select with its label.                       |
-| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the select with help or error text.             |
-| `disabled`        | `boolean`                 | Yes      | When true, render the select in a disabled state and prevent changes.                    |
-| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or disable option interactions as needed.            |
-| `onClear`         | `() => void`              | No       | Invoke when the user requests clearing the current selection.                            |
-| `clearLabel`      | `string`                  | No       | Render this text on the clear control when `onClear` is provided.                        |
+| Prop               | Type                              | Required | Description                                                                          |
+| ------------------ | --------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `options`          | `OptionItem[]`                    | Yes      | Render these entries as selectable options in the dropdown.                          |
+| `selectedOption`   | `SelectedOptionItem \| null`      | Yes      | Render this option as the current selection, or null when empty.                     |
+| `onChange`         | `(token: string \| null) => void` | Yes      | Call with the newly selected option token, or null when the selection is cleared.    |
+| `customOption`     | `OptionItem`                      | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
+| `customOptionForm` | `ReactNode`                       | No       | Render UI associated with the custom option (for example, a custom value input row). |
+| `id`               | `string`                          | Yes      | Set as the select element id so labels can target it.                                |
+| `ariaLabelledBy`   | `string`                          | No       | Forward to aria-labelledby to associate the select with its label.                   |
+| `ariaDescribedBy`  | `string`                          | No       | Forward to aria-describedby to associate the select with help or error text.         |
+| `disabled`         | `boolean`                         | No       | When true, render the select in a disabled state and prevent changes.                |
+| `isLoading`        | `boolean`                         | No       | When true, show a loading indicator or disable option interactions as needed.        |
+| `placeholder`      | `string`                          | No       | Show this hint in the input when no option is selected.                              |
 
 ### RadioButtonList
 
-Single-select option list presented as radio buttons. Use legacyOption for stored values that are no longer in the list,
+Single-select option list presented as radio buttons. Include disabled legacy options in the options list when needed
 and allow extra content after the list.
 
 | Prop              | Type                      | Required | Description                                                                   |
@@ -371,7 +366,6 @@ and allow extra content after the list.
 | `options`         | `OptionItem[]`            | Yes      | Render these entries as radio options.                                        |
 | `token`           | `string`                  | Yes      | Render this option token as the currently selected radio.                     |
 | `onChange`        | `(token: string) => void` | Yes      | Call with the newly selected option token when the user changes selection.    |
-| `legacyOption`    | `OptionItem \| null`      | Yes      | Include a disabled radio for a stored value that is not present in `options`. |
 | `id`              | `string`                  | Yes      | Use as the radio group name/id so options stay grouped.                       |
 | `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the group with its label.             |
 | `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the group with help or error text.   |
@@ -400,23 +394,34 @@ inputs.
 
 ### MultiSelectInput
 
-Composite multi-select UI that combines a picker, chips, optional actions, and an optional custom-value dialog. It
-should display selections as chips and allow removal when permitted.
+Composite multi-select UI that combines a picker, chips, and optional custom-option content. It should display selections
+as chips and allow removal when permitted.
 
-| Prop              | Type                      | Required | Description                                                                             |
-| ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`            | Yes      | Render these entries as options in the picker dropdown.                                 |
-| `token`           | `string`                  | No       | Use this option token as the current selection shown in the picker.                     |
-| `onChange`        | `(token: string) => void` | Yes      | Call with the selected option token when the user picks an option.                      |
-| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby for the picker so it associates with the label.              |
-| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby for the picker so it associates with help or error text.    |
-| `disabled`        | `boolean`                 | No       | When true, render the picker and chip actions in a disabled state.                      |
-| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or busy state for the options.                      |
-| `showOptions`     | `boolean`                 | No       | When false, hide the picker while still rendering chips and actions.                    |
-| `chips`           | `MultiSelectChip[]`       | Yes      | Render each chip as the current selection list, including its remove action and errors. |
-| `actions`         | `ReactNode`               | No       | Render additional action controls provided by the renderer (for example, “Clear all”).  |
-| `dialog`          | `MultiSelectDialog`       | No       | Render an overlay dialog when provided to capture custom values.                        |
-| `placeholder`     | `string`                  | No       | Show this placeholder text in the picker when no value is selected.                     |
+| Prop               | Type                      | Required | Description                                                                          |
+| ------------------ | ------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `options`          | `OptionItem[]`            | Yes      | Render these entries as options in the picker dropdown (including selected ones).    |
+| `selectedOptions`  | `SelectedOptionItem[]`    | Yes      | Render these selections as chips and use their tokens to filter options.             |
+| `onSelect`         | `(token: string) => void` | Yes      | Call with the selected option token when the user picks an option.                   |
+| `onDeselect`       | `(token: string) => void` | Yes      | Call with the selected token when the user removes a selection.                      |
+| `id`               | `string`                  | Yes      | Set as the input id so the combobox and listbox can be referenced.                   |
+| `customOption`     | `OptionItem`              | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
+| `ariaLabelledBy`   | `string`                  | No       | Forward to aria-labelledby for the picker so it associates with the label.           |
+| `ariaDescribedBy`  | `string`                  | No       | Forward to aria-describedby for the picker so it associates with help or error text. |
+| `disabled`         | `boolean`                 | No       | When true, render the picker and chip actions in a disabled state.                   |
+| `isLoading`        | `boolean`                 | No       | When true, show a loading indicator or busy state for the options.                   |
+| `customOptionForm` | `ReactNode`               | No       | Render UI associated with the custom option (for example, a custom value input row). |
+| `placeholder`      | `string`                  | No       | Show this placeholder text in the picker when no value is selected.                  |
+
+### CustomOptionForm
+
+Layout wrapper for custom option entry flows. Use it to present the custom input along with submit/cancel actions.
+
+| Prop      | Type                 | Required | Description                                                             |
+| --------- | -------------------- | -------- | ----------------------------------------------------------------------- |
+| `content` | `ReactNode`          | Yes      | Render the custom input control.                                        |
+| `errors`  | `ReactNode`          | No       | Render validation or error content associated with the custom input.    |
+| `submit`  | `CustomOptionAction` | Yes      | Configure the primary submit action (label, handler, disabled state).   |
+| `cancel`  | `CustomOptionAction` | Yes      | Configure the secondary cancel action (label, handler, disabled state). |
 
 ### FileInput
 
@@ -501,46 +506,6 @@ Action that returns from a custom open-choice input back to the option list.
 | ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
 | `onClick`  | `() => void` | Yes      | Call when the user wants to return from custom entry to the option list.                            |
 | `disabled` | `boolean`    | Yes      | When true, render the action disabled and prevent switching back.                                   |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
-
-### MultiSelectSpecifyOtherButton
-
-Action that opens the custom-value flow for multi-select questions.
-
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user wants to add a custom value outside the options list.                            |
-| `disabled` | `boolean`    | Yes      | When true, render the action disabled and prevent entering the flow.                                |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
-
-### MultiSelectClearAllButton
-
-Action that clears all current selections in a multi-select control.
-
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user wants to clear every selected value.                                             |
-| `disabled` | `boolean`    | Yes      | When true, render the action disabled and prevent clearing values.                                  |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
-
-### MultiSelectDialogCancelButton
-
-Cancel action inside the custom-value dialog. Close the dialog without adding a value.
-
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user cancels the custom-value dialog.                                                 |
-| `disabled` | `boolean`    | Yes      | When true, render the cancel action disabled and prevent closing.                                   |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
-
-### MultiSelectDialogAddButton
-
-Confirm action inside the custom-value dialog. Add the custom value when pressed.
-
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user confirms adding the custom value.                                                |
-| `disabled` | `boolean`    | Yes      | When true, render the confirm action disabled and prevent adding.                                   |
 | `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
 
 ### AnswerList
@@ -728,17 +693,32 @@ Shared data structures referenced by theme component props.
 
 ### OptionItem
 
-Base option shape used by single-select controls such as select inputs and radio lists.
+Base option shape used by option selectors such as select inputs and radio lists.
 
 | Field      | Type        | Required | Description                                                                              |
 | ---------- | ----------- | -------- | ---------------------------------------------------------------------------------------- |
-| `token`    | `string`    | Yes      | Use as the stable option token to compare against the control’s selected token.          |
+| `token`    | `string`    | Yes      | Use as the stable option token for selection and updates.                                |
 | `label`    | `ReactNode` | Yes      | Render as the visible label for the option; the renderer provides display-ready content. |
 | `disabled` | `boolean`   | No       | When true, render the option as unavailable and prevent selection.                       |
 
-### OptionEntry
+### SelectedOptionItem
 
-Alias of OptionItem.
+Represents a selected option rendered as a chip or a single selection.
+
+| Field      | Type        | Required | Description                                                        |
+| ---------- | ----------- | -------- | ------------------------------------------------------------------ |
+| `token`    | `string`    | Yes      | Use as a stable identifier when rendering and updating selections. |
+| `label`    | `ReactNode` | Yes      | Render as the selection's visible label.                           |
+| `disabled` | `boolean`   | No       | When true, render the selection as unavailable.                    |
+| `errors`   | `ReactNode` | No       | Render as error content associated with this selection.            |
+
+### CustomOptionAction
+
+| Field      | Type         | Required | Description                                                    |
+| ---------- | ------------ | -------- | -------------------------------------------------------------- |
+| `label`    | `string`     | Yes      | Render as the action label.                                    |
+| `onClick`  | `() => void` | Yes      | Call when the action is activated.                             |
+| `disabled` | `boolean`    | No       | When true, render the action disabled and prevent interaction. |
 
 ### Attachment
 
@@ -751,26 +731,6 @@ Attachment shape used by `FileInput` to display metadata and stored content.
 | `size`        | `number` | No       | Byte size for the attachment used for display.      |
 | `contentType` | `string` | No       | MIME type used for labeling or preview decisions.   |
 | `data`        | `string` | No       | Base64-encoded file content for inline attachments. |
-
-### MultiSelectChip
-
-| Field            | Type         | Required | Description                                                        |
-| ---------------- | ------------ | -------- | ------------------------------------------------------------------ |
-| `token`          | `string`     | Yes      | Use as a stable identifier when rendering and updating chip lists. |
-| `content`        | `ReactNode`  | Yes      | Render as the chip’s visible content (usually a value display).    |
-| `errors`         | `ReactNode`  | No       | Render as error content associated with this chip.                 |
-| `onRemove`       | `() => void` | No       | Call when the user activates the chip’s remove action.             |
-| `removeDisabled` | `boolean`    | No       | When true, render the remove action disabled.                      |
-| `removeLabel`    | `string`     | No       | Use as the accessible label for the remove control.                |
-
-### MultiSelectDialog
-
-| Field     | Type        | Required | Description                                                |
-| --------- | ----------- | -------- | ---------------------------------------------------------- |
-| `open`    | `boolean`   | Yes      | Use to control whether the dialog is rendered and visible. |
-| `title`   | `string`    | Yes      | Render as the dialog heading.                              |
-| `content` | `ReactNode` | Yes      | Render as the dialog body content.                         |
-| `actions` | `ReactNode` | Yes      | Render as the dialog footer actions.                       |
 
 ### GridTableColumn
 

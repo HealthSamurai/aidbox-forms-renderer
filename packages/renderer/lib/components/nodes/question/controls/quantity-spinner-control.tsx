@@ -14,6 +14,8 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitToken;
+  const selectedUnit =
+    answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
   const { min, max } = answer.bounds;
   const disabled = answer.question.readOnly;
 
@@ -49,9 +51,8 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
       ) : (
         <SelectInput
           options={answer.quantity.entries}
-          token={unitValue}
-          legacyOption={null}
-          onChange={(token) => answer.quantity.handleSelectChange(token)}
+          selectedOption={selectedUnit}
+          onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
           id={`${id}_/_unit`}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}

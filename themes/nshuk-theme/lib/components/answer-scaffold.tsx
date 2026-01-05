@@ -7,7 +7,7 @@ export function AnswerScaffold({
 }: AnswerScaffoldProps) {
   return (
     <div className="nhsuk-form-group">
-      <div>{control}</div>
+      {control}
       {toolbar ? (
         <div className="nhsuk-button-group" style={{ marginTop: "0.25rem" }}>
           {toolbar}

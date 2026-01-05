@@ -223,7 +223,7 @@ export type AnswerLifecycle =
 
 export type ResolvedAnswerOption<T extends AnswerType> = {
   token: string;
-  value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  value: DataTypeToType<AnswerTypeToDataType<T>>;
   disabled: boolean;
 };
 
@@ -678,7 +678,7 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   renderer: QuestionRendererComponent<T>;
 }
 
-export type SelectPendingDialog<T extends AnswerType> = {
+export type SelectPendingCustomInput<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
   isNew: boolean;
 };
@@ -698,14 +698,13 @@ export type SelectCheckboxState<T extends AnswerType> = {
 export type SelectChipItem<T extends AnswerType> = {
   token: string;
   answer: IAnswerInstance<T>;
-  inlineString: boolean;
   kind: "option" | "custom";
 };
 
-export type SelectDialogState<T extends AnswerType> = {
+export type SelectCustomInputState<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
   isNew: boolean;
-  canConfirm: boolean;
+  canSubmit: boolean;
 };
 
 export interface ISelectStore<T extends AnswerType = AnswerType> {
@@ -713,18 +712,18 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly isMultiSelect: boolean;
   readonly allowCustom: boolean;
   readonly resolvedOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
+  readonly filteredOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
   readonly isLoading: boolean;
   readonly checkboxState: SelectCheckboxState<T>;
   readonly selectedChipItems: Array<SelectChipItem<T>>;
   readonly customChipItems: Array<SelectChipItem<T>>;
-  readonly hasCustomAction: boolean;
+  readonly selectedOptionAnswers: ReadonlyMap<string, IAnswerInstance<T>>;
+  readonly selectedOptionTokens: ReadonlySet<string>;
   readonly specifyOtherToken: string;
   readonly canAddSelection: boolean;
   readonly canRemoveSelection: boolean;
   readonly hasSelections: boolean;
-  readonly dialogState: SelectDialogState<T> | null;
-  readonly optionsWithSpecifyOther: ReadonlyArray<ResolvedAnswerOption<T>>;
-  readonly pendingSelectToken: string;
+  readonly customInputState: SelectCustomInputState<T> | null;
   readonly ariaLabelledBy: string;
   readonly ariaDescribedBy: string | undefined;
 
@@ -735,14 +734,16 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
     token: string,
   ): DataTypeToType<AnswerTypeToDataType<T>> | null;
 
+  setSearchQuery(query: string): void;
   handleCheckboxToggle(token: string): void;
   handleSelectOption(token: string): void;
   handleSelectChange(token: string): void;
   handleRemoveAnswer(answer: IAnswerInstance<T>): void;
-  handleClearAll(): void;
-  cancelCustomDialog(): void;
-  confirmCustomDialog(): void;
+  openCustomInput(answer?: IAnswerInstance<T>): void;
+  cancelCustomInput(): void;
+  submitCustomInput(): void;
   addPendingToken(token: string): void;
+  removePendingToken(token: string): void;
   buildRowProps(
     answer: IAnswerInstance<T>,
     suffix: string,

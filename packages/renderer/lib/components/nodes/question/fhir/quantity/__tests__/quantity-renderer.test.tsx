@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
@@ -8,6 +15,7 @@ import { isQuestionNode } from "../../../../../../stores/nodes/questions/questio
 import { QuantityRenderer } from "../quantity-renderer.tsx";
 import { EXT } from "../../../../../../utils.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
+import { strings } from "../../../../../../strings.ts";
 
 function getQuantityQuestion(form: FormStore, linkId: string) {
   const node = form.scope.lookupNode(linkId);
@@ -16,6 +24,42 @@ function getQuantityQuestion(form: FormStore, linkId: string) {
     throw new Error(`Expected quantity question for ${linkId}`);
   }
   return node as IQuestionNode<"quantity">;
+}
+
+function getListbox(input: HTMLElement) {
+  const listboxId = input.getAttribute("aria-controls");
+  expect(listboxId).toBeTruthy();
+  const listbox = document.getElementById(listboxId!);
+  expect(listbox).not.toBeNull();
+  return listbox as HTMLElement;
+}
+
+function getCombobox(label: string | RegExp) {
+  return screen.getByRole("combobox", { name: label }) as HTMLElement;
+}
+
+function getComboboxValue(combobox: HTMLElement) {
+  if (
+    combobox instanceof HTMLInputElement ||
+    combobox instanceof HTMLTextAreaElement
+  ) {
+    return combobox.value;
+  }
+  return combobox.textContent?.trim() ?? "";
+}
+
+async function selectComboboxOption(
+  user: ReturnType<typeof userEvent.setup>,
+  input: HTMLElement,
+  optionLabel: string,
+) {
+  await user.click(input);
+  const listbox = getListbox(input);
+  const option = within(listbox).getByRole("option", {
+    name: optionLabel,
+  });
+  await user.click(option);
+  return option;
 }
 
 afterEach(cleanup);
@@ -58,18 +102,17 @@ describe("quantity-renderer", () => {
 
       render(<QuantityRenderer node={question} />);
 
-      const combobox = screen.getByRole("combobox", { name: /dosage/i });
-      const mgOption = screen.getByRole("option", {
-        name: "mg",
-      }) as HTMLOptionElement;
+      const combobox = getCombobox(/dosage/i);
+      const user = userEvent.setup();
 
       expect(combobox).toBeInTheDocument();
-      expect(mgOption.selected).toBe(false);
+      expect(getComboboxValue(combobox)).toBe(
+        strings.selection.selectPlaceholder,
+      );
 
-      const user = userEvent.setup();
-      await user.selectOptions(combobox, mgOption.value);
+      await selectComboboxOption(user, combobox, "mg");
 
-      expect(mgOption.selected).toBe(true);
+      expect(getComboboxValue(getCombobox(/dosage/i))).toBe("mg");
     });
 
     it("preselects the matching unit from the response", () => {
@@ -121,10 +164,8 @@ describe("quantity-renderer", () => {
 
       render(<QuantityRenderer node={question} />);
 
-      const option = screen.getByRole("option", {
-        name: "kg",
-      }) as HTMLOptionElement;
-      expect(option.selected).toBe(true);
+      const combobox = getCombobox(/weight/i);
+      expect(getComboboxValue(combobox)).toBe("kg");
     });
 
     it("auto selects the single unit option", async () => {
@@ -155,21 +196,26 @@ describe("quantity-renderer", () => {
 
       const { getByRole } = render(<QuantityRenderer node={question} />);
 
-      const combobox = getByRole("combobox");
-      const option = screen.getByRole("option", {
-        name: "mL",
-      }) as HTMLOptionElement;
-      expect(combobox).toHaveValue(option.value);
+      const combobox = getByRole("combobox") as HTMLElement;
+      expect(getComboboxValue(combobox)).toBe("mL");
       const numberInput = screen.getByRole("spinbutton", {
         name: /volume/i,
       }) as HTMLInputElement;
       expect(numberInput.value).toBe("");
 
       const user = userEvent.setup();
-      await user.selectOptions(combobox, "");
+      const clearButton = combobox.parentElement?.querySelector(
+        "button[aria-label='Clear']",
+      ) as HTMLButtonElement | null;
+      expect(clearButton).not.toBeNull();
+      await user.click(clearButton as HTMLButtonElement);
 
       expect(numberInput.value).toBe("");
-      expect(combobox).toHaveValue("");
+      await waitFor(() =>
+        expect(getComboboxValue(getByRole("combobox") as HTMLElement)).toBe(
+          strings.selection.selectPlaceholder,
+        ),
+      );
     });
 
     it("applies the single unit once the user types a value", async () => {
@@ -206,16 +252,15 @@ describe("quantity-renderer", () => {
       expect(numberInput).toBeTruthy();
       if (!numberInput) return;
 
-      const combobox = screen.getByRole("combobox", { name: /temperature/i });
+      const combobox = getCombobox(/temperature/i);
 
       const user = userEvent.setup();
       await user.type(numberInput, "37.5");
 
       expect(numberInput.value).toBe("37.5");
-      const option = screen.getByRole("option", {
-        name: "°C",
-      }) as HTMLOptionElement;
-      expect(combobox).toHaveValue(option.value);
+      await waitFor(() =>
+        expect(getComboboxValue(getCombobox(/temperature/i))).toBe("°C"),
+      );
     });
 
     it("does not auto select when value is prepopulated", async () => {
@@ -253,8 +298,12 @@ describe("quantity-renderer", () => {
 
       const { getByRole } = render(<QuantityRenderer node={question} />);
 
-      const combobox = getByRole("combobox");
-      await waitFor(() => expect(combobox).toHaveValue(""));
+      const combobox = getByRole("combobox") as HTMLElement;
+      await waitFor(() =>
+        expect(getComboboxValue(combobox)).toBe(
+          strings.selection.selectPlaceholder,
+        ),
+      );
       const tempInput = screen.getByRole("spinbutton", {
         name: /temperature/i,
       }) as HTMLInputElement;
@@ -316,29 +365,35 @@ describe("quantity-renderer", () => {
       const form = new FormStore(questionnaire, response);
       const question = getQuantityQuestion(form, "rate");
 
-      const { getByRole, queryByRole } = render(
-        <QuantityRenderer node={question} />,
+      const { getByRole } = render(<QuantityRenderer node={question} />);
+
+      const combobox = getByRole("combobox") as HTMLElement;
+      expect(getComboboxValue(combobox)).toBe("mL/day");
+
+      const user = userEvent.setup();
+      await user.click(combobox);
+      const listbox = getListbox(combobox);
+      const legacyOption = within(listbox).getByRole("option", {
+        name: "mL/day",
+      }) as HTMLButtonElement;
+      expect(legacyOption).toBeDisabled();
+      expect(legacyOption).toHaveAttribute("aria-selected", "true");
+
+      await user.click(
+        within(listbox).getByRole("option", { name: "mL/hour" }),
       );
 
-      const legacyOption = getByRole("option", {
-        name: "mL/day",
-        hidden: true,
-      }) as HTMLOptionElement;
-
-      expect(legacyOption.disabled).toBe(true);
-      expect(legacyOption.selected).toBe(true);
-
-      const combobox = getByRole("combobox");
-      const newOption = getByRole("option", {
-        name: "mL/hour",
-      }) as HTMLOptionElement;
-      const user = userEvent.setup();
-      await user.selectOptions(combobox, newOption.value);
-
+      const refreshedCombobox = getByRole("combobox") as HTMLElement;
+      fireEvent.click(refreshedCombobox);
+      const refreshedListbox = getListbox(refreshedCombobox);
       expect(
-        queryByRole("option", { name: "mL/day", hidden: true }),
+        within(refreshedListbox).queryByRole("option", {
+          name: "mL/day",
+        }),
       ).toBeNull();
-      expect(newOption).toHaveProperty("selected", true);
+      expect(
+        within(refreshedListbox).getByRole("option", { name: "mL/hour" }),
+      ).toHaveAttribute("aria-selected", "true");
     });
 
     it("does not reintroduce the legacy fallback after clearing a new selection", async () => {
@@ -386,26 +441,33 @@ describe("quantity-renderer", () => {
       const form = new FormStore(questionnaire, response);
       const question = getQuantityQuestion(form, "rate");
 
-      const { getByRole, queryByRole } = render(
-        <QuantityRenderer node={question} />,
-      );
+      const { getByRole } = render(<QuantityRenderer node={question} />);
 
-      const combobox = getByRole("combobox");
-      const newOption = getByRole("option", {
-        name: "mL/hour",
-      }) as HTMLOptionElement;
+      const combobox = getByRole("combobox") as HTMLElement;
       const user = userEvent.setup();
-      await user.selectOptions(combobox, newOption.value);
-      await user.selectOptions(combobox, "");
+      await selectComboboxOption(user, combobox, "mL/hour");
+      const selectedCombobox = getByRole("combobox") as HTMLElement;
+      const clearButton = selectedCombobox.parentElement?.querySelector(
+        "button[aria-label='Clear']",
+      ) as HTMLButtonElement | null;
+      expect(clearButton).not.toBeNull();
+      await user.click(clearButton as HTMLButtonElement);
 
+      const clearedCombobox = getByRole("combobox") as HTMLElement;
+      fireEvent.click(clearedCombobox);
+      const listbox = getListbox(clearedCombobox);
       expect(
-        queryByRole("option", { name: "mL/day", hidden: true }),
+        within(listbox).queryByRole("option", { name: "mL/day" }),
       ).toBeNull();
       const rateInput = screen.getByRole("spinbutton", {
         name: /infusion rate/i,
       }) as HTMLInputElement;
       expect(rateInput.value).toBe("50");
-      expect(combobox).toHaveValue("");
+      await waitFor(() =>
+        expect(getComboboxValue(getByRole("combobox") as HTMLElement)).toBe(
+          strings.selection.selectPlaceholder,
+        ),
+      );
     });
 
     it("keeps free-form unit entry as text when no unit options are provided", async () => {

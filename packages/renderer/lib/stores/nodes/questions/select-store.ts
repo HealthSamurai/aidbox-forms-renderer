@@ -1,7 +1,9 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import FuzzySearch from "fuzzy-search";
 import {
   AnswerType,
   AnswerTypeToDataType,
+  DataType,
   DataTypeToType,
   IAnswerInstance,
   IQuestionNode,
@@ -9,8 +11,8 @@ import {
   ResolvedAnswerOption,
   SelectCheckboxState,
   SelectChipItem,
-  SelectDialogState,
-  SelectPendingDialog,
+  SelectCustomInputState,
+  SelectPendingCustomInput,
   ValueControlProps,
 } from "../../../types.ts";
 import {
@@ -35,6 +37,14 @@ const BOOLEAN_FALLBACK_OPTIONS: Array<ResolvedAnswerOption<"boolean">> = [
   },
 ];
 
+const DEFAULT_SEARCH_KEYS: readonly string[] = ["value"];
+const SEARCH_KEYS_BY_TYPE: Partial<Record<DataType, readonly string[]>> = {
+  Coding: ["value.display", "value.code", "value.system", "value.version"],
+  Reference: ["value.display", "value.reference", "value.identifier.value"],
+  Quantity: ["value.unit", "value.code", "value.system", "value.value"],
+  Attachment: ["value.title", "value.url", "value.contentType"],
+};
+
 export class SelectStore<
   T extends AnswerType = AnswerType,
 > implements ISelectStore<T> {
@@ -47,10 +57,10 @@ export class SelectStore<
   private pendingCustomAnswerTokens = new Set<string>();
 
   @observable
-  pendingSelectToken = "";
+  private pendingCustomInput: SelectPendingCustomInput<T> | null = null;
 
   @observable
-  private pendingCustomDialog: SelectPendingDialog<T> | null = null;
+  private searchQuery = "";
 
   constructor(node: IQuestionNode<T>) {
     this.node = node;
@@ -88,6 +98,25 @@ export class SelectStore<
   }
 
   @computed
+  private get searchIndex(): FuzzySearch<ResolvedAnswerOption<T>> {
+    const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
+    const searchKeys = SEARCH_KEYS_BY_TYPE[dataType] ?? DEFAULT_SEARCH_KEYS;
+    return new FuzzySearch(this.resolvedOptions, searchKeys, {
+      caseSensitive: false,
+      sort: true,
+    });
+  }
+
+  @computed
+  get filteredOptions(): ReadonlyArray<ResolvedAnswerOption<T>> {
+    const query = this.searchQuery.trim();
+    if (!query) {
+      return this.resolvedOptions;
+    }
+    return this.searchIndex.search(query);
+  }
+
+  @computed
   get isLoading(): boolean {
     return this.node.options.loading;
   }
@@ -118,8 +147,8 @@ export class SelectStore<
         if (customAnswerTokens.has(answer.token)) {
           return false;
         }
-        if (answer.value == null || option.value == null) {
-          return answer.value == null && option.value == null;
+        if (answer.value == null) {
+          return false;
         }
         return areValuesEqual(dataType, answer.value, option.value);
       });
@@ -149,8 +178,20 @@ export class SelectStore<
       selectedTokens.add(specifyOtherToken);
     }
 
+    const canRemoveSelection = this.canRemoveSelection;
+    const options = this.resolvedOptions.map((option) => {
+      const isSelected = selectedTokens.has(option.token);
+      return {
+        ...option,
+        disabled:
+          option.disabled ||
+          (!isSelected && !canAddSelection) ||
+          (isSelected && !canRemoveSelection),
+      };
+    });
+
     return {
-      options: this.resolvedOptions,
+      options,
       selectedTokens,
       answerByToken,
       nonOptionAnswers,
@@ -201,12 +242,9 @@ export class SelectStore<
       return;
     }
     if (!state.canAddSelection) return;
-    const next =
-      option.value == null
-        ? null
-        : (structuredClone(option.value) as DataTypeToType<
-            AnswerTypeToDataType<T>
-          >);
+    const next = structuredClone(option.value) as DataTypeToType<
+      AnswerTypeToDataType<T>
+    >;
     const slot = state.availableAnswers[0];
     if (slot) {
       slot.setValueByUser(next);
@@ -223,6 +261,11 @@ export class SelectStore<
   @computed
   get ariaDescribedBy(): string | undefined {
     return getNodeDescribedBy(this.node);
+  }
+
+  @action.bound
+  setSearchQuery(query: string): void {
+    this.searchQuery = query;
   }
 
   @computed
@@ -251,7 +294,6 @@ export class SelectStore<
     }
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
     const match = this.resolvedOptions.find((entry) => {
-      if (entry.value == null) return false;
       return areValuesEqual(dataType, value, entry.value);
     });
     return match?.token ?? "";
@@ -262,13 +304,8 @@ export class SelectStore<
   ): DataTypeToType<AnswerTypeToDataType<T>> | null {
     if (!token) return null;
     const entry = this.resolvedOptions.find((option) => option.token === token);
-    if (!entry || entry.value == null) return null;
+    if (!entry) return null;
     return structuredClone(entry.value);
-  }
-
-  @computed
-  get hasCustomAction(): boolean {
-    return this.allowCustom;
   }
 
   @computed
@@ -276,12 +313,13 @@ export class SelectStore<
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.node.type];
     const selectedOptionAnswers = new Map<string, IAnswerInstance<T>>();
     const usedAnswerTokens = new Set<string>();
+    const pendingCustomAnswerTokens = this.pendingCustomAnswerTokens;
 
     this.resolvedOptions.forEach((option) => {
       const match = this.node.answers.find((answer) => {
         if (answer.value == null) return false;
+        if (pendingCustomAnswerTokens.has(answer.token)) return false;
         if (usedAnswerTokens.has(answer.token)) return false;
-        if (option.value == null) return false;
         return areValuesEqual(
           dataType,
           answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
@@ -298,6 +336,11 @@ export class SelectStore<
   }
 
   @computed
+  get selectedOptionTokens(): ReadonlySet<string> {
+    return new Set(this.selectedOptionAnswers.keys());
+  }
+
+  @computed
   private get usedAnswerTokens(): Set<string> {
     const used = new Set<string>();
     this.selectedOptionAnswers.forEach((answer) => used.add(answer.token));
@@ -306,12 +349,12 @@ export class SelectStore<
 
   @computed
   get customAnswers(): IAnswerInstance<T>[] {
-    const isTypeCustom = this.node.options.constraint === "optionsOrType";
+    const pendingInputToken = this.pendingCustomInput?.answer.token;
     return this.node.answers.filter((answer) => {
       if (this.usedAnswerTokens.has(answer.token)) return false;
-      if (isTypeCustom && this.pendingCustomAnswerTokens.has(answer.token))
-        return false;
-      if (this.pendingCustomAnswerTokens.has(answer.token)) return true;
+      if (this.pendingCustomAnswerTokens.has(answer.token)) {
+        return answer.token !== pendingInputToken;
+      }
       return answer.value != null;
     });
   }
@@ -337,38 +380,20 @@ export class SelectStore<
   }
 
   @computed
-  get optionsWithSpecifyOther(): ReadonlyArray<ResolvedAnswerOption<T>> {
-    if (!this.hasCustomAction) {
-      return this.selectableOptions;
-    }
-
-    const customOption: ResolvedAnswerOption<T> = {
-      token: this.specifyOtherToken,
-      value: null,
-      disabled: !this.canAddSelection,
-    };
-
-    return [...this.selectableOptions, customOption];
-  }
-
-  @computed
   get selectedChipItems(): SelectChipItem<T>[] {
     return [...this.selectedOptionAnswers.values()].map((answer) => ({
       token: answer.token,
       answer,
       kind: "option",
-      inlineString: false,
     }));
   }
 
   @computed
   get customChipItems(): SelectChipItem<T>[] {
-    const inlineString = this.node.options.constraint === "optionsOrString";
     return this.customAnswers.map((answer) => ({
       token: answer.token,
       answer,
       kind: "custom",
-      inlineString,
     }));
   }
 
@@ -379,17 +404,14 @@ export class SelectStore<
   }
 
   @computed
-  get dialogState(): SelectDialogState<T> | null {
-    if (
-      !this.pendingCustomDialog ||
-      this.node.options.constraint !== "optionsOrType"
-    ) {
+  get customInputState(): SelectCustomInputState<T> | null {
+    if (!this.pendingCustomInput || !this.allowCustom) {
       return null;
     }
     return {
-      answer: this.pendingCustomDialog.answer,
-      isNew: this.pendingCustomDialog.isNew,
-      canConfirm: answerHasContent(this.pendingCustomDialog.answer),
+      answer: this.pendingCustomInput.answer,
+      isNew: this.pendingCustomInput.isNew,
+      canSubmit: answerHasContent(this.pendingCustomInput.answer),
     };
   }
 
@@ -410,11 +432,6 @@ export class SelectStore<
   }
 
   @action.bound
-  setCustomDialog(dialog: SelectPendingDialog<T> | null): void {
-    this.pendingCustomDialog = dialog;
-  }
-
-  @action.bound
   handleRemoveAnswer(answer: IAnswerInstance<T>): void {
     if (!this.canRemoveSelection) return;
     this.removePendingToken(answer.token);
@@ -422,14 +439,7 @@ export class SelectStore<
   }
 
   @action.bound
-  handleClearAll(): void {
-    if (!this.canRemoveSelection) return;
-    [...this.node.answers].forEach((answer) => this.node.removeAnswer(answer));
-  }
-
-  @action.bound
   handleSelectOption(token: string): void {
-    this.pendingSelectToken = "";
     this.handleSelectChange(token);
   }
 
@@ -437,11 +447,7 @@ export class SelectStore<
   handleSelectChange(token: string): void {
     if (!token) return;
     if (token === this.specifyOtherToken) {
-      if (this.node.options.constraint === "optionsOrString") {
-        this.addCustomStringAnswer();
-      } else if (this.node.options.constraint === "optionsOrType") {
-        this.addCustomTypeAnswer();
-      }
+      this.openCustomInput();
       return;
     }
     const option = this.resolvedOptions.find((entry) => entry.token === token);
@@ -451,24 +457,54 @@ export class SelectStore<
   }
 
   @action.bound
-  cancelCustomDialog(): void {
-    const dialog = this.pendingCustomDialog;
-    if (!dialog) return;
-    this.removePendingToken(dialog.answer.token);
-    if (dialog.isNew) {
-      this.node.removeAnswer(dialog.answer);
-    } else {
-      dialog.answer.setValueByUser(null);
+  openCustomInput(answer?: IAnswerInstance<T>): void {
+    if (!this.allowCustom) return;
+    if (this.pendingCustomInput) return;
+    const hasValue = answer?.value != null;
+    if (!hasValue && (this.isLoading || !this.canAddSelection)) return;
+
+    if (answer) {
+      this.addPendingToken(answer.token);
+      this.pendingCustomInput = { answer, isNew: false };
+      return;
     }
-    this.pendingCustomDialog = null;
+
+    const slot = this.takeAvailableAnswer();
+    if (slot) {
+      this.addPendingToken(slot.token);
+      this.pendingCustomInput = { answer: slot, isNew: false };
+      return;
+    }
+    if (this.node.canAdd) {
+      const created = this.node.addAnswer(null);
+      if (created) {
+        this.addPendingToken(created.token);
+        this.pendingCustomInput = {
+          answer: created as IAnswerInstance<T>,
+          isNew: true,
+        };
+      }
+    }
   }
 
   @action.bound
-  confirmCustomDialog(): void {
-    const dialog = this.pendingCustomDialog;
-    if (!dialog) return;
-    this.removePendingToken(dialog.answer.token);
-    this.pendingCustomDialog = null;
+  cancelCustomInput(): void {
+    const customInput = this.pendingCustomInput;
+    if (!customInput) return;
+    this.removePendingToken(customInput.answer.token);
+    if (customInput.isNew) {
+      this.node.removeAnswer(customInput.answer);
+    } else {
+      customInput.answer.setValueByUser(null);
+    }
+    this.pendingCustomInput = null;
+  }
+
+  @action.bound
+  submitCustomInput(): void {
+    const customInput = this.pendingCustomInput;
+    if (!customInput) return;
+    this.pendingCustomInput = null;
   }
 
   buildRowProps(
@@ -499,49 +535,14 @@ export class SelectStore<
   private addOptionAnswer(option: ResolvedAnswerOption<T>): void {
     if (!this.canAddSelection || this.isLoading) return;
     if (this.selectedOptionAnswers.has(option.token)) return;
-    const nextValue =
-      option.value == null
-        ? null
-        : (structuredClone(option.value) as DataTypeToType<
-            AnswerTypeToDataType<T>
-          >);
+    const nextValue = structuredClone(option.value) as DataTypeToType<
+      AnswerTypeToDataType<T>
+    >;
     const slot = this.takeAvailableAnswer();
     if (slot) {
       slot.setValueByUser(nextValue);
       return;
     }
     this.node.addAnswer(nextValue);
-  }
-
-  private addCustomStringAnswer(): void {
-    if (!this.canAddSelection || this.isLoading) return;
-    const slot = this.takeAvailableAnswer();
-    if (slot) {
-      slot.setValueByUser("" as never);
-      this.addPendingToken(slot.token);
-      return;
-    }
-    const created = this.node.addAnswer("" as never);
-    if (created) {
-      this.addPendingToken(created.token);
-    }
-  }
-
-  private addCustomTypeAnswer(): void {
-    if (!this.canAddSelection || this.isLoading) return;
-    const slot = this.takeAvailableAnswer();
-    if (slot) {
-      this.addPendingToken(slot.token);
-      this.pendingCustomDialog = { answer: slot, isNew: false };
-      return;
-    }
-    const created = this.node.addAnswer(null);
-    if (created) {
-      this.addPendingToken(created.token);
-      this.pendingCustomDialog = {
-        answer: created as IAnswerInstance<T>,
-        isNew: true,
-      };
-    }
   }
 }

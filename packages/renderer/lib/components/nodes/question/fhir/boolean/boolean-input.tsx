@@ -41,7 +41,6 @@ export function BooleanInput({
           onChange(null);
         }
       }}
-      legacyOption={null}
       id={fallbackInputId}
       ariaLabelledBy={fallbackAriaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}

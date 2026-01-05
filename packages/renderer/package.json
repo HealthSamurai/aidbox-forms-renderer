@@ -67,6 +67,7 @@
     }
   },
   "dependencies": {
+    "fuzzy-search": "^3.2.1",
     "hashery": "^1.3.0"
   }
 }

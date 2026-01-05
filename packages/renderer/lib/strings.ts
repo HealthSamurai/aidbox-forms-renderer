@@ -9,7 +9,6 @@ export const strings = {
     no: "No",
   },
   dialog: {
-    specifyOtherTitle: "Specify other",
     cancel: "Cancel",
     add: "Add",
   },
@@ -50,9 +49,6 @@ export const strings = {
   selection: {
     specifyOther: "Specify other",
     addAnother: "Add another",
-    backToOptions: "Back to options",
-    clear: "Clear",
-    clearAll: "Clear all",
     selectPlaceholder: "Select an option",
     removeSelection: "Remove selection",
     removeCustomValue: "Remove custom value",

@@ -471,10 +471,22 @@ function getCustomSelectionValue<T extends AnswerType>(
   }
 }
 
+function getCustomStringSelectionValue(type: AnswerType): string {
+  const value = getCustomSelectionValue(type);
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "Custom entry";
+}
+
 function buildInitialValues<T extends AnswerType>(options: {
   type: T;
   repeats: boolean;
   selection: "none" | "firstOption" | "customValue";
+  answerConstraint: AnswerConstraint;
   optionValues: Array<DataTypeToType<AnswerTypeToDataType<T>>>;
 }): QuestionnaireItem["initial"] {
   if (options.selection === "none") {
@@ -482,6 +494,18 @@ function buildInitialValues<T extends AnswerType>(options: {
   }
 
   if (options.selection === "customValue") {
+    if (options.answerConstraint === "optionsOrString") {
+      const customValue = getCustomStringSelectionValue(options.type);
+      const customInitials = makeInitialValues("string", [customValue]);
+      if (options.repeats) {
+        const optionInitials = makeInitialValues(
+          options.type,
+          options.optionValues.slice(0, 1),
+        );
+        return [...customInitials, ...optionInitials];
+      }
+      return customInitials;
+    }
     const customValue = getCustomSelectionValue(options.type);
     const initialValues = options.repeats
       ? [customValue, ...(options.optionValues.slice(0, 1) ?? [])]
@@ -507,6 +531,7 @@ function buildSelectionItem(
     type: args.answerType,
     repeats: args.repeats,
     selection: args.initialSelection,
+    answerConstraint: args.answerConstraint,
     optionValues,
   });
 
@@ -547,6 +572,7 @@ function buildListSelectItem(args: ListSelectArgs): QuestionnaireItem {
     type: args.answerType,
     repeats: args.repeats,
     selection: args.initialSelection,
+    answerConstraint: args.answerConstraint,
     optionValues,
   });
   const childItems = args.hasNestedItems

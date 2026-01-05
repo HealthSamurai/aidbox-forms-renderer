@@ -242,14 +242,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private ensureBaselineAnswers(force = false) {
+    const canSeed =
+      force ||
+      this.canAdd ||
+      (this.readOnly && this.answers.length < this.maxOccurs);
+
     if (this.repeats) {
-      while (this.answers.length < this.minOccurs && (force || this.canAdd)) {
+      const target = Math.min(this.minOccurs, this.maxOccurs);
+      while (this.answers.length < target && canSeed) {
         this.pushAnswer(null);
       }
       return;
     }
 
-    if (this.answers.length === 0 && (force || this.canAdd)) {
+    if (this.answers.length === 0 && canSeed) {
       this.pushAnswer(null);
     }
   }

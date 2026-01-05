@@ -78,6 +78,11 @@ const Frame = styled.div<{ $solo: boolean }>`
   border-radius: 0.375rem;
   overflow: hidden;
   ${({ $solo }) => ($solo ? "width: 100%;" : "")}
+
+  &:focus-within {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.35);
+  }
 `;
 
 const Field = styled.input<{ $solo: boolean }>`

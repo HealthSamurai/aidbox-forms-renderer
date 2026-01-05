@@ -1,18 +1,19 @@
-import type { ComponentType } from "react";
-import type { OptionItem } from "./option-item.ts";
+import type { ComponentType, ReactNode } from "react";
+import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type SelectInputProps = {
   options: readonly OptionItem[];
-  token: string;
-  onChange: (token: string) => void;
-  legacyOption: OptionItem | null;
+  selectedOption: SelectedOptionItem | null;
+  onChange: (token: string | null) => void;
+  onSearch?: (query: string) => void;
+  customOption?: OptionItem | undefined;
+  customOptionForm?: ReactNode;
   id: string;
-  ariaLabelledBy: string;
+  ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
-  disabled: boolean;
-  isLoading?: boolean;
-  onClear?: (() => void) | undefined;
-  clearLabel?: string | undefined;
+  disabled?: boolean | undefined;
+  isLoading?: boolean | undefined;
+  placeholder?: string | undefined;
 };
 
 export type SelectInputComponent = ComponentType<SelectInputProps>;

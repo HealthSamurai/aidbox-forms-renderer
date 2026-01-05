@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
 import type { AnswerType, IQuestionNode } from "../../../../types.ts";
 import { QuestionScaffold } from "../question-scaffold.tsx";
-import { DropdownSelectControl } from "../controls/dropdown-select-control.tsx";
-import { MultiSelectControl } from "../controls/multi-select-control.tsx";
+import { AnswerList } from "../answers/answer-list.tsx";
+import { SingleDropdownSelectControl } from "../controls/single-dropdown-select-control.tsx";
+import { MultiDropdownSelectControl } from "../controls/multi-dropdown-select-control.tsx";
 
-export const DropdownRenderer = observer(function DropdownRenderer<
+export const DropdownSelectRenderer = observer(function DropdownRenderer<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   const isMultiSelect = node.selectStore.isMultiSelect;
@@ -12,9 +13,9 @@ export const DropdownRenderer = observer(function DropdownRenderer<
   return (
     <QuestionScaffold node={node} showOptionsLoading>
       {isMultiSelect ? (
-        <MultiSelectControl node={node} />
+        <MultiDropdownSelectControl node={node} />
       ) : (
-        <DropdownSelectControl node={node} />
+        <AnswerList node={node} control={SingleDropdownSelectControl} />
       )}
     </QuestionScaffold>
   );

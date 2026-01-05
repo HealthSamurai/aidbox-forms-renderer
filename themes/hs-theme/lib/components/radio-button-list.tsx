@@ -6,7 +6,6 @@ export function RadioButtonList({
   options,
   token,
   onChange,
-  legacyOption,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -23,20 +22,6 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {legacyOption ? (
-          <RadioOption>
-            <RadioLabel>
-              <input
-                type="radio"
-                name={id}
-                value={legacyOption.token}
-                checked={token === legacyOption.token}
-                disabled
-              />
-              {legacyOption.label}
-            </RadioLabel>
-          </RadioOption>
-        ) : null}
         {options.map((entry) => (
           <RadioOption key={entry.token}>
             <RadioLabel>

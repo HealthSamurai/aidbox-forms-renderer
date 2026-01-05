@@ -8,7 +8,7 @@ export function AnswerScaffold({
 }: AnswerScaffoldProps) {
   return (
     <Row>
-      <div>{control}</div>
+      {control}
       {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
       {children ? <Children>{children}</Children> : null}
     </Row>
@@ -30,4 +30,8 @@ const Children = styled.div`
   margin-left: 0.5rem;
   border-left: 2px solid #e2e8f0;
   padding-left: 0.5rem;
+
+  &:empty {
+    display: none;
+  }
 `;

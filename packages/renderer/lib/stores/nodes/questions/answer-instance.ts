@@ -158,10 +158,6 @@ export class AnswerInstance<
 
   @computed({ keepAlive: true })
   get quantity(): IQuantityAnswer {
-    if (this.question.type !== "quantity") {
-      throw new Error("Quantity access is only valid for quantity answers.");
-    }
-
     return new QuantityAnswer(this as unknown as IAnswerInstance<"quantity">);
   }
 }

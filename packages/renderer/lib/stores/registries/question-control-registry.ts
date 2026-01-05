@@ -10,7 +10,7 @@ import { CodingRenderer } from "../../components/nodes/question/fhir/coding/codi
 import { ReferenceRenderer } from "../../components/nodes/question/fhir/reference/reference-renderer.tsx";
 import { AttachmentRenderer } from "../../components/nodes/question/fhir/attachment/attachment-renderer.tsx";
 import { ListSelectRenderer } from "../../components/nodes/question/renderers/list-select-renderer.tsx";
-import { DropdownRenderer } from "../../components/nodes/question/renderers/dropdown-renderer.tsx";
+import { DropdownSelectRenderer } from "../../components/nodes/question/renderers/dropdown-select-renderer.tsx";
 import { UnsupportedRenderer } from "../../components/nodes/question/renderers/unsupported-renderer.tsx";
 import { NumberSliderRenderer } from "../../components/nodes/question/renderers/number-slider-renderer.tsx";
 import { NumberSpinnerRenderer } from "../../components/nodes/question/renderers/number-spinner-renderer.tsx";
@@ -59,7 +59,7 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     name: "dropdown",
     priority: 90,
     matcher: (node) => hasOptions(node),
-    renderer: DropdownRenderer,
+    renderer: DropdownSelectRenderer,
   },
   {
     name: "boolean-with-list",

@@ -14,6 +14,8 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.displayUnitToken;
+  const selectedUnit =
+    answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
   const { min, max } = answer.bounds;
   const step = getSliderStepValue(answer.question.template) ?? 0.1;
   const disabled = answer.question.readOnly;
@@ -51,9 +53,8 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
       ) : (
         <SelectInput
           options={answer.quantity.entries}
-          token={unitValue}
-          legacyOption={null}
-          onChange={(token) => answer.quantity.handleSelectChange(token)}
+          selectedOption={selectedUnit}
+          onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
           id={`${id}_/_unit`}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}

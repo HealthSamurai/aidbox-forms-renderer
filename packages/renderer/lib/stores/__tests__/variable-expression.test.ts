@@ -181,8 +181,10 @@ describe("variable expressions", () => {
     const secondName = findQuestion("name", 1);
     const secondEcho = findQuestion("echo", 1);
 
-    expect(firstEcho.answers).toHaveLength(0);
-    expect(secondEcho.answers).toHaveLength(0);
+    expect(firstEcho.answers).toHaveLength(1);
+    expect(firstEcho.answers[0]?.value).toBeNull();
+    expect(secondEcho.answers).toHaveLength(1);
+    expect(secondEcho.answers[0]?.value).toBeNull();
 
     const firstNameAnswer0 = firstName.answers[0];
     assertDefined(firstNameAnswer0);
@@ -202,7 +204,8 @@ describe("variable expressions", () => {
     const thirdName = findQuestion("name", 2);
     const thirdEcho = findQuestion("echo", 2);
 
-    expect(thirdEcho.answers).toHaveLength(0);
+    expect(thirdEcho.answers).toHaveLength(1);
+    expect(thirdEcho.answers[0]?.value).toBeNull();
 
     const thirdNameAnswer0 = thirdName.answers[0];
     assertDefined(thirdNameAnswer0);

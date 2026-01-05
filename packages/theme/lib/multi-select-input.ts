@@ -1,34 +1,19 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionItem } from "./option-item.ts";
-
-export type MultiSelectChip = {
-  token: string;
-  content: ReactNode;
-  errors?: ReactNode;
-  onRemove?: (() => void) | undefined;
-  removeDisabled?: boolean | undefined;
-  removeLabel?: string | undefined;
-};
-
-export type MultiSelectDialog = {
-  open: boolean;
-  title: string;
-  content: ReactNode;
-  actions: ReactNode;
-};
+import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type MultiSelectInputProps = {
   options: readonly OptionItem[];
-  token?: string | undefined;
-  onChange: (token: string) => void;
+  selectedOptions: SelectedOptionItem[];
+  onSelect: (token: string) => void;
+  onDeselect: (token: string) => void;
+  onSearch?: (query: string) => void;
+  customOption?: OptionItem | undefined;
+  customOptionForm?: ReactNode;
+  id: string;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   isLoading?: boolean | undefined;
-  showOptions?: boolean | undefined;
-  chips: MultiSelectChip[];
-  actions?: ReactNode;
-  dialog?: MultiSelectDialog;
   placeholder?: string | undefined;
 };
 

@@ -12,6 +12,7 @@ export { RadioButtonList } from "./components/radio-button-list.tsx";
 export { Checkbox } from "./components/checkbox.tsx";
 export { CheckboxList } from "./components/checkbox-list.tsx";
 export { MultiSelectInput } from "./components/multi-select-input.tsx";
+export { CustomOptionForm } from "./components/custom-option-form.tsx";
 export { Errors } from "./components/errors.tsx";
 export { NodeHeader } from "./components/node-header.tsx";
 export { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -39,10 +40,6 @@ export { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 export { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 export { GroupRemoveButton } from "./components/group-remove-button.tsx";
 export { OpenChoiceBackButton } from "./components/open-choice-back-button.tsx";
-export { MultiSelectSpecifyOtherButton } from "./components/multi-select-specify-other-button.tsx";
-export { MultiSelectClearAllButton } from "./components/multi-select-clear-all-button.tsx";
-export { MultiSelectDialogCancelButton } from "./components/multi-select-dialog-cancel-button.tsx";
-export { MultiSelectDialogAddButton } from "./components/multi-select-dialog-add-button.tsx";
 export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { GroupActions } from "./components/group-actions.tsx";
 export { GridTable } from "./components/grid-table.tsx";
@@ -66,6 +63,7 @@ import { RadioButtonList } from "./components/radio-button-list.tsx";
 import { Checkbox } from "./components/checkbox.tsx";
 import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
+import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
 import { NodeHeader } from "./components/node-header.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
@@ -94,10 +92,6 @@ import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
 import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
 import { GroupRemoveButton } from "./components/group-remove-button.tsx";
 import { OpenChoiceBackButton } from "./components/open-choice-back-button.tsx";
-import { MultiSelectSpecifyOtherButton } from "./components/multi-select-specify-other-button.tsx";
-import { MultiSelectClearAllButton } from "./components/multi-select-clear-all-button.tsx";
-import { MultiSelectDialogCancelButton } from "./components/multi-select-dialog-cancel-button.tsx";
-import { MultiSelectDialogAddButton } from "./components/multi-select-dialog-add-button.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GroupActions } from "./components/group-actions.tsx";
 import { GridTable } from "./components/grid-table.tsx";
@@ -122,6 +116,7 @@ export const theme: Theme = {
   Checkbox,
   CheckboxList,
   MultiSelectInput,
+  CustomOptionForm,
   Errors,
   NodeHeader,
   QuestionScaffold,
@@ -149,10 +144,6 @@ export const theme: Theme = {
   GroupWrapperScaffoldItem,
   GroupRemoveButton,
   OpenChoiceBackButton,
-  MultiSelectSpecifyOtherButton,
-  MultiSelectClearAllButton,
-  MultiSelectDialogCancelButton,
-  MultiSelectDialogAddButton,
   GroupScaffold,
   GroupActions,
   GridTable,

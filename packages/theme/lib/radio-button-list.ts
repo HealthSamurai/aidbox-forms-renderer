@@ -5,7 +5,6 @@ export type RadioButtonListProps = {
   options: readonly OptionItem[];
   token: string;
   onChange: (token: string) => void;
-  legacyOption: OptionItem | null;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;

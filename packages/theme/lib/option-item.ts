@@ -5,3 +5,7 @@ export type OptionItem = {
   label: ReactNode;
   disabled?: boolean;
 };
+
+export type SelectedOptionItem = OptionItem & {
+  errors?: ReactNode;
+};

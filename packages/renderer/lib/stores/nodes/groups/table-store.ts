@@ -88,9 +88,7 @@ export class TableStore implements ITableStore {
         return;
       }
       const selectedAnswer = entry.question.answers.find((answer) => {
-        if (answer.value == null || optionEntry.value == null) {
-          return false;
-        }
+        if (answer.value == null) return false;
         return areValuesEqual(dataType, answer.value, optionEntry.value);
       });
       if (selectedAnswer) {
@@ -118,9 +116,7 @@ export class TableStore implements ITableStore {
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
     const selectedAnswer = entry.question.answers.find((answer) => {
-      if (answer.value == null || optionEntry.value == null) {
-        return false;
-      }
+      if (answer.value == null) return false;
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
@@ -146,9 +142,7 @@ export class TableStore implements ITableStore {
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
     const selectedAnswer = entry.question.answers.find((answer) => {
-      if (answer.value == null || optionEntry.value == null) {
-        return false;
-      }
+      if (answer.value == null) return false;
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
@@ -190,9 +184,6 @@ export class TableStore implements ITableStore {
         ResolvedAnswerOption<AnswerType>
       >();
       question.options.resolvedOptions.forEach((entry) => {
-        if (entry.value == null) {
-          return;
-        }
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
         const token = tokenify(type, entry.value);
 

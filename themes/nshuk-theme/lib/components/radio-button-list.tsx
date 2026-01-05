@@ -4,7 +4,6 @@ export function RadioButtonList({
   options,
   token,
   onChange,
-  legacyOption,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -24,26 +23,6 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {legacyOption ? (
-          <div className="nhsuk-radios__item">
-            <input
-              className="nhsuk-radios__input"
-              id={makeInputId(legacyOption.token)}
-              type="radio"
-              name={id}
-              value={legacyOption.token}
-              checked={token === legacyOption.token}
-              disabled
-              aria-describedby={ariaDescribedBy}
-            />
-            <label
-              className="nhsuk-label nhsuk-radios__label"
-              htmlFor={makeInputId(legacyOption.token)}
-            >
-              {legacyOption.label}
-            </label>
-          </div>
-        ) : null}
         {options.map((entry) => {
           const optionId = makeInputId(entry.token);
           return (

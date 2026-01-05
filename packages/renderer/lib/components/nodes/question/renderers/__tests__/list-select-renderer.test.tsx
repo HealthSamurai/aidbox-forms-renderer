@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
 import { FormStore } from "../../../../../stores/form/form-store.ts";
@@ -7,6 +7,7 @@ import { isQuestionNode } from "../../../../../stores/nodes/questions/question-s
 import { ListSelectRenderer } from "../../renderers/list-select-renderer.tsx";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
 import { EXT } from "../../../../../utils.ts";
+import { VALUE_DISPLAY_BY_TYPE } from "../../fhir/index.ts";
 
 function getQuestion<T extends AnswerType>(
   form: FormStore,
@@ -26,7 +27,15 @@ function getStringAnswers(question: IQuestionNode<AnswerType>) {
     .filter((value): value is string => typeof value === "string");
 }
 
-describe("list-select-control", () => {
+function getListbox(input: HTMLElement) {
+  const listboxId = input.getAttribute("aria-controls");
+  expect(listboxId).toBeTruthy();
+  const listbox = document.getElementById(listboxId!);
+  expect(listbox).not.toBeNull();
+  return listbox as HTMLElement;
+}
+
+describe("list-select-renderer", () => {
   describe("optionsOnly", () => {
     describe("single (radio)", () => {
       it("renders a disabled legacy option for response values outside the options list", () => {
@@ -165,7 +174,50 @@ describe("list-select-control", () => {
 
   describe("optionsOrString", () => {
     describe("single (radio)", () => {
-      it("selects specify other and shows the custom value input", () => {
+      it("renders option labels using the question type display for optionsOrString", () => {
+        const originalString = VALUE_DISPLAY_BY_TYPE.string;
+        const originalUrl = VALUE_DISPLAY_BY_TYPE.url;
+
+        try {
+          VALUE_DISPLAY_BY_TYPE.string = ({ value }) => (
+            <>String: {String(value)}</>
+          );
+          VALUE_DISPLAY_BY_TYPE.url = ({ value }) => <>Url: {String(value)}</>;
+
+          const questionnaire: Questionnaire = {
+            resourceType: "Questionnaire",
+            status: "active",
+            item: [
+              {
+                linkId: "note",
+                text: "Note",
+                type: "url",
+                answerConstraint: "optionsOrString",
+                answerOption: [{ valueUri: "https://alpha.example" }],
+              },
+            ],
+          };
+
+          const form = new FormStore(questionnaire);
+          const question = getQuestion(form, "note");
+
+          render(<ListSelectRenderer node={question} />);
+
+          expect(
+            screen.getByRole("radio", { name: "Url: https://alpha.example" }),
+          ).toBeInTheDocument();
+          expect(
+            screen.queryByRole("radio", {
+              name: "String: https://alpha.example",
+            }),
+          ).toBeNull();
+        } finally {
+          VALUE_DISPLAY_BY_TYPE.string = originalString;
+          VALUE_DISPLAY_BY_TYPE.url = originalUrl;
+        }
+      });
+
+      it("shows the custom value and opens the custom input on specify other", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -197,18 +249,23 @@ describe("list-select-control", () => {
 
         render(<ListSelectRenderer node={question} />);
 
+        const fallback = screen.getByRole("radio", {
+          name: "Green",
+        }) as HTMLInputElement;
+        expect(fallback).toBeChecked();
         const specifyOther = screen.getByRole("radio", {
           name: /specify other/i,
         }) as HTMLInputElement;
-        expect(specifyOther).toBeChecked();
+        expect(specifyOther).not.toBeChecked();
+        expect(
+          screen.queryByRole("textbox", { name: "Favorite color" }),
+        ).toBeNull();
 
+        fireEvent.click(specifyOther);
         const customInput = screen.getByRole("textbox", {
           name: "Favorite color",
         }) as HTMLInputElement;
         expect(customInput.value).toBe("Green");
-        expect(screen.getByRole("radio", { name: "Red" })).not.toBeDisabled();
-        expect(screen.getByRole("radio", { name: "Blue" })).not.toBeDisabled();
-        expect(specifyOther).not.toBeDisabled();
       });
 
       it("cycles between option and specify other for single select", () => {
@@ -323,6 +380,9 @@ describe("list-select-control", () => {
         fireEvent.click(
           screen.getByRole("checkbox", { name: /specify other/i }),
         );
+        expect(
+          screen.getByRole("checkbox", { name: /specify other/i }),
+        ).toBeChecked();
         assertOptionsEnabled();
 
         expect(
@@ -379,8 +439,13 @@ describe("list-select-control", () => {
         assertOptionsEnabled();
 
         fireEvent.change(customInput, { target: { value: "Cats" } });
-        expect(customInput).toHaveValue("Cats");
         expect(getStringAnswers(question).sort()).toEqual(["Cats", "Dust"]);
+        assertOptionsEnabled();
+
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
+        expect(screen.getByRole("checkbox", { name: /cats/i })).toBeChecked();
         assertOptionsEnabled();
 
         fireEvent.click(pollen);
@@ -393,21 +458,24 @@ describe("list-select-control", () => {
         assertOptionsEnabled();
 
         fireEvent.click(specifyOther);
-        expect(specifyOther).not.toBeChecked();
-        expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
-        expect(getStringAnswers(question).sort()).toEqual(["Dust", "Pollen"]);
-        assertOptionsEnabled();
-
-        fireEvent.click(specifyOther);
         customInput = screen.getByRole("textbox", {
           name: "Allergy",
         }) as HTMLInputElement;
         expect(customInput).toHaveValue("");
-        expect(getStringAnswers(question).sort()).toEqual(["Dust", "Pollen"]);
+        assertOptionsEnabled();
+
+        fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
+        expect(getStringAnswers(question).sort()).toEqual([
+          "Cats",
+          "Dust",
+          "Pollen",
+        ]);
         assertOptionsEnabled();
       });
 
-      it("keeps string answers and shows them as custom text inputs", () => {
+      it("keeps string answers as custom selections", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -452,22 +520,22 @@ describe("list-select-control", () => {
 
         const one = screen.getByRole("checkbox", { name: /dose.*1/i });
         const two = screen.getByRole("checkbox", { name: /dose.*2/i });
+        const other = screen.getByRole("checkbox", {
+          name: /dose\s+other/i,
+        });
         const specifyOther = screen.getByRole("checkbox", {
           name: /specify other/i,
         });
 
         expect(one).toBeChecked();
         expect(two).toBeChecked();
-        expect(specifyOther).toBeChecked();
+        expect(other).toBeChecked();
+        expect(specifyOther).not.toBeChecked();
         expect(one).not.toBeDisabled();
         expect(two).not.toBeDisabled();
-        expect(specifyOther).not.toBeDisabled();
-
-        const customInput = screen.getByRole("textbox", {
-          name: /dose/i,
-        }) as HTMLInputElement;
-        expect(customInput).toHaveValue("Other");
+        expect(other).not.toBeDisabled();
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
+        expect(screen.queryByRole("textbox", { name: /dose/i })).toBeNull();
       });
 
       it("disables other options when maxOccurs is reached and re-enables after removal", () => {
@@ -558,26 +626,27 @@ describe("list-select-control", () => {
 
         const alpha = screen.getByRole("radio", { name: "Alpha" });
         const bravo = screen.getByRole("radio", { name: "Bravo" });
+        const custom = screen.getByRole("radio", {
+          name: "Zulu",
+        }) as HTMLInputElement;
         const specifyOther = screen.getByRole("radio", {
           name: /specify other/i,
-        });
-        const customInput = screen.getByRole("textbox", {
-          name: "Call sign",
         }) as HTMLInputElement;
 
         expect(alpha).toBeDisabled();
         expect(bravo).toBeDisabled();
+        expect(custom).toBeDisabled();
+        expect(custom).toBeChecked();
         expect(specifyOther).toBeDisabled();
-        expect(specifyOther).toBeChecked();
-        expect(customInput).toBeDisabled();
-        expect(customInput).toHaveValue("Zulu");
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("textbox", { name: "Call sign" })).toBeNull();
       });
     });
   });
 
   describe("optionsOrType", () => {
     describe("integer responses", () => {
-      it("shows a numeric custom input for non-option integer answers", () => {
+      it("shows a custom selection for non-option integer answers", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -613,7 +682,10 @@ describe("list-select-control", () => {
         const specifyOther = screen.getByRole("checkbox", {
           name: /specify other/i,
         });
-        expect(specifyOther).toBeChecked();
+        const customOption = screen.getByRole("checkbox", {
+          name: /dose.*3/i,
+        }) as HTMLInputElement;
+        expect(customOption).toBeChecked();
         expect(
           screen.getByRole("checkbox", { name: /dose.*1/i }),
         ).not.toBeDisabled();
@@ -621,11 +693,9 @@ describe("list-select-control", () => {
           screen.getByRole("checkbox", { name: /dose.*2/i }),
         ).not.toBeDisabled();
         expect(specifyOther).not.toBeDisabled();
+        expect(specifyOther).not.toBeChecked();
 
-        const customInput = screen.getByRole("spinbutton", {
-          name: /dose/i,
-        }) as HTMLInputElement;
-        expect(customInput.value).toBe("3");
+        expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
         expect(screen.queryByRole("textbox", { name: /dose/i })).toBeNull();
       });
 
@@ -739,10 +809,17 @@ describe("list-select-control", () => {
         assertOptionsEnabled();
 
         fireEvent.change(customInput, { target: { value: "5" } });
-        expect(customInput.value).toBe("5");
         expect(question.answers.map((answer) => answer.value).sort()).toEqual([
           1, 5,
         ]);
+        assertOptionsEnabled();
+
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
+        expect(
+          screen.getByRole("checkbox", { name: /dose.*5/i }),
+        ).toBeChecked();
         assertOptionsEnabled();
 
         fireEvent.click(two);
@@ -753,22 +830,17 @@ describe("list-select-control", () => {
         assertOptionsEnabled();
 
         fireEvent.click(specifyOther);
-        expect(specifyOther).not.toBeChecked();
-        expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
-        expect(question.answers.map((answer) => answer.value).sort()).toEqual([
-          1, 2,
-        ]);
-        assertOptionsEnabled();
-
-        fireEvent.click(specifyOther);
         customInput = screen.getByRole("spinbutton", {
           name: /dose/i,
         }) as HTMLInputElement;
         expect(customInput.value).toBe("");
+        assertOptionsEnabled();
+
+        fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
         expect(question.answers.map((answer) => answer.value).sort()).toEqual([
-          1,
-          2,
-          null,
+          1, 2, 5,
         ]);
         assertOptionsEnabled();
       });
@@ -813,9 +885,19 @@ describe("list-select-control", () => {
         ).toBeInTheDocument();
         assertOptionsEnabled();
 
-        fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+        fireEvent.change(screen.getByRole("spinbutton", { name: /dose/i }), {
+          target: { value: "5" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
+        assertOptionsEnabled();
+
+        const customOption = screen.getByRole("checkbox", {
+          name: /dose.*5/i,
+        });
+        fireEvent.click(customOption);
+        expect(screen.queryByRole("checkbox", { name: /dose.*5/i })).toBeNull();
         assertOptionsEnabled();
 
         fireEvent.click(specifyOther);
@@ -824,6 +906,46 @@ describe("list-select-control", () => {
           screen.getByRole("spinbutton", { name: /dose/i }),
         ).toBeInTheDocument();
         assertOptionsEnabled();
+      });
+    });
+
+    describe("url responses", () => {
+      it("keeps a custom url answer after submitting specify other", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "website",
+              text: "Website",
+              type: "url",
+              answerConstraint: "optionsOrType",
+              answerOption: [{ valueUri: "https://alpha.example" }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "website");
+
+        render(<ListSelectRenderer node={question} />);
+
+        fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
+        const customInput = screen.getByRole("textbox", {
+          name: "Website",
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, {
+          target: { value: "https://google.com" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+        expect(screen.queryByRole("textbox", { name: "Website" })).toBeNull();
+        const customValue = screen.getByRole("radio", {
+          name: "https://google.com",
+        }) as HTMLInputElement;
+        expect(customValue).toBeChecked();
+        expect(customValue).not.toBeDisabled();
+        expect(getStringAnswers(question)).toEqual(["https://google.com"]);
       });
     });
 
@@ -1143,12 +1265,19 @@ describe("list-select-control", () => {
 
         fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
 
-        expect(
-          screen.getByRole("combobox", { name: "Dosage" }),
-        ).toBeInTheDocument();
+        const combobox = screen.getByRole("combobox", {
+          name: "Dosage",
+        }) as HTMLInputElement;
+        expect(combobox).toBeInTheDocument();
         expect(screen.queryByRole("textbox", { name: "Dosage" })).toBeNull();
-        expect(screen.getByRole("option", { name: "mg" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "mL" })).toBeInTheDocument();
+        fireEvent.click(combobox);
+        const listbox = getListbox(combobox);
+        expect(
+          within(listbox).getByRole("option", { name: "mg" }),
+        ).toBeInTheDocument();
+        expect(
+          within(listbox).getByRole("option", { name: "mL" }),
+        ).toBeInTheDocument();
       });
 
       it("passes mimeType extensions to open-choice attachment inputs", () => {
@@ -1188,7 +1317,7 @@ describe("list-select-control", () => {
     });
 
     describe("multiple custom answers", () => {
-      it("keeps custom answers from auto-selecting options and retains Specify other", () => {
+      it("adds multiple custom answers without auto-selecting options", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -1223,31 +1352,30 @@ describe("list-select-control", () => {
         expect(specifyOther).toBeChecked();
         assertOptionsEnabled();
 
-        let customInputs = screen.getAllByRole("textbox", {
+        let customInput = screen.getByRole("textbox", {
           name: "Call sign",
-        }) as HTMLInputElement[];
-        fireEvent.change(customInputs[0], { target: { value: "Echo" } });
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, { target: { value: "Whiskey" } });
         expect(option).not.toBeChecked();
-        expect(specifyOther).toBeChecked();
         assertOptionsEnabled();
 
-        fireEvent.click(screen.getByRole("button", { name: /add another/i }));
-        customInputs = screen.getAllByRole("textbox", {
-          name: "Call sign",
-        }) as HTMLInputElement[];
-        fireEvent.change(customInputs[1], { target: { value: "Echoless" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        expect(specifyOther).not.toBeChecked();
         expect(option).not.toBeChecked();
-        expect(specifyOther).toBeChecked();
+        expect(
+          screen.getByRole("checkbox", { name: /whiskey/i }),
+        ).toBeChecked();
         assertOptionsEnabled();
 
-        const removeButtons = screen.getAllByRole("button", { name: "Remove" });
-        fireEvent.click(removeButtons[0]);
-        customInputs = screen.getAllByRole("textbox", {
+        fireEvent.click(specifyOther);
+        customInput = screen.getByRole("textbox", {
           name: "Call sign",
-        }) as HTMLInputElement[];
-        expect(customInputs).toHaveLength(1);
-        expect(specifyOther).toBeChecked();
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, { target: { value: "Zulu" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        expect(specifyOther).not.toBeChecked();
         expect(option).not.toBeChecked();
+        expect(screen.getByRole("checkbox", { name: /zulu/i })).toBeChecked();
         assertOptionsEnabled();
       });
     });
