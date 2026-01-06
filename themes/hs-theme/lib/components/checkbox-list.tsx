@@ -4,25 +4,40 @@ import { optionStatusClass } from "./option-status.ts";
 
 export function CheckboxList({
   options,
-  tokens,
-  onChange,
+  selectedOptions,
+  customOption,
+  customOptionForm,
+  onSelect,
+  onDeselect,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
   isLoading = false,
-  renderErrors,
-  after,
 }: CheckboxListProps) {
+  const displayOptions = customOption ? [...options, customOption] : options;
+  const selectedByToken = new Map(
+    selectedOptions.map((option) => [option.token, option]),
+  );
+  const customOptionToken = customOption?.token;
+  const isCustomActive = Boolean(customOptionForm && customOptionToken);
+
   return (
     <CheckboxControl
       data-disabled={disabled}
       aria-busy={isLoading || undefined}
+      role="group"
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
     >
-      {options.map((option, index) => {
+      {displayOptions.map((option, index) => {
         const optionId = `${id}-option-${index}`;
-        const isChecked = tokens.has(option.token);
-        const disableToggle = disabled || isLoading || option.disabled;
+        const selectedOption = selectedByToken.get(option.token);
+        const isCustomOption = option.token === customOptionToken;
+        const optionAriaDescribedBy =
+          [ariaDescribedBy, selectedOption?.ariaDescribedBy]
+            .filter(Boolean)
+            .join(" ") || undefined;
 
         return (
           <CheckboxOption key={option.token}>
@@ -30,15 +45,31 @@ export function CheckboxList({
               <input
                 type="checkbox"
                 name={id}
-                checked={isChecked}
-                disabled={disableToggle}
-                aria-labelledby={`${ariaLabelledBy} ${optionId}`}
-                aria-describedby={ariaDescribedBy}
-                onChange={() => onChange(option.token)}
+                checked={
+                  isCustomOption
+                    ? isCustomActive || Boolean(selectedOption)
+                    : Boolean(selectedOption)
+                }
+                disabled={
+                  disabled ||
+                  isLoading ||
+                  (option.disabled && !(isCustomOption && isCustomActive))
+                }
+                aria-labelledby={
+                  ariaLabelledBy ? `${ariaLabelledBy} ${optionId}` : optionId
+                }
+                aria-describedby={optionAriaDescribedBy}
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    onSelect(option.token);
+                  } else {
+                    onDeselect(option.token);
+                  }
+                }}
               />
               <span id={optionId}>{option.label}</span>
             </CheckboxLabel>
-            {renderErrors ? renderErrors(option.token) : null}
+            {selectedOption?.errors ?? null}
           </CheckboxOption>
         );
       })}
@@ -47,7 +78,9 @@ export function CheckboxList({
           Loading options…
         </div>
       ) : null}
-      {after ? <AfterContainer>{after}</AfterContainer> : null}
+      {customOptionForm ? (
+        <AfterContainer>{customOptionForm}</AfterContainer>
+      ) : null}
     </CheckboxControl>
   );
 }

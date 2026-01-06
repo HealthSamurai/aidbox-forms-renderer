@@ -4,16 +4,19 @@ import { optionStatusClass } from "./option-status.ts";
 
 export function RadioButtonList({
   options,
-  token,
+  selectedOption,
   onChange,
+  customOption,
+  customOptionForm,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
   isLoading = false,
-  after,
-  afterInset = false,
 }: RadioButtonListProps) {
+  const displayOptions = customOption ? [...options, customOption] : options;
+  const selectedToken = selectedOption?.token ?? "";
+
   return (
     <>
       <RadioGroupContainer
@@ -22,15 +25,15 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {options.map((entry) => (
+        {displayOptions.map((entry) => (
           <RadioOption key={entry.token}>
             <RadioLabel>
               <input
                 type="radio"
                 name={id}
                 value={entry.token}
-                checked={token === entry.token}
-                disabled={disabled || entry.disabled}
+                checked={selectedToken === entry.token}
+                disabled={disabled || isLoading || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
               />
               {entry.label}
@@ -43,10 +46,8 @@ export function RadioButtonList({
           Loading options…
         </div>
       ) : null}
-      {after ? (
-        <AfterContainer data-inset={afterInset ? "true" : undefined}>
-          {after}
-        </AfterContainer>
+      {customOptionForm ? (
+        <AfterContainer>{customOptionForm}</AfterContainer>
       ) : null}
     </>
   );
@@ -72,8 +73,5 @@ const RadioLabel = styled.label`
 
 const AfterContainer = styled.div`
   margin-top: 0.5rem;
-
-  &[data-inset="true"] {
-    margin-left: 1.5rem;
-  }
+  margin-left: 1.5rem;
 `;

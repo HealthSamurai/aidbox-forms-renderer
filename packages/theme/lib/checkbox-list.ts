@@ -1,17 +1,18 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionItem } from "./option-item.ts";
+import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type CheckboxListProps = {
   options: readonly OptionItem[];
-  tokens: Set<string>;
-  onChange: (token: string) => void;
+  selectedOptions: readonly SelectedOptionItem[];
+  onSelect: (token: string) => void;
+  onDeselect: (token: string) => void;
+  customOption?: OptionItem | undefined;
+  customOptionForm?: ReactNode;
   id: string;
-  ariaLabelledBy: string;
+  ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
-  disabled?: boolean;
-  isLoading?: boolean;
-  renderErrors?: (token: string) => ReactNode;
-  after?: ReactNode;
+  disabled?: boolean | undefined;
+  isLoading?: boolean | undefined;
 };
 
 export type CheckboxListComponent = ComponentType<CheckboxListProps>;

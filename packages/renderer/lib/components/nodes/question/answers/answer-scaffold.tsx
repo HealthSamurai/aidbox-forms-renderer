@@ -8,6 +8,7 @@ import {
   getAnswerErrorId,
   getNodeDescribedBy,
   getNodeLabelId,
+  safeJoin,
 } from "../../../../utils.ts";
 import {
   AnswerType,
@@ -36,12 +37,10 @@ export const AnswerScaffold = observer(function AnswerScaffold<
   const answerErrorId =
     answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
 
-  const describedByPieces = [
+  const ariaDescribedBy = safeJoin([
     getNodeDescribedBy(answer.question),
     answerErrorId,
-  ].filter((value): value is string => Boolean(value));
-  const ariaDescribedBy =
-    describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
+  ]);
 
   const Component = control;
 

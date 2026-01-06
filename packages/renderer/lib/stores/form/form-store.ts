@@ -56,13 +56,11 @@ import { ValueSetExpander } from "../services/valueset-expander.ts";
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private readonly initialResponse: QuestionnaireResponse | undefined;
 
-  @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "FormStore.children",
   });
 
-  @observable.shallow
   private readonly renderingIssues = observable.array<OperationOutcomeIssue>(
     [],
     {

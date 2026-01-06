@@ -1,104 +1,117 @@
 import { observer } from "mobx-react-lite";
+import { useMemo } from "react";
 import type {
   AnswerType,
   IQuestionNode,
   OptionItem,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-import { getNodeDescribedBy, getNodeLabelId } from "../../../../utils.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
-
-export type MultiListSelectControlProps<T extends AnswerType> = {
-  node: IQuestionNode<T>;
-};
+import {
+  getAnswerErrorId,
+  getNodeDescribedBy,
+  getNodeLabelId,
+  safeJoin,
+} from "../../../../utils.ts";
 
 export const MultiListSelectControl = observer(function MultiListSelectControl<
   T extends AnswerType,
->({ node }: MultiListSelectControlProps<T>) {
+>({ node }: { node: IQuestionNode<T> }) {
   const { CheckboxList, CustomOptionForm } = useTheme();
   const store = node.selectStore;
   const customControlType =
     node.answerOptions.constraint === "optionsOrString" ? "string" : node.type;
   const CustomControl = getValueControl(customControlType);
-  const selectedTokens = new Set(store.selectedTokens);
-  if (store.allowCustom && store.customOptionFormState) {
-    selectedTokens.add(store.specifyOtherToken);
-  }
+  const selectedOptions = useMemo(() => {
+    return store.selectedOptions.map((selection) => ({
+      token: selection.token,
+      label: (
+        <ValueDisplay type={selection.answerType} value={selection.value} />
+      ),
+      ariaDescribedBy:
+        selection.answer.issues.length > 0
+          ? getAnswerErrorId(selection.answer)
+          : undefined,
+      errors: <AnswerErrors answer={selection.answer} />,
+      disabled: selection.disabled,
+    }));
+  }, [store.selectedOptions]);
 
-  const checkboxOptions: OptionItem[] = store.options.map((entry) => ({
-    token: entry.token,
-    disabled: entry.disabled,
-    label: <ValueDisplay type={entry.answerType} value={entry.value} />,
-  }));
-  if (store.allowCustom) {
-    const hasCustomOptionForm = Boolean(store.customOptionFormState);
-    checkboxOptions.push({
-      token: store.specifyOtherToken,
-      label: strings.selection.specifyOther,
-      disabled:
-        store.isLoading || (!hasCustomOptionForm && !store.canAddSelection),
-    });
-  }
-  const customOptionForm = store.customOptionFormState ? (
+  const ariaLabelledBy = getNodeLabelId(node);
+  const ariaDescribedBy = getNodeDescribedBy(node);
+  const formState = store.customOptionFormState;
+  const customOptionForm = formState ? (
     <CustomOptionForm
       content={
         <CustomControl
-          {...store.buildRowProps(
-            store.customOptionFormState.answer,
-            "custom-input",
-          )}
+          answer={formState.answer}
+          id={`${formState.answer.token}_/_custom-input`}
+          ariaLabelledBy={ariaLabelledBy}
+          ariaDescribedBy={safeJoin([
+            ariaDescribedBy,
+            formState.answer && formState.answer.issues.length > 0
+              ? getAnswerErrorId(formState.answer)
+              : undefined,
+          ])}
         />
       }
-      errors={<AnswerErrors answer={store.customOptionFormState.answer} />}
+      errors={<AnswerErrors answer={formState.answer} />}
       cancel={{
         label: strings.dialog.cancel,
         onClick: store.cancelCustomOptionForm,
-        disabled: false,
       }}
       submit={{
         label: strings.dialog.add,
         onClick: store.submitCustomOptionForm,
-        disabled: !store.customOptionFormState.canSubmit,
+        disabled: !formState.canSubmit,
       }}
     />
-  ) : null;
+  ) : undefined;
 
-  const handleToggle = (token: string) => {
-    if (store.allowCustom && token === store.specifyOtherToken) {
-      if (store.customOptionFormState) {
-        store.cancelCustomOptionForm();
-      } else {
-        store.openCustomOptionForm();
+  const options = useMemo<OptionItem[]>(() => {
+    return store.filteredOptions.map((entry) => ({
+      token: entry.token,
+      disabled: entry.disabled,
+      label: <ValueDisplay type={entry.answerType} value={entry.value} />,
+    }));
+  }, [store.filteredOptions]);
+
+  const customOption = store.allowCustom
+    ? {
+        token: store.specifyOtherToken,
+        label: strings.selection.specifyOther,
+        disabled: !store.canAddSelection || store.isLoading,
       }
-      return;
-    }
+    : undefined;
+  const inputId = `af_/_${node.token}_/_multi-select`;
 
-    const selectedAnswer = store.answerByToken.get(token);
-    if (selectedAnswer) {
-      store.removeAnswer(selectedAnswer);
+  const handleDeselect = (token: string) => {
+    if (store.allowCustom && token === store.specifyOtherToken) {
+      store.cancelCustomOptionForm();
       return;
     }
-    store.selectOption(token);
+    const answer = store.answersByOptionToken.get(token);
+    if (answer) {
+      store.removeAnswer(answer);
+    }
   };
 
   return (
     <CheckboxList
-      options={checkboxOptions}
-      tokens={selectedTokens}
-      onChange={handleToggle}
-      id={node.token}
-      ariaLabelledBy={getNodeLabelId(node)}
-      ariaDescribedBy={getNodeDescribedBy(node)}
+      options={options}
+      onSelect={store.selectOption}
+      onDeselect={handleDeselect}
+      customOption={customOption}
+      id={inputId}
+      ariaLabelledBy={ariaLabelledBy}
+      ariaDescribedBy={ariaDescribedBy}
       disabled={node.readOnly}
       isLoading={store.isLoading}
-      renderErrors={(token) => {
-        const answer = store.answerByToken.get(token);
-        return answer ? <AnswerErrors answer={answer} /> : null;
-      }}
-      after={customOptionForm}
+      selectedOptions={selectedOptions}
+      customOptionForm={customOptionForm}
     />
   );
 });

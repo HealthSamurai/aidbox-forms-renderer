@@ -72,14 +72,21 @@ export function getAnswerErrorId(answer: IAnswerInstance): string {
   return `af_/_${answer.token}_/_errors`;
 }
 
+export function safeJoin(
+  values: Array<string | null | undefined>,
+  separator: string = " ",
+): string | undefined {
+  const filtered = values.filter((value): value is string => Boolean(value));
+  return filtered.length > 0 ? filtered.join(separator) : undefined;
+}
+
 export function getNodeDescribedBy<T extends AnswerType>(
   node: IQuestionNode<T>,
 ) {
-  const describedByPieces = [
+  return safeJoin([
     node.help ? getNodeHelpId(node) : undefined,
     node.hasErrors ? getNodeErrorId(node) : undefined,
-  ].filter(Boolean) as string[];
-  return describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
+  ]);
 }
 
 export function dedupe<T>(values: readonly T[]): T[] {

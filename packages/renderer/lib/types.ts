@@ -45,9 +45,9 @@ import type { GroupControlRegistry } from "./stores/registries/group-control-reg
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
-import type { OptionItem } from "@aidbox-forms/theme";
+import type { OptionItem, SelectedOptionItem } from "@aidbox-forms/theme";
 
-export type { OptionItem };
+export type { OptionItem, SelectedOptionItem };
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -205,6 +205,9 @@ export type AnswerType = Exclude<
   "group" | "display" | "question"
 >;
 
+export type AnswerToken = string;
+export type OptionToken = string;
+
 export type EnableWhenAnswer =
   | boolean
   | number
@@ -222,7 +225,7 @@ export type AnswerLifecycle =
   | "manual";
 
 export type AnswerOption<T extends AnswerType> = {
-  token: string;
+  token: OptionToken;
   value: DataTypeToType<AnswerTypeToDataType<T>>;
   disabled: boolean;
   answerType: AnswerType;
@@ -524,7 +527,7 @@ export interface IGridStore {
 }
 
 export type OptionAxisItem = {
-  token: string;
+  token: OptionToken;
   type: AnswerType;
   value: DataTypeToType<AnswerTypeToDataType<AnswerType>>;
 };
@@ -535,8 +538,8 @@ export type TableCellState = {
 };
 
 export type QuestionAxisSelection = {
-  selectedTokens: Set<string>;
-  selectedToken: string;
+  selectedTokens: Set<OptionToken>;
+  selectedToken: OptionToken;
 };
 
 export type QuestionAxisItem = {
@@ -549,7 +552,7 @@ export type QuestionAxisItem = {
 
 export type QuestionAxisEntry = {
   question: IQuestionNode;
-  optionMap: Map<string, AnswerOption<AnswerType>>;
+  optionMap: Map<OptionToken, AnswerOption<AnswerType>>;
 };
 
 export type TableAxisModel = {
@@ -565,9 +568,9 @@ export interface ITableStore {
   getQuestionSelection(questionToken: string): QuestionAxisSelection;
   getCellState(
     questionToken: string,
-    optionToken: string,
+    optionToken: OptionToken,
   ): TableCellState | null;
-  toggleCell(questionToken: string, optionToken: string): void;
+  toggleCell(questionToken: string, optionToken: OptionToken): void;
 }
 
 export type GridTableColumnState = {
@@ -625,7 +628,7 @@ export interface ValueBounds<T extends AnswerType = AnswerType> {
 }
 
 export interface IAnswerInstance<T extends AnswerType = AnswerType> {
-  readonly token: string;
+  readonly token: AnswerToken;
   readonly question: IQuestionNode<T>;
   readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
   setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
@@ -656,9 +659,9 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly constraint: QuestionnaireItem["answerConstraint"];
   getTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): string;
+  ): OptionToken;
   getValueForToken(
-    token: string,
+    token: OptionToken,
   ): DataTypeToType<AnswerTypeToDataType<T>> | null;
 }
 
@@ -699,32 +702,29 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
     AnswerOption<T> | AnswerOption<"string">
   >;
   readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
-  readonly selectedTokens: ReadonlySet<string>;
-  readonly answerByToken: ReadonlyMap<string, IAnswerInstance<T>>;
+  readonly selectedOptionTokens: ReadonlySet<OptionToken>;
+  readonly answersByOptionToken: ReadonlyMap<OptionToken, IAnswerInstance<T>>;
   readonly availableAnswers: ReadonlyArray<IAnswerInstance<T>>;
-  readonly specifyOtherToken: string;
+  readonly specifyOtherToken: OptionToken;
   readonly canAddSelection: boolean;
   readonly canRemoveSelection: boolean;
   readonly customOptionFormState: CustomOptionFormState<T> | undefined;
-  readonly ariaLabelledBy: string;
-  readonly ariaDescribedBy: string | undefined;
 
   getOption(
-    token: string,
+    token: OptionToken,
   ): AnswerOption<T> | AnswerOption<"string"> | undefined;
   getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
 
   setSearchQuery(query: string): void;
-  selectOption(token: string): void;
-  selectOptionForAnswer(answer: IAnswerInstance<T>, token: string | null): void;
+  selectOption(token: OptionToken): void;
+  selectOptionForAnswer(
+    answer: IAnswerInstance<T>,
+    token: OptionToken | null,
+  ): void;
   removeAnswer(answer: IAnswerInstance<T>): void;
   openCustomOptionForm(answer?: IAnswerInstance<T>): void;
   cancelCustomOptionForm(): void;
   submitCustomOptionForm(): void;
-  buildRowProps(
-    answer: IAnswerInstance<T>,
-    suffix: string,
-  ): ValueControlProps<T>;
 }
 
 export interface IQuestionNode<

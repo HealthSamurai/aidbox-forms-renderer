@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import type {
   AnswerType,
   AnswerTypeToDataType,
+  AnswerToken,
   DataTypeToType,
   IAnswerInstance,
   IPresentableNode,
@@ -27,7 +28,7 @@ import { QuantityAnswer } from "./quantity-answer.ts";
 export class AnswerInstance<
   T extends AnswerType,
 > implements IAnswerInstance<T> {
-  readonly token: string;
+  readonly token: AnswerToken;
   readonly scope: IScope;
 
   readonly question: IQuestionNode<T>;
@@ -49,7 +50,6 @@ export class AnswerInstance<
   @observable.ref
   private _value: DataTypeToType<AnswerTypeToDataType<T>> | null = null;
 
-  @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "AnswerInstance.nodes",
@@ -58,7 +58,7 @@ export class AnswerInstance<
   constructor(
     question: IQuestionNode<T>,
     scope: IScope,
-    token: string,
+    token: AnswerToken,
     initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {

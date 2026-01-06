@@ -29,12 +29,10 @@ export const SingleDropdownSelectControl = observer(
       store.customOptionFormState?.answer.token === answer.token;
     const selection = store.getSelectedOption(answer);
 
-    const Control = store.allowCustom
-      ? getValueControl(customControlType)
-      : null;
+    const Control = getValueControl(customControlType);
 
     const customOptionForm =
-      store.allowCustom && isCustomActive && Control ? (
+      isCustomActive && store.customOptionFormState ? (
         <CustomOptionForm
           content={
             <Control
@@ -53,7 +51,7 @@ export const SingleDropdownSelectControl = observer(
           submit={{
             label: strings.dialog.add,
             onClick: store.submitCustomOptionForm,
-            disabled: node.readOnly || !store.customOptionFormState?.canSubmit,
+            disabled: node.readOnly || !store.customOptionFormState.canSubmit,
           }}
         />
       ) : undefined;
@@ -94,9 +92,7 @@ export const SingleDropdownSelectControl = observer(
       <SelectInput
         options={options}
         selectedOption={selectedOption}
-        onChange={(token) => {
-          store.selectOptionForAnswer(answer, token);
-        }}
+        onChange={(token) => store.selectOptionForAnswer(answer, token)}
         onSearch={store.setSearchQuery}
         customOption={customOption}
         customOptionForm={customOptionForm}

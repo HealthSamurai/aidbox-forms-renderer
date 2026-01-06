@@ -1,10 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import { AnswerType, ValueControlProps } from "../../../../types.ts";
+import {
+  AnswerType,
+  ValueControlProps,
+  OptionItem,
+} from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
-import type { OptionItem } from "@aidbox-forms/theme";
 import { strings } from "../../../../strings.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 
@@ -22,30 +25,11 @@ export const SingleListSelectControl = observer(
       node.answerOptions.constraint === "optionsOrString"
         ? "string"
         : node.type;
-    const Control = getValueControl(customControlType);
-    const selection = store.getSelectedOption(answer);
     const isCustomActive =
       store.customOptionFormState?.answer.token === answer.token;
-    const selectedToken = isCustomActive
-      ? store.specifyOtherToken
-      : (selection?.token ?? "");
-    const options = useMemo<OptionItem[]>(
-      () =>
-        store.options.map((entry) => ({
-          token: entry.token,
-          disabled: entry.disabled,
-          label: <ValueDisplay type={entry.answerType} value={entry.value} />,
-        })),
-      [store.options],
-    );
-    const customOption = store.allowCustom
-      ? {
-          token: store.specifyOtherToken,
-          label: strings.selection.specifyOther,
-          disabled: store.isLoading,
-        }
-      : undefined;
-    const radioOptions = customOption ? [...options, customOption] : options;
+    const selection = store.getSelectedOption(answer);
+
+    const Control = getValueControl(customControlType);
 
     const customOptionForm =
       isCustomActive && store.customOptionFormState ? (
@@ -70,22 +54,50 @@ export const SingleListSelectControl = observer(
             disabled: node.readOnly || !store.customOptionFormState.canSubmit,
           }}
         />
-      ) : null;
+      ) : undefined;
+
+    const options = useMemo<OptionItem[]>(() => {
+      return store.filteredOptions.map((entry) => ({
+        token: entry.token,
+        label: <ValueDisplay type={entry.answerType} value={entry.value} />,
+        disabled: entry.disabled,
+      }));
+    }, [store.filteredOptions]);
+    const customOption = store.allowCustom
+      ? {
+          token: store.specifyOtherToken,
+          label: strings.selection.specifyOther,
+          disabled: store.isLoading,
+        }
+      : undefined;
+    const selectedOption = (() => {
+      if (isCustomActive) {
+        return customOption ?? null;
+      }
+      if (!selection) {
+        return null;
+      }
+      return {
+        token: selection.token,
+        disabled: selection.disabled,
+        label: (
+          <ValueDisplay type={selection.answerType} value={selection.value} />
+        ),
+      };
+    })();
 
     return (
       <RadioButtonList
-        options={radioOptions}
-        token={selectedToken}
-        onChange={(token) => {
-          store.selectOptionForAnswer(answer, token);
-        }}
+        options={options}
+        selectedOption={selectedOption}
+        onChange={(token) => store.selectOptionForAnswer(answer, token)}
+        customOption={customOption}
+        customOptionForm={customOptionForm}
         id={id}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={node.readOnly}
         isLoading={store.isLoading}
-        after={customOptionForm}
-        afterInset={Boolean(customOptionForm)}
       />
     );
   },

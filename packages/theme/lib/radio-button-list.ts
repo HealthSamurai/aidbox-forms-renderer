@@ -1,17 +1,17 @@
 import type { ComponentType, ReactNode } from "react";
-import type { OptionItem } from "./option-item.ts";
+import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type RadioButtonListProps = {
   options: readonly OptionItem[];
-  token: string;
-  onChange: (token: string) => void;
+  selectedOption: SelectedOptionItem | null;
+  onChange: (token: string | null) => void;
+  customOption?: OptionItem | undefined;
+  customOptionForm?: ReactNode;
   id: string;
-  ariaLabelledBy: string;
+  ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
-  disabled: boolean;
-  isLoading?: boolean;
-  after?: ReactNode;
-  afterInset?: boolean;
+  disabled?: boolean | undefined;
+  isLoading?: boolean | undefined;
 };
 
 export type RadioButtonListComponent = ComponentType<RadioButtonListProps>;

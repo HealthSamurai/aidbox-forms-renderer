@@ -2,16 +2,18 @@ import type { RadioButtonListProps } from "@aidbox-forms/theme";
 
 export function RadioButtonList({
   options,
-  token,
+  selectedOption,
   onChange,
+  customOption,
+  customOptionForm,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
   isLoading,
-  after,
-  afterInset = false,
 }: RadioButtonListProps) {
+  const displayOptions = customOption ? [...options, customOption] : options;
+  const selectedToken = selectedOption?.token ?? "";
   const makeInputId = (token: string) => (id ? `${id}-${token}` : undefined);
 
   return (
@@ -23,7 +25,7 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         aria-busy={isLoading || undefined}
       >
-        {options.map((entry) => {
+        {displayOptions.map((entry) => {
           const optionId = makeInputId(entry.token);
           return (
             <div key={entry.token} className="nhsuk-radios__item">
@@ -33,8 +35,8 @@ export function RadioButtonList({
                 type="radio"
                 name={id}
                 value={entry.token}
-                checked={token === entry.token}
-                disabled={disabled || entry.disabled}
+                checked={selectedToken === entry.token}
+                disabled={disabled || isLoading || entry.disabled}
                 onChange={(event) => onChange(event.target.value)}
                 aria-describedby={ariaDescribedBy}
               />
@@ -53,10 +55,8 @@ export function RadioButtonList({
           Loading options…
         </div>
       ) : null}
-      {after ? (
-        <div className={afterInset ? "nhsuk-u-padding-left-4" : undefined}>
-          {after}
-        </div>
+      {customOptionForm ? (
+        <div className="nhsuk-u-padding-left-4">{customOptionForm}</div>
       ) : null}
     </div>
   );

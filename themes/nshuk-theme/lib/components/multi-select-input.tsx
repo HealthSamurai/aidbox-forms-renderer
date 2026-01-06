@@ -43,10 +43,13 @@ export function MultiSelectInput({
     setQuery(nextQuery);
     onSearch?.(nextQuery);
   };
+  const displayOptions = useMemo(() => {
+    return options.filter((option) => !selectedTokens.has(option.token));
+  }, [options, selectedTokens]);
   const visibleOptions = useMemo(() => {
-    return customOption ? [...options, customOption] : options;
-  }, [customOption, options]);
-  const stickyIndex = customOption ? options.length : -1;
+    return customOption ? [...displayOptions, customOption] : displayOptions;
+  }, [customOption, displayOptions]);
+  const stickyIndex = customOption ? displayOptions.length : -1;
   const resolvedActiveToken = useMemo(() => {
     if (!isOpenWithCustom || visibleOptions.length === 0) {
       return null;
@@ -286,7 +289,7 @@ export function MultiSelectInput({
               </CustomOptionContent>
             ) : (
               <>
-                {options.map((option, index) => (
+                {displayOptions.map((option, index) => (
                   <OptionButton
                     key={option.token}
                     id={`${listboxId}-option-${index}`}

@@ -30,7 +30,6 @@ import { TableStore } from "./table-store.ts";
 export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   readonly expressionRegistry: NodeExpressionRegistry;
 
-  @observable.shallow
   readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
     name: "GroupStore.children",

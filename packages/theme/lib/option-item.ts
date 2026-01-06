@@ -7,5 +7,6 @@ export type OptionItem = {
 };
 
 export type SelectedOptionItem = OptionItem & {
+  ariaDescribedBy?: string | undefined;
   errors?: ReactNode;
 };

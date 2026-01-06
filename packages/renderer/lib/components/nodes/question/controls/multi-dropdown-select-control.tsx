@@ -10,16 +10,20 @@ import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
-
-export type MultiDropdownSelectControlProps<T extends AnswerType> = {
-  node: IQuestionNode<T>;
-};
+import {
+  getAnswerErrorId,
+  getNodeDescribedBy,
+  getNodeLabelId,
+  safeJoin,
+} from "../../../../utils.ts";
 
 export const MultiDropdownSelectControl = observer(
   function MultiDropdownSelectControl<T extends AnswerType>({
     node,
-  }: MultiDropdownSelectControlProps<T>) {
-    const { CustomOptionForm, MultiSelectInput } = useTheme();
+  }: {
+    node: IQuestionNode<T>;
+  }) {
+    const { MultiSelectInput, CustomOptionForm } = useTheme();
     const store = node.selectStore;
     const customControlType =
       node.answerOptions.constraint === "optionsOrString"
@@ -33,38 +37,46 @@ export const MultiDropdownSelectControl = observer(
         label: (
           <ValueDisplay type={selection.answerType} value={selection.value} />
         ),
+        ariaDescribedBy:
+          selection.answer.issues.length > 0
+            ? getAnswerErrorId(selection.answer)
+            : undefined,
         errors: <AnswerErrors answer={selection.answer} />,
         disabled: selection.disabled,
       }));
     }, [store.selectedOptions]);
-    const selectedTokens = useMemo(
-      () => new Set(store.selectedTokens),
-      [store.selectedTokens],
-    );
 
-    const customOptionForm = store.customOptionFormState && (
+    const ariaLabelledBy = getNodeLabelId(node);
+    const ariaDescribedBy = getNodeDescribedBy(node);
+    const formState = store.customOptionFormState;
+    const customOptionForm = formState ? (
       <CustomOptionForm
         content={
           <CustomControl
-            {...store.buildRowProps(
-              store.customOptionFormState.answer,
-              "custom-input",
-            )}
+            answer={formState.answer}
+            id={`${formState.answer.token}_/_custom-input`}
+            ariaLabelledBy={ariaLabelledBy}
+            ariaDescribedBy={safeJoin([
+              ariaDescribedBy,
+              formState.answer && formState.answer.issues.length > 0
+                ? getAnswerErrorId(formState.answer)
+                : undefined,
+            ])}
           />
         }
-        errors={<AnswerErrors answer={store.customOptionFormState.answer} />}
+        errors={<AnswerErrors answer={formState.answer} />}
         cancel={{
           label: strings.dialog.cancel,
           onClick: store.cancelCustomOptionForm,
-          disabled: false,
         }}
         submit={{
           label: strings.dialog.add,
           onClick: store.submitCustomOptionForm,
-          disabled: !store.customOptionFormState.canSubmit,
+          disabled: !formState.canSubmit,
         }}
       />
-    );
+    ) : undefined;
+
     const options = useMemo<OptionItem[]>(() => {
       return store.filteredOptions.map((entry) => ({
         token: entry.token,
@@ -72,10 +84,6 @@ export const MultiDropdownSelectControl = observer(
         label: <ValueDisplay type={entry.answerType} value={entry.value} />,
       }));
     }, [store.filteredOptions]);
-
-    const filteredOptions = useMemo(() => {
-      return options.filter((option) => !selectedTokens.has(option.token));
-    }, [options, selectedTokens]);
 
     const customOption = store.allowCustom
       ? {
@@ -86,21 +94,23 @@ export const MultiDropdownSelectControl = observer(
       : undefined;
     const inputId = `af_/_${node.token}_/_multi-select`;
 
+    const handleDeselect = (token: string) => {
+      const answer = store.answersByOptionToken.get(token);
+      if (answer) {
+        store.removeAnswer(answer);
+      }
+    };
+
     return (
       <MultiSelectInput
-        options={filteredOptions}
+        options={options}
         onSelect={store.selectOption}
-        onDeselect={(token) => {
-          const answer = store.answerByToken.get(token);
-          if (answer) {
-            store.removeAnswer(answer);
-          }
-        }}
+        onDeselect={handleDeselect}
         onSearch={store.setSearchQuery}
         customOption={customOption}
         id={inputId}
-        ariaLabelledBy={store.ariaLabelledBy}
-        ariaDescribedBy={store.ariaDescribedBy}
+        ariaLabelledBy={ariaLabelledBy}
+        ariaDescribedBy={ariaDescribedBy}
         disabled={node.readOnly}
         isLoading={store.isLoading}
         selectedOptions={selectedOptions}

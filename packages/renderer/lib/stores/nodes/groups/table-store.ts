@@ -13,6 +13,7 @@ import type {
   AnswerOption,
   TableAxisModel,
   TableCellState,
+  OptionToken,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
@@ -75,12 +76,12 @@ export class TableStore implements ITableStore {
   getQuestionSelection(questionToken: string): QuestionAxisSelection {
     const entry = this.questionByToken.get(questionToken);
     if (!entry) {
-      return { selectedTokens: new Set(), selectedToken: "" };
+      return { selectedTokens: new Set<OptionToken>(), selectedToken: "" };
     }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
-    const selectedTokens = new Set<string>();
-    let selectedToken = "";
+    const selectedTokens = new Set<OptionToken>();
+    let selectedToken: OptionToken = "";
 
     this.optionAxis.forEach((option) => {
       const optionEntry = entry.optionMap.get(option.token);
@@ -102,7 +103,7 @@ export class TableStore implements ITableStore {
 
   getCellState(
     questionToken: string,
-    optionToken: string,
+    optionToken: OptionToken,
   ): TableCellState | null {
     const entry = this.questionByToken.get(questionToken);
     if (!entry) {
@@ -133,7 +134,7 @@ export class TableStore implements ITableStore {
     };
   }
 
-  toggleCell(questionToken: string, optionToken: string): void {
+  toggleCell(questionToken: string, optionToken: OptionToken): void {
     const entry = this.questionByToken.get(questionToken);
     if (!entry) return;
 
@@ -175,14 +176,14 @@ export class TableStore implements ITableStore {
   @computed
   private get model(): TableAxisModel {
     const optionAxis: OptionAxisItem[] = [];
-    const optionMap = new Map<string, OptionAxisItem>();
+    const optionMap = new Map<OptionToken, OptionAxisItem>();
     const questionAxis: QuestionAxisEntry[] = [];
 
     this.questions.forEach((question) => {
-      const optionEntryMap = new Map<string, AnswerOption<AnswerType>>();
+      const optionEntryMap = new Map<OptionToken, AnswerOption<AnswerType>>();
       question.answerOptions.options.forEach((entry) => {
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
-        const token = tokenify(type, entry.value);
+        const token = tokenify(type, entry.value) as OptionToken;
 
         if (!optionMap.has(token)) {
           const option: OptionAxisItem = {

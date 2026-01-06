@@ -248,17 +248,17 @@ placeholder.
 
 Numeric text field for integer, decimal, and quantity values. Accept null for empty and show a unit label when provided.
 
-| Prop              | Type                              | Required | Description                                                                         |
-| ----------------- | --------------------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `id`              | `string`                          | No       | Set as the input id so labels can target it.                                        |
-| `value`           | `number \| null`                  | Yes      | Render this number as the current value; null means show an empty field.            |
-| `onChange`        | `(value: number \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
-| `disabled`        | `boolean`                         | No       | When true, render the input in a disabled state and prevent edits.                  |
-| `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                             |
-| `step`            | `number \| "any"`                 | No       | Apply as the input step value to control increments and precision.                  |
-| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                   |
-| `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.         |
-| `unitLabel`       | `string`                          | No       | Render a static unit label alongside the input when provided.                       |
+| Prop              | Type                               | Required | Description                                                                         |
+| ----------------- | ---------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `id`              | `string`                           | No       | Set as the input id so labels can target it.                                        |
+| `value`           | `number \| null`                   | Yes      | Render this number as the current value; null means show an empty field.            |
+| `onChange`        | `(value: nupmber \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
+| `disabled`        | `boolean`                          | No       | When true, render the input in a disabled state and prevent edits.                  |
+| `placeholder`     | `string`                           | No       | Show this hint when the field is empty.                                             |
+| `step`            | `number \| "any"`                  | No       | Apply as the input step value to control increments and precision.                  |
+| `ariaLabelledBy`  | `string`                           | No       | Forward to aria-labelledby to associate the input with its label.                   |
+| `ariaDescribedBy` | `string`                           | No       | Forward to aria-describedby to associate the input with help or error text.         |
+| `unitLabel`       | `string`                           | No       | Render a static unit label alongside the input when provided.                       |
 
 ### DateInput
 
@@ -358,51 +358,52 @@ clearing the selection when applicable.
 
 ### RadioButtonList
 
-Single-select option list presented as radio buttons. Include disabled legacy options in the options list when needed
-and allow extra content after the list.
+Single-select option list presented as radio buttons. Include disabled legacy options in the options list when needed.
 
-| Prop              | Type                      | Required | Description                                                                   |
-| ----------------- | ------------------------- | -------- | ----------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`            | Yes      | Render these entries as radio options.                                        |
-| `token`           | `string`                  | Yes      | Render this option token as the currently selected radio.                     |
-| `onChange`        | `(token: string) => void` | Yes      | Call with the newly selected option token when the user changes selection.    |
-| `id`              | `string`                  | Yes      | Use as the radio group name/id so options stay grouped.                       |
-| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the group with its label.             |
-| `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the group with help or error text.   |
-| `disabled`        | `boolean`                 | Yes      | When true, render options as disabled and prevent selection changes.          |
-| `isLoading`       | `boolean`                 | No       | When true, show a loading indicator or busy state for the list.               |
-| `after`           | `ReactNode`               | No       | Render additional content after the list (for example, an open-choice input). |
-| `afterInset`      | `boolean`                 | No       | When true, indent the `after` content to align with the option text.          |
+| Prop               | Type                              | Required | Description                                                                          |
+| ------------------ | --------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `options`          | `OptionItem[]`                    | Yes      | Render these entries as radio options.                                               |
+| `selectedOption`   | `SelectedOptionItem \| null`      | Yes      | Render this option as the current selection, or null when empty.                     |
+| `onChange`         | `(token: string \| null) => void` | Yes      | Call with the newly selected option token, or null when the selection is cleared.    |
+| `customOption`     | `OptionItem`                      | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
+| `customOptionForm` | `ReactNode`                       | No       | Render UI associated with the custom option (for example, a custom value input row). |
+| `id`               | `string`                          | Yes      | Use as the radio group name/id so options stay grouped.                              |
+| `ariaLabelledBy`   | `string`                          | No       | Forward to aria-labelledby to associate the group with its label.                    |
+| `ariaDescribedBy`  | `string`                          | No       | Forward to aria-describedby to associate the group with help or error text.          |
+| `disabled`         | `boolean`                         | No       | When true, render options as disabled and prevent selection changes.                 |
+| `isLoading`        | `boolean`                         | No       | When true, show a loading indicator or busy state for the list.                      |
 
 ### CheckboxList
 
-Multi-select option list presented as checkboxes. Support per-option errors and an optional after slot for custom
-inputs.
+Multi-select option list presented as checkboxes. Support per-option errors and optional custom-option content.
 
-| Prop              | Type                           | Required | Description                                                                 |
-| ----------------- | ------------------------------ | -------- | --------------------------------------------------------------------------- |
-| `options`         | `OptionItem[]`                 | Yes      | Render these entries as checkbox options.                                   |
-| `tokens`          | `Set<string>`                  | Yes      | Use this set of tokens to determine which checkboxes are checked.           |
-| `onChange`        | `(token: string) => void`      | Yes      | Call with the toggled option token when the user changes a checkbox.        |
-| `id`              | `string`                       | Yes      | Use as the checkbox group name/id so inputs stay grouped.                   |
-| `ariaLabelledBy`  | `string`                       | Yes      | Forward to aria-labelledby to associate the group with its label.           |
-| `ariaDescribedBy` | `string`                       | No       | Forward to aria-describedby to associate the group with help or error text. |
-| `disabled`        | `boolean`                      | No       | When true, render all options as disabled and prevent changes.              |
-| `isLoading`       | `boolean`                      | No       | When true, show a loading indicator or busy state for the list.             |
-| `renderErrors`    | `(token: string) => ReactNode` | No       | Render per-option error content for the matching token when provided.       |
-| `after`           | `ReactNode`                    | No       | Render additional content after the list (for example, a custom input).     |
+| Prop               | Type                      | Required | Description                                                                          |
+| ------------------ | ------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `options`          | `OptionItem[]`            | Yes      | Render these entries as checkbox options.                                            |
+| `selectedOptions`  | `SelectedOptionItem[]`    | Yes      | Render these selections as checked options and use their tokens to match state.      |
+| `onSelect`         | `(token: string) => void` | Yes      | Call with the option token when the user checks a box.                               |
+| `onDeselect`       | `(token: string) => void` | Yes      | Call with the option token when the user unchecks a box.                             |
+| `customOption`     | `OptionItem`              | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
+| `customOptionForm` | `ReactNode`               | No       | Render UI associated with the custom option (for example, a custom value input row). |
+| `id`               | `string`                  | Yes      | Use as the checkbox group name/id so inputs stay grouped.                            |
+| `ariaLabelledBy`   | `string`                  | No       | Forward to aria-labelledby to associate the group with its label.                    |
+| `ariaDescribedBy`  | `string`                  | No       | Forward to aria-describedby to associate the group with help or error text.          |
+| `disabled`         | `boolean`                 | No       | When true, render all options as disabled and prevent changes.                       |
+| `isLoading`        | `boolean`                 | No       | When true, show a loading indicator or busy state for the list.                      |
 
 ### MultiSelectInput
 
-Composite multi-select UI that combines a picker, chips, and optional custom-option content. It should display selections
+Composite multi-select UI that combines a picker, chips, and optional custom-option content. It should display
+selections
 as chips and allow removal when permitted.
 
 | Prop               | Type                      | Required | Description                                                                          |
 | ------------------ | ------------------------- | -------- | ------------------------------------------------------------------------------------ |
-| `options`          | `OptionItem[]`            | Yes      | Render these entries as options in the picker dropdown (including selected ones).    |
+| `options`          | `OptionItem[]`            | Yes      | Render these entries as options in the picker dropdown.                              |
 | `selectedOptions`  | `SelectedOptionItem[]`    | Yes      | Render these selections as chips and use their tokens to filter options.             |
 | `onSelect`         | `(token: string) => void` | Yes      | Call with the selected option token when the user picks an option.                   |
 | `onDeselect`       | `(token: string) => void` | Yes      | Call with the selected token when the user removes a selection.                      |
+| `onSearch`         | `(query: string) => void` | No       | Call with the search query when the user types into the picker input.                |
 | `id`               | `string`                  | Yes      | Set as the input id so the combobox and listbox can be referenced.                   |
 | `customOption`     | `OptionItem`              | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
 | `ariaLabelledBy`   | `string`                  | No       | Forward to aria-labelledby for the picker so it associates with the label.           |
@@ -705,12 +706,13 @@ Base option shape used by option selectors such as select inputs and radio lists
 
 Represents a selected option rendered as a chip or a single selection.
 
-| Field      | Type        | Required | Description                                                        |
-| ---------- | ----------- | -------- | ------------------------------------------------------------------ |
-| `token`    | `string`    | Yes      | Use as a stable identifier when rendering and updating selections. |
-| `label`    | `ReactNode` | Yes      | Render as the selection's visible label.                           |
-| `disabled` | `boolean`   | No       | When true, render the selection as unavailable.                    |
-| `errors`   | `ReactNode` | No       | Render as error content associated with this selection.            |
+| Field             | Type        | Required | Description                                                        |
+| ----------------- | ----------- | -------- | ------------------------------------------------------------------ |
+| `token`           | `string`    | Yes      | Use as a stable identifier when rendering and updating selections. |
+| `label`           | `ReactNode` | Yes      | Render as the selection's visible label.                           |
+| `disabled`        | `boolean`   | No       | When true, render the selection as unavailable.                    |
+| `ariaDescribedBy` | `string`    | No       | Forward to aria-describedby for text related to this selection.    |
+| `errors`          | `ReactNode` | No       | Render as error content associated with this selection.            |
 
 ### CustomOptionAction
 

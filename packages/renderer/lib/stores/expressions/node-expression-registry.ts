@@ -41,7 +41,6 @@ export class NodeExpressionRegistry
   readonly readOnly: IExpressionSlot | undefined;
   readonly repeats: IExpressionSlot | undefined;
 
-  @observable.shallow
   readonly answerOptionToggles = observable.array<AnswerOptionToggleDefinition>(
     [],
     {

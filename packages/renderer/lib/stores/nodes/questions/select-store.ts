@@ -3,23 +3,21 @@ import FuzzySearch from "fuzzy-search";
 import {
   AnswerType,
   AnswerTypeToDataType,
+  AnswerToken,
   CustomOptionFormState,
   DataType,
   DataTypeToType,
   IAnswerInstance,
   IQuestionNode,
   ISelectStore,
+  OptionToken,
   AnswerOption,
   SelectedAnswerOption,
-  ValueControlProps,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   answerHasContent,
   areValuesEqual,
-  getAnswerErrorId,
-  getNodeDescribedBy,
-  getNodeLabelId,
   tokenify,
 } from "../../../utils.ts";
 
@@ -51,18 +49,16 @@ export class SelectStore<
 > implements ISelectStore<T> {
   readonly node: IQuestionNode<T>;
 
-  @observable.ref
-  private pendingCustomAnswerTokens = new Set<string>();
+  private readonly customAnswerTokens = observable.set<AnswerToken>();
 
   @observable
   private pendingCustomOptionForm: CustomOptionFormState<T> | undefined =
     undefined;
 
-  @observable.ref
-  private extraOptionMap = new Map<
-    string,
+  private readonly extraOptionsByToken = observable.map<
+    OptionToken,
     AnswerOption<T> | AnswerOption<"string">
-  >();
+  >({}, { deep: false, name: "SelectStore.extraOptionsByToken" });
 
   @observable
   private searchQuery = "";
@@ -160,7 +156,7 @@ export class SelectStore<
         if (
           answer.value == null ||
           answer.token === this.pendingCustomOptionForm?.answer.token ||
-          this.pendingCustomAnswerTokens.has(answer.token)
+          this.customAnswerTokens.has(answer.token)
         )
           return false;
         return areValuesEqual(
@@ -175,7 +171,7 @@ export class SelectStore<
             token: option.token,
             disabled: option.disabled,
           });
-    }, new Map<string, { token: string; disabled: boolean }>());
+    }, new Map<AnswerToken, { token: OptionToken; disabled: boolean }>());
   }
 
   @computed
@@ -221,15 +217,15 @@ export class SelectStore<
   }
 
   @computed
-  get selectedTokens(): ReadonlySet<string> {
+  get selectedOptionTokens(): ReadonlySet<OptionToken> {
     return new Set(this.selectedOptions.map((entry) => entry.token));
   }
 
   @computed
-  get answerByToken(): ReadonlyMap<string, IAnswerInstance<T>> {
+  get answersByOptionToken(): ReadonlyMap<OptionToken, IAnswerInstance<T>> {
     return this.selectedOptions.reduce(
       (map, entry) => map.set(entry.token, entry.answer),
-      new Map<string, IAnswerInstance<T>>(),
+      new Map<OptionToken, IAnswerInstance<T>>(),
     );
   }
 
@@ -239,17 +235,17 @@ export class SelectStore<
       (answer) =>
         answer.value == null &&
         answer.token !== this.pendingCustomOptionForm?.answer.token &&
-        !this.pendingCustomAnswerTokens.has(answer.token),
+        !this.customAnswerTokens.has(answer.token),
     );
   }
 
   getOption(
-    token: string,
+    token: OptionToken,
   ): AnswerOption<T> | AnswerOption<"string"> | undefined {
     return this.options.find((entry) => entry.token === token);
   }
 
-  private isInherentToken(token: string) {
+  private isInherentToken(token: OptionToken) {
     return this.inherentOptions.some((option) => option.token === token);
   }
 
@@ -261,16 +257,6 @@ export class SelectStore<
         (entry) => entry.answer.token === answer.token,
       ) ?? null
     );
-  }
-
-  @computed
-  get ariaLabelledBy(): string {
-    return getNodeLabelId(this.node);
-  }
-
-  @computed
-  get ariaDescribedBy(): string | undefined {
-    return getNodeDescribedBy(this.node);
   }
 
   @action.bound
@@ -292,13 +278,13 @@ export class SelectStore<
   }
 
   @computed
-  get specifyOtherToken(): string {
+  get specifyOtherToken(): OptionToken {
     return `${this.node.token}_/_specify_other`;
   }
 
   private getCustomTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
-  ) {
+  ): OptionToken {
     if (value == null) return "";
     const baseToken = tokenify(this.customDataType, value);
     return baseToken ? `${this.node.token}_/_custom_${baseToken}` : "";
@@ -306,7 +292,7 @@ export class SelectStore<
 
   private getLegacyTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ) {
+  ): OptionToken {
     if (value == null) return "";
     const baseToken = tokenify(this.dataType, value);
     return baseToken ? `${this.node.token}_/_legacy_${baseToken}` : "";
@@ -323,18 +309,16 @@ export class SelectStore<
     )
       return;
     const token = this.getCustomTokenForValue(value);
-    if (!token || this.extraOptionMap.has(token)) return;
+    if (!token || this.extraOptionsByToken.has(token)) return;
     const cloned = structuredClone(value) as
       | DataTypeToType<AnswerTypeToDataType<T>>
       | string;
-    const next = new Map(this.extraOptionMap);
-    next.set(token, {
+    this.extraOptionsByToken.set(token, {
       token,
       value: cloned,
       answerType: this.customAnswerType,
       disabled: false,
     } as AnswerOption<T> | AnswerOption<"string">);
-    this.extraOptionMap = next;
   }
 
   @action.bound
@@ -348,15 +332,13 @@ export class SelectStore<
     )
       return;
     const token = this.getLegacyTokenForValue(value);
-    if (!token || this.extraOptionMap.has(token)) return;
-    const next = new Map(this.extraOptionMap);
-    next.set(token, {
+    if (!token || this.extraOptionsByToken.has(token)) return;
+    this.extraOptionsByToken.set(token, {
       token,
       value: structuredClone(value) as DataTypeToType<AnswerTypeToDataType<T>>,
       answerType: this.node.type,
       disabled: true,
     });
-    this.extraOptionMap = next;
   }
 
   @action.bound
@@ -376,14 +358,14 @@ export class SelectStore<
     >;
     const slot = this.takeAvailableAnswer();
     if (slot) {
-      this.addPendingToken(slot.token);
+      this.customAnswerTokens.add(slot.token);
       slot.setValueByUser(nextValue);
       return;
     }
     if (this.node.canAdd) {
       const created = this.node.addAnswer(nextValue);
       if (created) {
-        this.addPendingToken(created.token);
+        this.customAnswerTokens.add(created.token);
       }
     }
   }
@@ -399,7 +381,7 @@ export class SelectStore<
   }
 
   @action.bound
-  selectOption(token: string): void {
+  selectOption(token: OptionToken): void {
     if (!token) return;
     if (token === this.specifyOtherToken) {
       this.openCustomOptionForm();
@@ -422,7 +404,7 @@ export class SelectStore<
   @action.bound
   selectOptionForAnswer(
     answer: IAnswerInstance<T>,
-    token: string | null,
+    token: OptionToken | null,
   ): void {
     const isCustomActive =
       this.customOptionFormState?.answer.token === answer.token;
@@ -432,7 +414,7 @@ export class SelectStore<
         return;
       }
       this.rememberAnswerValue(answer);
-      this.removePendingToken(answer.token);
+      this.customAnswerTokens.delete(answer.token);
       answer.setValueByUser(null);
       return;
     }
@@ -452,9 +434,9 @@ export class SelectStore<
     const entry = this.getOption(token);
     if (!entry || entry.disabled) return;
     if (!this.isInherentToken(entry.token) && this.allowCustom) {
-      this.addPendingToken(answer.token);
+      this.customAnswerTokens.add(answer.token);
     } else {
-      this.removePendingToken(answer.token);
+      this.customAnswerTokens.delete(answer.token);
     }
     const nextValue = structuredClone(entry.value) as DataTypeToType<
       AnswerTypeToDataType<T>
@@ -466,24 +448,8 @@ export class SelectStore<
   removeAnswer(answer: IAnswerInstance<T>): void {
     if (!this.canRemoveSelection) return;
     this.rememberAnswerValue(answer);
-    this.removePendingToken(answer.token);
+    this.customAnswerTokens.delete(answer.token);
     this.node.removeAnswer(answer);
-  }
-
-  @action.bound
-  private addPendingToken(token: string) {
-    if (this.pendingCustomAnswerTokens.has(token)) return;
-    const next = new Set(this.pendingCustomAnswerTokens);
-    next.add(token);
-    this.pendingCustomAnswerTokens = next;
-  }
-
-  @action.bound
-  private removePendingToken(token: string) {
-    if (!this.pendingCustomAnswerTokens.has(token)) return;
-    const next = new Set(this.pendingCustomAnswerTokens);
-    next.delete(token);
-    this.pendingCustomAnswerTokens = next;
   }
 
   private rememberAnswerValue(answer: IAnswerInstance<T>) {
@@ -511,7 +477,7 @@ export class SelectStore<
     }
 
     if (answer) {
-      this.addPendingToken(answer.token);
+      this.customAnswerTokens.add(answer.token);
       answer.setValueByUser(null);
       this.pendingCustomOptionForm = {
         answer,
@@ -523,7 +489,7 @@ export class SelectStore<
 
     const slot = this.takeAvailableAnswer();
     if (slot) {
-      this.addPendingToken(slot.token);
+      this.customAnswerTokens.add(slot.token);
       this.pendingCustomOptionForm = {
         answer: slot,
         isNew: false,
@@ -534,7 +500,7 @@ export class SelectStore<
     if (this.node.canAdd) {
       const created = this.node.addAnswer(null);
       if (created) {
-        this.addPendingToken(created.token);
+        this.customAnswerTokens.add(created.token);
         this.pendingCustomOptionForm = {
           answer: created as IAnswerInstance<T>,
           isNew: true,
@@ -547,7 +513,7 @@ export class SelectStore<
   @action.bound
   cancelCustomOptionForm() {
     if (!this.pendingCustomOptionForm) return;
-    this.removePendingToken(this.pendingCustomOptionForm.answer.token);
+    this.customAnswerTokens.delete(this.pendingCustomOptionForm.answer.token);
     if (this.pendingCustomOptionForm.isNew) {
       this.node.removeAnswer(this.pendingCustomOptionForm.answer);
     } else {
@@ -567,31 +533,10 @@ export class SelectStore<
     this.pendingCustomOptionForm = undefined;
   }
 
-  buildRowProps(
-    answer: IAnswerInstance<T>,
-    suffix: string,
-  ): ValueControlProps<T> {
-    const answerErrorId =
-      answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
-    const describedByPieces = [
-      getNodeDescribedBy(this.node),
-      answerErrorId,
-    ].filter((value): value is string => Boolean(value));
-    const ariaDescribedBy =
-      describedByPieces.length > 0 ? describedByPieces.join(" ") : undefined;
-
-    return {
-      id: `${answer.token}_/_${suffix}`,
-      ariaLabelledBy: getNodeLabelId(this.node),
-      ariaDescribedBy,
-      answer,
-    };
-  }
-
   private buildOptions(
     options: ReadonlyArray<AnswerOption<T>>,
   ): ReadonlyArray<AnswerOption<T> | AnswerOption<"string">> {
-    const extraEntries = [...this.extraOptionMap.values()];
+    const extraEntries = [...this.extraOptionsByToken.values()];
     const knownTokens = new Set(
       [...options, ...extraEntries].map((entry) => entry.token),
     );
@@ -617,8 +562,10 @@ export class SelectStore<
     return entries.map((entry) => {
       const disabled =
         entry.disabled ||
-        (!this.selectedTokens.has(entry.token) && !this.canAddSelection) ||
-        (this.selectedTokens.has(entry.token) && !this.canRemoveSelection);
+        (!this.selectedOptionTokens.has(entry.token) &&
+          !this.canAddSelection) ||
+        (this.selectedOptionTokens.has(entry.token) &&
+          !this.canRemoveSelection);
       if (disabled === entry.disabled) {
         return entry;
       }
@@ -647,11 +594,11 @@ export class SelectStore<
   }
 
   private addOptionValue(
-    token: string,
+    token: OptionToken,
     value: DataTypeToType<AnswerTypeToDataType<T>>,
   ) {
     if (!this.canAddSelection || this.isLoading) return;
-    if (this.selectedTokens.has(token)) return;
+    if (this.selectedOptionTokens.has(token)) return;
     const nextValue = structuredClone(value) as DataTypeToType<
       AnswerTypeToDataType<T>
     >;

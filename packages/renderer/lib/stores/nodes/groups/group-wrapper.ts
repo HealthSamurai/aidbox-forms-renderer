@@ -36,7 +36,6 @@ export class GroupWrapper
   readonly scope: IScope;
   readonly token: string;
 
-  @observable.shallow
   readonly nodes = observable.array<IGroupNode>([], {
     deep: false,
     name: "GroupWrapper.nodes",

@@ -21,19 +21,16 @@ import { DuplicateExpressionNameError } from "./scope.ts";
 import { computed, makeObservable, observable } from "mobx";
 
 export class BaseExpressionRegistry implements IExpressionRegistry {
-  @observable.shallow
   private readonly slots = observable.array<IExpressionSlot>([], {
     deep: false,
     name: "BaseExpressionRegistry.slots",
   });
 
-  @observable.shallow
   private readonly constraints = observable.array<ConstraintSlot>([], {
     deep: false,
     name: "BaseExpressionRegistry.constraints",
   });
 
-  @observable.shallow
   readonly registrationIssues = observable.array<OperationOutcomeIssue>([], {
     deep: false,
     name: "BaseExpressionRegistry.registrationIssues",

@@ -24,14 +24,19 @@ export function BooleanInput({
   disabled,
 }: BooleanInputProps) {
   const { RadioButtonList } = useTheme();
-  const selectedToken = value === true ? "yes" : value === false ? "no" : "";
+  const selectedOption =
+    value === true
+      ? BOOLEAN_OPTIONS[0]
+      : value === false
+        ? BOOLEAN_OPTIONS[1]
+        : null;
   const fallbackInputId = id ?? "boolean";
   const fallbackAriaLabelledBy = ariaLabelledBy ?? fallbackInputId;
 
   return (
     <RadioButtonList
       options={BOOLEAN_OPTIONS}
-      token={selectedToken}
+      selectedOption={selectedOption}
       onChange={(token) => {
         if (token === "yes") {
           onChange(true);

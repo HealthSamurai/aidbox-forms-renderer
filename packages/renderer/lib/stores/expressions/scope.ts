@@ -15,12 +15,10 @@ export class DuplicateExpressionNameError extends Error {
 export class Scope implements IScope {
   private parent: IScope | undefined;
 
-  @observable.shallow
   private readonly nodeRegistry:
     | ObservableMap<string, IPresentableNode>
     | undefined;
 
-  @observable.shallow
   private readonly expressionRegistry = observable.map<string, IExpressionSlot>(
     {},
     { deep: false, name: "NodeScope.expressionRegistry" },

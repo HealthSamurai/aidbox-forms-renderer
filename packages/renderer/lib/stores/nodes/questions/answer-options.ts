@@ -6,6 +6,7 @@ import type {
   IAnswerOptions,
   IQuestionNode,
   AnswerOption,
+  OptionToken,
 } from "../../../types.ts";
 import type {
   Coding,
@@ -109,14 +110,14 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   @computed
   get options(): AnswerOption<T>[] {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
-    const seen = new Set<string>();
+    const seen = new Set<OptionToken>();
     return this.answerOptions.flatMap((option) => {
       const value = getValue(option, dataType);
       if (value == null) {
         return [];
       }
 
-      const token = tokenify(dataType, value);
+      const token = tokenify(dataType, value) as OptionToken;
       if (seen.has(token)) {
         return [];
       }
@@ -141,8 +142,11 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  private get valueMap(): Map<string, DataTypeToType<AnswerTypeToDataType<T>>> {
-    const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();
+  private get valueMap(): Map<
+    OptionToken,
+    DataTypeToType<AnswerTypeToDataType<T>>
+  > {
+    const map = new Map<OptionToken, DataTypeToType<AnswerTypeToDataType<T>>>();
     for (const entry of this.options) {
       map.set(entry.token, entry.value);
     }
@@ -151,7 +155,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
 
   getTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): string {
+  ): OptionToken {
     if (value == null) {
       return "";
     }
@@ -164,7 +168,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   getValueForToken(
-    token: string,
+    token: OptionToken,
   ): DataTypeToType<AnswerTypeToDataType<T>> | null {
     const value = this.valueMap.get(token);
     return value == null ? null : structuredClone(value);

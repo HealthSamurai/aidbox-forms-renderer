@@ -3,7 +3,7 @@ import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type MultiSelectInputProps = {
   options: readonly OptionItem[];
-  selectedOptions: SelectedOptionItem[];
+  selectedOptions: readonly SelectedOptionItem[];
   onSelect: (token: string) => void;
   onDeselect: (token: string) => void;
   onSearch?: (query: string) => void;

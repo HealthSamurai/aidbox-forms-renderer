@@ -56,7 +56,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 {
   readonly expressionRegistry: NodeExpressionRegistry;
 
-  @observable.shallow
   readonly answers = observable.array<IAnswerInstance<T>>([], {
     deep: false,
     name: "QuestionStore.answers",
