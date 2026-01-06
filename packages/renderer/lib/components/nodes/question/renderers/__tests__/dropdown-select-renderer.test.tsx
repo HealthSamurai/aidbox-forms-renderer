@@ -7,7 +7,11 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
+import type {
+  Questionnaire,
+  QuestionnaireItemAnswerOption,
+  QuestionnaireResponse,
+} from "fhir/r5";
 
 import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
@@ -313,61 +317,64 @@ describe("dropdown-select-renderer", () => {
 
   describe("optionsOrString", () => {
     describe("single (select)", () => {
-      it("renders custom string answers with string display for open-choice urls", () => {
+      it("renders custom string answers with string display for open-choice quantities", () => {
         const originalString = VALUE_DISPLAY_BY_TYPE.string;
-        const originalUrl = VALUE_DISPLAY_BY_TYPE.url;
+        const originalQuantity = VALUE_DISPLAY_BY_TYPE.quantity;
 
         try {
           VALUE_DISPLAY_BY_TYPE.string = ({ value }) => (
             <>String: {String(value)}</>
           );
-          VALUE_DISPLAY_BY_TYPE.url = ({ value }) => <>Url: {String(value)}</>;
+          VALUE_DISPLAY_BY_TYPE.quantity = ({ value }) => (
+            <>
+              Quantity: {value.value} {value.unit}
+            </>
+          );
 
           const questionnaire: Questionnaire = {
             resourceType: "Questionnaire",
             status: "active",
             item: [
               {
-                linkId: "website",
-                text: "Website",
-                type: "url",
+                linkId: "dose",
+                text: "Dose",
+                type: "quantity",
                 answerConstraint: "optionsOrString",
-                answerOption: [{ valueUri: "https://alpha.example" }],
+                answerOption: [
+                  {
+                    valueQuantity: { value: 1, unit: "mg" },
+                  } as QuestionnaireItemAnswerOption,
+                ],
               },
             ],
           };
 
           const form = new FormStore(questionnaire);
-          const question = getQuestion(form, "website");
+          const question = getQuestion(form, "dose");
 
           render(<DropdownSelectRenderer node={question} />);
 
-          selectOption("Website", /specify other/i);
+          selectOption("Dose", /specify other/i);
           const customInput = screen.getByRole("textbox", {
-            name: "Website",
+            name: "Dose",
           }) as HTMLInputElement;
-          fireEvent.change(customInput, { target: { value: "custom-link" } });
+          fireEvent.change(customInput, { target: { value: "custom-dose" } });
           fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
-          expect(screen.getByText("String: custom-link")).toBeInTheDocument();
-          expect(screen.queryByText("Url: custom-link")).toBeNull();
+          expect(screen.getByText("String: custom-dose")).toBeInTheDocument();
+          expect(screen.queryByText("Quantity: custom-dose")).toBeNull();
 
-          const input = getCombobox("Website");
+          const input = getCombobox("Dose");
           fireEvent.click(input);
           const listbox = getListbox(input);
           expect(
             within(listbox).getByRole("option", {
-              name: "Url: https://alpha.example",
+              name: "Quantity: 1 mg",
             }),
           ).toBeInTheDocument();
-          expect(
-            within(listbox).queryByRole("option", {
-              name: "String: https://alpha.example",
-            }),
-          ).toBeNull();
         } finally {
           VALUE_DISPLAY_BY_TYPE.string = originalString;
-          VALUE_DISPLAY_BY_TYPE.url = originalUrl;
+          VALUE_DISPLAY_BY_TYPE.quantity = originalQuantity;
         }
       });
 
@@ -558,71 +565,79 @@ describe("dropdown-select-renderer", () => {
           status: "active",
           item: [
             {
-              linkId: "website",
-              text: "Website",
-              type: "url",
+              linkId: "dose",
+              text: "Dose",
+              type: "quantity",
               answerConstraint: "optionsOrString",
-              answerOption: [{ valueUri: "https://alpha.example" }],
+              answerOption: [
+                {
+                  valueQuantity: { value: 1, unit: "mg" },
+                } as QuestionnaireItemAnswerOption,
+              ],
             },
           ],
         };
 
         const form = new FormStore(questionnaire);
-        const question = getQuestion(form, "website");
+        const question = getQuestion(form, "dose");
 
         render(<DropdownSelectRenderer node={question} />);
 
-        selectOption("Website", /specify other/i);
+        selectOption("Dose", /specify other/i);
         const customInput = screen.getByRole("textbox", {
-          name: "Website",
+          name: "Dose",
         }) as HTMLInputElement;
         fireEvent.change(customInput, {
-          target: { value: "https://google.com" },
+          target: { value: "custom-dose" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
-        expect(getStringAnswers(question)).toEqual(["https://google.com"]);
-        expect(getComboboxValue(getCombobox("Website"))).toContain(
-          "https://google.com",
-        );
+        expect(getStringAnswers(question)).toEqual(["custom-dose"]);
+        expect(getComboboxValue(getCombobox("Dose"))).toContain("custom-dose");
 
-        selectOption("Website", /https:\/\/google\.com/);
+        selectOption("Dose", /custom-dose/);
 
-        expect(getStringAnswers(question)).toEqual(["https://google.com"]);
-        expect(getComboboxValue(getCombobox("Website"))).toContain(
-          "https://google.com",
-        );
+        expect(getStringAnswers(question)).toEqual(["custom-dose"]);
+        expect(getComboboxValue(getCombobox("Dose"))).toContain("custom-dose");
 
-        selectOption("Website", /specify other/i);
+        selectOption("Dose", /specify other/i);
         const reopenedInput = screen.getByRole("textbox", {
-          name: "Website",
+          name: "Dose",
         }) as HTMLInputElement;
         expect(reopenedInput).toHaveValue("");
       });
     });
 
     describe("multi (multi-select)", () => {
-      it("renders custom string answers with string display for open-choice urls", () => {
+      it("renders custom string answers with string display for open-choice quantities", () => {
         const originalString = VALUE_DISPLAY_BY_TYPE.string;
-        const originalUrl = VALUE_DISPLAY_BY_TYPE.url;
+        const originalQuantity = VALUE_DISPLAY_BY_TYPE.quantity;
 
         try {
           VALUE_DISPLAY_BY_TYPE.string = ({ value }) => (
             <>String: {String(value)}</>
           );
-          VALUE_DISPLAY_BY_TYPE.url = ({ value }) => <>Url: {String(value)}</>;
+          VALUE_DISPLAY_BY_TYPE.quantity = ({ value }) => (
+            <>
+              Quantity: {value.value} {value.unit}
+            </>
+          );
 
           const questionnaire: Questionnaire = {
             resourceType: "Questionnaire",
             status: "active",
             item: [
               {
-                linkId: "website",
-                text: "Website",
-                type: "url",
+                linkId: "dose",
+                text: "Dose",
+                type: "quantity",
                 repeats: true,
                 answerConstraint: "optionsOrString",
-                answerOption: [{ valueUri: "https://alpha.example" }],
+                answerOption: [
+                  {
+                    valueQuantity: { value: 1, unit: "mg" },
+                  } as QuestionnaireItemAnswerOption,
+                ],
               },
             ],
           };
@@ -633,36 +648,31 @@ describe("dropdown-select-renderer", () => {
             status: "in-progress",
             item: [
               {
-                linkId: "website",
-                answer: [{ valueString: "custom-link" }],
+                linkId: "dose",
+                answer: [{ valueString: "custom-dose" }],
               },
             ],
           };
 
           const form = new FormStore(questionnaire, response);
-          const question = getQuestion(form, "website");
+          const question = getQuestion(form, "dose");
 
           render(<DropdownSelectRenderer node={question} />);
 
-          expect(screen.getByText("String: custom-link")).toBeInTheDocument();
-          expect(screen.queryByText("Url: custom-link")).toBeNull();
+          expect(screen.getByText("String: custom-dose")).toBeInTheDocument();
+          expect(screen.queryByText("Quantity: custom-dose")).toBeNull();
 
-          const input = getCombobox("Website");
+          const input = getCombobox("Dose");
           fireEvent.click(input);
           const listbox = getListbox(input);
           expect(
             within(listbox).getByRole("option", {
-              name: "Url: https://alpha.example",
+              name: "Quantity: 1 mg",
             }),
           ).toBeInTheDocument();
-          expect(
-            within(listbox).queryByRole("option", {
-              name: "String: https://alpha.example",
-            }),
-          ).toBeNull();
         } finally {
           VALUE_DISPLAY_BY_TYPE.string = originalString;
-          VALUE_DISPLAY_BY_TYPE.url = originalUrl;
+          VALUE_DISPLAY_BY_TYPE.quantity = originalQuantity;
         }
       });
 

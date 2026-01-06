@@ -5,7 +5,7 @@ import type {
   DataTypeToType,
   IAnswerOptions,
   IQuestionNode,
-  ResolvedAnswerOption,
+  AnswerOption,
 } from "../../../types.ts";
 import type {
   Coding,
@@ -107,7 +107,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   }
 
   @computed
-  get resolvedOptions(): ResolvedAnswerOption<T>[] {
+  get options(): AnswerOption<T>[] {
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
     const seen = new Set<string>();
     return this.answerOptions.flatMap((option) => {
@@ -130,7 +130,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
           value,
           disabled,
           answerType: this.question.type,
-        } satisfies ResolvedAnswerOption<T>,
+        } satisfies AnswerOption<T>,
       ];
     });
   }
@@ -143,7 +143,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
   @computed
   private get valueMap(): Map<string, DataTypeToType<AnswerTypeToDataType<T>>> {
     const map = new Map<string, DataTypeToType<AnswerTypeToDataType<T>>>();
-    for (const entry of this.resolvedOptions) {
+    for (const entry of this.options) {
       map.set(entry.token, entry.value);
     }
     return map;
@@ -157,7 +157,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
     }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
-    const match = this.resolvedOptions.find((entry) =>
+    const match = this.options.find((entry) =>
       areValuesEqual(dataType, value, entry.value),
     );
     return match?.token ?? "";

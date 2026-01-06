@@ -19,7 +19,9 @@ export const SingleListSelectControl = observer(
     const node = answer.question;
     const store = node.selectStore;
     const customControlType =
-      node.options.constraint === "optionsOrString" ? "string" : node.type;
+      node.answerOptions.constraint === "optionsOrString"
+        ? "string"
+        : node.type;
     const Control = getValueControl(customControlType);
     const selection = store.getSelectedOption(answer);
     const isCustomActive =

@@ -192,14 +192,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @computed({ keepAlive: true })
-  get options(): IAnswerOptions<T> {
+  get answerOptions(): IAnswerOptions<T> {
     return new AnswerOptions<T>(this);
   }
 
   @override
   override get issues() {
-    return this.options.error
-      ? [...super.issues, this.options.error]
+    return this.answerOptions.error
+      ? [...super.issues, this.answerOptions.error]
       : super.issues;
   }
 
@@ -359,7 +359,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         const value = getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
         if (
           value === undefined &&
-          this.options.constraint === "optionsOrString"
+          this.answerOptions.constraint === "optionsOrString"
         ) {
           return getValue(entry, "string");
         }
@@ -451,7 +451,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     answers.forEach((answer) => {
       const typedValue = getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
       const stringValue =
-        this.options.constraint === "optionsOrString"
+        this.answerOptions.constraint === "optionsOrString"
           ? getValue(answer, "string")
           : undefined;
       this.pushAnswer(

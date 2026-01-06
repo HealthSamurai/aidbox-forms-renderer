@@ -22,7 +22,9 @@ export const MultiDropdownSelectControl = observer(
     const { CustomOptionForm, MultiSelectInput } = useTheme();
     const store = node.selectStore;
     const customControlType =
-      node.options.constraint === "optionsOrString" ? "string" : node.type;
+      node.answerOptions.constraint === "optionsOrString"
+        ? "string"
+        : node.type;
     const CustomControl = getValueControl(customControlType);
 
     const selectedOptions = useMemo(() => {

@@ -75,7 +75,7 @@ describe("answerOptionsToggleExpression", () => {
     assertQuestionNode(color);
 
     const getEntry = (code: string) =>
-      color.options.resolvedOptions.find((entry) => {
+      color.answerOptions.options.find((entry) => {
         const coding = entry.value as Coding | null;
         return coding?.code === code;
       });
@@ -131,7 +131,7 @@ describe("answerOptionsToggleExpression", () => {
     assertQuestionNode(color);
 
     const getEntry = (value: string) =>
-      color.options.resolvedOptions.find((entry) => entry.value === value);
+      color.answerOptions.options.find((entry) => entry.value === value);
 
     expect(getEntry("Red")?.disabled).toBe(false);
     expect(getEntry("Green")?.disabled).toBe(false);

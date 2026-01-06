@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
+import type {
+  Quantity,
+  Questionnaire,
+  QuestionnaireItemAnswerOption,
+  QuestionnaireResponse,
+} from "fhir/r5";
 
 import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
@@ -25,6 +30,14 @@ function getStringAnswers(question: IQuestionNode<AnswerType>) {
   return question.answers
     .map((answer) => answer.value)
     .filter((value): value is string => typeof value === "string");
+}
+
+function getQuantityAnswers(question: IQuestionNode<AnswerType>) {
+  return question.answers
+    .map((answer) => answer.value)
+    .filter(
+      (value): value is Quantity => typeof value === "object" && value !== null,
+    );
 }
 
 function getListbox(input: HTMLElement) {
@@ -176,13 +189,17 @@ describe("list-select-renderer", () => {
     describe("single (radio)", () => {
       it("renders option labels using the question type display for optionsOrString", () => {
         const originalString = VALUE_DISPLAY_BY_TYPE.string;
-        const originalUrl = VALUE_DISPLAY_BY_TYPE.url;
+        const originalQuantity = VALUE_DISPLAY_BY_TYPE.quantity;
 
         try {
           VALUE_DISPLAY_BY_TYPE.string = ({ value }) => (
             <>String: {String(value)}</>
           );
-          VALUE_DISPLAY_BY_TYPE.url = ({ value }) => <>Url: {String(value)}</>;
+          VALUE_DISPLAY_BY_TYPE.quantity = ({ value }) => (
+            <>
+              Quantity: {value.value} {value.unit}
+            </>
+          );
 
           const questionnaire: Questionnaire = {
             resourceType: "Questionnaire",
@@ -191,9 +208,13 @@ describe("list-select-renderer", () => {
               {
                 linkId: "note",
                 text: "Note",
-                type: "url",
+                type: "quantity",
                 answerConstraint: "optionsOrString",
-                answerOption: [{ valueUri: "https://alpha.example" }],
+                answerOption: [
+                  {
+                    valueQuantity: { value: 1, unit: "mg" },
+                  } as QuestionnaireItemAnswerOption,
+                ],
               },
             ],
           };
@@ -204,16 +225,16 @@ describe("list-select-renderer", () => {
           render(<ListSelectRenderer node={question} />);
 
           expect(
-            screen.getByRole("radio", { name: "Url: https://alpha.example" }),
+            screen.getByRole("radio", { name: "Quantity: 1 mg" }),
           ).toBeInTheDocument();
           expect(
             screen.queryByRole("radio", {
-              name: "String: https://alpha.example",
+              name: "String: [object Object]",
             }),
           ).toBeNull();
         } finally {
           VALUE_DISPLAY_BY_TYPE.string = originalString;
-          VALUE_DISPLAY_BY_TYPE.url = originalUrl;
+          VALUE_DISPLAY_BY_TYPE.quantity = originalQuantity;
         }
       });
 
@@ -947,43 +968,48 @@ describe("list-select-renderer", () => {
       });
     });
 
-    describe("url responses", () => {
-      it("keeps a custom url answer after submitting specify other", () => {
+    describe("quantity responses", () => {
+      it("keeps a custom quantity answer after submitting specify other", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
           item: [
             {
-              linkId: "website",
-              text: "Website",
-              type: "url",
+              linkId: "dose",
+              text: "Dose",
+              type: "quantity",
               answerConstraint: "optionsOrType",
-              answerOption: [{ valueUri: "https://alpha.example" }],
+              answerOption: [
+                {
+                  valueQuantity: { value: 1, unit: "mg" },
+                } as QuestionnaireItemAnswerOption,
+              ],
             },
           ],
         };
 
         const form = new FormStore(questionnaire);
-        const question = getQuestion(form, "website");
+        const question = getQuestion(form, "dose");
 
         render(<ListSelectRenderer node={question} />);
 
         fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
-        const customInput = screen.getByRole("textbox", {
-          name: "Website",
+        const customInput = screen.getByRole("spinbutton", {
+          name: "Dose",
         }) as HTMLInputElement;
         fireEvent.change(customInput, {
-          target: { value: "https://google.com" },
+          target: { value: "5" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
-        expect(screen.queryByRole("textbox", { name: "Website" })).toBeNull();
+        expect(screen.queryByRole("spinbutton", { name: "Dose" })).toBeNull();
         const customValue = screen.getByRole("radio", {
-          name: "https://google.com",
+          name: /5/,
         }) as HTMLInputElement;
         expect(customValue).toBeChecked();
         expect(customValue).not.toBeDisabled();
-        expect(getStringAnswers(question)).toEqual(["https://google.com"]);
+        const [customAnswer] = getQuantityAnswers(question);
+        expect(customAnswer?.value).toBe(5);
       });
     });
 

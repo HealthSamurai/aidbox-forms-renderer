@@ -98,6 +98,9 @@ importers:
       '@types/fhir':
         specifier: ^0.0.41
         version: 0.0.41
+      '@types/fuzzy-search':
+        specifier: ^2.1.5
+        version: 2.1.5
       '@types/react':
         specifier: ^19.2.2
         version: 19.2.7
@@ -1330,6 +1333,9 @@ packages:
 
   '@types/fhir@0.0.41':
     resolution: {integrity: sha512-MAQAFufNZBZ6V0F94Nhknmmh/E3iMXFK4n/L8RkSNjKtOJnvaAJERivNOj35VVx9VCQBJbE0BHSzikfBahoRhA==}
+
+  '@types/fuzzy-search@2.1.5':
+    resolution: {integrity: sha512-Yw8OsjhVKbKw83LMDOZ9RXc+N+um48DmZYMrz7QChpHkQuygsc5O40oCL7SfvWgpaaviCx2TbNXYUBwhMtBH5w==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -4088,6 +4094,8 @@ snapshots:
   '@types/estree@1.0.8': {}
 
   '@types/fhir@0.0.41': {}
+
+  '@types/fuzzy-search@2.1.5': {}
 
   '@types/json-schema@7.0.15': {}
 

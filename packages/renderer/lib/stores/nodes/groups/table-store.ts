@@ -10,7 +10,7 @@ import type {
   QuestionAxisEntry,
   QuestionAxisItem,
   QuestionAxisSelection,
-  ResolvedAnswerOption,
+  AnswerOption,
   TableAxisModel,
   TableCellState,
 } from "../../../types.ts";
@@ -121,7 +121,7 @@ export class TableStore implements ITableStore {
     });
     const isSelected = Boolean(selectedAnswer);
     const isReadOnly =
-      entry.question.readOnly || entry.question.options.loading;
+      entry.question.readOnly || entry.question.answerOptions.loading;
     const disableNewSelection =
       !isSelected &&
       (optionEntry.disabled ||
@@ -147,7 +147,7 @@ export class TableStore implements ITableStore {
     });
     const isSelected = Boolean(selectedAnswer);
     const isReadOnly =
-      entry.question.readOnly || entry.question.options.loading;
+      entry.question.readOnly || entry.question.answerOptions.loading;
     const disableNewSelection =
       !isSelected &&
       (optionEntry.disabled ||
@@ -179,11 +179,8 @@ export class TableStore implements ITableStore {
     const questionAxis: QuestionAxisEntry[] = [];
 
     this.questions.forEach((question) => {
-      const optionEntryMap = new Map<
-        string,
-        ResolvedAnswerOption<AnswerType>
-      >();
-      question.options.resolvedOptions.forEach((entry) => {
+      const optionEntryMap = new Map<string, AnswerOption<AnswerType>>();
+      question.answerOptions.options.forEach((entry) => {
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
         const token = tokenify(type, entry.value);
 

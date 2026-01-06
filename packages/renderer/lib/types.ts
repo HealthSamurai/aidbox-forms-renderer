@@ -221,7 +221,7 @@ export type AnswerLifecycle =
   | "expression"
   | "manual";
 
-export type ResolvedAnswerOption<T extends AnswerType> = {
+export type AnswerOption<T extends AnswerType> = {
   token: string;
   value: DataTypeToType<AnswerTypeToDataType<T>>;
   disabled: boolean;
@@ -549,7 +549,7 @@ export type QuestionAxisItem = {
 
 export type QuestionAxisEntry = {
   question: IQuestionNode;
-  optionMap: Map<string, ResolvedAnswerOption<AnswerType>>;
+  optionMap: Map<string, AnswerOption<AnswerType>>;
 };
 
 export type TableAxisModel = {
@@ -652,7 +652,7 @@ export interface IQuantityAnswer {
 export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly loading: boolean;
   readonly error: OperationOutcomeIssue | null;
-  readonly resolvedOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
+  readonly options: ReadonlyArray<AnswerOption<T>>;
   readonly constraint: QuestionnaireItem["answerConstraint"];
   getTokenForValue(
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
@@ -687,18 +687,16 @@ export type CustomOptionFormState<T extends AnswerType> = {
 
 export type SelectedAnswerOption<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
-} & (ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">);
+} & (AnswerOption<T> | AnswerOption<"string">);
 
 export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly useCheckboxes: boolean;
   readonly isMultiSelect: boolean;
   readonly allowCustom: boolean;
   readonly isLoading: boolean;
-  readonly options: ReadonlyArray<
-    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
-  >;
+  readonly options: ReadonlyArray<AnswerOption<T> | AnswerOption<"string">>;
   readonly filteredOptions: ReadonlyArray<
-    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
+    AnswerOption<T> | AnswerOption<"string">
   >;
   readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
   readonly selectedTokens: ReadonlySet<string>;
@@ -713,7 +711,7 @@ export interface ISelectStore<T extends AnswerType = AnswerType> {
 
   getOption(
     token: string,
-  ): ResolvedAnswerOption<T> | ResolvedAnswerOption<"string"> | undefined;
+  ): AnswerOption<T> | AnswerOption<"string"> | undefined;
   getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
 
   setSearchQuery(query: string): void;
@@ -735,7 +733,7 @@ export interface IQuestionNode<
   readonly type: T;
   readonly control: QuestionItemControl | undefined;
   readonly repeats: boolean;
-  readonly options: IAnswerOptions<T>;
+  readonly answerOptions: IAnswerOptions<T>;
   readonly selectStore: ISelectStore<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;

@@ -22,7 +22,9 @@ export const SingleDropdownSelectControl = observer(
     const node = answer.question;
     const store = node.selectStore;
     const customControlType =
-      node.options.constraint === "optionsOrString" ? "string" : node.type;
+      node.answerOptions.constraint === "optionsOrString"
+        ? "string"
+        : node.type;
     const isCustomActive =
       store.customOptionFormState?.answer.token === answer.token;
     const selection = store.getSelectedOption(answer);

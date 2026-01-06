@@ -6,6 +6,7 @@ import type {
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
+  QuestionnaireItemInitial,
 } from "fhir/r5";
 import type {
   AnswerType,
@@ -196,7 +197,7 @@ export function makeAnswerOptions<T extends AnswerType>(
 export function makeInitialValues<T extends AnswerType>(
   type: T,
   values: Array<DataTypeToType<AnswerTypeToDataType<T>>>,
-): QuestionnaireItem["initial"] {
+): QuestionnaireItemInitial[] {
   const dataType = ANSWER_TYPE_TO_DATA_TYPE[type];
   return values.map((value) => asAnswerFragment(dataType, value));
 }

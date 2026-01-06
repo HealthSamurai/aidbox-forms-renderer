@@ -21,7 +21,7 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
   const { CheckboxList, CustomOptionForm } = useTheme();
   const store = node.selectStore;
   const customControlType =
-    node.options.constraint === "optionsOrString" ? "string" : node.type;
+    node.answerOptions.constraint === "optionsOrString" ? "string" : node.type;
   const CustomControl = getValueControl(customControlType);
   const selectedTokens = new Set(store.selectedTokens);
   if (store.allowCustom && store.customOptionFormState) {

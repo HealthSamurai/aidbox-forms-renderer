@@ -3,13 +3,13 @@ import FuzzySearch from "fuzzy-search";
 import {
   AnswerType,
   AnswerTypeToDataType,
+  CustomOptionFormState,
   DataType,
   DataTypeToType,
   IAnswerInstance,
   IQuestionNode,
   ISelectStore,
-  CustomOptionFormState,
-  ResolvedAnswerOption,
+  AnswerOption,
   SelectedAnswerOption,
   ValueControlProps,
 } from "../../../types.ts";
@@ -23,7 +23,7 @@ import {
   tokenify,
 } from "../../../utils.ts";
 
-const BOOLEAN_FALLBACK_OPTIONS: Array<ResolvedAnswerOption<"boolean">> = [
+const BOOLEAN_FALLBACK_OPTIONS: Array<AnswerOption<"boolean">> = [
   {
     token: "yes",
     value: true,
@@ -61,7 +61,7 @@ export class SelectStore<
   @observable.ref
   private extraOptionMap = new Map<
     string,
-    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
+    AnswerOption<T> | AnswerOption<"string">
   >();
 
   @observable
@@ -89,23 +89,23 @@ export class SelectStore<
   get isBooleanFallback(): boolean {
     return (
       this.node.type === "boolean" &&
-      this.node.options.resolvedOptions.length === 0
+      this.node.answerOptions.options.length === 0
     );
   }
 
   @computed
-  get resolvedOptions(): ReadonlyArray<ResolvedAnswerOption<T>> {
+  get inherentOptions(): ReadonlyArray<AnswerOption<T>> {
     return (
       this.isBooleanFallback
         ? BOOLEAN_FALLBACK_OPTIONS
-        : this.node.options.resolvedOptions
-    ) as ReadonlyArray<ResolvedAnswerOption<T>>;
+        : this.node.answerOptions.options
+    ) as ReadonlyArray<AnswerOption<T>>;
   }
 
   @computed
   private get searchIndex() {
     return new FuzzySearch(
-      this.resolvedOptions,
+      this.inherentOptions,
       SEARCH_KEYS_BY_TYPE[this.dataType] ?? DEFAULT_SEARCH_KEYS,
       {
         caseSensitive: false,
@@ -115,24 +115,24 @@ export class SelectStore<
   }
 
   @computed
-  get filteredResolvedOptions(): ReadonlyArray<ResolvedAnswerOption<T>> {
+  get filteredInherentOptions(): ReadonlyArray<AnswerOption<T>> {
     const query = this.searchQuery.trim();
     if (!query) {
-      return this.resolvedOptions;
+      return this.inherentOptions;
     }
     return this.searchIndex.search(query);
   }
 
   @computed
   get isLoading(): boolean {
-    return this.node.options.loading;
+    return this.node.answerOptions.loading;
   }
 
   @computed
   get allowCustom(): boolean {
     return (
-      this.node.options.constraint === "optionsOrString" ||
-      this.node.options.constraint === "optionsOrType"
+      this.node.answerOptions.constraint === "optionsOrString" ||
+      this.node.answerOptions.constraint === "optionsOrType"
     );
   }
 
@@ -142,28 +142,27 @@ export class SelectStore<
   }
 
   @computed
-  get options(): ReadonlyArray<
-    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
-  > {
-    return this.buildOptions(this.resolvedOptions);
+  get options(): ReadonlyArray<AnswerOption<T> | AnswerOption<"string">> {
+    return this.buildOptions(this.inherentOptions);
   }
 
   @computed
   get filteredOptions(): ReadonlyArray<
-    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
+    AnswerOption<T> | AnswerOption<"string">
   > {
-    return this.buildOptions(this.filteredResolvedOptions);
+    return this.buildOptions(this.filteredInherentOptions);
   }
 
   @computed
   private get matchedOptionsByAnswerToken() {
-    return this.resolvedOptions.reduce((matches, option) => {
+    return this.inherentOptions.reduce((matches, option) => {
       const match = this.node.answers.find((answer) => {
-        if (answer.value == null) return false;
-        if (answer.token === this.pendingCustomOptionForm?.answer.token) {
+        if (
+          answer.value == null ||
+          answer.token === this.pendingCustomOptionForm?.answer.token ||
+          this.pendingCustomAnswerTokens.has(answer.token)
+        )
           return false;
-        }
-        if (this.pendingCustomAnswerTokens.has(answer.token)) return false;
         return areValuesEqual(
           this.dataType,
           answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
@@ -184,12 +183,11 @@ export class SelectStore<
     const selectedOptions: SelectedAnswerOption<T>[] = [];
 
     this.node.answers.forEach((answer) => {
-      if (answer.token === this.pendingCustomOptionForm?.answer.token) {
+      if (
+        answer.token === this.pendingCustomOptionForm?.answer.token ||
+        answer.value == null
+      )
         return;
-      }
-      if (answer.value == null) {
-        return;
-      }
 
       const matchedOption = this.matchedOptionsByAnswerToken.get(answer.token);
       if (matchedOption) {
@@ -237,23 +235,22 @@ export class SelectStore<
 
   @computed
   get availableAnswers(): ReadonlyArray<IAnswerInstance<T>> {
-    return this.node.answers.filter((answer) => {
-      if (answer.value != null) return false;
-      if (answer.token === this.pendingCustomOptionForm?.answer.token) {
-        return false;
-      }
-      return !this.pendingCustomAnswerTokens.has(answer.token);
-    });
+    return this.node.answers.filter(
+      (answer) =>
+        answer.value == null &&
+        answer.token !== this.pendingCustomOptionForm?.answer.token &&
+        !this.pendingCustomAnswerTokens.has(answer.token),
+    );
   }
 
   getOption(
     token: string,
-  ): ResolvedAnswerOption<T> | ResolvedAnswerOption<"string"> | undefined {
+  ): AnswerOption<T> | AnswerOption<"string"> | undefined {
     return this.options.find((entry) => entry.token === token);
   }
 
-  private isResolvedToken(token: string) {
-    return this.resolvedOptions.some((option) => option.token === token);
+  private isInherentToken(token: string) {
+    return this.inherentOptions.some((option) => option.token === token);
   }
 
   getSelectedOption(
@@ -303,10 +300,7 @@ export class SelectStore<
     value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
   ) {
     if (value == null) return "";
-    const baseToken = tokenify(
-      this.customDataType,
-      value as DataTypeToType<DataType>,
-    );
+    const baseToken = tokenify(this.customDataType, value);
     return baseToken ? `${this.node.token}_/_custom_${baseToken}` : "";
   }
 
@@ -323,10 +317,11 @@ export class SelectStore<
     value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
   ) {
     if (!this.allowCustom) return;
-    if (value == null) return;
-    if (typeof value === "string" && value.trim().length === 0) {
+    if (
+      value == null ||
+      (typeof value === "string" && value.trim().length === 0)
+    )
       return;
-    }
     const token = this.getCustomTokenForValue(value);
     if (!token || this.extraOptionMap.has(token)) return;
     const cloned = structuredClone(value) as
@@ -338,7 +333,7 @@ export class SelectStore<
       value: cloned,
       answerType: this.customAnswerType,
       disabled: false,
-    });
+    } as AnswerOption<T> | AnswerOption<"string">);
     this.extraOptionMap = next;
   }
 
@@ -347,10 +342,11 @@ export class SelectStore<
     value: DataTypeToType<AnswerTypeToDataType<T>> | null,
   ) {
     if (this.allowCustom) return;
-    if (value == null) return;
-    if (typeof value === "string" && value.trim().length === 0) {
+    if (
+      value == null ||
+      (typeof value === "string" && value.trim().length === 0)
+    )
       return;
-    }
     const token = this.getLegacyTokenForValue(value);
     if (!token || this.extraOptionMap.has(token)) return;
     const next = new Map(this.extraOptionMap);
@@ -369,10 +365,11 @@ export class SelectStore<
   ) {
     if (!this.allowCustom) return;
     if (this.isLoading || !this.canAddSelection) return;
-    if (value == null) return;
-    if (typeof value === "string" && value.trim().length === 0) {
+    if (
+      value == null ||
+      (typeof value === "string" && value.trim().length === 0)
+    )
       return;
-    }
     this.rememberCustomValue(value);
     const nextValue = structuredClone(value) as DataTypeToType<
       AnswerTypeToDataType<T>
@@ -410,7 +407,7 @@ export class SelectStore<
     }
     const entry = this.getOption(token);
     if (!entry || entry.disabled) return;
-    if (!this.isResolvedToken(entry.token)) {
+    if (!this.isInherentToken(entry.token)) {
       if (this.allowCustom) {
         this.addCustomValue(entry.value);
       }
@@ -454,7 +451,7 @@ export class SelectStore<
 
     const entry = this.getOption(token);
     if (!entry || entry.disabled) return;
-    if (!this.isResolvedToken(entry.token) && this.allowCustom) {
+    if (!this.isInherentToken(entry.token) && this.allowCustom) {
       this.addPendingToken(answer.token);
     } else {
       this.removePendingToken(answer.token);
@@ -493,7 +490,7 @@ export class SelectStore<
     if (answer.value == null) return;
     const selection = this.getSelectedOption(answer);
     if (!selection) return;
-    if (this.isResolvedToken(selection.token)) return;
+    if (this.isInherentToken(selection.token)) return;
     if (this.allowCustom) {
       this.rememberCustomValue(
         answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
@@ -591,16 +588,12 @@ export class SelectStore<
     };
   }
 
-  private buildOptions(options: ReadonlyArray<ResolvedAnswerOption<T>>) {
-    const baseEntries = options.map((option) => ({
-      token: option.token,
-      value: option.value,
-      disabled: option.disabled,
-      answerType: option.answerType,
-    }));
+  private buildOptions(
+    options: ReadonlyArray<AnswerOption<T>>,
+  ): ReadonlyArray<AnswerOption<T> | AnswerOption<"string">> {
     const extraEntries = [...this.extraOptionMap.values()];
     const knownTokens = new Set(
-      [...baseEntries, ...extraEntries].map((entry) => entry.token),
+      [...options, ...extraEntries].map((entry) => entry.token),
     );
     const selectionExtras = this.selectedOptions.flatMap((selection) => {
       if (knownTokens.has(selection.token)) return [];
@@ -610,10 +603,14 @@ export class SelectStore<
           value: selection.value,
           disabled: selection.disabled,
           answerType: selection.answerType,
-        },
+        } as AnswerOption<T> | AnswerOption<"string">,
       ];
     });
-    const entries = [...baseEntries, ...extraEntries, ...selectionExtras];
+    const entries: Array<AnswerOption<T> | AnswerOption<"string">> = [
+      ...options,
+      ...extraEntries,
+      ...selectionExtras,
+    ];
     if (!this.isMultiSelect) {
       return entries;
     }
@@ -638,13 +635,13 @@ export class SelectStore<
   }
 
   private get customAnswerType() {
-    return this.node.options.constraint === "optionsOrString"
+    return this.node.answerOptions.constraint === "optionsOrString"
       ? "string"
       : this.node.type;
   }
 
   private get customDataType() {
-    return this.node.options.constraint === "optionsOrString"
+    return this.node.answerOptions.constraint === "optionsOrString"
       ? "string"
       : this.dataType;
   }
