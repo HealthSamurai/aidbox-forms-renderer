@@ -10,7 +10,6 @@ import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
-import { answerHasContent } from "../../../../utils.ts";
 
 export const SingleDropdownSelectControl = observer(
   function SingleDropdownSelectControl<T extends AnswerType>({
@@ -22,33 +21,18 @@ export const SingleDropdownSelectControl = observer(
     const { SelectInput, CustomOptionForm } = useTheme();
     const node = answer.question;
     const store = node.selectStore;
-    const allowCustom = store.allowCustom;
-    const customType =
+    const customControlType =
       node.options.constraint === "optionsOrString" ? "string" : node.type;
-    const resolvedOptionToken = store.resolveTokenForValue(answer.value);
-    const isCustomValue =
-      allowCustom && answer.value != null && !resolvedOptionToken;
-    const customInputState = store.customInputState;
     const isCustomActive =
-      allowCustom && customInputState?.answer.token === answer.token;
-    const fallbackOption: OptionItem | null =
-      !isCustomActive && answer.value != null && !resolvedOptionToken
-        ? {
-            token: `${answer.token}_/_fallback`,
-            label: (
-              <ValueDisplay
-                type={allowCustom ? customType : node.type}
-                value={answer.value}
-              />
-            ),
-            disabled: !allowCustom,
-          }
-        : null;
+      store.customOptionFormState?.answer.token === answer.token;
+    const selection = store.getSelectedOption(answer);
 
-    const Control = allowCustom ? getValueControl(customType) : null;
+    const Control = store.allowCustom
+      ? getValueControl(customControlType)
+      : null;
 
     const customOptionForm =
-      allowCustom && isCustomActive && Control ? (
+      store.allowCustom && isCustomActive && Control ? (
         <CustomOptionForm
           content={
             <Control
@@ -61,24 +45,24 @@ export const SingleDropdownSelectControl = observer(
           errors={<AnswerErrors answer={answer} />}
           cancel={{
             label: strings.dialog.cancel,
-            onClick: store.cancelCustomInput,
+            onClick: store.cancelCustomOptionForm,
             disabled: node.readOnly,
           }}
           submit={{
             label: strings.dialog.add,
-            onClick: store.submitCustomInput,
-            disabled: node.readOnly || !answerHasContent(answer),
+            onClick: store.submitCustomOptionForm,
+            disabled: node.readOnly || !store.customOptionFormState?.canSubmit,
           }}
         />
       ) : undefined;
 
-    const filteredOptions = useMemo<OptionItem[]>(() => {
-      return store.filteredOptions.map((option) => ({
-        token: option.token,
-        label: <ValueDisplay type={node.type} value={option.value} />,
-        disabled: option.disabled,
+    const options = useMemo<OptionItem[]>(() => {
+      return store.filteredOptions.map((entry) => ({
+        token: entry.token,
+        label: <ValueDisplay type={entry.answerType} value={entry.value} />,
+        disabled: entry.disabled,
       }));
-    }, [node.type, store.filteredOptions]);
+    }, [store.filteredOptions]);
 
     const customOption = store.allowCustom
       ? {
@@ -92,70 +76,25 @@ export const SingleDropdownSelectControl = observer(
       if (isCustomActive) {
         return customOption ?? null;
       }
-      if (resolvedOptionToken) {
-        const resolved = store.resolvedOptions.find(
-          (option) => option.token === resolvedOptionToken,
-        );
-        return resolved
-          ? {
-              token: resolved.token,
-              label: <ValueDisplay type={node.type} value={resolved.value} />,
-              disabled: resolved.disabled,
-            }
-          : null;
+      if (!selection) {
+        return null;
       }
-      return fallbackOption;
+      return {
+        token: selection.token,
+        disabled: selection.disabled,
+        label: (
+          <ValueDisplay type={selection.answerType} value={selection.value} />
+        ),
+      };
     })();
-
-    const optionsWithLegacy = useMemo(() => {
-      let next = filteredOptions;
-      if (fallbackOption) {
-        const hasLegacy = next.some(
-          (option) => option.token === fallbackOption.token,
-        );
-        if (!hasLegacy) {
-          next = [fallbackOption, ...next];
-        }
-      }
-      if (
-        selectedOption &&
-        selectedOption.token !== customOption?.token &&
-        !next.some((option) => option.token === selectedOption.token)
-      ) {
-        next = [selectedOption, ...next];
-      }
-      return next;
-    }, [customOption?.token, filteredOptions, fallbackOption, selectedOption]);
-
-    const handleSelect = (token: string | null) => {
-      if (token == null) {
-        if (isCustomActive) {
-          store.cancelCustomInput();
-        }
-        answer.setValueByUser(null);
-        return;
-      }
-      if (allowCustom && token === store.specifyOtherToken) {
-        store.openCustomInput(answer);
-        if (!isCustomValue) {
-          answer.setValueByUser(null);
-        }
-        return;
-      }
-      if (isCustomActive) {
-        store.cancelCustomInput();
-      }
-      const nextValue = store.resolveValueForToken(token);
-      if (nextValue !== null) {
-        answer.setValueByUser(nextValue);
-      }
-    };
 
     return (
       <SelectInput
-        options={optionsWithLegacy}
+        options={options}
         selectedOption={selectedOption}
-        onChange={handleSelect}
+        onChange={(token) => {
+          store.selectOptionForAnswer(answer, token);
+        }}
         onSearch={store.setSearchQuery}
         customOption={customOption}
         customOptionForm={customOptionForm}

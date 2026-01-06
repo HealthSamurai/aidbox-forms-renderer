@@ -129,6 +129,7 @@ export class AnswerOptions<T extends AnswerType> implements IAnswerOptions<T> {
           token,
           value,
           disabled,
+          answerType: this.question.type,
         } satisfies ResolvedAnswerOption<T>,
       ];
     });

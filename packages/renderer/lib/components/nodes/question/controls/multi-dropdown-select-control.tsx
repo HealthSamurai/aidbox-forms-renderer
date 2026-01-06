@@ -2,9 +2,6 @@ import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import type {
   AnswerType,
-  AnswerTypeToDataType,
-  DataTypeToType,
-  IAnswerInstance,
   IQuestionNode,
   OptionItem,
 } from "../../../../types.ts";
@@ -13,10 +10,6 @@ import { AnswerErrors } from "../validation/answer-errors.tsx";
 import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
-
-type AnswerWithValue<T extends AnswerType> = IAnswerInstance<T> & {
-  value: DataTypeToType<AnswerTypeToDataType<T>>;
-};
 
 export type MultiDropdownSelectControlProps<T extends AnswerType> = {
   node: IQuestionNode<T>;
@@ -31,72 +24,56 @@ export const MultiDropdownSelectControl = observer(
     const customControlType =
       node.options.constraint === "optionsOrString" ? "string" : node.type;
     const CustomControl = getValueControl(customControlType);
-    const customDisplayType =
-      node.options.constraint === "optionsOrString" ? "string" : node.type;
 
-    const customInputToken = store.customInputState?.answer.token;
-    const customAnswerTokens = new Set(
-      store.customAnswers.map((answer) => answer.token),
-    );
-    const selectedAnswers = node.answers.filter(
-      (answer): answer is AnswerWithValue<T> =>
-        answer.value != null && answer.token !== customInputToken,
-    );
-    const answerByToken = new Map<string, AnswerWithValue<T>>();
-    const selectedOptions = selectedAnswers.map((answer) => {
-      const isCustomAnswer = customAnswerTokens.has(answer.token);
-      const displayType = isCustomAnswer ? customDisplayType : node.type;
-      answerByToken.set(answer.token, answer);
-      return {
-        token: answer.token,
-        label: <ValueDisplay type={displayType} value={answer.value} />,
-        errors: <AnswerErrors answer={answer} />,
-        disabled: !store.canRemoveSelection,
-      };
-    });
-
-    const customInput = store.customInputState
-      ? (() => {
-          return (
-            <CustomOptionForm
-              content={
-                <CustomControl
-                  {...store.buildRowProps(
-                    store.customInputState.answer,
-                    "custom-input",
-                  )}
-                />
-              }
-              errors={<AnswerErrors answer={store.customInputState.answer} />}
-              cancel={{
-                label: strings.dialog.cancel,
-                onClick: store.cancelCustomInput,
-                disabled: false,
-              }}
-              submit={{
-                label: strings.dialog.add,
-                onClick: store.submitCustomInput,
-                disabled: !store.customInputState.canSubmit,
-              }}
-            />
-          );
-        })()
-      : null;
-
-    const customOptionForm = customInput ?? undefined;
-    const options = useMemo<OptionItem[]>(() => {
-      return store.filteredOptions.map((option) => ({
-        token: option.token,
-        label: <ValueDisplay type={node.type} value={option.value} />,
-        disabled: option.disabled || !store.canAddSelection,
+    const selectedOptions = useMemo(() => {
+      return store.selectedOptions.map((selection) => ({
+        token: selection.token,
+        label: (
+          <ValueDisplay type={selection.answerType} value={selection.value} />
+        ),
+        errors: <AnswerErrors answer={selection.answer} />,
+        disabled: selection.disabled,
       }));
-    }, [node.type, store.canAddSelection, store.filteredOptions]);
+    }, [store.selectedOptions]);
+    const selectedTokens = useMemo(
+      () => new Set(store.selectedTokens),
+      [store.selectedTokens],
+    );
+
+    const customOptionForm = store.customOptionFormState && (
+      <CustomOptionForm
+        content={
+          <CustomControl
+            {...store.buildRowProps(
+              store.customOptionFormState.answer,
+              "custom-input",
+            )}
+          />
+        }
+        errors={<AnswerErrors answer={store.customOptionFormState.answer} />}
+        cancel={{
+          label: strings.dialog.cancel,
+          onClick: store.cancelCustomOptionForm,
+          disabled: false,
+        }}
+        submit={{
+          label: strings.dialog.add,
+          onClick: store.submitCustomOptionForm,
+          disabled: !store.customOptionFormState.canSubmit,
+        }}
+      />
+    );
+    const options = useMemo<OptionItem[]>(() => {
+      return store.filteredOptions.map((entry) => ({
+        token: entry.token,
+        disabled: entry.disabled,
+        label: <ValueDisplay type={entry.answerType} value={entry.value} />,
+      }));
+    }, [store.filteredOptions]);
 
     const filteredOptions = useMemo(() => {
-      return options.filter(
-        (option) => !store.selectedOptionTokens.has(option.token),
-      );
-    }, [options, store.selectedOptionTokens]);
+      return options.filter((option) => !selectedTokens.has(option.token));
+    }, [options, selectedTokens]);
 
     const customOption = store.allowCustom
       ? {
@@ -110,11 +87,11 @@ export const MultiDropdownSelectControl = observer(
     return (
       <MultiSelectInput
         options={filteredOptions}
-        onSelect={store.handleSelectOption}
+        onSelect={store.selectOption}
         onDeselect={(token) => {
-          const answer = answerByToken.get(token);
+          const answer = store.answerByToken.get(token);
           if (answer) {
-            store.handleRemoveAnswer(answer);
+            store.removeAnswer(answer);
           }
         }}
         onSearch={store.setSearchQuery}

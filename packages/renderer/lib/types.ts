@@ -225,6 +225,7 @@ export type ResolvedAnswerOption<T extends AnswerType> = {
   token: string;
   value: DataTypeToType<AnswerTypeToDataType<T>>;
   disabled: boolean;
+  answerType: AnswerType;
 };
 
 export type ValueDisplayProps<T extends AnswerType> = {
@@ -678,72 +679,50 @@ export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
   renderer: QuestionRendererComponent<T>;
 }
 
-export type SelectPendingCustomInput<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
-  isNew: boolean;
-};
-
-export type SelectCheckboxState<T extends AnswerType> = {
-  options: ReadonlyArray<ResolvedAnswerOption<T>>;
-  selectedTokens: Set<string>;
-  answerByToken: Map<string, IAnswerInstance<T>>;
-  nonOptionAnswers: IAnswerInstance<T>[];
-  customAnswers: IAnswerInstance<T>[];
-  availableAnswers: IAnswerInstance<T>[];
-  canAddSelection: boolean;
-  isCustomActive: boolean;
-  specifyOtherToken: string;
-};
-
-export type SelectChipItem<T extends AnswerType> = {
-  token: string;
-  answer: IAnswerInstance<T>;
-  kind: "option" | "custom";
-};
-
-export type SelectCustomInputState<T extends AnswerType> = {
+export type CustomOptionFormState<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
   isNew: boolean;
   canSubmit: boolean;
 };
 
+export type SelectedAnswerOption<T extends AnswerType> = {
+  answer: IAnswerInstance<T>;
+} & (ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">);
+
 export interface ISelectStore<T extends AnswerType = AnswerType> {
   readonly useCheckboxes: boolean;
   readonly isMultiSelect: boolean;
   readonly allowCustom: boolean;
-  readonly resolvedOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
-  readonly filteredOptions: ReadonlyArray<ResolvedAnswerOption<T>>;
   readonly isLoading: boolean;
-  readonly checkboxState: SelectCheckboxState<T>;
-  readonly selectedChipItems: Array<SelectChipItem<T>>;
-  readonly customChipItems: Array<SelectChipItem<T>>;
-  readonly selectedOptionAnswers: ReadonlyMap<string, IAnswerInstance<T>>;
-  readonly selectedOptionTokens: ReadonlySet<string>;
+  readonly options: ReadonlyArray<
+    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
+  >;
+  readonly filteredOptions: ReadonlyArray<
+    ResolvedAnswerOption<T> | ResolvedAnswerOption<"string">
+  >;
+  readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
+  readonly selectedTokens: ReadonlySet<string>;
+  readonly answerByToken: ReadonlyMap<string, IAnswerInstance<T>>;
+  readonly availableAnswers: ReadonlyArray<IAnswerInstance<T>>;
   readonly specifyOtherToken: string;
   readonly canAddSelection: boolean;
   readonly canRemoveSelection: boolean;
-  readonly hasSelections: boolean;
-  readonly customInputState: SelectCustomInputState<T> | null;
+  readonly customOptionFormState: CustomOptionFormState<T> | undefined;
   readonly ariaLabelledBy: string;
   readonly ariaDescribedBy: string | undefined;
 
-  resolveTokenForValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): string;
-  resolveValueForToken(
+  getOption(
     token: string,
-  ): DataTypeToType<AnswerTypeToDataType<T>> | null;
+  ): ResolvedAnswerOption<T> | ResolvedAnswerOption<"string"> | undefined;
+  getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
 
   setSearchQuery(query: string): void;
-  handleCheckboxToggle(token: string): void;
-  handleSelectOption(token: string): void;
-  handleSelectChange(token: string): void;
-  handleRemoveAnswer(answer: IAnswerInstance<T>): void;
-  openCustomInput(answer?: IAnswerInstance<T>): void;
-  cancelCustomInput(): void;
-  submitCustomInput(): void;
-  addPendingToken(token: string): void;
-  removePendingToken(token: string): void;
+  selectOption(token: string): void;
+  selectOptionForAnswer(answer: IAnswerInstance<T>, token: string | null): void;
+  removeAnswer(answer: IAnswerInstance<T>): void;
+  openCustomOptionForm(answer?: IAnswerInstance<T>): void;
+  cancelCustomOptionForm(): void;
+  submitCustomOptionForm(): void;
   buildRowProps(
     answer: IAnswerInstance<T>,
     suffix: string,

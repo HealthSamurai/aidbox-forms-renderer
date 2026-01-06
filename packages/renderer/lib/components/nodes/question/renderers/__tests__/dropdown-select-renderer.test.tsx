@@ -413,11 +413,11 @@ describe("dropdown-select-renderer", () => {
         const customInput = screen.getByRole("textbox", {
           name: "Favorite color",
         }) as HTMLInputElement;
-        expect(customInput.value).toBe("Green");
+        expect(customInput.value).toBe("");
         const cancelButton = screen.getByRole("button", { name: "Cancel" });
         const addButton = screen.getByRole("button", { name: "Add" });
         expect(cancelButton).not.toBeDisabled();
-        expect(addButton).not.toBeDisabled();
+        expect(addButton).toBeDisabled();
       });
 
       it("cycles between option and specify other for single select", () => {
@@ -514,6 +514,44 @@ describe("dropdown-select-renderer", () => {
         expect(getStringAnswers(question)).toEqual(["Magenta"]);
       });
 
+      it("keeps custom options available after switching to an option", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "color",
+              text: "Favorite color",
+              type: "string",
+              answerConstraint: "optionsOrString",
+              answerOption: [{ valueString: "Red" }, { valueString: "Blue" }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "color");
+
+        render(<DropdownSelectRenderer node={question} />);
+
+        selectOption("Favorite color", /specify other/i);
+        const customInput = screen.getByRole("textbox", {
+          name: "Favorite color",
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, { target: { value: "Green" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+        expect(getComboboxValue(getCombobox("Favorite color"))).toBe("Green");
+
+        selectOption("Favorite color", "Red");
+        const input = getCombobox("Favorite color");
+        fireEvent.click(input);
+        const listbox = getListbox(input);
+        expect(
+          within(listbox).getByRole("option", { name: "Green" }),
+        ).toBeInTheDocument();
+      });
+
       it("keeps the custom value when selecting it from the dropdown", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
@@ -559,7 +597,7 @@ describe("dropdown-select-renderer", () => {
         const reopenedInput = screen.getByRole("textbox", {
           name: "Website",
         }) as HTMLInputElement;
-        expect(reopenedInput).toHaveValue("https://google.com");
+        expect(reopenedInput).toHaveValue("");
       });
     });
 
@@ -743,6 +781,12 @@ describe("dropdown-select-renderer", () => {
         fireEvent.click(getChipButton("Cats"));
         expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
         expect(getStringAnswers(question).sort()).toEqual(["Dust", "Pollen"]);
+        const input = getCombobox("Allergy");
+        fireEvent.click(input);
+        const listbox = getListbox(input);
+        expect(
+          within(listbox).getByRole("option", { name: "Cats" }),
+        ).toBeInTheDocument();
 
         selectOption("Allergy", /specify other/i);
         customInput = screen.getByRole("textbox", {
@@ -935,7 +979,7 @@ describe("dropdown-select-renderer", () => {
         const customInput = screen.getByRole("spinbutton", {
           name: "Dose",
         }) as HTMLInputElement;
-        expect(customInput.value).toBe("3");
+        expect(customInput.value).toBe("");
       });
 
       it("cycles between option and specify other for single select", () => {

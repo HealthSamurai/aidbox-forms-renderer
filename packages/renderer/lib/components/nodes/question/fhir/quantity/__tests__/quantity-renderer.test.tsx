@@ -252,8 +252,6 @@ describe("quantity-renderer", () => {
       expect(numberInput).toBeTruthy();
       if (!numberInput) return;
 
-      const combobox = getCombobox(/temperature/i);
-
       const user = userEvent.setup();
       await user.type(numberInput, "37.5");
 

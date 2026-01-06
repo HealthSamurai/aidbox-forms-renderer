@@ -217,6 +217,39 @@ describe("list-select-renderer", () => {
         }
       });
 
+      it("keeps custom options available after switching to an option", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "color",
+              text: "Favorite color",
+              type: "string",
+              answerConstraint: "optionsOrString",
+              answerOption: [{ valueString: "Red" }, { valueString: "Blue" }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "color");
+
+        render(<ListSelectRenderer node={question} />);
+
+        fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
+        const customInput = screen.getByRole("textbox", {
+          name: "Favorite color",
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, { target: { value: "Green" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+        expect(screen.getByRole("radio", { name: "Green" })).toBeChecked();
+
+        fireEvent.click(screen.getByRole("radio", { name: "Red" }));
+        expect(screen.getByRole("radio", { name: "Green" })).not.toBeChecked();
+      });
+
       it("shows the custom value and opens the custom input on specify other", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
@@ -265,7 +298,10 @@ describe("list-select-renderer", () => {
         const customInput = screen.getByRole("textbox", {
           name: "Favorite color",
         }) as HTMLInputElement;
-        expect(customInput.value).toBe("Green");
+        expect(customInput.value).toBe("");
+        expect(
+          screen.getByRole("radio", { name: "Green" }),
+        ).toBeInTheDocument();
       });
 
       it("cycles between option and specify other for single select", () => {
@@ -897,7 +933,9 @@ describe("list-select-renderer", () => {
           name: /dose.*5/i,
         });
         fireEvent.click(customOption);
-        expect(screen.queryByRole("checkbox", { name: /dose.*5/i })).toBeNull();
+        expect(
+          screen.getByRole("checkbox", { name: /dose.*5/i }),
+        ).not.toBeChecked();
         assertOptionsEnabled();
 
         fireEvent.click(specifyOther);

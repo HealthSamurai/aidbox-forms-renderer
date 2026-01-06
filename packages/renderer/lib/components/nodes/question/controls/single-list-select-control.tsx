@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { useMemo } from "react";
 import { AnswerType, ValueControlProps } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/index.ts";
@@ -6,7 +7,6 @@ import { ValueDisplay } from "../fhir/value-display.tsx";
 import type { OptionItem } from "@aidbox-forms/theme";
 import { strings } from "../../../../strings.ts";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
-import { answerHasContent } from "../../../../utils.ts";
 
 export const SingleListSelectControl = observer(
   function SingleListSelectControl<T extends AnswerType>({
@@ -18,43 +18,24 @@ export const SingleListSelectControl = observer(
     const { CustomOptionForm, RadioButtonList } = useTheme();
     const node = answer.question;
     const store = node.selectStore;
-    const customType =
+    const customControlType =
       node.options.constraint === "optionsOrString" ? "string" : node.type;
-    const Control = getValueControl(customType);
-    const selectToken = store.resolveTokenForValue(answer.value);
-    const isBooleanFallback =
-      node.type === "boolean" && node.options.resolvedOptions.length === 0;
-    const isCustomValue =
-      store.allowCustom && answer.value != null && !selectToken;
-    const customInputState = store.customInputState;
+    const Control = getValueControl(customControlType);
+    const selection = store.getSelectedOption(answer);
     const isCustomActive =
-      store.allowCustom && customInputState?.answer.token === answer.token;
-    const fallbackOption =
-      isBooleanFallback || selectToken || answer.value == null || isCustomActive
-        ? null
-        : {
-            token: `${answer.token}_/_fallback`,
-            label: (
-              <ValueDisplay
-                type={store.allowCustom ? customType : node.type}
-                value={answer.value}
-              />
-            ),
-            disabled: !store.allowCustom,
-          };
-    const selectValue = isCustomActive
+      store.customOptionFormState?.answer.token === answer.token;
+    const selectedToken = isCustomActive
       ? store.specifyOtherToken
-      : selectToken || fallbackOption?.token || "";
-    const baseOptions: OptionItem[] = store.resolvedOptions.map((option) => ({
-      token: option.token,
-      label: <ValueDisplay type={node.type} value={option.value} />,
-      disabled: option.disabled,
-    }));
-    const optionsWithFallback = fallbackOption
-      ? baseOptions.some((option) => option.token === fallbackOption.token)
-        ? baseOptions
-        : [fallbackOption, ...baseOptions]
-      : baseOptions;
+      : (selection?.token ?? "");
+    const options = useMemo<OptionItem[]>(
+      () =>
+        store.options.map((entry) => ({
+          token: entry.token,
+          disabled: entry.disabled,
+          label: <ValueDisplay type={entry.answerType} value={entry.value} />,
+        })),
+      [store.options],
+    );
     const customOption = store.allowCustom
       ? {
           token: store.specifyOtherToken,
@@ -62,64 +43,47 @@ export const SingleListSelectControl = observer(
           disabled: store.isLoading,
         }
       : undefined;
-    const radioOptions = customOption
-      ? [...optionsWithFallback, customOption]
-      : optionsWithFallback;
+    const radioOptions = customOption ? [...options, customOption] : options;
 
-    const handleChange = (token: string) => {
-      if (store.allowCustom && token === store.specifyOtherToken) {
-        store.openCustomInput(answer);
-        if (!isCustomValue) {
-          answer.setValueByUser(null);
-        }
-        return;
-      }
-
-      if (isCustomActive) {
-        store.cancelCustomInput();
-      }
-      const nextValue = store.resolveValueForToken(token);
-      if (nextValue !== null) {
-        answer.setValueByUser(nextValue);
-      }
-    };
-
-    const customInput = isCustomActive ? (
-      <CustomOptionForm
-        content={
-          <Control
-            answer={answer}
-            id={id}
-            ariaLabelledBy={ariaLabelledBy}
-            ariaDescribedBy={ariaDescribedBy}
-          />
-        }
-        errors={<AnswerErrors answer={answer} />}
-        cancel={{
-          label: strings.dialog.cancel,
-          onClick: store.cancelCustomInput,
-          disabled: node.readOnly,
-        }}
-        submit={{
-          label: strings.dialog.add,
-          onClick: store.submitCustomInput,
-          disabled: node.readOnly || !answerHasContent(answer),
-        }}
-      />
-    ) : null;
+    const customOptionForm =
+      isCustomActive && store.customOptionFormState ? (
+        <CustomOptionForm
+          content={
+            <Control
+              answer={answer}
+              id={id}
+              ariaLabelledBy={ariaLabelledBy}
+              ariaDescribedBy={ariaDescribedBy}
+            />
+          }
+          errors={<AnswerErrors answer={answer} />}
+          cancel={{
+            label: strings.dialog.cancel,
+            onClick: store.cancelCustomOptionForm,
+            disabled: node.readOnly,
+          }}
+          submit={{
+            label: strings.dialog.add,
+            onClick: store.submitCustomOptionForm,
+            disabled: node.readOnly || !store.customOptionFormState.canSubmit,
+          }}
+        />
+      ) : null;
 
     return (
       <RadioButtonList
         options={radioOptions}
-        token={selectValue}
-        onChange={handleChange}
+        token={selectedToken}
+        onChange={(token) => {
+          store.selectOptionForAnswer(answer, token);
+        }}
         id={id}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={node.readOnly}
         isLoading={store.isLoading}
-        after={customInput}
-        afterInset={Boolean(customInput)}
+        after={customOptionForm}
+        afterInset={Boolean(customOptionForm)}
       />
     );
   },
