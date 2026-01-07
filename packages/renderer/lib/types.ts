@@ -653,16 +653,28 @@ export interface IQuantityAnswer {
 }
 
 export interface IAnswerOptions<T extends AnswerType = AnswerType> {
-  readonly loading: boolean;
+  readonly isLoading: boolean;
   readonly error: OperationOutcomeIssue | null;
-  readonly options: ReadonlyArray<AnswerOption<T>>;
+  readonly inherentOptions: ReadonlyArray<AnswerOption<T>>;
   readonly constraint: QuestionnaireItem["answerConstraint"];
-  getTokenForValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
-  ): OptionToken;
-  getValueForToken(
-    token: OptionToken,
-  ): DataTypeToType<AnswerTypeToDataType<T>> | null;
+  readonly allowCustom: boolean;
+  readonly filteredOptions: ReadonlyArray<
+    AnswerOption<T> | AnswerOption<"string">
+  >;
+  readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
+  readonly specifyOtherToken: OptionToken;
+  readonly canAddSelection: boolean;
+  readonly customOptionFormState: CustomOptionFormState<T> | undefined;
+  getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
+  setSearchQuery(query: string): void;
+  selectOption(token: OptionToken): void;
+  deselectOption(token: OptionToken): void;
+  selectOptionForAnswer(
+    answer: IAnswerInstance<T>,
+    token: OptionToken | null,
+  ): void;
+  cancelCustomOptionForm(): void;
+  submitCustomOptionForm(): void;
 }
 
 export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
@@ -692,49 +704,14 @@ export type SelectedAnswerOption<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
 } & (AnswerOption<T> | AnswerOption<"string">);
 
-export interface ISelectStore<T extends AnswerType = AnswerType> {
-  readonly useCheckboxes: boolean;
-  readonly isMultiSelect: boolean;
-  readonly allowCustom: boolean;
-  readonly isLoading: boolean;
-  readonly options: ReadonlyArray<AnswerOption<T> | AnswerOption<"string">>;
-  readonly filteredOptions: ReadonlyArray<
-    AnswerOption<T> | AnswerOption<"string">
-  >;
-  readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
-  readonly selectedOptionTokens: ReadonlySet<OptionToken>;
-  readonly answersByOptionToken: ReadonlyMap<OptionToken, IAnswerInstance<T>>;
-  readonly availableAnswers: ReadonlyArray<IAnswerInstance<T>>;
-  readonly specifyOtherToken: OptionToken;
-  readonly canAddSelection: boolean;
-  readonly canRemoveSelection: boolean;
-  readonly customOptionFormState: CustomOptionFormState<T> | undefined;
-
-  getOption(
-    token: OptionToken,
-  ): AnswerOption<T> | AnswerOption<"string"> | undefined;
-  getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
-
-  setSearchQuery(query: string): void;
-  selectOption(token: OptionToken): void;
-  selectOptionForAnswer(
-    answer: IAnswerInstance<T>,
-    token: OptionToken | null,
-  ): void;
-  removeAnswer(answer: IAnswerInstance<T>): void;
-  openCustomOptionForm(answer?: IAnswerInstance<T>): void;
-  cancelCustomOptionForm(): void;
-  submitCustomOptionForm(): void;
-}
-
 export interface IQuestionNode<
   T extends AnswerType = AnswerType,
 > extends IActualNode {
   readonly type: T;
   readonly control: QuestionItemControl | undefined;
   readonly repeats: boolean;
-  readonly answerOptions: IAnswerOptions<T>;
-  readonly selectStore: ISelectStore<T>;
+  readonly isRepeatingWithoutChildren: boolean;
+  readonly answerOption: IAnswerOptions<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;
   readonly renderer: QuestionControlDefinition["renderer"] | undefined;

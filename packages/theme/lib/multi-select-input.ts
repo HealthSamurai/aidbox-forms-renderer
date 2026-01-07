@@ -7,7 +7,7 @@ export type MultiSelectInputProps = {
   onSelect: (token: string) => void;
   onDeselect: (token: string) => void;
   onSearch?: (query: string) => void;
-  customOption?: OptionItem | undefined;
+  specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
   ariaLabelledBy?: string | undefined;

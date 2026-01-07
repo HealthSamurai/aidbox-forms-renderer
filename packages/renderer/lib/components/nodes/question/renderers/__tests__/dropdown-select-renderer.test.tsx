@@ -1126,6 +1126,47 @@ describe("dropdown-select-renderer", () => {
       });
     });
 
+    describe("quantity responses", () => {
+      it("keeps a custom quantity answer after submitting specify other", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "dose",
+              text: "Dose",
+              type: "quantity",
+              answerConstraint: "optionsOrType",
+              answerOption: [
+                {
+                  valueQuantity: { value: 1, unit: "mg" },
+                } as QuestionnaireItemAnswerOption,
+              ],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "dose");
+
+        render(<DropdownSelectRenderer node={question} />);
+
+        selectOption("Dose", /specify other/i);
+        const customInput = screen.getByRole("spinbutton", {
+          name: "Dose",
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, {
+          target: { value: "5" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+        expect(screen.queryByRole("spinbutton", { name: "Dose" })).toBeNull();
+        expect(getComboboxValue(getCombobox("Dose"))).toContain("5");
+        const [customAnswer] = getAnswerValues(question);
+        expect(customAnswer).toMatchObject({ value: 5 });
+      });
+    });
+
     describe("string interactions", () => {
       it("keeps specify other active when custom value matches an option", () => {
         const questionnaire: Questionnaire = {

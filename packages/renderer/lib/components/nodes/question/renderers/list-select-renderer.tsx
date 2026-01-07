@@ -10,7 +10,7 @@ export const ListSelectRenderer = observer(function ListSelectRenderer<
 >({ node }: { node: IQuestionNode<T> }) {
   return (
     <QuestionScaffold node={node} showOptionsLoading>
-      {node.selectStore.useCheckboxes ? (
+      {node.isRepeatingWithoutChildren ? (
         <MultiListSelectControl node={node} />
       ) : (
         <AnswerList node={node} control={SingleListSelectControl} />

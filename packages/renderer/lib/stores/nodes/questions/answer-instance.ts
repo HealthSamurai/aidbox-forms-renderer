@@ -128,7 +128,7 @@ export class AnswerInstance<
     if (value != null) {
       Object.assign(
         answer,
-        this.question.answerOptions.constraint === "optionsOrString" &&
+        this.question.answerOption.constraint === "optionsOrString" &&
           typeof value === "string"
           ? asAnswerFragment("string", value)
           : asAnswerFragment(

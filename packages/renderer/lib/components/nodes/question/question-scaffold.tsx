@@ -28,7 +28,7 @@ export function QuestionScaffold({
 
 function QuestionOptionsLoading({ node }: { node: IQuestionNode }) {
   const { OptionsLoading } = useTheme();
-  if (node.answerOptions.loading) {
+  if (node.answerOption.isLoading) {
     return <OptionsLoading isLoading />;
   }
   return null;

@@ -5,7 +5,7 @@ export type RadioButtonListProps = {
   options: readonly OptionItem[];
   selectedOption: SelectedOptionItem | null;
   onChange: (token: string | null) => void;
-  customOption?: OptionItem | undefined;
+  specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
   ariaLabelledBy?: string | undefined;

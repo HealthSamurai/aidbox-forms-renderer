@@ -20,11 +20,9 @@ export const SingleDropdownSelectControl = observer(
   }: ValueControlProps<T>) {
     const { SelectInput, CustomOptionForm } = useTheme();
     const node = answer.question;
-    const store = node.selectStore;
+    const store = node.answerOption;
     const customControlType =
-      node.answerOptions.constraint === "optionsOrString"
-        ? "string"
-        : node.type;
+      node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
     const isCustomActive =
       store.customOptionFormState?.answer.token === answer.token;
     const selection = store.getSelectedOption(answer);
@@ -64,7 +62,7 @@ export const SingleDropdownSelectControl = observer(
       }));
     }, [store.filteredOptions]);
 
-    const customOption = store.allowCustom
+    const specifyOtherOption = store.allowCustom
       ? {
           token: store.specifyOtherToken,
           label: strings.selection.specifyOther,
@@ -74,7 +72,7 @@ export const SingleDropdownSelectControl = observer(
 
     const selectedOption = (() => {
       if (isCustomActive) {
-        return customOption ?? null;
+        return specifyOtherOption ?? null;
       }
       if (!selection) {
         return null;
@@ -94,7 +92,7 @@ export const SingleDropdownSelectControl = observer(
         selectedOption={selectedOption}
         onChange={(token) => store.selectOptionForAnswer(answer, token)}
         onSearch={store.setSearchQuery}
-        customOption={customOption}
+        specifyOtherOption={specifyOtherOption}
         customOptionForm={customOptionForm}
         id={id}
         ariaLabelledBy={ariaLabelledBy}

@@ -17,7 +17,7 @@ export function MultiSelectInput({
   onDeselect,
   onSearch,
   id,
-  customOption,
+  specifyOtherOption,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled = false,
@@ -48,9 +48,11 @@ export function MultiSelectInput({
     return options.filter((option) => !selectedTokens.has(option.token));
   }, [options, selectedTokens]);
   const visibleOptions = useMemo(() => {
-    return customOption ? [...displayOptions, customOption] : displayOptions;
-  }, [customOption, displayOptions]);
-  const stickyIndex = customOption ? displayOptions.length : -1;
+    return specifyOtherOption
+      ? [...displayOptions, specifyOtherOption]
+      : displayOptions;
+  }, [displayOptions, specifyOtherOption]);
+  const stickyIndex = specifyOtherOption ? displayOptions.length : -1;
   const resolvedActiveToken = useMemo(() => {
     if (!isOpenWithCustom || visibleOptions.length === 0) {
       return null;
@@ -318,32 +320,34 @@ export function MultiSelectInput({
                     {option.label}
                   </OptionButton>
                 ))}
-                {customOption ? (
+                {specifyOtherOption ? (
                   <StickyOption
-                    key={customOption.token}
+                    key={specifyOtherOption.token}
                     id={`${listboxId}-option-${stickyIndex}`}
                     type="button"
                     role="option"
-                    aria-selected={selectedTokens.has(customOption.token)}
-                    aria-disabled={customOption.disabled || undefined}
-                    disabled={Boolean(customOption.disabled)}
-                    data-active={customOption.token === resolvedActiveToken}
+                    aria-selected={selectedTokens.has(specifyOtherOption.token)}
+                    aria-disabled={specifyOtherOption.disabled || undefined}
+                    disabled={Boolean(specifyOtherOption.disabled)}
+                    data-active={
+                      specifyOtherOption.token === resolvedActiveToken
+                    }
                     ref={(node) => {
                       if (node) {
-                        optionRefs.current.set(customOption.token, node);
+                        optionRefs.current.set(specifyOtherOption.token, node);
                       } else {
-                        optionRefs.current.delete(customOption.token);
+                        optionRefs.current.delete(specifyOtherOption.token);
                       }
                     }}
-                    onFocus={() => setActiveToken(customOption.token)}
+                    onFocus={() => setActiveToken(specifyOtherOption.token)}
                     onKeyDown={handleNavigationKeyDown}
                     onClick={() => {
-                      if (!customOption.disabled) {
-                        handleSelect(customOption.token);
+                      if (!specifyOtherOption.disabled) {
+                        handleSelect(specifyOtherOption.token);
                       }
                     }}
                   >
-                    {customOption.label}
+                    {specifyOtherOption.label}
                   </StickyOption>
                 ) : null}
               </>

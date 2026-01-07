@@ -44,7 +44,7 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   const renderQuestionHeader = (entry: QuestionAxisItem) => (
     <>
       <NodeHeader node={entry.question} />
-      {entry.question.answerOptions.loading ? (
+      {entry.question.answerOption.isLoading ? (
         <OptionsLoading isLoading />
       ) : null}
       {entry.question.hasErrors ? <NodeErrors node={entry.question} /> : null}

@@ -3,7 +3,7 @@ import type { CheckboxListProps } from "@aidbox-forms/theme";
 export function CheckboxList({
   options,
   selectedOptions,
-  customOption,
+  specifyOtherOption,
   customOptionForm,
   onSelect,
   onDeselect,
@@ -13,12 +13,14 @@ export function CheckboxList({
   disabled,
   isLoading,
 }: CheckboxListProps) {
-  const resolvedOptions = customOption ? [...options, customOption] : options;
+  const resolvedOptions = specifyOtherOption
+    ? [...options, specifyOtherOption]
+    : options;
   const selectedByToken = new Map(
     selectedOptions.map((option) => [option.token, option]),
   );
-  const customOptionToken = customOption?.token;
-  const isCustomActive = Boolean(customOptionForm && customOptionToken);
+  const specifyOtherToken = specifyOtherOption?.token;
+  const isCustomActive = Boolean(customOptionForm && specifyOtherToken);
 
   return (
     <div
@@ -32,7 +34,7 @@ export function CheckboxList({
         const optionId = `${id}-option-${index}`;
         const optionLabelId = `${optionId}-label`;
         const selectedOption = selectedByToken.get(option.token);
-        const isCustomOption = option.token === customOptionToken;
+        const isSpecifyOtherOption = option.token === specifyOtherToken;
         const optionAriaDescribedBy =
           [ariaDescribedBy, selectedOption?.ariaDescribedBy]
             .filter(Boolean)
@@ -46,14 +48,14 @@ export function CheckboxList({
               name={id}
               id={optionId}
               checked={
-                isCustomOption
+                isSpecifyOtherOption
                   ? isCustomActive || Boolean(selectedOption)
                   : Boolean(selectedOption)
               }
               disabled={
                 disabled ||
                 isLoading ||
-                (option.disabled && !(isCustomOption && isCustomActive))
+                (option.disabled && !(isSpecifyOtherOption && isCustomActive))
               }
               aria-labelledby={
                 ariaLabelledBy

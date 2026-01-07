@@ -34,7 +34,6 @@ type ListSelectArgs = {
   optionCount: number;
   initialSelection: "none" | "firstOption" | "customValue";
   readOnly: boolean;
-  itemControl: "radio-button" | "check-box";
   includeOptions: boolean;
 };
 
@@ -84,6 +83,7 @@ const baseArgTypes = {
     name: "Initial selection",
     options: ["none", "firstOption", "customValue"],
     control: { type: "select" },
+    if: { arg: "answerConstraint", neq: "optionsOnly" },
   },
   readOnly: {
     name: "Read-only",
@@ -591,7 +591,7 @@ function buildListSelectItem(args: ListSelectArgs): QuestionnaireItem {
     linkId: `${args.answerType}-list-select`,
     text: `List select (${args.answerType})`,
     type: args.answerType,
-    control: args.itemControl,
+    control: args.repeats ? "check-box" : "radio-button",
     repeats: args.repeats,
     readOnly: args.readOnly,
     answerConstraint: args.answerConstraint,
@@ -641,16 +641,10 @@ export const DropdownRenderer: StoryObj<DropdownArgs> = {
 export const ListSelectRenderer: StoryObj<ListSelectArgs> = {
   name: "List-select renderer",
   args: {
-    itemControl: "radio-button",
     includeOptions: true,
   },
   argTypes: {
     ...baseArgTypes,
-    itemControl: {
-      name: "Item control",
-      options: ["radio-button", "check-box"],
-      control: { type: "select" },
-    },
     includeOptions: {
       name: "Include answer options",
       control: { type: "boolean" },

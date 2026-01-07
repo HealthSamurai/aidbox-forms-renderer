@@ -21,9 +21,9 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   const { CheckboxList, CustomOptionForm } = useTheme();
-  const store = node.selectStore;
+  const store = node.answerOption;
   const customControlType =
-    node.answerOptions.constraint === "optionsOrString" ? "string" : node.type;
+    node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
   const CustomControl = getValueControl(customControlType);
   const selectedOptions = useMemo(() => {
     return store.selectedOptions.map((selection) => ({
@@ -79,7 +79,7 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
     }));
   }, [store.filteredOptions]);
 
-  const customOption = store.allowCustom
+  const specifyOtherOption = store.allowCustom
     ? {
         token: store.specifyOtherToken,
         label: strings.selection.specifyOther,
@@ -88,23 +88,12 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
     : undefined;
   const inputId = `af_/_${node.token}_/_multi-select`;
 
-  const handleDeselect = (token: string) => {
-    if (store.allowCustom && token === store.specifyOtherToken) {
-      store.cancelCustomOptionForm();
-      return;
-    }
-    const answer = store.answersByOptionToken.get(token);
-    if (answer) {
-      store.removeAnswer(answer);
-    }
-  };
-
   return (
     <CheckboxList
       options={options}
       onSelect={store.selectOption}
-      onDeselect={handleDeselect}
-      customOption={customOption}
+      onDeselect={store.deselectOption}
+      specifyOtherOption={specifyOtherOption}
       id={inputId}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}

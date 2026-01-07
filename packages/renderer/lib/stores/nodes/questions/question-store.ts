@@ -47,8 +47,7 @@ import {
 } from "../../../utils.ts";
 import type { HTMLAttributes } from "react";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
-import { AnswerOptions } from "./answer-options.ts";
-import { SelectStore } from "./select-store.ts";
+import { AnswerOptionStore } from "./answer-option-store.ts";
 
 export class QuestionStore<T extends AnswerType = AnswerType>
   extends AbstractActualNodeStore
@@ -71,11 +70,6 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed
   get renderer(): QuestionControlDefinition["renderer"] | undefined {
     return this.form.questionControlRegistry.resolve(this)?.renderer;
-  }
-
-  @computed({ keepAlive: true })
-  get selectStore(): SelectStore<T> {
-    return new SelectStore(this);
   }
 
   @computed
@@ -168,6 +162,13 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @computed
+  get isRepeatingWithoutChildren(): boolean {
+    const hasChildren =
+      Array.isArray(this.template.item) && this.template.item.length > 0;
+    return this.repeats && !hasChildren;
+  }
+
+  @computed
   get keyboardType(): HTMLAttributes<Element>["inputMode"] | undefined {
     if (this.type !== "string" && this.type !== "text") {
       return undefined;
@@ -191,14 +192,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   @computed({ keepAlive: true })
-  get answerOptions(): IAnswerOptions<T> {
-    return new AnswerOptions<T>(this);
+  get answerOption(): IAnswerOptions<T> {
+    return new AnswerOptionStore<T>(this);
   }
 
   @override
   override get issues() {
-    return this.answerOptions.error
-      ? [...super.issues, this.answerOptions.error]
+    return this.answerOption.error
+      ? [...super.issues, this.answerOption.error]
       : super.issues;
   }
 
@@ -358,7 +359,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         const value = getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
         if (
           value === undefined &&
-          this.answerOptions.constraint === "optionsOrString"
+          this.answerOption.constraint === "optionsOrString"
         ) {
           return getValue(entry, "string");
         }
@@ -450,7 +451,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     answers.forEach((answer) => {
       const typedValue = getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
       const stringValue =
-        this.answerOptions.constraint === "optionsOrString"
+        this.answerOption.constraint === "optionsOrString"
           ? getValue(answer, "string")
           : undefined;
       this.pushAnswer(

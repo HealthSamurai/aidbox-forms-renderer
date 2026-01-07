@@ -8,7 +8,7 @@ export function SelectInput({
   selectedOption,
   onChange,
   onSearch,
-  customOption,
+  specifyOtherOption,
   customOptionForm,
   id,
   ariaLabelledBy,
@@ -45,9 +45,9 @@ export function SelectInput({
 
   const listboxId = `${id}-listbox`;
   const visibleOptions = useMemo(() => {
-    return customOption ? [...options, customOption] : options;
-  }, [customOption, options]);
-  const stickyIndex = customOption ? options.length : -1;
+    return specifyOtherOption ? [...options, specifyOtherOption] : options;
+  }, [options, specifyOtherOption]);
+  const stickyIndex = specifyOtherOption ? options.length : -1;
   const resolvedActiveToken = useMemo(() => {
     if (!isOpenWithCustom || visibleOptions.length === 0) {
       return null;
@@ -374,27 +374,32 @@ export function SelectInput({
                       {entry.label}
                     </button>
                   ))}
-                  {customOption ? (
+                  {specifyOtherOption ? (
                     <button
                       id={`${listboxId}-option-${stickyIndex}`}
                       type="button"
                       role="option"
-                      aria-selected={customOption.token === selectedToken}
-                      aria-disabled={customOption.disabled || undefined}
-                      disabled={Boolean(customOption.disabled)}
-                      data-active={customOption.token === resolvedActiveToken}
+                      aria-selected={specifyOtherOption.token === selectedToken}
+                      aria-disabled={specifyOtherOption.disabled || undefined}
+                      disabled={Boolean(specifyOtherOption.disabled)}
+                      data-active={
+                        specifyOtherOption.token === resolvedActiveToken
+                      }
                       ref={(node) => {
                         if (node) {
-                          optionRefs.current.set(customOption.token, node);
+                          optionRefs.current.set(
+                            specifyOtherOption.token,
+                            node,
+                          );
                         } else {
-                          optionRefs.current.delete(customOption.token);
+                          optionRefs.current.delete(specifyOtherOption.token);
                         }
                       }}
-                      onFocus={() => setActiveToken(customOption.token)}
+                      onFocus={() => setActiveToken(specifyOtherOption.token)}
                       onKeyDown={handleNavigationKeyDown}
                       onClick={() => {
-                        if (!customOption.disabled) {
-                          handleSelect(customOption.token);
+                        if (!specifyOtherOption.disabled) {
+                          handleSelect(specifyOtherOption.token);
                         }
                       }}
                       style={{
@@ -404,21 +409,21 @@ export function SelectInput({
                         padding: "0.5rem 0.75rem",
                         border: "none",
                         background:
-                          customOption.token === resolvedActiveToken
+                          specifyOtherOption.token === resolvedActiveToken
                             ? "#e8edee"
                             : "#fff",
                         borderTop: "1px solid #d8dde0",
                         position: "sticky",
                         bottom: 0,
-                        cursor: customOption.disabled
+                        cursor: specifyOtherOption.disabled
                           ? "not-allowed"
                           : "pointer",
                         font: "inherit",
                         color: "inherit",
-                        opacity: customOption.disabled ? 0.6 : 1,
+                        opacity: specifyOtherOption.disabled ? 0.6 : 1,
                       }}
                     >
-                      {customOption.label}
+                      {specifyOtherOption.label}
                     </button>
                   ) : null}
                 </>

@@ -8,11 +8,9 @@ import { MultiDropdownSelectControl } from "../controls/multi-dropdown-select-co
 export const DropdownSelectRenderer = observer(function DropdownRenderer<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
-  const isMultiSelect = node.selectStore.isMultiSelect;
-
   return (
     <QuestionScaffold node={node} showOptionsLoading>
-      {isMultiSelect ? (
+      {node.isRepeatingWithoutChildren ? (
         <MultiDropdownSelectControl node={node} />
       ) : (
         <AnswerList node={node} control={SingleDropdownSelectControl} />

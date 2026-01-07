@@ -5,7 +5,7 @@ import { optionStatusClass } from "./option-status.ts";
 export function CheckboxList({
   options,
   selectedOptions,
-  customOption,
+  specifyOtherOption,
   customOptionForm,
   onSelect,
   onDeselect,
@@ -15,12 +15,14 @@ export function CheckboxList({
   disabled,
   isLoading = false,
 }: CheckboxListProps) {
-  const displayOptions = customOption ? [...options, customOption] : options;
+  const displayOptions = specifyOtherOption
+    ? [...options, specifyOtherOption]
+    : options;
   const selectedByToken = new Map(
     selectedOptions.map((option) => [option.token, option]),
   );
-  const customOptionToken = customOption?.token;
-  const isCustomActive = Boolean(customOptionForm && customOptionToken);
+  const specifyOtherToken = specifyOtherOption?.token;
+  const isCustomActive = Boolean(customOptionForm && specifyOtherToken);
 
   return (
     <CheckboxControl
@@ -33,7 +35,7 @@ export function CheckboxList({
       {displayOptions.map((option, index) => {
         const optionId = `${id}-option-${index}`;
         const selectedOption = selectedByToken.get(option.token);
-        const isCustomOption = option.token === customOptionToken;
+        const isSpecifyOtherOption = option.token === specifyOtherToken;
         const optionAriaDescribedBy =
           [ariaDescribedBy, selectedOption?.ariaDescribedBy]
             .filter(Boolean)
@@ -46,14 +48,14 @@ export function CheckboxList({
                 type="checkbox"
                 name={id}
                 checked={
-                  isCustomOption
+                  isSpecifyOtherOption
                     ? isCustomActive || Boolean(selectedOption)
                     : Boolean(selectedOption)
                 }
                 disabled={
                   disabled ||
                   isLoading ||
-                  (option.disabled && !(isCustomOption && isCustomActive))
+                  (option.disabled && !(isSpecifyOtherOption && isCustomActive))
                 }
                 aria-labelledby={
                   ariaLabelledBy ? `${ariaLabelledBy} ${optionId}` : optionId

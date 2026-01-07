@@ -4,7 +4,7 @@ export function RadioButtonList({
   options,
   selectedOption,
   onChange,
-  customOption,
+  specifyOtherOption,
   customOptionForm,
   id,
   ariaLabelledBy,
@@ -12,7 +12,9 @@ export function RadioButtonList({
   disabled,
   isLoading,
 }: RadioButtonListProps) {
-  const displayOptions = customOption ? [...options, customOption] : options;
+  const displayOptions = specifyOtherOption
+    ? [...options, specifyOtherOption]
+    : options;
   const selectedToken = selectedOption?.token ?? "";
   const makeInputId = (token: string) => (id ? `${id}-${token}` : undefined);
 

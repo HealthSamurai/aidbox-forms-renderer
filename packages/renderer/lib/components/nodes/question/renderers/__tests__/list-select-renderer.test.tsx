@@ -88,6 +88,38 @@ describe("list-select-renderer", () => {
         expect(screen.getByRole("radio", { name: "Red" })).not.toBeDisabled();
         expect(screen.getByRole("radio", { name: "Blue" })).not.toBeDisabled();
       });
+
+      it("disables options when readOnly and no answers", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "color",
+              text: "Favorite color",
+              type: "string",
+              readOnly: true,
+              answerOption: [{ valueString: "Red" }, { valueString: "Blue" }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "color");
+
+        render(<ListSelectRenderer node={question} />);
+
+        const red = screen.getByRole("radio", { name: "Red" });
+        const blue = screen.getByRole("radio", { name: "Blue" });
+
+        expect(red).toBeDisabled();
+        expect(blue).toBeDisabled();
+        expect(red).not.toBeChecked();
+        expect(blue).not.toBeChecked();
+        expect(
+          screen.queryByRole("radio", { name: /specify other/i }),
+        ).toBeNull();
+      });
     });
 
     describe("multi (checkbox)", () => {
@@ -232,6 +264,72 @@ describe("list-select-renderer", () => {
               name: "String: [object Object]",
             }),
           ).toBeNull();
+        } finally {
+          VALUE_DISPLAY_BY_TYPE.string = originalString;
+          VALUE_DISPLAY_BY_TYPE.quantity = originalQuantity;
+        }
+      });
+
+      it("renders custom string answers with string display for open-choice quantities", () => {
+        const originalString = VALUE_DISPLAY_BY_TYPE.string;
+        const originalQuantity = VALUE_DISPLAY_BY_TYPE.quantity;
+
+        try {
+          VALUE_DISPLAY_BY_TYPE.string = ({ value }) => (
+            <>String: {String(value)}</>
+          );
+          VALUE_DISPLAY_BY_TYPE.quantity = ({ value }) => (
+            <>
+              Quantity: {value.value} {value.unit}
+            </>
+          );
+
+          const questionnaire: Questionnaire = {
+            resourceType: "Questionnaire",
+            status: "active",
+            item: [
+              {
+                linkId: "dose",
+                text: "Dose",
+                type: "quantity",
+                answerConstraint: "optionsOrString",
+                answerOption: [
+                  {
+                    valueQuantity: { value: 1, unit: "mg" },
+                  } as QuestionnaireItemAnswerOption,
+                ],
+              },
+            ],
+          };
+
+          const response: QuestionnaireResponse = {
+            resourceType: "QuestionnaireResponse",
+            questionnaire: "#Q",
+            status: "in-progress",
+            item: [
+              {
+                linkId: "dose",
+                answer: [{ valueString: "custom-dose" }],
+              },
+            ],
+          };
+
+          const form = new FormStore(questionnaire, response);
+          const question = getQuestion(form, "dose");
+
+          render(<ListSelectRenderer node={question} />);
+
+          expect(
+            screen.getByRole("radio", { name: "String: custom-dose" }),
+          ).toBeChecked();
+          expect(
+            screen.queryByRole("radio", {
+              name: "Quantity: custom-dose",
+            }),
+          ).toBeNull();
+          expect(
+            screen.getByRole("radio", { name: "Quantity: 1 mg" }),
+          ).toBeInTheDocument();
         } finally {
           VALUE_DISPLAY_BY_TYPE.string = originalString;
           VALUE_DISPLAY_BY_TYPE.quantity = originalQuantity;
@@ -393,6 +491,40 @@ describe("list-select-renderer", () => {
         expect(customAgain).toHaveValue("");
         expect(getStringAnswers(question)).toEqual([]);
         assertOptionsEnabled();
+      });
+
+      it("commits a custom value and closes the form on Add", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "color",
+              text: "Favorite color",
+              type: "string",
+              answerConstraint: "optionsOrString",
+              answerOption: [{ valueString: "Red" }, { valueString: "Blue" }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "color");
+
+        render(<ListSelectRenderer node={question} />);
+
+        fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
+        const customInput = screen.getByRole("textbox", {
+          name: "Favorite color",
+        }) as HTMLInputElement;
+        fireEvent.change(customInput, { target: { value: "Magenta" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+        expect(
+          screen.queryByRole("textbox", { name: "Favorite color" }),
+        ).toBeNull();
+        expect(screen.getByRole("radio", { name: "Magenta" })).toBeChecked();
+        expect(getStringAnswers(question)).toEqual(["Magenta"]);
       });
     });
 
@@ -754,6 +886,53 @@ describe("list-select-renderer", () => {
 
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
         expect(screen.queryByRole("textbox", { name: /dose/i })).toBeNull();
+      });
+
+      it("keeps a non-option integer answer selected until specify other is opened", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "dose",
+              text: "Dose",
+              type: "integer",
+              answerConstraint: "optionsOrType",
+              answerOption: [{ valueInteger: 1 }, { valueInteger: 2 }],
+            },
+          ],
+        };
+
+        const response: QuestionnaireResponse = {
+          resourceType: "QuestionnaireResponse",
+          questionnaire: "#Q",
+          status: "in-progress",
+          item: [
+            {
+              linkId: "dose",
+              answer: [{ valueInteger: 3 }],
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire, response);
+        const question = getQuestion(form, "dose");
+
+        render(<ListSelectRenderer node={question} />);
+
+        const custom = screen.getByRole("radio", { name: "3" });
+        const specifyOther = screen.getByRole("radio", {
+          name: /specify other/i,
+        });
+        expect(custom).toBeChecked();
+        expect(specifyOther).not.toBeChecked();
+        expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
+
+        fireEvent.click(specifyOther);
+        const customInput = screen.getByRole("spinbutton", {
+          name: /dose/i,
+        }) as HTMLInputElement;
+        expect(customInput.value).toBe("");
       });
 
       it("cycles between option and specify other for single select", () => {

@@ -24,11 +24,9 @@ export const MultiDropdownSelectControl = observer(
     node: IQuestionNode<T>;
   }) {
     const { MultiSelectInput, CustomOptionForm } = useTheme();
-    const store = node.selectStore;
+    const store = node.answerOption;
     const customControlType =
-      node.answerOptions.constraint === "optionsOrString"
-        ? "string"
-        : node.type;
+      node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
     const CustomControl = getValueControl(customControlType);
 
     const selectedOptions = useMemo(() => {
@@ -85,7 +83,7 @@ export const MultiDropdownSelectControl = observer(
       }));
     }, [store.filteredOptions]);
 
-    const customOption = store.allowCustom
+    const specifyOtherOption = store.allowCustom
       ? {
           token: store.specifyOtherToken,
           label: strings.selection.specifyOther,
@@ -94,20 +92,13 @@ export const MultiDropdownSelectControl = observer(
       : undefined;
     const inputId = `af_/_${node.token}_/_multi-select`;
 
-    const handleDeselect = (token: string) => {
-      const answer = store.answersByOptionToken.get(token);
-      if (answer) {
-        store.removeAnswer(answer);
-      }
-    };
-
     return (
       <MultiSelectInput
         options={options}
         onSelect={store.selectOption}
-        onDeselect={handleDeselect}
+        onDeselect={store.deselectOption}
         onSearch={store.setSearchQuery}
-        customOption={customOption}
+        specifyOtherOption={specifyOtherOption}
         id={inputId}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}

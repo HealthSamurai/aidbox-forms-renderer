@@ -122,7 +122,7 @@ export class TableStore implements ITableStore {
     });
     const isSelected = Boolean(selectedAnswer);
     const isReadOnly =
-      entry.question.readOnly || entry.question.answerOptions.loading;
+      entry.question.readOnly || entry.question.answerOption.isLoading;
     const disableNewSelection =
       !isSelected &&
       (optionEntry.disabled ||
@@ -148,7 +148,7 @@ export class TableStore implements ITableStore {
     });
     const isSelected = Boolean(selectedAnswer);
     const isReadOnly =
-      entry.question.readOnly || entry.question.answerOptions.loading;
+      entry.question.readOnly || entry.question.answerOption.isLoading;
     const disableNewSelection =
       !isSelected &&
       (optionEntry.disabled ||
@@ -181,7 +181,7 @@ export class TableStore implements ITableStore {
 
     this.questions.forEach((question) => {
       const optionEntryMap = new Map<OptionToken, AnswerOption<AnswerType>>();
-      question.answerOptions.options.forEach((entry) => {
+      question.answerOption.inherentOptions.forEach((entry) => {
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
         const token = tokenify(type, entry.value) as OptionToken;
 
