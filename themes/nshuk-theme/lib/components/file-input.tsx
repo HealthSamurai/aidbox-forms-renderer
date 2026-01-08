@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { FileInputProps } from "@aidbox-forms/theme";
 import { type ChangeEvent, useRef } from "react";
 
@@ -31,8 +32,8 @@ export function FileInput({
   };
 
   return (
-    <div className="nhsuk-form-group">
-      <input
+    <Container>
+      <HiddenInput
         ref={fileInputRef}
         id={id}
         aria-labelledby={ariaLabelledBy}
@@ -40,24 +41,20 @@ export function FileInput({
         className="nhsuk-file-upload"
         disabled={disabled}
         type="file"
-        style={{ display: "none" }}
         onChange={handleFileChange}
         accept={accept}
       />
       {value != null ? (
-        <div
-          className="nhsuk-u-margin-top-2"
+        <Details
           role="group"
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         >
-          <p className="nhsuk-body">{displayLabel}</p>
+          <LabelText className="nhsuk-body">{displayLabel}</LabelText>
           {displaySizeLabel ? (
-            <p className="nhsuk-hint nhsuk-u-margin-bottom-2">
-              {displaySizeLabel}
-            </p>
+            <HintText className="nhsuk-hint">{displaySizeLabel}</HintText>
           ) : null}
-          <div className="nhsuk-button-group">
+          <Actions>
             {!disabled ? (
               <button
                 className="nhsuk-button nhsuk-button--secondary"
@@ -75,8 +72,8 @@ export function FileInput({
             >
               Clear attachment
             </button>
-          </div>
-        </div>
+          </Actions>
+        </Details>
       ) : (
         <button
           className="nhsuk-button nhsuk-button--secondary"
@@ -87,6 +84,32 @@ export function FileInput({
           Choose file
         </button>
       )}
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
+const Details = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const LabelText = styled.div``;
+
+const HintText = styled.div``;
+
+const Actions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;

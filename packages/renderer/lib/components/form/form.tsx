@@ -137,10 +137,12 @@ export const Form = observer(function Form({
         ) : null}
       </NodeList>
       <FormActions>
-        <FormSubmitButton onClick={onSubmit}>Submit</FormSubmitButton>
-        <FormResetButton onClick={() => store.reset()} disabled={false}>
-          Reset
-        </FormResetButton>
+        <FormSubmitButton onClick={onSubmit} text="Submit" />
+        <FormResetButton
+          onClick={() => store.reset()}
+          disabled={false}
+          text="Reset"
+        />
       </FormActions>
     </ThemedForm>
   );

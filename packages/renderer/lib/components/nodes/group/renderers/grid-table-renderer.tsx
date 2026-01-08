@@ -22,20 +22,15 @@ export const GridTableRenderer = observer(function GridTableRenderer({
             <GroupRemoveButton
               onClick={() => wrapper.removeNode(row.node)}
               disabled={!wrapper.canRemove}
-            >
-              {strings.group.removeSection}
-            </GroupRemoveButton>
+              text={strings.group.removeSection}
+            />
           ),
         };
       }
 
       return {
         token: cell.token,
-        content: cell.question ? (
-          <Node node={cell.question} />
-        ) : (
-          strings.placeholders.emptyCell
-        ),
+        content: cell.question ? <Node node={cell.question} /> : null,
       };
     }),
   }));

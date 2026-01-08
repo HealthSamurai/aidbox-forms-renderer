@@ -1,9 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 
 export type FormSubmitButtonProps = {
   onClick?: (() => void) | undefined;
   disabled?: boolean | undefined;
-  children?: ReactNode;
+  text: string;
 };
 
 export type FormSubmitButtonComponent = ComponentType<FormSubmitButtonProps>;

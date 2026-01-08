@@ -17,9 +17,11 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   const addAnswer = useCallback(() => node.addAnswer(), [node]);
 
   const toolbar = node.repeats ? (
-    <AnswerAddButton onClick={addAnswer} disabled={!node.canAdd}>
-      {strings.selection.addAnother}
-    </AnswerAddButton>
+    <AnswerAddButton
+      onClick={addAnswer}
+      disabled={!node.canAdd}
+      text={strings.selection.addAnother}
+    />
   ) : undefined;
 
   return (

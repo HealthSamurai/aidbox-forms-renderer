@@ -24,9 +24,8 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
         <GroupAddButton
           onClick={() => wrapper.addNode()}
           disabled={!wrapper.canAdd}
-        >
-          {strings.group.addSection}
-        </GroupAddButton>
+          text={strings.group.addSection}
+        />
       }
     >
       {children ??

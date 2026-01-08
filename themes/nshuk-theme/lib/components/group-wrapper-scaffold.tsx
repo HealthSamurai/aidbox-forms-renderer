@@ -1,5 +1,5 @@
+import { styled } from "@linaria/react";
 import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
-import classNames from "classnames";
 
 export function GroupWrapperScaffold({
   linkId,
@@ -8,25 +8,24 @@ export function GroupWrapperScaffold({
   toolbar,
 }: GroupWrapperScaffoldProps) {
   return (
-    <fieldset
-      className={classNames(
-        "nhsuk-fieldset",
-        "nhsuk-u-margin-bottom-5",
-        "nhsuk-u-padding-4",
-      )}
-      data-linkid={linkId}
-      style={{
-        border: "1px solid #d8dde0",
-        borderRadius: "4px",
-      }}
-    >
-      {header ? <div className="nhsuk-u-margin-bottom-2">{header}</div> : null}
-      <div className="nhsuk-fieldset__content nhsuk-u-margin-top-2">
-        {children}
-      </div>
-      {toolbar ? (
-        <div className="nhsuk-button-group nhsuk-u-margin-top-3">{toolbar}</div>
-      ) : null}
-    </fieldset>
+    <Container data-linkid={linkId}>
+      {header ? <Header>{header}</Header> : null}
+      {children}
+      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const Header = styled.div``;
+
+const Toolbar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;

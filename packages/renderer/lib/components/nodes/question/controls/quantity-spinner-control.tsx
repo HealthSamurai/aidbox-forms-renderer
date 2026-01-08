@@ -18,6 +18,8 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
     answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
   const { min, max } = answer.bounds;
   const disabled = answer.question.readOnly;
+  const valuePlaceholder =
+    answer.question.placeholder ?? strings.inputs.quantityValuePlaceholder;
 
   const handleValueChange = (nextValue: number | null) => {
     answer.quantity.handleNumberInput(
@@ -34,7 +36,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
         max={getNumericValue(max) ?? undefined}
         step={0.1}
         disabled={disabled}
-        placeholder={answer.question.placeholder}
+        placeholder={valuePlaceholder}
         ariaLabelledBy={ariaLabelledBy ?? id}
         ariaDescribedBy={ariaDescribedBy}
       />

@@ -38,9 +38,7 @@ export function SelectInput({
   const displayContent = selectedOption ? (
     selectedOption.label
   ) : (
-    <span style={{ color: "#4a5568", opacity: 0.65 }}>
-      {placeholder ?? "Select an option"}
-    </span>
+    <PlaceholderText>{placeholder ?? "Select an option"}</PlaceholderText>
   );
 
   const listboxId = `${id}-listbox`;
@@ -200,18 +198,19 @@ export function SelectInput({
   };
 
   return (
-    <div
+    <Container
       aria-busy={isLoading || undefined}
       ref={containerRef}
       onBlur={handleBlur}
     >
-      <div className="nhsuk-u-display-flex nhsuk-u-align-items-center">
-        <div style={{ position: "relative", flex: 1 }}>
+      <InputRow>
+        <InputWrap>
           {showSearchInput ? (
             <SelectInputField
               ref={inputRef}
               id={id}
               className="nhsuk-input"
+              data-has-clear={selectedOption ? "true" : undefined}
               value={query}
               onChange={(event) => {
                 updateQuery(event.target.value);
@@ -247,10 +246,9 @@ export function SelectInput({
               }
               placeholder={placeholder ?? "Select an option"}
               autoComplete="off"
-              style={{ paddingRight: selectedOption ? "2rem" : undefined }}
             />
           ) : (
-            <div
+            <SelectDisplay
               id={id}
               className="nhsuk-input"
               role="combobox"
@@ -263,6 +261,8 @@ export function SelectInput({
               }
               aria-disabled={disabled || isLoading ? true : undefined}
               tabIndex={disabled || isLoading ? -1 : 0}
+              data-disabled={disabled || isLoading ? "true" : undefined}
+              data-has-clear={selectedOption ? "true" : undefined}
               onClick={() => {
                 if (!disabled && !isLoading && !isOpen) {
                   updateQuery("");
@@ -271,68 +271,37 @@ export function SelectInput({
                 }
               }}
               onKeyDown={handleNavigationKeyDown}
-              style={{
-                paddingRight: selectedOption ? "2rem" : undefined,
-                display: "flex",
-                alignItems: "center",
-                cursor: disabled || isLoading ? "not-allowed" : "text",
-              }}
             >
               {displayContent}
-            </div>
+            </SelectDisplay>
           )}
           {selectedOption ? (
-            <button
+            <ClearButton
               type="button"
               onClick={handleClear}
               disabled={disabled || isLoading}
+              data-disabled={disabled || isLoading ? "true" : undefined}
               onMouseDown={(event) => event.preventDefault()}
               aria-label="Clear"
-              style={{
-                position: "absolute",
-                right: "0.5rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                border: "none",
-                background: "transparent",
-                padding: "0.25rem",
-                cursor: "pointer",
-                color: "#4a5568",
-                opacity: disabled || isLoading ? 0.6 : 1,
-              }}
             >
               {"\u00d7"}
-            </button>
+            </ClearButton>
           ) : null}
           {isOpenWithCustom ? (
-            <div
+            <Listbox
               id={listboxId}
               role="listbox"
               aria-labelledby={ariaLabelledBy}
               aria-describedby={ariaDescribedBy}
-              style={{
-                position: "absolute",
-                top: "calc(100% + 0.25rem)",
-                left: 0,
-                right: 0,
-                maxHeight: "16rem",
-                overflow: "auto",
-                border: "1px solid #d8dde0",
-                borderRadius: "4px",
-                background: "#fff",
-                boxShadow: "0 8px 16px rgba(15, 23, 42, 0.08)",
-                zIndex: 10,
-                padding: "0.25rem 0",
-              }}
             >
               {customOptionForm ? (
-                <div style={{ padding: "0.75rem" }} role="presentation">
+                <CustomOptionSlot role="presentation">
                   {customOptionForm}
-                </div>
+                </CustomOptionSlot>
               ) : (
                 <>
                   {options.map((entry, index) => (
-                    <button
+                    <OptionButton
                       key={entry.token}
                       id={`${listboxId}-option-${index}`}
                       type="button"
@@ -355,27 +324,12 @@ export function SelectInput({
                           handleSelect(entry.token);
                         }
                       }}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "0.5rem 0.75rem",
-                        border: "none",
-                        background:
-                          entry.token === resolvedActiveToken
-                            ? "#e8edee"
-                            : "transparent",
-                        cursor: entry.disabled ? "not-allowed" : "pointer",
-                        font: "inherit",
-                        color: "inherit",
-                        opacity: entry.disabled ? 0.6 : 1,
-                      }}
                     >
                       {entry.label}
-                    </button>
+                    </OptionButton>
                   ))}
                   {specifyOtherOption ? (
-                    <button
+                    <OptionButton
                       id={`${listboxId}-option-${stickyIndex}`}
                       type="button"
                       role="option"
@@ -385,6 +339,7 @@ export function SelectInput({
                       data-active={
                         specifyOtherOption.token === resolvedActiveToken
                       }
+                      data-sticky="true"
                       ref={(node) => {
                         if (node) {
                           optionRefs.current.set(
@@ -402,48 +357,132 @@ export function SelectInput({
                           handleSelect(specifyOtherOption.token);
                         }
                       }}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "0.5rem 0.75rem",
-                        border: "none",
-                        background:
-                          specifyOtherOption.token === resolvedActiveToken
-                            ? "#e8edee"
-                            : "#fff",
-                        borderTop: "1px solid #d8dde0",
-                        position: "sticky",
-                        bottom: 0,
-                        cursor: specifyOtherOption.disabled
-                          ? "not-allowed"
-                          : "pointer",
-                        font: "inherit",
-                        color: "inherit",
-                        opacity: specifyOtherOption.disabled ? 0.6 : 1,
-                      }}
                     >
                       {specifyOtherOption.label}
-                    </button>
+                    </OptionButton>
                   ) : null}
                 </>
               )}
-            </div>
+            </Listbox>
           ) : null}
-        </div>
-      </div>
+        </InputWrap>
+      </InputRow>
       {isLoading ? (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div``;
+
+const InputRow = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const InputWrap = styled.div`
+  position: relative;
+  flex: 1;
+  min-width: 0;
+`;
+
+const PlaceholderText = styled.span`
+  color: #4a5568;
+  opacity: 0.65;
+`;
 
 const SelectInputField = styled.input`
   &&::placeholder {
     color: #4a5568;
     opacity: 0.65;
+  }
+
+  &[data-has-clear="true"] {
+    padding-right: 2rem;
+  }
+`;
+
+const SelectDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: text;
+
+  &[data-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  &[data-has-clear="true"] {
+    padding-right: 2rem;
+  }
+`;
+
+const ClearButton = styled.button`
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: #4a5568;
+
+  &[data-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const Listbox = styled.div`
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid #d8dde0;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+  z-index: 10;
+  padding: 0.25rem 0;
+`;
+
+const CustomOptionSlot = styled.div`
+  padding: 0.75rem;
+`;
+
+const OptionButton = styled.button`
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+
+  &[data-active="true"] {
+    background: #e8edee;
+  }
+
+  &[data-sticky="true"] {
+    position: sticky;
+    bottom: 0;
+    border-top: 1px solid #d8dde0;
+    background: #fff;
+  }
+
+  &[data-sticky="true"][data-active="true"] {
+    background: #e8edee;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 `;

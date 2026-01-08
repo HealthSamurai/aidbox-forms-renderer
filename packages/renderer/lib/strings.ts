@@ -30,21 +30,17 @@ export const strings = {
     rowLabelFallback: "Row",
   },
   gridTable: {
-    headerNode: "Node",
     headerActions: "Actions",
-    entryFallback: "Entry",
   },
   inputs: {
     referencePlaceholder: "Resource/type/id",
     referenceDisplayPlaceholder: "Display label",
-    codingSystemPlaceholder: "System (e.g. http://loinc.org)",
+    codingSystemPlaceholder: "System",
     codingCodePlaceholder: "Code",
     codingDisplayPlaceholder: "Display",
-    quantityUnitPlaceholder: "unit",
+    quantityValuePlaceholder: "Value",
+    quantityUnitPlaceholder: "Unit",
     attachmentSelected: "Attachment selected",
-  },
-  placeholders: {
-    emptyCell: "\u2014",
   },
   selection: {
     specifyOther: "Specify other",

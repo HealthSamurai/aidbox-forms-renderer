@@ -24,12 +24,11 @@ const ButtonRoot = styled.button`
 export function FormSubmitButton({
   disabled,
   onClick,
-  children,
+  text,
 }: FormSubmitButtonProps) {
-  const label = children ?? "Submit";
   return (
     <ButtonRoot type="submit" disabled={disabled} onClick={onClick}>
-      {label}
+      {text}
     </ButtonRoot>
   );
 }

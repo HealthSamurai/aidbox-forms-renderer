@@ -25,9 +25,7 @@ export function NodeHeader({
   );
 }
 
-const Wrapper = styled.div`
-  margin-bottom: 0.25rem;
-`;
+const Wrapper = styled.div``;
 
 const LabelRow = styled.div`
   display: inline-flex;

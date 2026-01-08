@@ -6,7 +6,6 @@ export function GroupActions({ children }: GroupActionsProps) {
 }
 
 const Extras = styled.div`
-  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

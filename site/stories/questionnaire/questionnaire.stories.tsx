@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { Questionnaire } from "fhir/r5";
 import { useCallback, useEffect, useMemo } from "react";
+import { styled } from "@linaria/react";
 
 import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
 import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
@@ -52,11 +53,15 @@ function Renderer({
   useEffect(() => () => store.dispose(), [store]);
 
   return (
-    <div style={{ padding: 16 }}>
+    <StoryFrame>
       <Form store={store} onSubmit={handleSubmit} />
-    </div>
+    </StoryFrame>
   );
 }
+
+const StoryFrame = styled.div`
+  padding: 16px;
+`;
 
 const meta = {
   title: "Questionnaires",

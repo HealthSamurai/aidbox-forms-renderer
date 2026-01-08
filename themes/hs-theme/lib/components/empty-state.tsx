@@ -6,6 +6,6 @@ export function EmptyState({ children }: EmptyStateProps) {
 }
 
 const Message = styled.p`
+  display: block;
   color: #4a5568;
-  margin: 0;
 `;

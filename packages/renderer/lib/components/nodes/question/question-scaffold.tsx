@@ -16,7 +16,7 @@ export function QuestionScaffold({
   showOptionsLoading,
 }: QuestionScaffoldProps) {
   const { QuestionScaffold: ThemedQuestionScaffold } = useTheme();
-  const header = <NodeHeader node={node} />;
+  const header = node.isHeaderless ? null : <NodeHeader node={node} />;
   return (
     <ThemedQuestionScaffold linkId={node.linkId} header={header}>
       {showOptionsLoading ? <QuestionOptionsLoading node={node} /> : null}

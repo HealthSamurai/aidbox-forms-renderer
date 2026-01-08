@@ -1,10 +1,11 @@
 import { styled } from "@linaria/react";
 import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
+import { Plus } from "../icons/plus.tsx";
 
 const ButtonRoot = styled.button`
   cursor: pointer;
   border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border: 1px solid transparent;
   font-weight: 600;
   display: inline-flex;
@@ -16,20 +17,25 @@ const ButtonRoot = styled.button`
     opacity: 0.6;
   }
 
-  background: #38a169;
-  color: #fff;
-  border-color: #2f855a;
+  background: #edf2f7;
+  color: #1a202c;
+  border-color: #cbd5e0;
 `;
 
 export function AnswerAddButton({
   onClick,
   disabled,
-  children,
+  text,
 }: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
   return (
-    <ButtonRoot type="button" onClick={onClick} disabled={disabled}>
-      {label}
+    <ButtonRoot
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={text}
+      aria-label={text}
+    >
+      <Plus size={15} />
     </ButtonRoot>
   );
 }

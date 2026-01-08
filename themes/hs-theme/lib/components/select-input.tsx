@@ -297,9 +297,9 @@ export function SelectInput({
               aria-describedby={ariaDescribedBy}
             >
               {customOptionForm ? (
-                <CustomOptionContent role="presentation">
+                <CustomOptionForm role="presentation">
                   {customOptionForm}
-                </CustomOptionContent>
+                </CustomOptionForm>
               ) : (
                 <>
                   {options.map((entry, index) => (
@@ -434,7 +434,7 @@ const OptionsList = styled.div`
   padding: 0;
 `;
 
-const CustomOptionContent = styled.div`
+const CustomOptionForm = styled.div`
   padding: 0.75rem;
 `;
 

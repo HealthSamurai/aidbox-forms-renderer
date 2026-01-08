@@ -60,3 +60,4 @@
 - prefer having functions over class methods if `this` is not used
 - exactOptionalPropertyTypes is enabled so when defining types prefer union with undefined over optional properties
 - avoid local const aliases that only shorten getters/properties; inline `this.foo` unless it is reused for a meaningful purpose
+- don't use margins, instead use flexbox/gap to space elements

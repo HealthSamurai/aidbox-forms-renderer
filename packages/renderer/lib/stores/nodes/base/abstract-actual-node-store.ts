@@ -187,6 +187,25 @@ export abstract class AbstractActualNodeStore
   }
 
   @computed
+  get isHeaderless(): boolean {
+    const parent = this.parentStore;
+    const parentControl = parent && "control" in parent ? parent.control : null;
+    if (parentControl === "tab-container" || parentControl === "gtable") {
+      return true;
+    }
+
+    const parentIsGroup = !!parent && "gridStore" in parent;
+    const grandparent = parent?.parentStore;
+    const grandparentIsGridGroup =
+      !!grandparent &&
+      "gridStore" in grandparent &&
+      "control" in grandparent &&
+      grandparent.control === "grid";
+
+    return parentIsGroup && grandparentIsGridGroup;
+  }
+
+  @computed
   get isDirty() {
     return this.dirty;
   }

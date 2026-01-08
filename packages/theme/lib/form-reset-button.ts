@@ -1,9 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 
 export type FormResetButtonProps = {
   onClick: () => void;
   disabled: boolean;
-  children?: ReactNode;
+  text: string;
 };
 
 export type FormResetButtonComponent = ComponentType<FormResetButtonProps>;

@@ -24,12 +24,11 @@ const ButtonRoot = styled.button`
 export function FormResetButton({
   onClick,
   disabled,
-  children,
+  text,
 }: FormResetButtonProps) {
-  const label = children ?? "Reset";
   return (
     <ButtonRoot type="button" onClick={onClick} disabled={disabled}>
-      {label}
+      {text}
     </ButtonRoot>
   );
 }

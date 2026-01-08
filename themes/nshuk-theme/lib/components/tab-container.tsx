@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { TabContainerProps } from "@aidbox-forms/theme";
 import classNames from "classnames";
 
@@ -24,7 +25,7 @@ export function TabContainer({
   );
 
   return (
-    <div className="nhsuk-tabs" data-linkid={linkId}>
+    <TabsShell className="nhsuk-tabs" data-linkid={linkId}>
       {header ? <h2 className="nhsuk-tabs__title">{header}</h2> : null}
       <ul className="nhsuk-tabs__list" role="tablist">
         {items.map((item, idx) => {
@@ -54,7 +55,7 @@ export function TabContainer({
       {items.map((item, idx) => {
         const selected = idx === clampedIndex;
         return (
-          <div
+          <TabPanel
             key={item.token}
             className="nhsuk-tabs__panel"
             role="tabpanel"
@@ -63,10 +64,26 @@ export function TabContainer({
             hidden={!selected}
           >
             {item.content}
-          </div>
+          </TabPanel>
         );
       })}
       {errors}
-    </div>
+    </TabsShell>
   );
 }
+
+const TabsShell = styled.div`
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+`;
+
+const TabPanel = styled.div`
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+`;

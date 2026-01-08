@@ -15,9 +15,9 @@ export function QuestionScaffold({
 }
 
 const Container = styled.div`
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
-const Header = styled.div`
-  margin-bottom: 0.5rem;
-`;
+const Header = styled.div``;

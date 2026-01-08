@@ -1,6 +1,8 @@
 import { styled } from "@linaria/react";
 import { useId } from "react";
 import type { SpinnerInputProps } from "@aidbox-forms/theme";
+import { Minus } from "../icons/minus.tsx";
+import { Plus } from "../icons/plus.tsx";
 
 export function SpinnerInput({
   value,
@@ -44,7 +46,7 @@ export function SpinnerInput({
         disabled={disabled}
         aria-label="Decrease value"
       >
-        –
+        <Minus size={14} />
       </SpinnerButton>
       <SpinnerField
         type="number"
@@ -72,7 +74,7 @@ export function SpinnerInput({
         disabled={disabled}
         aria-label="Increase value"
       >
-        +
+        <Plus size={14} />
       </SpinnerButton>
     </Spinner>
   );
@@ -96,29 +98,46 @@ const SpinnerShell = styled.div`
 `;
 
 const Spinner = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: stretch;
   border: 1px solid #cbd5e0;
   border-radius: 0.375rem;
   overflow: hidden;
+  flex: 1;
+
+  &:focus-within {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.35);
+    outline: none;
+  }
 `;
 
 const SpinnerButton = styled.button`
-  background: #edf2f7;
   border: none;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.5rem;
   cursor: pointer;
 
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
   }
+
+  &:active {
+    background: #edf2f7;
+  }
 `;
 
 const SpinnerField = styled.input`
   border: none;
   padding: 0.5rem 0.75rem;
-  width: 5rem;
+  min-width: 0;
+  width: 100%;
+  flex: 1;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Unit = styled.span`

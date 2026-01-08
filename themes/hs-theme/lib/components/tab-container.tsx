@@ -56,9 +56,6 @@ export function TabContainer({
 }
 
 const Shell = styled.div`
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -95,9 +92,8 @@ const TabButton = styled.button`
 `;
 
 const Panel = styled.div`
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  padding: 1rem;
+  border: 0;
+  padding: 0;
 `;
 
 const ErrorsSlot = styled.div`

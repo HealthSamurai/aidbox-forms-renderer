@@ -9,11 +9,11 @@ export function InputGroup({ children, layout, weights }: InputGroupProps) {
       <RowGroup>
         {items.map((child, index) => {
           const weight = weights?.[index];
+          if (weight == null) {
+            return <RowItem key={index}>{child}</RowItem>;
+          }
           return (
-            <RowItem
-              key={index}
-              style={weight ? { flex: `${weight} 1 0` } : undefined}
-            >
+            <RowItem key={index} $weight={weight}>
               {child}
             </RowItem>
           );
@@ -37,6 +37,8 @@ const RowGroup = styled.div`
   flex-wrap: wrap;
 `;
 
-const RowItem = styled.div`
-  flex: 1 1 0;
+const RowItem = styled.div<{ $weight?: number }>`
+  flex: ${(props) =>
+    props.$weight == null ? "1 1 0" : `${props.$weight} 1 0`};
+  min-width: 0;
 `;

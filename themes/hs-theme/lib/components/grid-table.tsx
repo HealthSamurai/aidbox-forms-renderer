@@ -11,12 +11,14 @@ export function GridTable({
     return empty ? <>{empty}</> : <Empty>Nothing to display.</Empty>;
   }
 
+  const hasRowHeader = rows.some((row) => row.label != null);
+
   return (
     <Wrapper>
       <Table>
         <thead>
           <tr>
-            <Header scope="col">Row</Header>
+            {hasRowHeader ? <Header scope="col" aria-hidden="true" /> : null}
             {columns.map((column) => (
               <Header key={column.token} scope="col" id={column.labelId}>
                 {column.label}
@@ -27,9 +29,11 @@ export function GridTable({
         <tbody>
           {rows.map((row) => (
             <tr key={row.token}>
-              <RowHeader scope="row" id={row.labelId}>
-                {row.label}
-              </RowHeader>
+              {hasRowHeader ? (
+                <RowHeader scope="row" id={row.labelId}>
+                  {row.label}
+                </RowHeader>
+              ) : null}
               {row.cells.map((cell) => (
                 <Cell key={cell.token}>{cell.content}</Cell>
               ))}
@@ -54,6 +58,7 @@ const Header = styled.th`
   border: 1px solid #e2e8f0;
   padding: 0.5rem;
   text-align: left;
+  font-weight: 600;
 `;
 
 const RowHeader = styled.th`

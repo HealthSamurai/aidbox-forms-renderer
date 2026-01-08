@@ -1,9 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 
 export type GroupAddButtonProps = {
   onClick: () => void;
   disabled: boolean;
-  children?: ReactNode;
+  text: string;
 };
 
 export type GroupAddButtonComponent = ComponentType<GroupAddButtonProps>;

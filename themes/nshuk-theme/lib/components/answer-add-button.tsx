@@ -3,17 +3,18 @@ import type { AnswerAddButtonProps } from "@aidbox-forms/theme";
 export function AnswerAddButton({
   onClick,
   disabled,
-  children,
+  text,
 }: AnswerAddButtonProps) {
-  const label = children ?? "Add another";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       className="nhsuk-button nhsuk-button--secondary"
+      title={text}
+      aria-label={text}
     >
-      {label}
+      ＋
     </button>
   );
 }

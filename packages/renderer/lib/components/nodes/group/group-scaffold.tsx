@@ -14,7 +14,11 @@ export function GroupScaffold({
   children: ReactNode;
 }) {
   const { GroupScaffold: ThemedGroupScaffold, NodeList } = useTheme();
-  const header = node.template.text ? <NodeHeader node={node} /> : null;
+
+  const header =
+    !node.isHeaderless && node.template.text ? (
+      <NodeHeader node={node} />
+    ) : null;
   return (
     <ThemedGroupScaffold
       linkId={node.linkId}

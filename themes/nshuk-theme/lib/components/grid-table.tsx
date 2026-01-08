@@ -14,41 +14,47 @@ export function GridTable({
     );
   }
 
+  const hasRowHeader = rows.some((row) => row.label != null);
+
   return (
-    <div className="nhsuk-u-margin-top-2">
-      <table className="nhsuk-table nhsuk-table-responsive">
-        <thead className="nhsuk-table__head">
-          <tr className="nhsuk-table__row">
-            <th scope="col" className="nhsuk-table__header">
-              Row
+    <table className="nhsuk-table nhsuk-table-responsive">
+      <thead className="nhsuk-table__head">
+        <tr className="nhsuk-table__row">
+          {hasRowHeader ? (
+            <th
+              scope="col"
+              className="nhsuk-table__header"
+              aria-hidden="true"
+            />
+          ) : null}
+          {columns.map((column) => (
+            <th
+              key={column.token}
+              scope="col"
+              className="nhsuk-table__header"
+              id={column.labelId}
+            >
+              {column.label}
             </th>
-            {columns.map((column) => (
-              <th
-                key={column.token}
-                scope="col"
-                className="nhsuk-table__header"
-                id={column.labelId}
-              >
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="nhsuk-table__body">
-          {rows.map((row) => (
-            <tr key={row.token} className="nhsuk-table__row">
+          ))}
+        </tr>
+      </thead>
+      <tbody className="nhsuk-table__body">
+        {rows.map((row) => (
+          <tr key={row.token} className="nhsuk-table__row">
+            {hasRowHeader ? (
               <th scope="row" className="nhsuk-table__header" id={row.labelId}>
                 {row.label}
               </th>
-              {row.cells.map((cell) => (
-                <td key={cell.token} className="nhsuk-table__cell">
-                  {cell.content}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+            ) : null}
+            {row.cells.map((cell) => (
+              <td key={cell.token} className="nhsuk-table__cell">
+                {cell.content}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

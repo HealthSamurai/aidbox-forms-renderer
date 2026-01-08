@@ -44,6 +44,8 @@ export function QuantityInput({
   const inputBaseId = id;
   const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
   const unitInputId = `${inputBaseId}_/_unit`;
+  const valuePlaceholder =
+    placeholder ?? strings.inputs.quantityValuePlaceholder;
 
   const handleValueChange = (nextValue: number | null) => {
     answer.quantity.handleNumberInput(
@@ -60,7 +62,7 @@ export function QuantityInput({
         value={answer.value?.value ?? null}
         onChange={handleValueChange}
         disabled={disabled}
-        placeholder={placeholder}
+        placeholder={valuePlaceholder}
         step="any"
         min={minValue}
         max={maxValue}

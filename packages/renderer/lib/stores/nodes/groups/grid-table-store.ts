@@ -57,16 +57,11 @@ export class GridTableStore implements IGridTableStore {
 
   @computed
   get gridColumns(): GridTableColumnState[] {
-    const columns = [
-      { token: "node", label: strings.gridTable.headerNode },
-      ...this.columns,
-    ];
-    if (this.wrapper.canRemove) {
-      columns.push({
-        token: "actions",
-        label: strings.gridTable.headerActions,
-      });
-    }
+    const columns = [...this.columns];
+    columns.push({
+      token: "actions",
+      label: strings.gridTable.headerActions,
+    });
     return columns;
   }
 
@@ -84,17 +79,15 @@ export class GridTableStore implements IGridTableStore {
         question: questionMap.get(column.token),
       }));
 
-      if (this.wrapper.canRemove) {
-        cells.push({
-          token: `${node.token}-actions`,
-          action: "remove",
-        });
-      }
+      cells.push({
+        token: `${node.token}-actions`,
+        action: "remove",
+      });
 
       return {
         token: node.token,
         node,
-        label: `${this.wrapper.template.text ?? strings.gridTable.entryFallback} #${index + 1}`,
+        label: null,
         cells,
       };
     });

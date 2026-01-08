@@ -18,11 +18,12 @@ const Header = styled.header`
 `;
 
 const Title = styled.h1`
-  margin: 0;
+  display: block;
   font-size: 1.5rem;
+  font-weight: 700;
 `;
 
 const Description = styled.p`
-  margin: 0;
+  display: block;
   color: #4a5568;
 `;

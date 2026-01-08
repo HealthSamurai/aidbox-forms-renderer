@@ -14,7 +14,6 @@ export function FormErrors({ messages }: FormErrorsProps) {
 
 const List = styled.ul`
   padding: 0;
-  margin: 0;
   list-style: none;
   color: #c53030;
   font-size: 0.95rem;

@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { AnswerScaffoldProps } from "@aidbox-forms/theme";
 
 export function AnswerScaffold({
@@ -6,14 +7,26 @@ export function AnswerScaffold({
   children,
 }: AnswerScaffoldProps) {
   return (
-    <div className="nhsuk-form-group">
+    <Container>
       {control}
-      {toolbar ? (
-        <div className="nhsuk-button-group" style={{ marginTop: "0.25rem" }}>
-          {toolbar}
-        </div>
-      ) : null}
-      {children ? <div style={{ marginLeft: "0.5rem" }}>{children}</div> : null}
-    </div>
+      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+      {children ? <Indented>{children}</Indented> : null}
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const Indented = styled.div`
+  padding-left: 0.5rem;
+`;

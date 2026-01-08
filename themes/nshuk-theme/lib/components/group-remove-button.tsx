@@ -3,17 +3,18 @@ import type { GroupRemoveButtonProps } from "@aidbox-forms/theme";
 export function GroupRemoveButton({
   onClick,
   disabled,
-  children,
+  text,
 }: GroupRemoveButtonProps) {
-  const label = children ?? "Remove section";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="nhsuk-button nhsuk-button--warning"
+      className="nhsuk-button nhsuk-button--secondary"
+      title={text}
+      aria-label={text}
     >
-      {label}
+      −
     </button>
   );
 }

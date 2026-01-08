@@ -11,7 +11,11 @@ export function FileInput({
   value,
   onChange,
 }: FileInputProps) {
-  const displayLabel = value?.title ?? value?.url ?? "Attachment selected";
+  const isEmpty = value == null;
+  const displayLabel =
+    value?.title ??
+    value?.url ??
+    (isEmpty ? "Choose file" : "Attachment selected");
   const displaySizeLabel =
     value?.size != null ? `${Math.round(value.size / 1024)} KB` : undefined;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -31,8 +35,31 @@ export function FileInput({
     }
   };
 
+  const handleSummaryClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("button")) return;
+    handlePickFile();
+  };
+
+  const handleSummaryKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handlePickFile();
+    }
+  };
+
   return (
-    <Wrapper>
+    <Summary
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled ? "true" : undefined}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
+      onClick={handleSummaryClick}
+      onKeyDown={handleSummaryKeyDown}
+    >
       <HiddenInput
         ref={fileInputRef}
         id={id}
@@ -43,65 +70,79 @@ export function FileInput({
         disabled={disabled}
         accept={accept}
       />
+      <Label data-empty={isEmpty ? "true" : undefined}>
+        {displayLabel}
+        {displaySizeLabel ? ` (${displaySizeLabel})` : ""}
+      </Label>
       {value != null ? (
-        <Summary
-          role="group"
-          aria-labelledby={ariaLabelledBy}
-          aria-describedby={ariaDescribedBy}
+        <ClearButton
+          type="button"
+          onClick={() => onChange?.(null)}
+          disabled={disabled}
+          aria-label="Clear attachment"
         >
-          <Label>
-            {displayLabel}
-            {displaySizeLabel ? ` (${displaySizeLabel})` : ""}
-          </Label>
-          {!disabled ? (
-            <Action type="button" onClick={handlePickFile}>
-              Change file
-            </Action>
-          ) : null}
-          <Action
-            type="button"
-            onClick={() => onChange?.(null)}
-            disabled={disabled}
-          >
-            Clear attachment
-          </Action>
-        </Summary>
-      ) : (
-        <Action type="button" onClick={handlePickFile} disabled={disabled}>
-          Choose file
-        </Action>
-      )}
-    </Wrapper>
+          ×
+        </ClearButton>
+      ) : null}
+    </Summary>
   );
 }
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
 
 const HiddenInput = styled.input`
   display: none;
 `;
 
 const Summary = styled.div`
+  position: relative;
   display: flex;
-  gap: 0.5rem;
   align-items: center;
-  flex-wrap: wrap;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  padding-right: 2.25rem;
+
+  &:focus-within {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.35);
+  }
+
+  &:focus,
+  &:focus-visible {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.35);
+    outline: none;
+  }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `;
 
 const Label = styled.span`
-  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+
+  &[data-empty="true"] {
+    color: #a0aec0;
+  }
 `;
 
-const Action = styled.button`
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.25rem;
-  padding: 0.35rem 0.75rem;
+const ClearButton = styled.button`
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  color: #4a5568;
+  font-size: 1.25rem;
   cursor: pointer;
+  flex-shrink: 0;
 
   &:disabled {
     cursor: not-allowed;

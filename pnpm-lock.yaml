@@ -259,6 +259,9 @@ importers:
       '@wyw-in-js/vite':
         specifier: ^0.4.0
         version: 0.4.1(rollup@4.53.3)(typescript@5.9.3)(vite@7.2.7(@types/node@24.10.3)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       react:
         specifier: ^19.2.0
         version: 19.2.1
@@ -2488,6 +2491,9 @@ packages:
 
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
+
+  normalize.css@8.0.1:
+    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
 
   object.omit@3.0.0:
     resolution: {integrity: sha512-EO+BCv6LJfu+gBIF3ggLicFebFLN5zqzz/WWJlMFfkMyGth+oBkhxzDl0wx2W4GkLzuQs/FsSkXZb2IMWQqmBQ==}
@@ -5292,6 +5298,8 @@ snapshots:
   nhsuk-frontend@10.2.2: {}
 
   node-releases@2.0.27: {}
+
+  normalize.css@8.0.1: {}
 
   object.omit@3.0.0:
     dependencies:

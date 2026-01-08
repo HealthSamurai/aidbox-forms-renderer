@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { QuestionScaffoldProps } from "@aidbox-forms/theme";
 
 export function QuestionScaffold({
@@ -6,9 +7,17 @@ export function QuestionScaffold({
   children,
 }: QuestionScaffoldProps) {
   return (
-    <div data-linkid={linkId}>
-      {header ? <div className="nhsuk-u-margin-bottom-2">{header}</div> : null}
+    <Container data-linkid={linkId}>
+      {header ? <Header>{header}</Header> : null}
       {children}
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const Header = styled.div``;

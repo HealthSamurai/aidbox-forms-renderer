@@ -3,17 +3,18 @@ import type { AnswerRemoveButtonProps } from "@aidbox-forms/theme";
 export function AnswerRemoveButton({
   onClick,
   disabled,
-  children,
+  text,
 }: AnswerRemoveButtonProps) {
-  const label = children ?? "Remove";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="nhsuk-button nhsuk-button--warning"
+      className="nhsuk-button nhsuk-button--secondary"
+      title={text}
+      aria-label={text}
     >
-      {label}
+      −
     </button>
   );
 }

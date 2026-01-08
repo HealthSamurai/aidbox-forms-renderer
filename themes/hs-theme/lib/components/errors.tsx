@@ -14,8 +14,10 @@ export function Errors({ id, messages }: ErrorsProps) {
 
 const List = styled.ul`
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
   color: #c53030;
   font-size: 0.875rem;
-  margin: 0;
-  list-style: none;
 `;

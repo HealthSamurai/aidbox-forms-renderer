@@ -501,6 +501,35 @@ describe("quantity-renderer", () => {
     });
   });
 
+  describe("placeholders", () => {
+    it("uses the default value placeholder when none is provided", () => {
+      const questionnaire: Questionnaire = {
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          {
+            linkId: "volume",
+            text: "Volume",
+            type: "quantity",
+          },
+        ],
+      };
+
+      const form = new FormStore(questionnaire);
+      const question = getQuantityQuestion(form, "volume");
+
+      render(<QuantityRenderer node={question} />);
+
+      const valueInput = screen.getByRole("spinbutton", {
+        name: /volume/i,
+      }) as HTMLInputElement;
+
+      expect(valueInput.placeholder).toBe(
+        strings.inputs.quantityValuePlaceholder,
+      );
+    });
+  });
+
   describe("constraints", () => {
     it("applies min and max quantity values as input attributes", () => {
       const questionnaire: Questionnaire = {

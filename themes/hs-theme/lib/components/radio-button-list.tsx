@@ -18,42 +18,51 @@ export function RadioButtonList({
     ? [...options, specifyOtherOption]
     : options;
   const selectedToken = selectedOption?.token ?? "";
+  const hasOptions = displayOptions.length > 0;
 
   return (
-    <>
-      <RadioGroupContainer
-        role="radiogroup"
-        aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
-        aria-busy={isLoading || undefined}
-      >
-        {displayOptions.map((entry) => (
-          <RadioOption key={entry.token}>
-            <RadioLabel>
-              <input
-                type="radio"
-                name={id}
-                value={entry.token}
-                checked={selectedToken === entry.token}
-                disabled={disabled || isLoading || entry.disabled}
-                onChange={(event) => onChange(event.target.value)}
-              />
-              {entry.label}
-            </RadioLabel>
-          </RadioOption>
-        ))}
-      </RadioGroupContainer>
+    <Stack>
+      {hasOptions ? (
+        <RadioGroupContainer
+          role="radiogroup"
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
+          aria-busy={isLoading || undefined}
+        >
+          {displayOptions.map((entry) => (
+            <RadioOption key={entry.token}>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name={id}
+                  value={entry.token}
+                  checked={selectedToken === entry.token}
+                  disabled={disabled || isLoading || entry.disabled}
+                  onChange={(event) => onChange(event.target.value)}
+                />
+                {entry.label}
+              </RadioLabel>
+            </RadioOption>
+          ))}
+        </RadioGroupContainer>
+      ) : null}
       {isLoading ? (
         <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
       {customOptionForm ? (
-        <AfterContainer>{customOptionForm}</AfterContainer>
+        <CustomFormSlot>{customOptionForm}</CustomFormSlot>
       ) : null}
-    </>
+    </Stack>
   );
 }
+
+const Stack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 
 const RadioGroupContainer = styled.div`
   display: flex;
@@ -73,7 +82,6 @@ const RadioLabel = styled.label`
   gap: 0.5rem;
 `;
 
-const AfterContainer = styled.div`
-  margin-top: 0.5rem;
-  margin-left: 1.5rem;
+const CustomFormSlot = styled.div`
+  padding-left: 1.5rem;
 `;

@@ -33,10 +33,38 @@ const config: StorybookConfig = {
     }, {});
 
     config.resolve = config.resolve ?? {};
-    config.resolve.alias = {
-      ...(config.resolve.alias ?? {}),
-      ...pathAliases,
-    };
+    const escapeRegExp = (value: string) =>
+      value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const themePackageNames = new Set(
+      Object.keys(pathAliases).filter((key) => key.endsWith("-theme")),
+    );
+    const themeAliases = Array.from(themePackageNames).map((packageName) => {
+      const themeBasePath = pathAliases[packageName];
+      const themePath = themeBasePath.endsWith(".ts")
+        ? themeBasePath
+        : resolve(themeBasePath, "theme.ts");
+      return {
+        find: new RegExp(`^${escapeRegExp(packageName)}$`),
+        replacement: themePath,
+      };
+    });
+    const existingAliases = Array.isArray(config.resolve.alias)
+      ? config.resolve.alias
+      : Object.entries(config.resolve.alias ?? {}).map(
+          ([find, replacement]) => ({
+            find,
+            replacement,
+          }),
+        );
+    const pathAliasEntries = Object.entries(pathAliases)
+      .filter(([key]) => !themePackageNames.has(key))
+      .map(([find, replacement]) => ({ find, replacement }));
+
+    config.resolve.alias = [
+      ...themeAliases,
+      ...existingAliases,
+      ...pathAliasEntries,
+    ];
 
     config.plugins = [
       ...(config.plugins ?? []),

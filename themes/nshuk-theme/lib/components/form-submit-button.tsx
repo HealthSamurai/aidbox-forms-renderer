@@ -3,9 +3,8 @@ import type { FormSubmitButtonProps } from "@aidbox-forms/theme";
 export function FormSubmitButton({
   disabled,
   onClick,
-  children,
+  text,
 }: FormSubmitButtonProps) {
-  const label = children ?? "Submit";
   return (
     <button
       type="submit"
@@ -13,7 +12,7 @@ export function FormSubmitButton({
       onClick={onClick}
       className="nhsuk-button"
     >
-      {label}
+      {text}
     </button>
   );
 }

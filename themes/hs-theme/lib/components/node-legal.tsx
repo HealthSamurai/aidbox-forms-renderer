@@ -33,7 +33,6 @@ const LegalButton = styled.button`
   color: #c05621;
   font-size: 0.9rem;
   cursor: pointer;
-  margin-left: 0.25rem;
 
   &:hover {
     background: #fbd38d;
@@ -77,7 +76,6 @@ const SrOnly = styled.span`
   width: 1px;
   height: 1px;
   padding: 0;
-  margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;

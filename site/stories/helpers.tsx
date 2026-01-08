@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { styled } from "@linaria/react";
 import { addons } from "storybook/preview-api";
 import { autorun } from "mobx";
 import type {
@@ -25,18 +26,6 @@ import {
 } from "@aidbox-forms/renderer/utils.ts";
 import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
 import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
-import type { Theme } from "@aidbox-forms/theme";
-import { theme as hsTheme } from "@aidbox-forms/hs-theme";
-import { theme as nshukTheme } from "@aidbox-forms/nshuk-theme";
-
-export type ThemeId = "hs" | "nshuk";
-
-export function resolveTheme(theme: ThemeId | undefined): Theme {
-  if (theme === "nshuk") {
-    return nshukTheme;
-  }
-  return hsTheme;
-}
 
 export function useQuestionnaireResponseBroadcaster(
   form: IForm,
@@ -230,8 +219,12 @@ export function Renderer({
   }
 
   return (
-    <div className="af-form" style={{ maxWidth: 760 }}>
+    <FormContainer>
       <Node node={node as IPresentableNode} />
-    </div>
+    </FormContainer>
   );
 }
+
+const FormContainer = styled.div`
+  max-width: 760px;
+`;

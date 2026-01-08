@@ -12,22 +12,22 @@ export function CustomOptionForm({
       <div>{content}</div>
       {errors ?? null}
       <Actions>
-        <ActionButton
+        <button
           type="button"
           onClick={cancel.onClick}
           disabled={cancel.disabled}
           className="nhsuk-button nhsuk-button--secondary"
         >
           {cancel.label}
-        </ActionButton>
-        <ActionButton
+        </button>
+        <button
           type="button"
           onClick={submit.onClick}
           disabled={submit.disabled}
           className="nhsuk-button nhsuk-button--secondary"
         >
           {submit.label}
-        </ActionButton>
+        </button>
       </Actions>
     </Stack>
   );
@@ -43,10 +43,4 @@ const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-`;
-
-const ActionButton = styled.button`
-  &.nhsuk-button {
-    margin: 0;
-  }
 `;

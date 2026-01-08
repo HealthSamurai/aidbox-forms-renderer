@@ -7,11 +7,18 @@
 - [Quick start](#quick-start)
 - [Theme contract](#theme-contract)
 - [Conventions](#conventions)
+- [Renderer composition overview](#renderer-composition-overview)
+- [Accessibility contract](#accessibility-contract)
+- [Controlled-value contract](#controlled-value-contract)
+- [Disabled behavior](#disabled-behavior)
+- [Options and custom options lifecycle](#options-and-custom-options-lifecycle)
+- [Repeating items contract](#repeating-items-contract)
+- [Renderer guarantees](#renderer-guarantees)
 - [Component reference](#component-reference)
   - [Link](#link)
   - [EmptyState](#emptystate)
   - [Errors](#errors)
-- [OptionsLoading](#optionsloading)
+  - [OptionsLoading](#optionsloading)
   - [NodeHelp](#nodehelp)
   - [NodeLegal](#nodelegal)
   - [NodeFlyover](#nodeflyover)
@@ -37,7 +44,6 @@
   - [GroupRemoveButton](#groupremovebutton)
   - [FormSubmitButton](#formsubmitbutton)
   - [FormResetButton](#formresetbutton)
-  - [OpenChoiceBackButton](#openchoicebackbutton)
   - [AnswerList](#answerlist)
   - [AnswerScaffold](#answerscaffold)
   - [QuestionScaffold](#questionscaffold)
@@ -103,13 +109,146 @@ every component must be provided.
 - Controlled props: text/number/date inputs use value and onChange. Single-selects pass selectedOption, multi-selects
   pass selectedOptions with onSelect/onDeselect, and checkbox lists use tokens for the selected set. onChange receives
   the next value, never a DOM event.
-- Disabled states: the renderer uses disabled to indicate non editable inputs. Prefer disabled over readOnly in theme
+- Disabled states: the renderer uses disabled to indicate non-editable inputs. Prefer disabled over readOnly in theme
   components.
 - Accessibility: ariaLabelledBy and ariaDescribedBy are string ids. Wire them to the relevant elements.
 - Ids: when id is provided, pass it through to the focusable control.
 - children is the slot name for single content. Option data types use label for the display content.
 - Option fallback: include disabled legacy options in the options list so stored answers stay visible.
 - Props marked No in Required can be omitted. Treat undefined as not provided.
+
+## Renderer composition overview
+
+The renderer composes your theme in a predictable tree. You control layout, but the nesting explains where headers,
+errors, and toolbars appear.
+
+Overview diagram (simplified):
+
+```mermaid
+flowchart TD
+  QS[QuestionScaffold] --> QH[NodeHeader]
+  QS --> QOL[OptionsLoading]
+  QS --> AL[AnswerList or control]
+  AL --> AS[AnswerScaffold]
+  AS --> CTRL[Control]
+  AS --> TB[Toolbar (AnswerRemoveButton)]
+  AS --> CH[Children (Nodes + AnswerErrors)]
+  QS --> QE[Errors]
+```
+
+```mermaid
+flowchart TD
+  GWS[GroupWrapperScaffold] --> GWH[NodeHeader]
+  GWS --> GWItems[GroupWrapperScaffoldItem...]
+  GWItems --> GS[GroupScaffold or group renderer]
+  GWItems --> GWTB[Toolbar (GroupRemoveButton)]
+  GWItems --> GWE[Errors]
+  GWS --> GWAdd[Toolbar (GroupAddButton)]
+```
+
+Typical question node:
+
+```text
+QuestionScaffold
+  NodeHeader
+  OptionsLoading (only when option-backed and isLoading)
+  AnswerList (or a single control)
+    AnswerScaffold (per answer)
+      control (TextInput/Select/etc.)
+      toolbar (AnswerRemoveButton when repeats)
+      children (nested nodes and AnswerErrors)
+  Errors (question-level)
+```
+
+Typical repeating group wrapper:
+
+```text
+GroupWrapperScaffold
+  NodeHeader (only when wrapper has text)
+  GroupWrapperScaffoldItem (per instance)
+    GroupScaffold or group renderer content
+    toolbar (GroupRemoveButton when available)
+    errors (Errors)
+  toolbar (GroupAddButton)
+```
+
+Typical non-repeating group:
+
+```text
+GroupScaffold
+  NodeHeader (when visible)
+  NodeList (child nodes)
+  Errors
+```
+
+## Accessibility contract
+
+- `ariaLabelledBy` and `ariaDescribedBy` are already-composed, space-separated id strings. Attach them verbatim to the
+  focusable element; do not join or parse them.
+- `NodeHeader` receives `ariaLabelledBy` for the label element id. Apply it to the element that wraps the visible label
+  text so controls can reference it via `aria-labelledby`.
+- When `id` is provided, set it on the primary focusable element. For composite widgets, choose the element that
+  receives keyboard focus.
+- `ariaDescribedBy` references the rendered `NodeHelp` and `Errors` ids. Keep those elements in the DOM when you render
+  them. Legal and flyover content is not included in `ariaDescribedBy` by default, so ensure it remains accessible in
+  your layout.
+- For `TabContainer`, follow the WAI-ARIA tab pattern: `role="tablist"` on the container, `role="tab"` on each tab with
+  `id={buttonId}`, `role="tabpanel"` on each panel with `id={panelId}`, and wire `aria-controls`/`aria-labelledby`.
+- For custom select or multiselect widgets, follow standard combobox/listbox roles and keyboard interactions (Arrow
+  keys, Enter/Space to select, Escape to close) when you are not using native inputs.
+
+## Controlled-value contract
+
+All inputs are controlled; callbacks receive values, not DOM events.
+
+- TextInput/TextArea: pass the raw string; empty string stays empty string.
+- NumberInput/SpinnerInput/SliderInput: parse to `number` or `null`. Use `null` when the field is empty or invalid; do
+  not pass strings.
+- DateInput/DateTimeInput/TimeInput: treat the value as an opaque string and return it as entered. Do not normalize,
+  format, or shift timezones.
+- Select/Radio: `selectedOption = null` means no selection. Call `onChange(token | null)` for changes.
+- CheckboxList/MultiSelect: treat `selectedOptions[].token` as the selected set. Call `onSelect` or `onDeselect` once per
+  user action and do not reorder the provided selections.
+
+## Disabled behavior
+
+- When `disabled` is true, render the UI as disabled and suppress all callbacks.
+- Native inputs: use the `disabled` attribute.
+- Custom widgets: set `aria-disabled="true"`, remove from the tab order (`tabIndex={-1}`), and ignore pointer/keyboard
+  events.
+- Disabled options should remain visible and announced as disabled.
+- If a toolbar or button is provided with `disabled`, render it disabled rather than hiding it.
+
+## Options and custom options lifecycle
+
+- Tokens are stable for a given option or selection; it is safe to use them as React keys.
+- `SelectedOptionItem.label` may not match the current options list (legacy or custom values). Render it as provided.
+- The renderer may include disabled legacy options in `options` to keep stored answers visible. Treat them as normal
+  options, but disabled.
+- `specifyOtherOption` is an extra option row. When the user selects it, the renderer enters a custom-entry state and
+  provides `customOptionForm`.
+- `customOptionForm` is present only while custom entry is active. Render it near the options list or in place of it;
+  use its `submit` and `cancel` actions to finish or return to the list.
+- `isLoading` can be true while options fetch. The renderer may also render `OptionsLoading` in the question scaffold;
+  handle both without duplicating spinners.
+
+## Repeating items contract
+
+- `AnswerList` renders one or more `AnswerScaffold` entries; when `toolbar` is provided it contains the add-answer
+  control.
+- `AnswerScaffold.toolbar` is provided for repeating questions and may be disabled; render it in a consistent place next
+  to the control.
+- `GroupWrapperScaffold` renders a list of `GroupWrapperScaffoldItem` entries plus a toolbar for add-group.
+- `GroupWrapperScaffoldItem.toolbar` may be null when removal is not allowed; when provided, render it even if disabled.
+
+## Renderer guarantees
+
+- `id`, `ariaLabelledBy`, and `ariaDescribedBy` values are unique within a form render and stable for a given node or
+  answer instance.
+- `ariaDescribedBy` strings are already space-joined; use them as-is.
+- Option tokens are stable across renders; selected options may remain when the option list changes.
+- When needed, the renderer passes disabled legacy options so stored answers can still render.
+- `label` and `children` props are ready-to-render `ReactNode` values.
 
 ## Component reference
 
@@ -123,7 +262,9 @@ control with standard link behavior.
 | `href`     | `string`    | Yes      | Set as the anchor destination; the renderer passes a fully qualified or relative URL. |
 | `children` | `ReactNode` | Yes      | Render this content inside the link; it may be plain text or richer markup.           |
 | `target`   | `string`    | No       | Set the anchor target when provided, for example `_blank` for a new tab.              |
-| `rel`      | `string`    | No       | Set the anchor rel attribute; use it to convey security or relationship hints.        |
+| `rel`      | `string`    | No       | Set the anchor rel attribute; when using `_blank`, prefer `noopener noreferrer`.      |
+
+Use standard link behavior; avoid preventing default unless you provide equivalent navigation.
 
 ### EmptyState
 
@@ -144,6 +285,9 @@ input.
 | `id`       | `string`   | No       | Apply as the container id so inputs can reference it via aria-describedby. |
 | `messages` | `string[]` | Yes      | Render each string as a distinct message line.                             |
 
+Consider rendering messages as a list. If you use `aria-live` or `role="alert"` to announce updates, prefer polite
+announcements to avoid repeated reads.
+
 ### OptionsLoading
 
 Loading UI for option-backed controls while options are fetching. Use it to show a spinner or skeleton where options
@@ -152,6 +296,9 @@ would appear.
 | Prop        | Type      | Required | Description                                             |
 | ----------- | --------- | -------- | ------------------------------------------------------- |
 | `isLoading` | `boolean` | Yes      | When true, show a loading indicator instead of options. |
+
+The renderer may render `OptionsLoading` in the question scaffold or selection table while options are loading. Option
+controls also receive `isLoading`, so avoid duplicating spinners if you render both.
 
 ### NodeHelp
 
@@ -206,11 +353,11 @@ also provides the labelled-by anchor for the main control.
 Layout wrapper for multi-part inputs such as quantity and coding. Arrange the children as a single logical field using
 the chosen layout and weights.
 
-| Prop       | Type              | Required | Description                                                                       |
-| ---------- | ----------------- | -------- | --------------------------------------------------------------------------------- |
-| `children` | `ReactNode`       | Yes      | Render each child input in order as a single grouped control.                     |
-| `layout`   | `"grid" \| "row"` | Yes      | Choose the overall arrangement: grid-style flow or a horizontal row.              |
-| `weights`  | `number[]`        | No       | Use as relative size hints per child when layout is row; ignore for grid layouts. |
+| Prop       | Type              | Required | Description                                                                                                  |
+| ---------- | ----------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `children` | `ReactNode`       | Yes      | Render each child input in order as a single grouped control.                                                |
+| `layout`   | `"grid" \| "row"` | Yes      | Choose the overall arrangement: grid-style flow or a horizontal row.                                         |
+| `weights`  | `number[]`        | No       | Use as relative size hints (for example, flex-grow ratios) per child in row layout. Ignore for grid layouts. |
 
 ### TextInput
 
@@ -248,17 +395,17 @@ placeholder.
 
 Numeric text field for integer, decimal, and quantity values. Accept null for empty and show a unit label when provided.
 
-| Prop              | Type                               | Required | Description                                                                         |
-| ----------------- | ---------------------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `id`              | `string`                           | No       | Set as the input id so labels can target it.                                        |
-| `value`           | `number \| null`                   | Yes      | Render this number as the current value; null means show an empty field.            |
-| `onChange`        | `(value: nupmber \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
-| `disabled`        | `boolean`                          | No       | When true, render the input in a disabled state and prevent edits.                  |
-| `placeholder`     | `string`                           | No       | Show this hint when the field is empty.                                             |
-| `step`            | `number \| "any"`                  | No       | Apply as the input step value to control increments and precision.                  |
-| `ariaLabelledBy`  | `string`                           | No       | Forward to aria-labelledby to associate the input with its label.                   |
-| `ariaDescribedBy` | `string`                           | No       | Forward to aria-describedby to associate the input with help or error text.         |
-| `unitLabel`       | `string`                           | No       | Render a static unit label alongside the input when provided.                       |
+| Prop              | Type                              | Required | Description                                                                         |
+| ----------------- | --------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `id`              | `string`                          | No       | Set as the input id so labels can target it.                                        |
+| `value`           | `number \| null`                  | Yes      | Render this number as the current value; null means show an empty field.            |
+| `onChange`        | `(value: number \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
+| `disabled`        | `boolean`                         | No       | When true, render the input in a disabled state and prevent edits.                  |
+| `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                             |
+| `step`            | `number \| "any"`                 | No       | Apply as the input step value to control increments and precision.                  |
+| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                   |
+| `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.         |
+| `unitLabel`       | `string`                          | No       | Render a static unit label alongside the input when provided.                       |
 
 ### DateInput
 
@@ -356,6 +503,9 @@ clearing the selection when applicable.
 | `isLoading`          | `boolean`                         | No       | When true, show a loading indicator or disable option interactions as needed.        |
 | `placeholder`        | `string`                          | No       | Show this hint in the input when no option is selected.                              |
 
+The renderer always provides `id` for option-backed controls. Use it on the primary focusable element and for any
+combobox/listbox wiring in custom select UIs.
+
 ### RadioButtonList
 
 Single-select option list presented as radio buttons. Include disabled legacy options in the options list when needed.
@@ -391,6 +541,9 @@ Multi-select option list presented as checkboxes. Support per-option errors and 
 | `disabled`           | `boolean`                 | No       | When true, render all options as disabled and prevent changes.                       |
 | `isLoading`          | `boolean`                 | No       | When true, show a loading indicator or busy state for the list.                      |
 
+If a selected option provides `errors` or `ariaDescribedBy`, render the error content near that option and attach
+`aria-describedby` to the option's focusable element.
+
 ### MultiSelectInput
 
 Composite multi-select UI that combines a picker, chips, and optional custom-option content. It should display
@@ -413,6 +566,9 @@ as chips and allow removal when permitted.
 | `customOptionForm`   | `ReactNode`               | No       | Render UI associated with the custom option (for example, a custom value input row). |
 | `placeholder`        | `string`                  | No       | Show this placeholder text in the picker when no value is selected.                  |
 
+When rendering chips or selected rows, attach `SelectedOptionItem.ariaDescribedBy` to the focusable element for that
+selection so per-selection errors can be announced.
+
 ### CustomOptionForm
 
 Layout wrapper for custom option entry flows. Use it to present the custom input along with submit/cancel actions.
@@ -423,6 +579,8 @@ Layout wrapper for custom option entry flows. Use it to present the custom input
 | `errors`  | `ReactNode`          | No       | Render validation or error content associated with the custom input.    |
 | `submit`  | `CustomOptionAction` | Yes      | Configure the primary submit action (label, handler, disabled state).   |
 | `cancel`  | `CustomOptionAction` | Yes      | Configure the secondary cancel action (label, handler, disabled state). |
+
+Use `cancel` as the "back to options" action and `submit` to commit the custom value.
 
 ### FileInput
 
@@ -442,72 +600,62 @@ file (or null when clearing) so the renderer can update the Attachment.
 
 Add action for repeating question answers. Usually placed in the answer list toolbar.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                        |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                   |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                     |
+| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### AnswerRemoveButton
 
 Remove action for a single repeating answer. Usually placed next to the answer control.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the remove action.                                                     |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                                |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | Yes      | Call when the user activates the remove action.                                                  |
+| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                             |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### GroupAddButton
 
 Add action for repeating group instances. Typically placed near the group wrapper toolbar.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                        |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                   |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                     |
+| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### GroupRemoveButton
 
 Remove action for a single group instance inside a repeating wrapper.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the remove action.                                                     |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                                |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | Yes      | Call when the user activates the remove action.                                                  |
+| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                             |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### FormSubmitButton
 
 Primary submit call to action for the form. Render a button and invoke onClick when you handle submission outside native
 form behavior.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | No       | Invoke the callback passed by the renderer when the user activates the submit control directly.     |
-| `disabled` | `boolean`    | No       | When true, render the submit action disabled and prevent submission.                                |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | No       | Invoke the callback passed by the renderer when the user activates the submit control directly.  |
+| `disabled` | `boolean`    | No       | When true, render the submit action disabled and prevent submission.                             |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### FormResetButton
 
 Secondary action that resets the form to its initial state. Render a button that calls onClick.
 
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the reset action.                                                      |
-| `disabled` | `boolean`    | Yes      | When true, render the reset action disabled and prevent reset.                                      |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
-
-### OpenChoiceBackButton
-
-Action that returns from a custom open-choice input back to the option list.
-
-| Prop       | Type         | Required | Description                                                                                         |
-| ---------- | ------------ | -------- | --------------------------------------------------------------------------------------------------- |
-| `onClick`  | `() => void` | Yes      | Call when the user wants to return from custom entry to the option list.                            |
-| `disabled` | `boolean`    | Yes      | When true, render the action disabled and prevent switching back.                                   |
-| `children` | `ReactNode`  | No       | Use as the label when you want the renderer's wording; you may ignore it and render your own label. |
+| Prop       | Type         | Required | Description                                                                                      |
+| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `onClick`  | `() => void` | Yes      | Call when the user activates the reset action.                                                   |
+| `disabled` | `boolean`    | Yes      | When true, render the reset action disabled and prevent reset.                                   |
+| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### AnswerList
 
@@ -640,6 +788,26 @@ onSubmit from your own controls.
 | `onSubmit` | `() => void` | No       | Call when the user submits; prevent default yourself if you render a form. |
 | `children` | `ReactNode`  | Yes      | Render the full form content inside the form element.                      |
 
+Example patterns:
+
+```tsx
+<form
+  onSubmit={(event) => {
+    event.preventDefault();
+    onSubmit?.();
+  }}
+>
+  {children}
+</form>
+```
+
+```tsx
+<div>
+  {children}
+  <FormSubmitButton onClick={onSubmit} text="Submit" />
+</div>
+```
+
 ### PageStatus
 
 Indicator for the current page in a paged form. Keep it readable and accessible.
@@ -665,13 +833,13 @@ Controls for moving between pages in a paged form. Provide clear prev/next affor
 ### GridTable
 
 Tabular layout used by grid-style groups. Render headers and rows based on column and row metadata, with an optional
-empty state.
+empty state. If any row includes a label, the table should render a row header column.
 
-| Prop      | Type                | Required | Description                                                          |
-| --------- | ------------------- | -------- | -------------------------------------------------------------------- |
-| `columns` | `GridTableColumn[]` | Yes      | Render these column definitions as table headers.                    |
-| `rows`    | `GridTableRow[]`    | Yes      | Render these row definitions, including row labels and cell content. |
-| `empty`   | `ReactNode`         | No       | Render this content when there are no rows or columns.               |
+| Prop      | Type                | Required | Description                                                                   |
+| --------- | ------------------- | -------- | ----------------------------------------------------------------------------- |
+| `columns` | `GridTableColumn[]` | Yes      | Render these column definitions as table headers.                             |
+| `rows`    | `GridTableRow[]`    | Yes      | Render these row definitions, including optional row labels and cell content. |
+| `empty`   | `ReactNode`         | No       | Render this content when there are no rows or columns.                        |
 
 ### TabContainer
 
@@ -688,6 +856,9 @@ relevant.
 | `empty`    | `ReactNode`               | No       | Render this content when there are no tabs to show.                                          |
 | `linkId`   | `string`                  | Yes      | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
 
+Implement tabs with the standard ARIA roles, using `buttonId` and `panelId` to wire `aria-controls` and
+`aria-labelledby`.
+
 ## Data types
 
 Shared data structures referenced by theme component props.
@@ -698,7 +869,7 @@ Base option shape used by option selectors such as select inputs and radio lists
 
 | Field      | Type        | Required | Description                                                                              |
 | ---------- | ----------- | -------- | ---------------------------------------------------------------------------------------- |
-| `token`    | `string`    | Yes      | Use as the stable option token for selection and updates.                                |
+| `token`    | `string`    | Yes      | Use as the stable option token for selection and updates; safe as a React key.           |
 | `label`    | `ReactNode` | Yes      | Render as the visible label for the option; the renderer provides display-ready content. |
 | `disabled` | `boolean`   | No       | When true, render the option as unavailable and prevent selection.                       |
 
@@ -706,13 +877,13 @@ Base option shape used by option selectors such as select inputs and radio lists
 
 Represents a selected option rendered as a chip or a single selection.
 
-| Field             | Type        | Required | Description                                                        |
-| ----------------- | ----------- | -------- | ------------------------------------------------------------------ |
-| `token`           | `string`    | Yes      | Use as a stable identifier when rendering and updating selections. |
-| `label`           | `ReactNode` | Yes      | Render as the selection's visible label.                           |
-| `disabled`        | `boolean`   | No       | When true, render the selection as unavailable.                    |
-| `ariaDescribedBy` | `string`    | No       | Forward to aria-describedby for text related to this selection.    |
-| `errors`          | `ReactNode` | No       | Render as error content associated with this selection.            |
+| Field             | Type        | Required | Description                                                                              |
+| ----------------- | ----------- | -------- | ---------------------------------------------------------------------------------------- |
+| `token`           | `string`    | Yes      | Use as a stable identifier when rendering and updating selections; safe as a React key.  |
+| `label`           | `ReactNode` | Yes      | Render as the selection's visible label, which may differ from the current options list. |
+| `disabled`        | `boolean`   | No       | When true, render the selection as unavailable.                                          |
+| `ariaDescribedBy` | `string`    | No       | Forward to aria-describedby on the focusable element for this selection.                 |
+| `errors`          | `ReactNode` | No       | Render as error content associated with this selection, near the option.                 |
 
 ### CustomOptionAction
 
@@ -743,11 +914,11 @@ Attachment shape used by `FileInput` to display metadata and stored content.
 
 ### GridTableRow
 
-| Field   | Type              | Required | Description                                         |
-| ------- | ----------------- | -------- | --------------------------------------------------- |
-| `token` | `string`          | Yes      | Use as a stable identifier for the row.             |
-| `label` | `ReactNode`       | Yes      | Render as the row label or header cell content.     |
-| `cells` | `GridTableCell[]` | Yes      | Render these cells for the row, aligned to columns. |
+| Field   | Type              | Required | Description                                                |
+| ------- | ----------------- | -------- | ---------------------------------------------------------- |
+| `token` | `string`          | Yes      | Use as a stable identifier for the row.                    |
+| `label` | `ReactNode`       | Yes      | Render as the row label or header cell content (optional). |
+| `cells` | `GridTableCell[]` | Yes      | Render these cells for the row, aligned to columns.        |
 
 ### GridTableCell
 
@@ -760,8 +931,8 @@ Attachment shape used by `FileInput` to display metadata and stored content.
 
 | Field      | Type        | Required | Description                                                  |
 | ---------- | ----------- | -------- | ------------------------------------------------------------ |
-| `token`    | `string`    | Yes      | Use as a stable identifier for the tab.                      |
+| `token`    | `string`    | Yes      | Use as a stable identifier for the tab; safe as a React key. |
 | `label`    | `ReactNode` | Yes      | Render as the tab button label.                              |
-| `buttonId` | `string`    | Yes      | Apply as the tab button id to wire aria-labelledby/controls. |
-| `panelId`  | `string`    | Yes      | Apply as the tab panel id to wire aria controls.             |
+| `buttonId` | `string`    | Yes      | Apply as the tab button id and use it for aria-controls.     |
+| `panelId`  | `string`    | Yes      | Apply as the tab panel id and use it for aria-labelledby.    |
 | `content`  | `ReactNode` | Yes      | Render as the panel content for this tab.                    |

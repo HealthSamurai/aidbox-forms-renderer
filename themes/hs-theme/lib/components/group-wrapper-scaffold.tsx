@@ -16,15 +16,13 @@ export function GroupWrapperScaffold({
   );
 }
 
-const Container = styled.fieldset`
-  border: 1px solid #cbd5f5;
-  border-radius: 0.5rem;
-  padding: 1rem;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
-const Header = styled.div`
-  margin-bottom: 0.5rem;
-`;
+const Header = styled.div``;
 
 const Items = styled.div`
   interpolate-size: allow-keywords;
@@ -36,5 +34,5 @@ const Items = styled.div`
 const Toolbar = styled.div`
   display: flex;
   justify-content: flex-start;
-  margin-top: 1rem;
+  gap: 0.75rem;
 `;

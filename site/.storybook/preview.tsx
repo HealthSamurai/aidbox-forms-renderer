@@ -1,30 +1,75 @@
 import type { Preview } from "@storybook/react-vite";
 import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
-import { resolveTheme, type ThemeId } from "../stories/helpers.tsx";
+import { useEffect } from "react";
 import "./preview.css";
+import { theme as hsTheme } from "@aidbox-forms/hs-theme";
+import { theme as nshukTheme } from "@aidbox-forms/nshuk-theme";
+import hsThemeCssUrl from "../../themes/hs-theme/lib/style.css?url";
+import nshukThemeCssUrl from "../../themes/nshuk-theme/lib/style.css?url";
+
+export const themes = {
+  hs: {
+    title: "Health Samurai",
+    packageName: "@aidbox-forms/hs-theme",
+    themePath: "themes/hs-theme/lib/theme.ts",
+    css: hsThemeCssUrl,
+    instance: hsTheme,
+  },
+  nshuk: {
+    title: "National Health Service",
+    packageName: "@aidbox-forms/nshuk-theme",
+    themePath: "themes/nshuk-theme/lib/theme.ts",
+    css: nshukThemeCssUrl,
+    instance: nshukTheme,
+  },
+};
+
+type ThemeId = keyof typeof themes;
+const defaultThemeId = "hs";
 
 const preview: Preview = {
   globalTypes: {
     theme: {
       description: "Global theme applied to all stories",
-      defaultValue: "hs",
+      defaultValue: defaultThemeId,
       toolbar: {
         icon: "cog",
-        items: [
-          { value: "hs", title: "Health Samurai" },
-          { value: "nshuk", title: "National Health Service" },
-        ],
+        items: Object.entries(themes).map(([id, { title }]) => ({
+          value: id,
+          title,
+        })),
         dynamicTitle: true,
       },
     },
   },
   decorators: [
     (Story, context) => {
-      const theme =
-        (context.globals["theme"] as ThemeId | undefined) ?? ("hs" as const);
+      const selectedTheme = ((context.globals["theme"] as string | undefined) ??
+        defaultThemeId) as ThemeId;
+      const themeIds = new Set(Object.keys(themes));
+      const theme = themeIds.has(selectedTheme)
+        ? selectedTheme
+        : defaultThemeId;
+
+      useEffect(() => {
+        const linkId = "aidbox-theme-css";
+        let link = document.querySelector<HTMLLinkElement>(`#${linkId}`);
+        if (!link) {
+          link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          document.head.appendChild(link);
+        }
+        link.dataset["theme"] = theme;
+        link.href = themes[theme].css ?? themes[theme].css;
+      }, [theme]);
 
       return (
-        <ThemeProvider theme={resolveTheme(theme)}>
+        <ThemeProvider
+          theme={
+            theme ? themes[theme].instance : themes[defaultThemeId].instance
+          }
+        >
           <Story />
         </ThemeProvider>
       );

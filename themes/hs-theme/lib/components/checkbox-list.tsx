@@ -23,71 +23,85 @@ export function CheckboxList({
   );
   const specifyOtherToken = specifyOtherOption?.token;
   const isCustomActive = Boolean(customOptionForm && specifyOtherToken);
+  const hasOptions = displayOptions.length > 0;
 
   return (
-    <CheckboxControl
+    <Stack
       data-disabled={disabled}
       aria-busy={isLoading || undefined}
       role="group"
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
     >
-      {displayOptions.map((option, index) => {
-        const optionId = `${id}-option-${index}`;
-        const selectedOption = selectedByToken.get(option.token);
-        const isSpecifyOtherOption = option.token === specifyOtherToken;
-        const optionAriaDescribedBy =
-          [ariaDescribedBy, selectedOption?.ariaDescribedBy]
-            .filter(Boolean)
-            .join(" ") || undefined;
+      {hasOptions ? (
+        <OptionsList>
+          {displayOptions.map((option, index) => {
+            const optionId = `${id}-option-${index}`;
+            const selectedOption = selectedByToken.get(option.token);
+            const isSpecifyOtherOption = option.token === specifyOtherToken;
+            const optionAriaDescribedBy =
+              [ariaDescribedBy, selectedOption?.ariaDescribedBy]
+                .filter(Boolean)
+                .join(" ") || undefined;
 
-        return (
-          <CheckboxOption key={option.token}>
-            <CheckboxLabel>
-              <input
-                type="checkbox"
-                name={id}
-                checked={
-                  isSpecifyOtherOption
-                    ? isCustomActive || Boolean(selectedOption)
-                    : Boolean(selectedOption)
-                }
-                disabled={
-                  disabled ||
-                  isLoading ||
-                  (option.disabled && !(isSpecifyOtherOption && isCustomActive))
-                }
-                aria-labelledby={
-                  ariaLabelledBy ? `${ariaLabelledBy} ${optionId}` : optionId
-                }
-                aria-describedby={optionAriaDescribedBy}
-                onChange={(event) => {
-                  if (event.target.checked) {
-                    onSelect(option.token);
-                  } else {
-                    onDeselect(option.token);
-                  }
-                }}
-              />
-              <span id={optionId}>{option.label}</span>
-            </CheckboxLabel>
-            {selectedOption?.errors ?? null}
-          </CheckboxOption>
-        );
-      })}
+            return (
+              <CheckboxOption key={option.token}>
+                <CheckboxLabel>
+                  <input
+                    type="checkbox"
+                    name={id}
+                    checked={
+                      isSpecifyOtherOption
+                        ? isCustomActive || Boolean(selectedOption)
+                        : Boolean(selectedOption)
+                    }
+                    disabled={
+                      disabled ||
+                      isLoading ||
+                      (option.disabled &&
+                        !(isSpecifyOtherOption && isCustomActive))
+                    }
+                    aria-labelledby={
+                      ariaLabelledBy
+                        ? `${ariaLabelledBy} ${optionId}`
+                        : optionId
+                    }
+                    aria-describedby={optionAriaDescribedBy}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        onSelect(option.token);
+                      } else {
+                        onDeselect(option.token);
+                      }
+                    }}
+                  />
+                  <span id={optionId}>{option.label}</span>
+                </CheckboxLabel>
+                {selectedOption?.errors ?? null}
+              </CheckboxOption>
+            );
+          })}
+        </OptionsList>
+      ) : null}
       {isLoading ? (
         <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
       ) : null}
       {customOptionForm ? (
-        <AfterContainer>{customOptionForm}</AfterContainer>
+        <CustomFormSlot>{customOptionForm}</CustomFormSlot>
       ) : null}
-    </CheckboxControl>
+    </Stack>
   );
 }
 
-const CheckboxControl = styled.div`
+const Stack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const OptionsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -105,6 +119,4 @@ const CheckboxLabel = styled.label`
   gap: 0.5rem;
 `;
 
-const AfterContainer = styled.div`
-  margin-top: 0.5rem;
-`;
+const CustomFormSlot = styled.div``;

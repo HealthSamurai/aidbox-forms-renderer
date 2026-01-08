@@ -480,6 +480,7 @@ export interface IActualNode extends IPresentableNode {
   readonly minOccurs: number;
   readonly maxOccurs: number;
   readonly expressionRegistry: INodeExpressionRegistry;
+  readonly isHeaderless: boolean;
 
   readonly isDirty: boolean;
 }
@@ -586,7 +587,7 @@ export type GridTableCellState = {
 
 export type GridTableRowState = {
   token: string;
-  label: string;
+  label: string | null;
   node: IGroupNode;
   cells: Array<GridTableCellState>;
 };

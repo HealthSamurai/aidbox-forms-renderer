@@ -67,17 +67,18 @@ export function NumberInput({
 }
 
 const NumberInputShell = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: stretch;
+  width: 100%;
 `;
 
 const Frame = styled.div<{ $solo: boolean }>`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   border: 1px solid #cbd5e0;
   border-radius: 0.375rem;
   overflow: hidden;
-  ${({ $solo }) => ($solo ? "width: 100%;" : "")}
+  width: 100%;
 
   &:focus-within {
     border-color: #3182ce;
@@ -89,8 +90,8 @@ const Field = styled.input<{ $solo: boolean }>`
   border: none;
   outline: none;
   padding: 0.5rem 0.75rem;
-  min-width: 6rem;
-  ${({ $solo }) => ($solo ? "width: 100%;" : "")}
+  min-width: 0;
+  flex: 1;
 `;
 
 const Unit = styled.span`
