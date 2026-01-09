@@ -9,8 +9,8 @@ import {
   buildQuestionItem,
   buildQuestionnaire,
   makeAnswerOptions,
-  Renderer,
 } from "../helpers.tsx";
+import { Renderer } from "../renderer.tsx";
 
 type PlaygroundArgs = {
   itemControl: QuestionItemControl | "none";

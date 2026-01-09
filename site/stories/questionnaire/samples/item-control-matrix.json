@@ -489,74 +489,6 @@
           ]
         },
         {
-          "linkId": "group-header",
-          "text": "Header-style section (header)",
-          "type": "group",
-          "extension": [
-            {
-              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-              "valueCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://hl7.org/fhir/questionnaire-item-control",
-                    "code": "header"
-                  }
-                ]
-              }
-            }
-          ],
-          "item": [
-            {
-              "linkId": "group-header-question",
-              "text": "Header-style section question",
-              "type": "string",
-              "answerConstraint": "optionsOnly",
-              "answerOption": [
-                {
-                  "valueString": "Header-style section question option A"
-                },
-                {
-                  "valueString": "Header-style section question option B"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "linkId": "group-footer",
-          "text": "Footer-style section (footer)",
-          "type": "group",
-          "extension": [
-            {
-              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-              "valueCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://hl7.org/fhir/questionnaire-item-control",
-                    "code": "footer"
-                  }
-                ]
-              }
-            }
-          ],
-          "item": [
-            {
-              "linkId": "group-footer-question",
-              "text": "Footer-style section question",
-              "type": "string",
-              "answerConstraint": "optionsOnly",
-              "answerOption": [
-                {
-                  "valueString": "Footer-style section question option A"
-                },
-                {
-                  "valueString": "Footer-style section question option B"
-                }
-              ]
-            }
-          ]
-        },
-        {
           "linkId": "group-page",
           "text": "Page block (page)",
           "type": "group",
@@ -670,6 +602,84 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "group-header",
+      "text": "Header-style section (header)",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "header"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "group-header-note",
+          "text": "Header content stays visible at the top of the questionnaire.",
+          "type": "display"
+        },
+        {
+          "linkId": "group-header-question",
+          "text": "Header-style section question",
+          "type": "string",
+          "answerConstraint": "optionsOnly",
+          "answerOption": [
+            {
+              "valueString": "Header-style section question option A"
+            },
+            {
+              "valueString": "Header-style section question option B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "group-footer",
+      "text": "Footer-style section (footer)",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "footer"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "group-footer-note",
+          "text": "Footer content stays visible at the bottom of the questionnaire.",
+          "type": "display"
+        },
+        {
+          "linkId": "group-footer-question",
+          "text": "Footer-style section question",
+          "type": "string",
+          "answerConstraint": "optionsOnly",
+          "answerOption": [
+            {
+              "valueString": "Footer-style section question option A"
+            },
+            {
+              "valueString": "Footer-style section question option B"
             }
           ]
         }

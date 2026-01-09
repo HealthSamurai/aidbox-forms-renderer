@@ -8,7 +8,7 @@ import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,
-} from "../helpers.tsx";
+} from "../story-channel-hooks.ts";
 import answerConstraint from "./samples/answer-constraint-examples.json" with { type: "json" };
 import answerExpression from "./samples/answer-expression.json" with { type: "json" };
 import answerOptions from "./samples/answer-options.json" with { type: "json" };

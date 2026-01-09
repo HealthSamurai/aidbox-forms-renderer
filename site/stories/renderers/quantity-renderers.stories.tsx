@@ -8,8 +8,8 @@ import {
   buildQuestionItem,
   buildQuestionnaire,
   makeInitialValues,
-  Renderer,
 } from "../helpers.tsx";
+import { Renderer } from "../renderer.tsx";
 import { EXT } from "@aidbox-forms/renderer/utils.ts";
 
 type UnitMode = "freeText" | "singleOption" | "multipleOptions";

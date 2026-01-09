@@ -1,10 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { Extension, QuestionnaireItem } from "fhir/r5";
+import type { Extension, Questionnaire, QuestionnaireItem } from "fhir/r5";
+import { useEffect, useMemo } from "react";
+import { styled } from "@linaria/react";
+import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
+import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
 import type {
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
   GroupItemControl,
+  QuestionItemControl,
 } from "@aidbox-forms/renderer/types.ts";
 import { EXT, ITEM_CONTROL_SYSTEM } from "@aidbox-forms/renderer/utils.ts";
 import {
@@ -12,12 +17,16 @@ import {
   buildQuestionnaire,
   makeAnswerOptions,
   makeInitialValues,
-  Renderer,
 } from "../helpers.tsx";
+import { Renderer } from "../renderer.tsx";
+import {
+  useQuestionnaireBroadcaster,
+  useQuestionnaireResponseBroadcaster,
+} from "../story-channel-hooks.ts";
 
 type GroupItemConfig = {
   linkId: string;
-  text: string;
+  text?: string | undefined;
   control?: GroupItemControl | undefined;
   repeats?: boolean | undefined;
   readOnly?: boolean | undefined;
@@ -68,16 +77,156 @@ const baseQuestions = [
   }),
 ];
 
+const headerStoryItems: QuestionnaireItem[] = [
+  {
+    linkId: "header-story-note",
+    text: "Please review the following information before you start. This header stays visible so you can always see the clinic name, visit context, and any time-sensitive instructions while you complete the form.",
+    type: "display",
+  },
+];
+
+const footerStoryItems: QuestionnaireItem[] = [
+  {
+    linkId: "footer-story-note",
+    text: "If you need help, contact the front desk or pause and return later. This footer remains visible so you can quickly find support details and consent reminders at any point.",
+    type: "display",
+  },
+];
+
+function buildPageQuestions(
+  prefix: string,
+  label: string,
+): QuestionnaireItem[] {
+  const buildPageItem = (
+    suffix: string,
+    text: string,
+    type: AnswerType,
+    control?: QuestionItemControl,
+  ) =>
+    buildQuestionItem({
+      linkId: `${prefix}-${suffix}`,
+      text,
+      type,
+      control,
+    });
+
+  switch (label) {
+    case "Demographics":
+      return [
+        buildPageItem("first-name", "First name", "string", "text-box"),
+        buildPageItem("last-name", "Last name", "string", "text-box"),
+        buildPageItem("date-of-birth", "Date of birth", "date"),
+        buildPageItem("sex-at-birth", "Sex at birth", "string", "text-box"),
+        buildPageItem("mobile-phone", "Mobile phone", "string", "text-box"),
+        buildPageItem("email", "Email", "string", "text-box"),
+      ];
+    case "Current medications":
+      return [
+        buildPageItem(
+          "medication-name",
+          "Medication name",
+          "string",
+          "text-box",
+        ),
+        buildPageItem("dose-mg", "Dose (mg)", "integer", "spinner"),
+        buildPageItem("frequency", "Frequency", "string", "text-box"),
+        buildPageItem("route", "Route", "string", "text-box"),
+        buildPageItem("start-date", "Start date", "date"),
+        buildPageItem("still-taking", "Still taking", "boolean", "check-box"),
+      ];
+    case "Intake details":
+      return [
+        buildPageItem(
+          "reason-for-visit",
+          "Reason for visit",
+          "text",
+          "text-box",
+        ),
+        buildPageItem("symptom-onset", "Symptom onset", "date"),
+        buildPageItem("pain-level", "Pain level (0-10)", "integer", "spinner"),
+        buildPageItem("temperature", "Temperature (C)", "decimal"),
+        buildPageItem("visit-type", "Visit type", "string", "text-box"),
+        buildPageItem(
+          "consent-to-treat",
+          "Consent to treatment",
+          "boolean",
+          "check-box",
+        ),
+      ];
+    case "Medical history":
+      return [
+        buildPageItem("allergies", "Allergies", "text", "text-box"),
+        buildPageItem(
+          "chronic-conditions",
+          "Chronic conditions",
+          "text",
+          "text-box",
+        ),
+        buildPageItem("past-surgeries", "Past surgeries", "text", "text-box"),
+        buildPageItem("family-history", "Family history", "text", "text-box"),
+        buildPageItem("tobacco-use", "Tobacco use", "string", "text-box"),
+        buildPageItem("alcohol-use", "Alcohol use", "string", "text-box"),
+      ];
+    case "Care plan":
+      return [
+        buildPageItem("primary-goal", "Primary goal", "text", "text-box"),
+        buildPageItem("target-date", "Target date", "date"),
+        buildPageItem(
+          "assigned-clinician",
+          "Assigned clinician",
+          "string",
+          "text-box",
+        ),
+        buildPageItem("follow-up", "Follow-up interval", "string", "text-box"),
+        buildPageItem(
+          "needs-referral",
+          "Needs referral",
+          "boolean",
+          "check-box",
+        ),
+        buildPageItem("care-plan-notes", "Care plan notes", "text", "text-box"),
+      ];
+    default:
+      return [
+        buildPageItem("details", "Details", "text", "text-box"),
+        buildPageItem("notes", "Additional notes", "text", "text-box"),
+        buildPageItem(
+          "follow-up-needed",
+          "Follow-up needed",
+          "boolean",
+          "check-box",
+        ),
+      ];
+  }
+}
+
 type TableOptionOverlap = "exact" | "overlap" | "sparse";
 type TableAnswerType = AnswerType;
 type TableSelectionMode = "single" | "multi" | "mixed";
 type TableInitialSelection = "none" | "partial" | "full";
 type TableMaxSelections = "none" | "1" | "2";
+type GridQuestionOverlap = "exact" | "overlap" | "sparse";
 
 type TableOptionValue<T extends TableAnswerType> = DataTypeToType<
   AnswerTypeToDataType<T>
 >;
 type TableOptionSet<T> = Record<TableOptionOverlap, T[][]>;
+
+const answerTypeOptions = [
+  "string",
+  "text",
+  "integer",
+  "decimal",
+  "boolean",
+  "date",
+  "dateTime",
+  "time",
+  "url",
+  "coding",
+  "reference",
+  "attachment",
+  "quantity",
+] as const;
 
 const tableQuestionSpecs = [
   { linkId: "taste", text: "Taste" },
@@ -86,6 +235,28 @@ const tableQuestionSpecs = [
   { linkId: "shape", text: "Shape" },
   { linkId: "texture", text: "Texture" },
 ];
+
+const gridQuestionSpecs: Array<{
+  linkId: string;
+  text: string;
+  type: TableAnswerType;
+}> = [
+  { linkId: "grid-string", text: "String", type: "string" },
+  { linkId: "grid-text", text: "Text", type: "text" },
+  { linkId: "grid-integer", text: "Integer", type: "integer" },
+  { linkId: "grid-decimal", text: "Decimal", type: "decimal" },
+  { linkId: "grid-boolean", text: "Boolean", type: "boolean" },
+  { linkId: "grid-date", text: "Date", type: "date" },
+  { linkId: "grid-date-time", text: "DateTime", type: "dateTime" },
+  { linkId: "grid-time", text: "Time", type: "time" },
+  { linkId: "grid-url", text: "URL", type: "url" },
+  { linkId: "grid-coding", text: "Coding", type: "coding" },
+  { linkId: "grid-reference", text: "Reference", type: "reference" },
+  { linkId: "grid-attachment", text: "Attachment", type: "attachment" },
+  { linkId: "grid-quantity", text: "Quantity", type: "quantity" },
+];
+
+const gridRowLabels = ["Morning", "Afternoon", "Evening"];
 
 const stringOptionSets: TableOptionSet<string> = {
   exact: [
@@ -202,6 +373,38 @@ function buildSteppedOptionSets<T>(
       buildRow(start, rowIndex),
     ),
   };
+}
+
+function buildGridQuestionOverlapSets(
+  total: number,
+  overlap: GridQuestionOverlap,
+) {
+  const allIndexes = Array.from({ length: total }, (_item, index) => index);
+  if (total === 0) {
+    return gridRowLabels.map(() => []);
+  }
+  if (overlap === "exact") {
+    return gridRowLabels.map(() => allIndexes);
+  }
+  if (overlap === "sparse") {
+    const chunk = Math.ceil(total / gridRowLabels.length);
+    return gridRowLabels.map((_label, index) => {
+      const start = index * chunk;
+      return allIndexes.slice(start, start + chunk);
+    });
+  }
+
+  const windowSize = Math.min(5, total);
+  if (total <= windowSize) {
+    return gridRowLabels.map(() => allIndexes);
+  }
+  const middleStart = Math.floor((total - windowSize) / 2);
+  const lastStart = Math.max(0, total - windowSize);
+  return [
+    allIndexes.slice(0, windowSize),
+    allIndexes.slice(middleStart, middleStart + windowSize),
+    allIndexes.slice(lastStart, lastStart + windowSize),
+  ];
 }
 
 const dayRowStarts: Record<TableOptionOverlap, number[]> = {
@@ -430,6 +633,31 @@ function makeStory(item: QuestionnaireItem): StoryObj {
   };
 }
 
+function FormStory({
+  questionnaire,
+  storyId,
+}: {
+  questionnaire: Questionnaire;
+  storyId: string;
+}) {
+  const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
+
+  useEffect(() => () => store.dispose(), [store]);
+
+  useQuestionnaireResponseBroadcaster(store, storyId);
+  useQuestionnaireBroadcaster(questionnaire, storyId);
+
+  return (
+    <FormStoryFrame>
+      <Form store={store} onSubmit={() => store.validateAll()} />
+    </FormStoryFrame>
+  );
+}
+
+const FormStoryFrame = styled.div`
+  max-width: 760px;
+`;
+
 type TableGroupArgs = {
   orientation: "vertical" | "horizontal";
   optionOverlap: TableOptionOverlap;
@@ -455,21 +683,7 @@ const tableGroupArgTypes = {
   },
   answerType: {
     name: "Answer type",
-    options: [
-      "string",
-      "text",
-      "integer",
-      "decimal",
-      "boolean",
-      "date",
-      "dateTime",
-      "time",
-      "url",
-      "coding",
-      "reference",
-      "attachment",
-      "quantity",
-    ],
+    options: answerTypeOptions,
     control: { type: "select" },
   },
   questionCount: {
@@ -501,33 +715,128 @@ const tableGroupArgTypes = {
     name: "Read-only",
     control: { type: "boolean" },
   },
+} as const;
+
+type GridGroupArgs = {
+  questionTypes: TableAnswerType[];
+  questionOverlap: GridQuestionOverlap;
+  readOnly: boolean;
 };
 
+const gridGroupArgTypes = {
+  questionTypes: {
+    name: "Question types",
+    options: answerTypeOptions,
+    control: { type: "multi-select" },
+  },
+  questionOverlap: {
+    name: "Question overlap",
+    options: ["exact", "overlap", "sparse"],
+    control: { type: "select" },
+  },
+  readOnly: {
+    name: "Read-only",
+    control: { type: "boolean" },
+  },
+} as const;
+
+type TabLabelStyle = "short" | "long" | "mixed";
+
+type TabContainerGroupArgs = {
+  tabCount: number;
+  labelStyle: TabLabelStyle;
+};
+
+const tabContainerArgTypes = {
+  tabCount: {
+    name: "Tab count",
+    control: { type: "range", min: 2, max: 12, step: 1 },
+  },
+  labelStyle: {
+    name: "Label length",
+    options: ["short", "long", "mixed"],
+    control: { type: "select" },
+  },
+} as const;
+
+function buildTabLabel(index: number, style: TabLabelStyle) {
+  const shortLabels = [
+    "Overview",
+    "Profile",
+    "Security",
+    "Billing",
+    "Team",
+    "Activity",
+    "Alerts",
+    "Support",
+    "Preferences",
+    "Integrations",
+    "Audit",
+    "Usage",
+  ];
+  const longLabels = [
+    "Overview and quick metrics",
+    "Profile and account details",
+    "Security and access controls",
+    "Billing and invoice settings",
+    "Team members and permissions",
+    "Activity history and logs",
+    "Alerts and notification rules",
+    "Support and service contacts",
+    "Preferences and appearance",
+    "Integrations and webhooks",
+    "Audit trail and compliance",
+    "Usage and plan limits",
+  ];
+  const shortLabel = shortLabels[index % shortLabels.length];
+  const longLabel = longLabels[index % longLabels.length];
+
+  if (style === "short") {
+    return shortLabel;
+  }
+
+  if (style === "long") {
+    return longLabel;
+  }
+
+  return index % 2 === 0 ? shortLabel : longLabel;
+}
+
+function buildTabItems(
+  tabCount: number,
+  labelStyle: TabLabelStyle,
+): QuestionnaireItem[] {
+  const count = Math.max(1, Math.floor(tabCount));
+  return Array.from({ length: count }, (_, index) => {
+    const tabIndex = index + 1;
+    return buildGroupItem({
+      linkId: `tab-${tabIndex}`,
+      text: buildTabLabel(index, labelStyle),
+      item: [
+        buildQuestionItem({
+          linkId: `tab-${tabIndex}-field`,
+          text: `Field ${tabIndex}`,
+          type: "string",
+          control: "text-box",
+        }),
+      ],
+    });
+  });
+}
+
 export const DefaultGroupRenderer = {
-  name: "Default group",
+  name: "Default",
   ...makeStory(
     buildGroupItem({
       linkId: "group-default",
-      text: "Default group",
-      item: baseQuestions,
-    }),
-  ),
-};
-
-export const ListGroupRenderer = {
-  name: "List group",
-  ...makeStory(
-    buildGroupItem({
-      linkId: "group-list",
-      text: "List group",
-      control: "list",
+      text: "Default",
       item: baseQuestions,
     }),
   ),
 };
 
 export const TableGroupRenderer = {
-  name: "Table group",
+  name: "Table",
   args: {
     orientation: "vertical",
     optionOverlap: "overlap",
@@ -567,56 +876,54 @@ export const TableGroupRenderer = {
 } satisfies StoryObj<TableGroupArgs>;
 
 export const GridGroupRenderer = {
-  name: "Grid group",
-  ...makeStory(
-    buildGroupItem({
+  name: "Grid",
+  args: {
+    questionTypes: ["string", "integer", "boolean", "date", "coding"],
+    questionOverlap: "overlap",
+    readOnly: false,
+  },
+  argTypes: gridGroupArgTypes,
+  render: (args: GridGroupArgs, context) => {
+    const questionPool = gridQuestionSpecs.filter((question) =>
+      args.questionTypes.includes(question.type),
+    );
+    const questionIndexes = buildGridQuestionOverlapSets(
+      questionPool.length,
+      args.questionOverlap,
+    );
+    const rows = gridRowLabels.map((rowLabel, rowIndex) => {
+      const rowQuestionIndexes = questionIndexes[rowIndex] ?? [];
+      return buildGroupItem({
+        linkId: `row-${rowIndex + 1}`,
+        text: rowLabel,
+        item: rowQuestionIndexes
+          .map((questionIndex) => questionPool[questionIndex])
+          .filter(Boolean)
+          .map((question) =>
+            buildQuestionItem({
+              linkId: question.linkId,
+              text: question.text,
+              type: question.type,
+            }),
+          ),
+      });
+    });
+
+    const item = buildGroupItem({
       linkId: "group-grid",
       text: "Daily check-in",
       control: "grid",
-      item: [
-        buildGroupItem({
-          linkId: "row-intake",
-          text: "Morning",
-          item: [
-            buildQuestionItem({
-              linkId: "intake-fluid",
-              text: "Fluid intake (mL)",
-              type: "integer",
-              control: "spinner",
-            }),
-            buildQuestionItem({
-              linkId: "intake-notes",
-              text: "Notes",
-              type: "string",
-              control: "text-box",
-            }),
-          ],
-        }),
-        buildGroupItem({
-          linkId: "row-output",
-          text: "Evening",
-          item: [
-            buildQuestionItem({
-              linkId: "output-fluid",
-              text: "Fluid output (mL)",
-              type: "integer",
-              control: "spinner",
-            }),
-            buildQuestionItem({
-              linkId: "output-notes",
-              text: "Notes",
-              type: "string",
-              control: "text-box",
-            }),
-          ],
-        }),
-      ],
-    }),
-  ),
-};
+      readOnly: args.readOnly,
+      item: rows,
+    });
+    return (
+      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+    );
+  },
+} satisfies StoryObj<GridGroupArgs>;
 
 export const GridTableGroupRenderer = {
-  name: "Grid table group",
+  name: "Grid Table",
   ...makeStory(
     buildGroupItem({
       linkId: "group-gtable",
@@ -648,87 +955,120 @@ export const GridTableGroupRenderer = {
   ),
 };
 
-export const HeaderGroupRenderer = {
-  name: "Header group",
-  ...makeStory(
-    buildGroupItem({
-      linkId: "group-header",
-      text: "Header section",
-      control: "header",
-      item: baseQuestions,
-    }),
+export const HeaderGroupRenderer: StoryObj = {
+  name: "Header",
+  render: (_args, context) => (
+    <FormStory
+      questionnaire={{
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          buildGroupItem({
+            linkId: "group-header",
+            control: "header",
+            item: headerStoryItems,
+          }),
+          buildGroupItem({
+            linkId: "header-page-demographics",
+            text: "Demographics",
+            control: "page",
+            item: buildPageQuestions(
+              "header-page-demographics",
+              "Demographics",
+            ),
+          }),
+          buildGroupItem({
+            linkId: "header-page-medications",
+            text: "Current medications",
+            control: "page",
+            item: buildPageQuestions(
+              "header-page-medications",
+              "Current medications",
+            ),
+          }),
+        ],
+      }}
+      storyId={context.id}
+    />
   ),
 };
 
-export const FooterGroupRenderer = {
-  name: "Footer group",
-  ...makeStory(
-    buildGroupItem({
-      linkId: "group-footer",
-      text: "Footer section",
-      control: "footer",
-      item: baseQuestions,
-    }),
+export const FooterGroupRenderer: StoryObj = {
+  name: "Footer",
+  render: (_args, context) => (
+    <FormStory
+      questionnaire={{
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          buildGroupItem({
+            linkId: "footer-page-intake",
+            text: "Intake details",
+            control: "page",
+            item: buildPageQuestions("footer-page-intake", "Intake details"),
+          }),
+          buildGroupItem({
+            linkId: "footer-page-history",
+            text: "Medical history",
+            control: "page",
+            item: buildPageQuestions("footer-page-history", "Medical history"),
+          }),
+          buildGroupItem({
+            linkId: "group-footer",
+            control: "footer",
+            item: footerStoryItems,
+          }),
+        ],
+      }}
+      storyId={context.id}
+    />
   ),
 };
 
-export const PageGroupRenderer = {
-  name: "Page group",
-  ...makeStory(
-    buildGroupItem({
-      linkId: "group-page",
-      text: "Page section",
-      control: "page",
-      item: baseQuestions,
-    }),
+export const PageGroupRenderer: StoryObj = {
+  name: "Page",
+  render: (_args, context) => (
+    <FormStory
+      questionnaire={{
+        resourceType: "Questionnaire",
+        status: "active",
+        item: [
+          buildGroupItem({
+            linkId: "group-page-demographics",
+            text: "Demographics",
+            control: "page",
+            item: buildPageQuestions("page-story-demographics", "Demographics"),
+          }),
+          buildGroupItem({
+            linkId: "group-page-care-plan",
+            text: "Care plan",
+            control: "page",
+            item: buildPageQuestions("page-story-care-plan", "Care plan"),
+          }),
+        ],
+      }}
+      storyId={context.id}
+    />
   ),
 };
 
 export const TabContainerGroupRenderer = {
-  name: "Tab container group",
-  ...makeStory(
-    buildGroupItem({
+  name: "Tabs",
+  args: {
+    tabCount: 6,
+    labelStyle: "mixed",
+  },
+  argTypes: tabContainerArgTypes,
+  render: (args: TabContainerGroupArgs, context) => {
+    const item = buildGroupItem({
       linkId: "group-tabs",
       text: "Profile",
       control: "tab-container",
-      item: [
-        buildGroupItem({
-          linkId: "tab-basics",
-          text: "Basics",
-          item: [
-            buildQuestionItem({
-              linkId: "first-name-tab",
-              text: "First name",
-              type: "string",
-              control: "text-box",
-            }),
-            buildQuestionItem({
-              linkId: "last-name-tab",
-              text: "Last name",
-              type: "string",
-              control: "text-box",
-            }),
-          ],
-        }),
-        buildGroupItem({
-          linkId: "tab-contact",
-          text: "Contact",
-          item: [
-            buildQuestionItem({
-              linkId: "email-tab",
-              text: "Email",
-              type: "string",
-              control: "text-box",
-            }),
-            buildQuestionItem({
-              linkId: "phone-tab",
-              text: "Phone",
-              type: "string",
-              control: "text-box",
-            }),
-          ],
-        }),
-      ],
-    }),
-  ),
-};
+      item: buildTabItems(args.tabCount, args.labelStyle),
+    });
+
+    return (
+      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+    );
+  },
+} satisfies StoryObj<TabContainerGroupArgs>;

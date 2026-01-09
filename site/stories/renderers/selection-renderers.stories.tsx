@@ -11,8 +11,8 @@ import {
   buildQuestionnaire,
   makeAnswerOptions,
   makeInitialValues,
-  Renderer,
 } from "../helpers.tsx";
+import { Renderer } from "../renderer.tsx";
 
 type AnswerConstraint = QuestionnaireItem["answerConstraint"];
 

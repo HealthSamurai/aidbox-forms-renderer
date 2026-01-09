@@ -1,7 +1,3 @@
-import { useEffect, useMemo } from "react";
-import { styled } from "@linaria/react";
-import { addons } from "storybook/preview-api";
-import { autorun } from "mobx";
 import type {
   Extension,
   Questionnaire,
@@ -13,8 +9,6 @@ import type {
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
-  IForm,
-  IPresentableNode,
   ItemControl,
   QuestionItemControl,
 } from "@aidbox-forms/renderer/types.ts";
@@ -24,64 +18,6 @@ import {
   EXT,
   ITEM_CONTROL_SYSTEM,
 } from "@aidbox-forms/renderer/utils.ts";
-import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
-import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
-
-export function useQuestionnaireResponseBroadcaster(
-  form: IForm,
-  storyId: string,
-) {
-  useEffect(() => {
-    if (!storyId) return;
-    const channel = addons.getChannel();
-
-    const handleRequest = ({ storyId: requestId }: { storyId?: string }) => {
-      if (requestId === storyId) {
-        channel.emit(`aidbox/questionnaire-response/update`, {
-          storyId: storyId,
-          response: form.response,
-        });
-      }
-    };
-
-    channel.on("aidbox/questionnaire-response/request", handleRequest);
-
-    const dispose = autorun(() => {
-      channel.emit(`aidbox/questionnaire-response/update`, {
-        storyId: storyId,
-        response: form.response,
-      });
-    });
-
-    return () => {
-      dispose();
-      channel.off(`aidbox/questionnaire-response/request`, handleRequest);
-    };
-  }, [form, storyId]);
-}
-
-export function useQuestionnaireBroadcaster(
-  questionnaire: Questionnaire,
-  storyId: string,
-) {
-  useEffect(() => {
-    if (!storyId) return;
-    const channel = addons.getChannel();
-
-    channel.emit(`aidbox/questionnaire/update`, { storyId, questionnaire });
-
-    const handleRequest = ({ storyId: requestId }: { storyId?: string }) => {
-      if (requestId === storyId) {
-        channel.emit(`aidbox/questionnaire/update`, { storyId, questionnaire });
-      }
-    };
-
-    channel.on(`aidbox/questionnaire/request`, handleRequest);
-    return () => {
-      channel.off(`aidbox/questionnaire/request`, handleRequest);
-    };
-  }, [questionnaire, storyId]);
-}
 
 export type QuestionItemConfig<T extends AnswerType> = {
   linkId: string;
@@ -198,33 +134,3 @@ export function buildQuestionnaire(item: QuestionnaireItem): Questionnaire {
     item: [item],
   };
 }
-
-export function Renderer({
-  questionnaire,
-  storyId,
-}: {
-  questionnaire: Questionnaire;
-  storyId: string;
-}) {
-  const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
-
-  useEffect(() => () => store.dispose(), [store]);
-
-  useQuestionnaireResponseBroadcaster(store, storyId);
-  useQuestionnaireBroadcaster(questionnaire, storyId);
-
-  const node = store.nodes[0];
-  if (!node) {
-    return <p>Questionnaire did not produce a node.</p>;
-  }
-
-  return (
-    <FormContainer>
-      <Node node={node as IPresentableNode} />
-    </FormContainer>
-  );
-}
-
-const FormContainer = styled.div`
-  max-width: 760px;
-`;

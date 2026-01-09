@@ -39,6 +39,7 @@ export function QuestionnaireResponsePanel() {
       language="json"
       showLineNumbers
       wrapLongLines
+      copyable
       customStyle={{
         flex: 1,
         margin: 0,
