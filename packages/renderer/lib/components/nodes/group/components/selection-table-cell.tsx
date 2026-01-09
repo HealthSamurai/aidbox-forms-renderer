@@ -6,6 +6,7 @@ import type {
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
+import { buildId } from "../../../../utils.ts";
 
 export const SelectionTableCell = observer(function SelectionTableCell({
   store,
@@ -30,7 +31,7 @@ export const SelectionTableCell = observer(function SelectionTableCell({
     return null;
   }
 
-  const groupName = `${questionAxis.token}_/_table`;
+  const groupName = buildId(questionAxis.token, "table");
   const ariaLabelledBy = `${questionAxis.ariaLabelledBy} ${optionLabelId}`;
 
   return questionAxis.question.repeats ? (

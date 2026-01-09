@@ -1,5 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
+export type NodeHeaderAs = "legend" | "label" | "text";
+
 export type NodeHeaderProps = {
   label: ReactNode;
   ariaLabelledBy?: string | undefined;
@@ -8,6 +10,7 @@ export type NodeHeaderProps = {
   help?: ReactNode;
   legal?: ReactNode;
   flyover?: ReactNode;
+  as?: NodeHeaderAs | undefined;
 };
 
 export type NodeHeaderComponent = ComponentType<NodeHeaderProps>;

@@ -1,7 +1,11 @@
 import { observer } from "mobx-react-lite";
 import type { ValueControlProps } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
+import {
+  getNumericValue,
+  getSliderStepValue,
+  buildId,
+} from "../../../../utils.ts";
 import { strings } from "../../../../strings.ts";
 
 export const QuantitySliderControl = observer(function QuantitySliderControl({
@@ -13,7 +17,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
   const { InputGroup, SliderInput, SelectInput, TextInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
-    : answer.quantity.displayUnitToken;
+    : answer.quantity.unitToken;
   const selectedUnit =
     answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
   const { min, max } = answer.bounds;
@@ -39,10 +43,11 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
         ariaDescribedBy={ariaDescribedBy}
         lowerLabel={answer.question.lower}
         upperLabel={answer.question.upper}
+        unitLabel={answer.value?.unit}
       />
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
-          id={`${id}_/_unit`}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
@@ -55,7 +60,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
           options={answer.quantity.entries}
           selectedOption={selectedUnit}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
-          id={`${id}_/_unit`}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}
           disabled={disabled}

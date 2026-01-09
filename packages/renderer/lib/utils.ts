@@ -48,45 +48,49 @@ export function formatString<T extends string>(
   });
 }
 
-export function getNodeLabelId(node: IPresentableNode): string {
-  return `af_/_${node.token}_/_label`;
+export function buildId(
+  base: string,
+  ...parts: Array<string | number | null | undefined>
+): string {
+  return [base, ...parts]
+    .filter((value): value is string | number => value != null)
+    .map(String)
+    .join("_/_");
 }
 
-export function getNodeHelpId(node: IPresentableNode): string {
-  return `af_/_${node.token}_/_help`;
+export function getNodeLabelId(node: IPresentableNode): string {
+  return buildId(node.token, "label");
+}
+
+export function getNodeHelpId(node: IPresentableNode): string | undefined {
+  return node.help ? buildId(node.token, "help") : undefined;
 }
 
 export function getNodeLegalId(node: IPresentableNode): string {
-  return `af_/_${node.token}_/_legal`;
+  return buildId(node.token, "legal");
 }
 
 export function getNodeFlyoverId(node: IPresentableNode): string {
-  return `af_/_${node.token}_/_flyover`;
+  return buildId(node.token, "flyover");
 }
 
-export function getNodeErrorId(node: IPresentableNode): string {
-  return `af_/_${node.token}_/_errors`;
+export function getNodeErrorId(node: IPresentableNode): string | undefined {
+  return node.hasErrors ? buildId(node.token, "errors") : undefined;
 }
 
-export function getAnswerErrorId(answer: IAnswerInstance): string {
-  return `af_/_${answer.token}_/_errors`;
+export function getAnswerErrorId(answer: IAnswerInstance): string | undefined {
+  return answer.issues.length > 0 ? buildId(answer.token, "errors") : undefined;
 }
 
-export function safeJoin(
-  values: Array<string | null | undefined>,
-  separator: string = " ",
+export function concatIds(
+  ...parts: Array<string | number | null | undefined>
 ): string | undefined {
-  const filtered = values.filter((value): value is string => Boolean(value));
-  return filtered.length > 0 ? filtered.join(separator) : undefined;
-}
-
-export function getNodeDescribedBy<T extends AnswerType>(
-  node: IQuestionNode<T>,
-) {
-  return safeJoin([
-    node.help ? getNodeHelpId(node) : undefined,
-    node.hasErrors ? getNodeErrorId(node) : undefined,
-  ]);
+  return (
+    parts
+      .map((value) => (value == null ? "" : String(value)))
+      .filter((value) => value.length > 0)
+      .join(" ") || undefined
+  );
 }
 
 export function dedupe<T>(values: readonly T[]): T[] {
@@ -99,6 +103,12 @@ export function dedupe<T>(values: readonly T[]): T[] {
     }
   });
   return result;
+}
+
+export function clamp(value: number, min: number, max: number) {
+  if (value < min) return min;
+  if (value > max) return max;
+  return value;
 }
 
 export function assertDefined<T>(

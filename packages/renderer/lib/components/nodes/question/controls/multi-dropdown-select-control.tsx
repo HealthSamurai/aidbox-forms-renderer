@@ -11,10 +11,12 @@ import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
 import {
+  concatIds,
   getAnswerErrorId,
-  getNodeDescribedBy,
+  getNodeErrorId,
+  getNodeHelpId,
   getNodeLabelId,
-  safeJoin,
+  buildId,
 } from "../../../../utils.ts";
 
 export const MultiDropdownSelectControl = observer(
@@ -35,31 +37,22 @@ export const MultiDropdownSelectControl = observer(
         label: (
           <ValueDisplay type={selection.answerType} value={selection.value} />
         ),
-        ariaDescribedBy:
-          selection.answer.issues.length > 0
-            ? getAnswerErrorId(selection.answer)
-            : undefined,
+        ariaDescribedBy: getAnswerErrorId(selection.answer),
         errors: <AnswerErrors answer={selection.answer} />,
         disabled: selection.disabled,
       }));
     }, [store.selectedOptions]);
 
-    const ariaLabelledBy = getNodeLabelId(node);
-    const ariaDescribedBy = getNodeDescribedBy(node);
     const formState = store.customOptionFormState;
+
     const customOptionForm = formState ? (
       <CustomOptionForm
         content={
           <CustomControl
             answer={formState.answer}
-            id={`${formState.answer.token}_/_custom-input`}
-            ariaLabelledBy={ariaLabelledBy}
-            ariaDescribedBy={safeJoin([
-              ariaDescribedBy,
-              formState.answer && formState.answer.issues.length > 0
-                ? getAnswerErrorId(formState.answer)
-                : undefined,
-            ])}
+            id={buildId(formState.answer.token, "custom-input")}
+            ariaLabelledBy={getNodeLabelId(node)}
+            ariaDescribedBy={getAnswerErrorId(formState.answer)}
           />
         }
         errors={<AnswerErrors answer={formState.answer} />}
@@ -90,7 +83,6 @@ export const MultiDropdownSelectControl = observer(
           disabled: !store.canAddSelection || store.isLoading,
         }
       : undefined;
-    const inputId = `af_/_${node.token}_/_multi-select`;
 
     return (
       <MultiSelectInput
@@ -99,9 +91,9 @@ export const MultiDropdownSelectControl = observer(
         onDeselect={store.deselectOption}
         onSearch={store.setSearchQuery}
         specifyOtherOption={specifyOtherOption}
-        id={inputId}
-        ariaLabelledBy={ariaLabelledBy}
-        ariaDescribedBy={ariaDescribedBy}
+        id={buildId(node.token, "multi-select")}
+        ariaLabelledBy={getNodeLabelId(node)}
+        ariaDescribedBy={concatIds(getNodeHelpId(node), getNodeErrorId(node))}
         disabled={node.readOnly}
         isLoading={store.isLoading}
         selectedOptions={selectedOptions}

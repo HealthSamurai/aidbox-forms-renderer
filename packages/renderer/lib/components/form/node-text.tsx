@@ -1,29 +1,19 @@
-import type { IPresentableNode, IQuestionNode } from "../../types.ts";
-import { getNodeLabelId } from "../../utils.ts";
+import type { IPresentableNode } from "../../types.ts";
 import { isQuestionNode } from "../../stores/nodes/questions/question-store.ts";
+import { buildId } from "../../utils.ts";
 
-export function getNodeLabelParts(node: IPresentableNode) {
-  const ariaLabelledBy = getNodeLabelId(node);
-  const htmlFor = getPrimaryControlId(node);
-  const labelText = [
-    node.prefix ? `${node.prefix} ` : "",
-    node.text ?? node.linkId ?? "",
-  ]
+export function getNodeText(node: IPresentableNode): string {
+  return [node.prefix ? `${node.prefix} ` : "", node.text ?? ""]
     .join("")
     .trim();
-
-  return { ariaLabelledBy, htmlFor, labelText };
 }
 
-function getPrimaryControlId(node: IPresentableNode): string | undefined {
-  if (!isQuestionNode(node)) {
-    return undefined;
+export function getPrimaryControlId(
+  node: IPresentableNode,
+): string | undefined {
+  if (isQuestionNode(node)) {
+    const token = node.answers[0]?.token;
+    if (token) return buildId(token, "control");
   }
-
-  const firstAnswer = (node as IQuestionNode).answers[0];
-  if (!firstAnswer) {
-    return undefined;
-  }
-
-  return firstAnswer.token;
+  return undefined;
 }

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import type { ValueControlProps } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-import { getNumericValue } from "../../../../utils.ts";
+import { getNumericValue, buildId } from "../../../../utils.ts";
 import { strings } from "../../../../strings.ts";
 
 export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
@@ -13,7 +13,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
   const { InputGroup, SpinnerInput, SelectInput, TextInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
-    : answer.quantity.displayUnitToken;
+    : answer.quantity.unitToken;
   const selectedUnit =
     answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
   const { min, max } = answer.bounds;
@@ -42,7 +42,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
       />
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
-          id={`${id}_/_unit`}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
@@ -55,7 +55,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
           options={answer.quantity.entries}
           selectedOption={selectedUnit}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
-          id={`${id}_/_unit`}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy ?? id}
           ariaDescribedBy={ariaDescribedBy}
           disabled={disabled}

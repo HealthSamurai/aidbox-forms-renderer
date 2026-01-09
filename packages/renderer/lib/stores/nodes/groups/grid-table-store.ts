@@ -1,6 +1,5 @@
 import { computed, makeObservable } from "mobx";
 import type {
-  GridTableCellState,
   GridTableColumnState,
   GridTableRowState,
   IGridTableStore,
@@ -8,7 +7,7 @@ import type {
   IQuestionNode,
 } from "../../../types.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-import { strings } from "../../../strings.ts";
+import { buildId } from "../../../utils.ts";
 
 export class GridTableStore implements IGridTableStore {
   private readonly wrapper: IGroupWrapper;
@@ -56,39 +55,22 @@ export class GridTableStore implements IGridTableStore {
   }
 
   @computed
-  get gridColumns(): GridTableColumnState[] {
-    const columns = [...this.columns];
-    columns.push({
-      token: "actions",
-      label: strings.gridTable.headerActions,
-    });
-    return columns;
-  }
-
-  @computed
   get rows(): GridTableRowState[] {
-    const columns = this.columns;
-    return this.wrapper.visibleNodes.map((node, index) => {
+    return this.wrapper.visibleNodes.map((node) => {
       const questionMap = new Map<string, IQuestionNode>(
         node.nodes
           .filter(isQuestionNode)
           .map((question) => [question.linkId, question]),
       );
-      const cells: GridTableCellState[] = columns.map((column) => ({
-        token: `${node.token}_/_${column.token}`,
-        question: questionMap.get(column.token),
-      }));
-
-      cells.push({
-        token: `${node.token}-actions`,
-        action: "remove",
-      });
 
       return {
         token: node.token,
         node,
         label: null,
-        cells,
+        cells: this.columns.map((column) => ({
+          token: buildId(node.token, column.token),
+          question: questionMap.get(column.token),
+        })),
       };
     });
   }

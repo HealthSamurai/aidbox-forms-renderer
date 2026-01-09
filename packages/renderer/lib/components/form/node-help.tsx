@@ -10,16 +10,11 @@ export const NodeHelp = observer(function NodeHelp({
   node: IPresentableNode;
 }) {
   const { NodeHelp: ThemedNodeHelp } = useTheme();
+  const id = getNodeHelpId(node);
 
-  if (!node.help) {
-    return null;
-  }
-
-  const helpId = getNodeHelpId(node);
-
-  return (
-    <ThemedNodeHelp id={helpId} ariaLabel={strings.aria.help}>
+  return id ? (
+    <ThemedNodeHelp id={id} ariaLabel={strings.aria.help}>
       {node.help}
     </ThemedNodeHelp>
-  );
+  ) : null;
 });

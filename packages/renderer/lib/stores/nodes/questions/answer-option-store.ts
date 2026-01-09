@@ -27,6 +27,7 @@ import {
   areValuesEqual,
   booleanify,
   getValue,
+  buildId,
   OPTIONS_ISSUE_EXPRESSION,
   tokenify,
 } from "../../../utils.ts";
@@ -335,7 +336,7 @@ export class AnswerOptionStore<
 
   @computed
   get specifyOtherToken(): OptionToken {
-    return `${this.question.token}_/_specify_other`;
+    return buildId(this.question.token, "specify_other");
   }
 
   get customOptionFormState(): CustomOptionFormState<T> | undefined {
@@ -475,7 +476,7 @@ export class AnswerOptionStore<
   ): OptionToken {
     if (value == null) return "";
     const baseToken = tokenify(this.customDataType, value);
-    return baseToken ? `${this.question.token}_/_custom_${baseToken}` : "";
+    return baseToken ? buildId(this.question.token, "custom", baseToken) : "";
   }
 
   private getLegacyTokenForValue(
@@ -483,7 +484,7 @@ export class AnswerOptionStore<
   ): OptionToken {
     if (value == null) return "";
     const baseToken = tokenify(this.dataType, value);
-    return baseToken ? `${this.question.token}_/_legacy_${baseToken}` : "";
+    return baseToken ? buildId(this.question.token, "legacy", baseToken) : "";
   }
 
   @action.bound

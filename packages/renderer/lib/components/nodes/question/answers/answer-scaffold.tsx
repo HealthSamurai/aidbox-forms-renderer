@@ -1,14 +1,16 @@
 import type { ComponentType } from "react";
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import { NodesList } from "../../../form/node-list.tsx";
+import { NodeList } from "../../../form/node-list.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { AnswerErrors } from "../validation/answer-errors.tsx";
 import {
+  concatIds,
   getAnswerErrorId,
-  getNodeDescribedBy,
+  getNodeErrorId,
+  getNodeHelpId,
   getNodeLabelId,
-  safeJoin,
+  buildId,
 } from "../../../../utils.ts";
 import {
   AnswerType,
@@ -28,19 +30,10 @@ export const AnswerScaffold = observer(function AnswerScaffold<
   answer: IAnswerInstance<T>;
   control: AnswerRenderCallback<T>;
 }) {
-  const { AnswerRemoveButton, AnswerScaffold: ThemedAnswerScaffold } =
-    useTheme();
+  const { AnswerScaffold: ThemedAnswerScaffold } = useTheme();
   const handleRemove = useCallback(() => {
     answer.question.removeAnswer(answer);
   }, [answer]);
-
-  const answerErrorId =
-    answer.issues.length > 0 ? getAnswerErrorId(answer) : undefined;
-
-  const ariaDescribedBy = safeJoin([
-    getNodeDescribedBy(answer.question),
-    answerErrorId,
-  ]);
 
   const Component = control;
 
@@ -48,27 +41,22 @@ export const AnswerScaffold = observer(function AnswerScaffold<
     <ThemedAnswerScaffold
       control={
         <Component
-          id={answer.token}
+          id={buildId(answer.token, "control")}
           ariaLabelledBy={getNodeLabelId(answer.question)}
-          ariaDescribedBy={ariaDescribedBy}
+          ariaDescribedBy={concatIds(
+            getNodeHelpId(answer.question),
+            getNodeErrorId(answer.question),
+            getAnswerErrorId(answer),
+          )}
           answer={answer as IAnswerInstance<T>}
         />
       }
-      toolbar={
-        answer.question.repeats ? (
-          <AnswerRemoveButton
-            onClick={handleRemove}
-            disabled={!answer.question.canRemove}
-            text="Remove"
-          />
-        ) : undefined
+      onRemove={answer.question.repeats ? handleRemove : undefined}
+      canRemove={
+        answer.question.repeats ? answer.question.canRemove : undefined
       }
-      children={
-        <>
-          {!!answer.nodes?.length && <NodesList nodes={answer.nodes} />}
-          <AnswerErrors answer={answer} />
-        </>
-      }
+      errors={<AnswerErrors answer={answer} />}
+      children={<NodeList nodes={answer.nodes} />}
     />
   );
 });

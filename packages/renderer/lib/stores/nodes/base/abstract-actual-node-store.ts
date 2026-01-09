@@ -188,6 +188,16 @@ export abstract class AbstractActualNodeStore
 
   @computed
   get isHeaderless(): boolean {
+    if (isQuestionNode(this)) {
+      if (
+        this.type === "boolean" &&
+        this.control !== "radio-button" &&
+        this.control !== "check-box"
+      ) {
+        return true;
+      }
+    }
+
     const parent = this.parentStore;
     const parentControl = parent && "control" in parent ? parent.control : null;
     if (parentControl === "tab-container" || parentControl === "gtable") {

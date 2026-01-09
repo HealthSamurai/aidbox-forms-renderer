@@ -1,12 +1,13 @@
 import type { Reference } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
+import { buildId } from "../../../../../utils.ts";
 
 export type ReferenceInputProps = {
   value: Reference | null;
   onChange: (value: Reference | null) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
@@ -31,13 +32,10 @@ export function ReferenceInput({
     onChange(pruneReference(draft));
   };
 
-  const referenceId = id;
-  const displayId = id ? `${id}_/_display` : undefined;
-
   return (
     <InputGroup layout="grid">
       <TextInput
-        id={referenceId}
+        id={id}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={reference.reference ?? ""}
@@ -46,7 +44,7 @@ export function ReferenceInput({
         placeholder={placeholder ?? strings.inputs.referencePlaceholder}
       />
       <TextInput
-        id={displayId}
+        id={id ? buildId(id, "display") : undefined}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={reference.display ?? ""}

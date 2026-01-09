@@ -9,6 +9,7 @@ import type {
 import { isGroupNode } from "./group-store.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { strings } from "../../../strings.ts";
+import { buildId } from "../../../utils.ts";
 
 export class GridStore implements IGridStore {
   private readonly group: IGroupNode;
@@ -70,7 +71,7 @@ export class GridStore implements IGridStore {
         token: row.token,
         label,
         cells: columns.map((column) => ({
-          token: `${row.token}_/_${column.token}`,
+          token: buildId(row.token, column.token),
           question: questionMap.get(column.token),
         })),
       };

@@ -6,6 +6,7 @@ import { DateRenderer } from "../../components/nodes/question/fhir/date/date-ren
 import { DateTimeRenderer } from "../../components/nodes/question/fhir/dateTime/date-time-renderer.tsx";
 import { TimeRenderer } from "../../components/nodes/question/fhir/time/time-renderer.tsx";
 import { QuantityRenderer } from "../../components/nodes/question/fhir/quantity/quantity-renderer.tsx";
+import { BooleanRenderer } from "../../components/nodes/question/fhir/boolean/boolean-renderer.tsx";
 import { CodingRenderer } from "../../components/nodes/question/fhir/coding/coding-renderer.tsx";
 import { ReferenceRenderer } from "../../components/nodes/question/fhir/reference/reference-renderer.tsx";
 import { AttachmentRenderer } from "../../components/nodes/question/fhir/attachment/attachment-renderer.tsx";
@@ -51,21 +52,26 @@ export const defaultQuestionControlDefinitions: QuestionControlDefinition[] = [
     name: "list-select",
     priority: 95,
     matcher: (node) =>
-      hasOptions(node) &&
+      (hasOptions(node) || node.type === "boolean") &&
       (node.control === "radio-button" || node.control === "check-box"),
     renderer: ListSelectRenderer,
   },
   {
     name: "dropdown",
     priority: 90,
-    matcher: (node) => hasOptions(node),
+    matcher: (node) =>
+      hasOptions(node) ||
+      (node.type === "boolean" &&
+        (node.control === "drop-down" ||
+          node.control === "autocomplete" ||
+          node.control === "lookup")),
     renderer: DropdownSelectRenderer,
   },
   {
-    name: "boolean-with-list",
-    priority: 20,
+    name: "boolean",
+    priority: 10,
     matcher: (node) => node.type === "boolean",
-    renderer: ListSelectRenderer,
+    renderer: BooleanRenderer,
   },
   {
     name: "string",

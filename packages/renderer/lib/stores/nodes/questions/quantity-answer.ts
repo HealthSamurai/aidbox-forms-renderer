@@ -131,7 +131,7 @@ export class QuantityAnswer implements IQuantityAnswer {
   }
 
   @computed
-  get displayUnitToken(): string {
+  get unitToken(): string {
     if (this.shouldAutoSelectUnit) {
       return this.firstEnabledOptionToken ?? "";
     }

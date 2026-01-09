@@ -7,8 +7,8 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type AttachmentInputProps = {
   value: Attachment | null;
   onChange: (value: Attachment | null) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   accept?: string | undefined;
@@ -36,8 +36,6 @@ export function AttachmentInput({
     [onChange],
   );
 
-  const inputIdentifier = `${id ?? "attachment"}_/_file`;
-
   const themeValue = useMemo<ThemeAttachment | null>(() => {
     return (
       value && {
@@ -49,7 +47,7 @@ export function AttachmentInput({
 
   return (
     <ThemedFileInput
-      id={inputIdentifier}
+      id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}

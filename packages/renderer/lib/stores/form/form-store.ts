@@ -4,10 +4,10 @@ import {
   IExpressionEnvironmentProvider,
   IExpressionRegistry,
   IForm,
-  INode,
   IGroupNode,
-  IPresentableNode,
   IGroupWrapper,
+  INode,
+  IPresentableNode,
   IScope,
   IValueSetExpander,
   QuestionControlDefinition,
@@ -39,19 +39,23 @@ import {
   isQuestionNode,
   QuestionStore,
 } from "../nodes/questions/question-store.ts";
-import { isGroupNode, GroupStore } from "../nodes/groups/group-store.ts";
+import { GroupStore, isGroupNode } from "../nodes/groups/group-store.ts";
 import { DisplayStore } from "../nodes/display/display-store.ts";
-import { isGroupWrapper, GroupWrapper } from "../nodes/groups/group-wrapper.ts";
+import { GroupWrapper, isGroupWrapper } from "../nodes/groups/group-wrapper.ts";
 import { EvaluationCoordinator } from "../expressions/evaluation-coordinator.ts";
 import { Scope } from "../expressions/scope.ts";
 import { BaseExpressionRegistry } from "../expressions/base-expression-registry.ts";
 import {
+  clamp,
   EXT,
   extractExtensionsValues,
+  getItemControlCode,
+  buildId,
   makeIssue,
   shouldCreateStore,
 } from "../../utils.ts";
 import { ValueSetExpander } from "../services/valueset-expander.ts";
+import type { FormPagination } from "@aidbox-forms/theme";
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private readonly initialResponse: QuestionnaireResponse | undefined;
@@ -73,6 +77,9 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
   @observable
   private submitAttempted = false;
+
+  @observable
+  private pageIndex = 0;
 
   readonly coordinator = new EvaluationCoordinator();
   readonly questionControlRegistry: QuestionControlRegistry;
@@ -144,6 +151,72 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     );
   }
 
+  @computed
+  get headerNodes(): IGroupNode[] {
+    return this.nodes.filter(
+      (node): node is IGroupNode =>
+        isGroupNode(node) && node.control === "header" && !node.hidden,
+    );
+  }
+
+  @computed
+  get footerNodes(): IGroupNode[] {
+    return this.nodes.filter(
+      (node): node is IGroupNode =>
+        isGroupNode(node) && node.control === "footer" && !node.hidden,
+    );
+  }
+
+  @computed
+  get contentNodes(): IPresentableNode[] {
+    const pages = this.pages;
+    if (pages) {
+      const maxPageIndex = Math.max(pages.length - 1, 0);
+      return pages.length > 0
+        ? [pages[clamp(this.pageIndex, 0, maxPageIndex)]]
+        : [];
+    }
+
+    return this.nodes.filter((node) => {
+      if (!isGroupControlNode(node)) {
+        return true;
+      }
+      return node.control !== "header" && node.control !== "footer";
+    });
+  }
+
+  @computed
+  get pagination(): FormPagination | undefined {
+    const pages = this.pages;
+    if (!pages?.length) {
+      return undefined;
+    }
+
+    const pageIndex = clamp(this.pageIndex, 0, pages.length - 1);
+
+    return {
+      current: pageIndex + 1,
+      total: pages.length,
+      disabledPrev: pageIndex === 0,
+      onPrev: action(() => {
+        this.pageIndex = clamp(this.pageIndex - 1, 0, pages.length - 1);
+      }),
+      disabledNext: pageIndex >= pages.length - 1,
+      onNext: action(() => {
+        this.pageIndex = clamp(this.pageIndex + 1, 0, pages.length - 1);
+      }),
+    };
+  }
+
+  @computed
+  private get pages(): IPresentableNode[] | undefined {
+    const pages = this.nodes.filter(
+      (node): node is IGroupNode | IGroupWrapper =>
+        isGroupControlNode(node) && node.control === "page" && !node.hidden,
+    );
+    return pages.length > 0 ? pages : undefined;
+  }
+
   @action
   createNodeStore(
     item: QuestionnaireItem,
@@ -159,7 +232,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           item,
           parentStore,
           parentScope.extend(false),
-          `${parentToken}_/_${item.linkId}`,
+          buildId(parentToken, item.linkId),
         );
         parentScope.registerNode(store);
         return store;
@@ -172,7 +245,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             item,
             parentStore,
             parentScope.extend(false),
-            `${parentToken}_/_${item.linkId}`,
+            buildId(parentToken, item.linkId),
             parentResponseItems?.filter(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -183,7 +256,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
             item,
             parentStore,
             parentScope.extend(false),
-            `${parentToken}_/_${item.linkId}`,
+            buildId(parentToken, item.linkId),
             parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -209,7 +282,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           item,
           parentStore,
           parentScope.extend(false),
-          `${parentToken}_/_${item.linkId}`,
+          buildId(parentToken, item.linkId),
           parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
         );
         parentScope.registerNode(store);
@@ -350,36 +423,83 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
         );
     }
 
-    const pageNodes = groupNodes.filter((node) => node.control === "page");
-    if (pageNodes.length > 0) {
-      this.nodes.forEach((node) => {
-        if (isGroupControlNode(node)) {
-          const control = node.control;
-          if (
-            control === "page" ||
-            control === "header" ||
-            control === "footer"
-          ) {
-            return;
-          }
+    const nestedPageLinkIds: string[] = [];
+    const siblingViolations: Array<{
+      parent: string;
+      linkIds: string[];
+    }> = [];
 
+    const isPageGroupItem = (item: QuestionnaireItem) =>
+      item.type === "group" && getItemControlCode(item) === "page";
+
+    const isAllowedPageSibling = (item: QuestionnaireItem) => {
+      if (item.type !== "group") {
+        return false;
+      }
+
+      const control = getItemControlCode(item);
+      return control === "page" || control === "header" || control === "footer";
+    };
+
+    const visit = (
+      items: QuestionnaireItem[] | undefined,
+      depth: number,
+      parent: string,
+    ) => {
+      if (!items || items.length === 0) {
+        return;
+      }
+
+      const hasPage = items.some(isPageGroupItem);
+      if (hasPage) {
+        const invalidLinkIds: string[] = [];
+        items.forEach((item) => {
+          if (!isAllowedPageSibling(item)) {
+            invalidLinkIds.push(item.linkId);
+            this.reportRenderingIssue(
+              makeIssue(
+                "structure",
+                `Items that are siblings of a page group must be groups with item-control 'page', 'header', or 'footer' (parent=${parent}, linkId=${item.linkId}).`,
+              ),
+            );
+          }
+        });
+
+        if (invalidLinkIds.length > 0) {
+          siblingViolations.push({ parent, linkIds: invalidLinkIds });
+        }
+      }
+
+      items.forEach((item) => {
+        if (depth > 0 && isPageGroupItem(item)) {
+          nestedPageLinkIds.push(item.linkId);
           this.reportRenderingIssue(
             makeIssue(
               "structure",
-              `Top-level group "${node.linkId}" must declare control 'page', 'header', or 'footer' when page controls are used.`,
+              `Page groups should be top-level items and must not be nested (linkId=${item.linkId}).`,
             ),
           );
-          return;
         }
 
-        this.reportRenderingIssue(
-          makeIssue(
-            "structure",
-            `Top-level item "${node.linkId}" must be a group when page controls are used.`,
-          ),
-        );
+        if (item.item && item.item.length > 0) {
+          visit(item.item, depth + 1, item.linkId);
+        }
       });
+    };
+
+    visit(this.questionnaire.item, 0, "Questionnaire");
+
+    if (nestedPageLinkIds.length > 0) {
+      console.warn(
+        `[Aidbox Forms] Page groups should be top-level items and must not be nested. Invalid linkIds: ${nestedPageLinkIds.join(", ")}.`,
+      );
     }
+
+    siblingViolations.forEach((violation) => {
+      console.warn(
+        `[Aidbox Forms] Items that are siblings of a page group must be groups with item-control 'page', 'header', or 'footer'. Parent: ${violation.parent}. Invalid linkIds: ${violation.linkIds.join(", ")}.`,
+      );
+    });
   }
 
   private buildResponseSnapshot(kind: SnapshotKind): QuestionnaireResponse {

@@ -1,19 +1,15 @@
+import type { ReactNode } from "react";
 import { useTheme } from "../../../../../ui/theme.tsx";
-import { strings } from "../../../../../strings.ts";
 
 export type BooleanInputProps = {
   value: boolean | null;
   onChange: (value: boolean | null) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
+  label?: ReactNode | undefined;
 };
-
-const BOOLEAN_OPTIONS = [
-  { token: "yes", label: strings.boolean.yes },
-  { token: "no", label: strings.boolean.no },
-];
 
 export function BooleanInput({
   value,
@@ -22,34 +18,20 @@ export function BooleanInput({
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
+  label,
 }: BooleanInputProps) {
-  const { RadioButtonList } = useTheme();
-  const selectedOption =
-    value === true
-      ? BOOLEAN_OPTIONS[0]
-      : value === false
-        ? BOOLEAN_OPTIONS[1]
-        : null;
-  const fallbackInputId = id ?? "boolean";
-  const fallbackAriaLabelledBy = ariaLabelledBy ?? fallbackInputId;
+  const { Checkbox } = useTheme();
+  const checked = value === true;
 
   return (
-    <RadioButtonList
-      options={BOOLEAN_OPTIONS}
-      selectedOption={selectedOption}
-      onChange={(token) => {
-        if (token === "yes") {
-          onChange(true);
-        } else if (token === "no") {
-          onChange(false);
-        } else {
-          onChange(null);
-        }
-      }}
-      id={fallbackInputId}
-      ariaLabelledBy={fallbackAriaLabelledBy}
+    <Checkbox
+      checked={checked}
+      onChange={() => onChange(!checked)}
+      id={id}
+      ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={Boolean(disabled)}
+      label={label}
     />
   );
 }

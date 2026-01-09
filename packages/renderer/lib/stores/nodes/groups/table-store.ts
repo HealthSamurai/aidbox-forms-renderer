@@ -1,5 +1,6 @@
 import { computed, makeObservable } from "mobx";
 import type {
+  AnswerOption,
   AnswerType,
   AnswerTypeToDataType,
   DataTypeToType,
@@ -7,18 +8,19 @@ import type {
   IQuestionNode,
   ITableStore,
   OptionAxisItem,
+  OptionToken,
   QuestionAxisEntry,
   QuestionAxisItem,
   QuestionAxisSelection,
-  AnswerOption,
   TableAxisModel,
   TableCellState,
-  OptionToken,
 } from "../../../types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   areValuesEqual,
-  getNodeDescribedBy,
+  concatIds,
+  getNodeErrorId,
+  getNodeHelpId,
   getNodeLabelId,
   tokenify,
 } from "../../../utils.ts";
@@ -46,8 +48,6 @@ export class TableStore implements ITableStore {
   get questionAxis(): QuestionAxisItem[] {
     return this.model.questionAxis.map((entry) => {
       const question = entry.question;
-      const ariaLabelledBy = getNodeLabelId(question);
-      const ariaDescribedBy = getNodeDescribedBy(question);
 
       const visibleAnswers = question.repeats
         ? question.answers
@@ -59,8 +59,11 @@ export class TableStore implements ITableStore {
       return {
         token: question.token,
         question,
-        ariaLabelledBy,
-        ariaDescribedBy,
+        ariaLabelledBy: getNodeLabelId(question),
+        ariaDescribedBy: concatIds(
+          getNodeHelpId(question),
+          getNodeErrorId(question),
+        ),
         hasDetails,
       };
     });

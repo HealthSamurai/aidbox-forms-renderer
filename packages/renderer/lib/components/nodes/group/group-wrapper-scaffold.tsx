@@ -13,20 +13,17 @@ export const GroupWrapperScaffold = observer(function GroupWrapperScaffold({
   wrapper: IGroupWrapper;
   children?: ReactNode;
 }) {
-  const { GroupAddButton, GroupWrapperScaffold: ThemedGroupWrapperScaffold } =
-    useTheme();
-  const header = wrapper.template.text ? <NodeHeader node={wrapper} /> : null;
+  const { GroupWrapperScaffold: ThemedGroupWrapperScaffold } = useTheme();
+  const header = wrapper.template.text ? (
+    <NodeHeader node={wrapper} as="legend" />
+  ) : null;
   return (
     <ThemedGroupWrapperScaffold
       linkId={wrapper.linkId}
       header={header}
-      toolbar={
-        <GroupAddButton
-          onClick={() => wrapper.addNode()}
-          disabled={!wrapper.canAdd}
-          text={strings.group.addSection}
-        />
-      }
+      onAdd={() => wrapper.addNode()}
+      canAdd={wrapper.canAdd}
+      addLabel={strings.group.addSection}
     >
       {children ??
         wrapper.visibleNodes.map((node) => (

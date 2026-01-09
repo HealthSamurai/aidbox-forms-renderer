@@ -45,7 +45,7 @@ describe("FormStore item control validations", () => {
 
     expect(
       store.issues.some((issue) =>
-        issue.diagnostics?.includes('Top-level item "question-1"'),
+        issue.diagnostics?.includes("linkId=question-1"),
       ),
     ).toBe(true);
   });

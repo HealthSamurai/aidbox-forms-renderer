@@ -11,10 +11,12 @@ import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
 import {
+  concatIds,
   getAnswerErrorId,
-  getNodeDescribedBy,
+  getNodeErrorId,
+  getNodeHelpId,
   getNodeLabelId,
-  safeJoin,
+  buildId,
 } from "../../../../utils.ts";
 
 export const MultiListSelectControl = observer(function MultiListSelectControl<
@@ -31,31 +33,26 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
       label: (
         <ValueDisplay type={selection.answerType} value={selection.value} />
       ),
-      ariaDescribedBy:
-        selection.answer.issues.length > 0
-          ? getAnswerErrorId(selection.answer)
-          : undefined,
+      ariaDescribedBy: getAnswerErrorId(selection.answer),
       errors: <AnswerErrors answer={selection.answer} />,
       disabled: selection.disabled,
     }));
   }, [store.selectedOptions]);
 
   const ariaLabelledBy = getNodeLabelId(node);
-  const ariaDescribedBy = getNodeDescribedBy(node);
+  const ariaDescribedBy = concatIds(getNodeHelpId(node), getNodeErrorId(node));
   const formState = store.customOptionFormState;
+  const customAriaDescribedBy = formState?.answer
+    ? getAnswerErrorId(formState.answer)
+    : undefined;
   const customOptionForm = formState ? (
     <CustomOptionForm
       content={
         <CustomControl
           answer={formState.answer}
-          id={`${formState.answer.token}_/_custom-input`}
+          id={buildId(formState.answer.token, "custom-input")}
           ariaLabelledBy={ariaLabelledBy}
-          ariaDescribedBy={safeJoin([
-            ariaDescribedBy,
-            formState.answer && formState.answer.issues.length > 0
-              ? getAnswerErrorId(formState.answer)
-              : undefined,
-          ])}
+          ariaDescribedBy={customAriaDescribedBy}
         />
       }
       errors={<AnswerErrors answer={formState.answer} />}
@@ -86,7 +83,6 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
         disabled: !store.canAddSelection || store.isLoading,
       }
     : undefined;
-  const inputId = `af_/_${node.token}_/_multi-select`;
 
   return (
     <CheckboxList
@@ -94,7 +90,7 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
       onSelect={store.selectOption}
       onDeselect={store.deselectOption}
       specifyOtherOption={specifyOtherOption}
-      id={inputId}
+      id={buildId(node.token, "multi-select")}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={node.readOnly}

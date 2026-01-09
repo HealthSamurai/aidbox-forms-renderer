@@ -12,20 +12,15 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   node: IQuestionNode<T>;
   control: AnswerRenderCallback<T>;
 }) {
-  const { AnswerAddButton, AnswerList: ThemedAnswerList } = useTheme();
+  const { AnswerList: ThemedAnswerList } = useTheme();
   const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
   const addAnswer = useCallback(() => node.addAnswer(), [node]);
-
-  const toolbar = node.repeats ? (
-    <AnswerAddButton
-      onClick={addAnswer}
-      disabled={!node.canAdd}
-      text={strings.selection.addAnother}
-    />
-  ) : undefined;
+  const onAdd = node.repeats ? addAnswer : undefined;
+  const canAdd = node.repeats ? node.canAdd : undefined;
+  const addLabel = node.repeats ? strings.selection.addAnother : undefined;
 
   return (
-    <ThemedAnswerList toolbar={toolbar}>
+    <ThemedAnswerList onAdd={onAdd} canAdd={canAdd} addLabel={addLabel}>
       {answers.map((answer) => (
         <AnswerScaffold key={answer.token} answer={answer} control={control} />
       ))}

@@ -1,11 +1,12 @@
 import type { IAnswerInstance } from "../../../../../types.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
+import { buildId } from "../../../../../utils.ts";
 
 export type QuantityInputProps = {
   answer: IAnswerInstance<"quantity">;
   id: string;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
@@ -38,12 +39,11 @@ export function QuantityInput({
 
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
-    : answer.quantity.displayUnitToken;
+    : answer.quantity.unitToken;
   const selectedUnit =
     answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
-  const inputBaseId = id;
-  const resolvedAriaLabelledBy = ariaLabelledBy ?? inputBaseId;
-  const unitInputId = `${inputBaseId}_/_unit`;
+
+  const unitInputId = buildId(id, "unit");
   const valuePlaceholder =
     placeholder ?? strings.inputs.quantityValuePlaceholder;
 
@@ -57,7 +57,7 @@ export function QuantityInput({
     <InputGroup layout="row" weights={[2, 1]}>
       <NumberInput
         id={id}
-        ariaLabelledBy={resolvedAriaLabelledBy}
+        ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={answer.value?.value ?? null}
         onChange={handleValueChange}
@@ -70,7 +70,7 @@ export function QuantityInput({
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
           id={unitInputId}
-          ariaLabelledBy={resolvedAriaLabelledBy}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
@@ -83,7 +83,7 @@ export function QuantityInput({
           selectedOption={selectedUnit}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
           id={unitInputId}
-          ariaLabelledBy={resolvedAriaLabelledBy}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           disabled={Boolean(disabled)}
         />

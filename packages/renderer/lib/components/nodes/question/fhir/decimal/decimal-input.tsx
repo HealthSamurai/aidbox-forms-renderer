@@ -3,8 +3,8 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type DecimalInputProps = {
   value: number | null;
   onChange: (value: number | null) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;

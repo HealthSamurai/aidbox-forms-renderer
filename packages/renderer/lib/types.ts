@@ -45,7 +45,11 @@ import type { GroupControlRegistry } from "./stores/registries/group-control-reg
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
-import type { OptionItem, SelectedOptionItem } from "@aidbox-forms/theme";
+import type {
+  FormPagination,
+  OptionItem,
+  SelectedOptionItem,
+} from "@aidbox-forms/theme";
 
 export type { OptionItem, SelectedOptionItem };
 
@@ -582,7 +586,6 @@ export type GridTableColumnState = {
 export type GridTableCellState = {
   token: string;
   question?: IQuestionNode | undefined;
-  action?: "remove" | undefined;
 };
 
 export type GridTableRowState = {
@@ -593,7 +596,7 @@ export type GridTableRowState = {
 };
 
 export interface IGridTableStore {
-  readonly gridColumns: Array<GridTableColumnState>;
+  readonly columns: Array<GridTableColumnState>;
   readonly rows: Array<GridTableRowState>;
 }
 
@@ -646,7 +649,7 @@ export interface IAnswerInstance<T extends AnswerType = AnswerType> {
 
 export interface IQuantityAnswer {
   readonly entries: ReadonlyArray<OptionItem>;
-  readonly displayUnitToken: string;
+  readonly unitToken: string;
   readonly isUnitFreeForm: boolean;
   handleNumberInput(raw: string): void;
   handleSelectChange(token: string): void;
@@ -757,6 +760,10 @@ export interface IForm {
   questionnaire: Questionnaire;
   response: QuestionnaireResponse | undefined;
   nodes: Array<IPresentableNode>;
+  readonly headerNodes: Array<IGroupNode>;
+  readonly footerNodes: Array<IGroupNode>;
+  readonly contentNodes: Array<IPresentableNode>;
+  readonly pagination: FormPagination | undefined;
   readonly expressionResponse: QuestionnaireResponse;
   readonly coordinator: IEvaluationCoordinator;
   readonly expressionRegistry: IExpressionRegistry;

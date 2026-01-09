@@ -3,8 +3,8 @@ import { useTheme } from "../../../../../ui/theme.tsx";
 export type TimeInputProps = {
   value: string;
   onChange: (value: string) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;

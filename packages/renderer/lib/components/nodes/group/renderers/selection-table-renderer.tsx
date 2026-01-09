@@ -11,6 +11,7 @@ import { useTheme } from "../../../../ui/theme.tsx";
 import { ValueDisplay } from "../../question/fhir/value-display.tsx";
 import { SelectionTableCell } from "../components/selection-table-cell.tsx";
 import { strings } from "../../../../strings.ts";
+import { buildId } from "../../../../utils.ts";
 
 export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   node,
@@ -43,7 +44,7 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
 
   const renderQuestionHeader = (entry: QuestionAxisItem) => (
     <>
-      <NodeHeader node={entry.question} />
+      <NodeHeader node={entry.question} as="text" />
       {entry.question.answerOption.isLoading ? (
         <OptionsLoading isLoading />
       ) : null}
@@ -67,7 +68,7 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
             : node.tableStore.optionAxis.map((option) => ({
                 token: option.token,
                 label: renderOptionLabel(option),
-                labelId: `${node.token}_/_${option.token}`,
+                labelId: buildId(node.token, option.token),
               }))
         }
         rows={
@@ -75,15 +76,15 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
             ? node.tableStore.optionAxis.map((option) => ({
                 token: option.token,
                 label: renderOptionLabel(option),
-                labelId: `${node.token}_/_${option.token}`,
+                labelId: buildId(node.token, option.token),
                 cells: node.tableStore.questionAxis.map((entry) => ({
-                  token: `${entry.token}_/_${option.token}`,
+                  token: buildId(entry.token, option.token),
                   content: (
                     <SelectionTableCell
                       store={node.tableStore}
                       questionAxis={entry}
                       option={option}
-                      optionLabelId={`${node.token}_/_${option.token}`}
+                      optionLabelId={buildId(node.token, option.token)}
                     />
                   ),
                 })),
@@ -92,13 +93,13 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
                 token: entry.token,
                 label: renderQuestionHeader(entry),
                 cells: node.tableStore.optionAxis.map((option) => ({
-                  token: `${entry.token}_/_${option.token}`,
+                  token: buildId(entry.token, option.token),
                   content: (
                     <SelectionTableCell
                       store={node.tableStore}
                       questionAxis={entry}
                       option={option}
-                      optionLabelId={`${node.token}_/_${option.token}`}
+                      optionLabelId={buildId(node.token, option.token)}
                     />
                   ),
                 })),

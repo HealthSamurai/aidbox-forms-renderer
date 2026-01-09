@@ -42,6 +42,7 @@ import {
   extractExtensionValue,
   getItemControlCode,
   getValue,
+  buildId,
   normalizeExpressionValues,
   withQuestionnaireResponseItemMeta,
 } from "../../../utils.ts";
@@ -546,7 +547,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const answer = new AnswerInstance(
       this,
       this.scope,
-      `${this.token}_/_${this.lastIndex++}`,
+      buildId(this.token, this.lastIndex++),
       initial,
       responseItems,
     );

@@ -1,15 +1,15 @@
 import { action, computed, observable, override } from "mobx";
 import {
-  IPresentableNode,
+  GROUP_ITEM_CONTROLS,
+  type GroupControlDefinition,
+  type GroupItemControl,
   IForm,
-  INode,
   IGroupNode,
   IGroupWrapper,
+  INode,
+  IPresentableNode,
   IScope,
   SnapshotKind,
-  GROUP_ITEM_CONTROLS,
-  type GroupItemControl,
-  type GroupControlDefinition,
 } from "../../../types.ts";
 import {
   OperationOutcomeIssue,
@@ -19,6 +19,7 @@ import {
 import { AbstractPresentableNode } from "../base/abstract-presentable-node.ts";
 import { GroupWrapperValidator } from "../../validation/group-wrapper-validator.ts";
 import {
+  buildId,
   EXT,
   findExtension,
   getItemControlCode,
@@ -117,11 +118,11 @@ export class GroupWrapper
 
   @override
   override get hidden() {
-    if (super.hidden) {
-      return true;
-    }
-
-    return !this.nodes.some((node) => !node.hidden);
+    return super.hidden
+      ? true
+      : this.nodes.some((node) => !node.hidden)
+        ? false
+        : !this.canAdd;
   }
 
   @computed
@@ -159,7 +160,7 @@ export class GroupWrapper
       this.template,
       this,
       this.scope.extend(true),
-      `${this.token}_/_${this.lastIndex++}`,
+      buildId(this.token, this.lastIndex++),
       responseItem,
     );
     this.nodes.push(node);

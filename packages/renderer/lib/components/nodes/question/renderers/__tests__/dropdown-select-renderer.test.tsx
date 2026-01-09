@@ -16,7 +16,7 @@ import type {
 import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
-import { EXT } from "../../../../../utils.ts";
+import { EXT, buildId } from "../../../../../utils.ts";
 import { strings } from "../../../../../strings.ts";
 import { DropdownSelectRenderer } from "../dropdown-select-renderer.tsx";
 import { VALUE_DISPLAY_BY_TYPE } from "../../fhir/index.ts";
@@ -1446,7 +1446,7 @@ describe("dropdown-select-renderer", () => {
 
         const answer = question.answers[0];
         expect(answer).toBeDefined();
-        const unitInputId = `${answer!.token}_/_unit`;
+        const unitInputId = buildId(answer!.token, "control", "unit");
         const unitInput = document.getElementById(
           unitInputId,
         ) as HTMLInputElement | null;

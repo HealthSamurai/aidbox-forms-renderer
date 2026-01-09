@@ -38,31 +38,21 @@
   - [MultiSelectInput](#multiselectinput)
   - [CustomOptionForm](#customoptionform)
   - [FileInput](#fileinput)
-  - [AnswerAddButton](#answeraddbutton)
   - [AnswerRemoveButton](#answerremovebutton)
-  - [GroupAddButton](#groupaddbutton)
-  - [GroupRemoveButton](#groupremovebutton)
-  - [FormSubmitButton](#formsubmitbutton)
-  - [FormResetButton](#formresetbutton)
   - [AnswerList](#answerlist)
   - [AnswerScaffold](#answerscaffold)
   - [QuestionScaffold](#questionscaffold)
   - [GroupWrapperScaffold](#groupwrapperscaffold)
   - [GroupWrapperScaffoldItem](#groupwrapperscaffolditem)
   - [GroupScaffold](#groupscaffold)
-  - [GroupActions](#groupactions)
   - [DisplayRenderer](#displayrenderer)
   - [NodeList](#nodelist)
-  - [FormHeader](#formheader)
   - [FormErrors](#formerrors)
-  - [FormSection](#formsection)
-  - [FormActions](#formactions)
   - [Form](#form)
-  - [PageStatus](#pagestatus)
-  - [PageNavigation](#pagenavigation)
   - [GridTable](#gridtable)
   - [TabContainer](#tabcontainer)
 - [Data types](#data-types)
+  - [FormPagination](#formpagination)
   - [OptionItem](#optionitem)
   - [SelectedOptionItem](#selectedoptionitem)
   - [CustomOptionAction](#customoptionaction)
@@ -89,7 +79,7 @@ import { theme as baseTheme } from "@aidbox-forms/hs-theme";
 
 const theme: Theme = {
   ...baseTheme,
-  FormSubmitButton: MyFormSubmitButton,
+  NodeHeader: MyNodeHeader,
 };
 
 <Renderer questionnaire={questionnaire} theme={theme} />;
@@ -120,7 +110,7 @@ every component must be provided.
 ## Renderer composition overview
 
 The renderer composes your theme in a predictable tree. You control layout, but the nesting explains where headers,
-errors, and toolbars appear.
+errors, and actions appear.
 
 Overview diagram (simplified):
 
@@ -131,8 +121,9 @@ flowchart TD
   QS --> AL[AnswerList or control]
   AL --> AS[AnswerScaffold]
   AS --> CTRL[Control]
-  AS --> TB[Toolbar (AnswerRemoveButton)]
-  AS --> CH[Children (Nodes + AnswerErrors)]
+  AS --> RB[Remove action (AnswerRemoveButton)]
+  AS --> CH[Children (Nodes)]
+  AS --> AE[Errors (AnswerErrors)]
   QS --> QE[Errors]
 ```
 
@@ -141,9 +132,9 @@ flowchart TD
   GWS[GroupWrapperScaffold] --> GWH[NodeHeader]
   GWS --> GWItems[GroupWrapperScaffoldItem...]
   GWItems --> GS[GroupScaffold or group renderer]
-  GWItems --> GWTB[Toolbar (GroupRemoveButton)]
   GWItems --> GWE[Errors]
-  GWS --> GWAdd[Toolbar (GroupAddButton)]
+  GWItems --> GWR[Remove action]
+  GWS --> GWAdd[Add action]
 ```
 
 Typical question node:
@@ -155,8 +146,9 @@ QuestionScaffold
   AnswerList (or a single control)
     AnswerScaffold (per answer)
       control (TextInput/Select/etc.)
-      toolbar (AnswerRemoveButton when repeats)
-      children (nested nodes and AnswerErrors)
+      remove action (AnswerRemoveButton when repeats)
+      children (nested nodes)
+      errors (AnswerErrors)
   Errors (question-level)
 ```
 
@@ -167,9 +159,9 @@ GroupWrapperScaffold
   NodeHeader (only when wrapper has text)
   GroupWrapperScaffoldItem (per instance)
     GroupScaffold or group renderer content
-    toolbar (GroupRemoveButton when available)
+    remove action (when onRemove is provided)
     errors (Errors)
-  toolbar (GroupAddButton)
+  add action (when onAdd is provided)
 ```
 
 Typical non-repeating group:
@@ -217,7 +209,8 @@ All inputs are controlled; callbacks receive values, not DOM events.
 - Custom widgets: set `aria-disabled="true"`, remove from the tab order (`tabIndex={-1}`), and ignore pointer/keyboard
   events.
 - Disabled options should remain visible and announced as disabled.
-- If a toolbar or button is provided with `disabled`, render it disabled rather than hiding it.
+- If an add/remove action is provided with `canAdd={false}` or `canRemove={false}`, render it disabled rather than
+  hiding it.
 
 ## Options and custom options lifecycle
 
@@ -234,12 +227,15 @@ All inputs are controlled; callbacks receive values, not DOM events.
 
 ## Repeating items contract
 
-- `AnswerList` renders one or more `AnswerScaffold` entries; when `toolbar` is provided it contains the add-answer
-  control.
-- `AnswerScaffold.toolbar` is provided for repeating questions and may be disabled; render it in a consistent place next
-  to the control.
-- `GroupWrapperScaffold` renders a list of `GroupWrapperScaffoldItem` entries plus a toolbar for add-group.
-- `GroupWrapperScaffoldItem.toolbar` may be null when removal is not allowed; when provided, render it even if disabled.
+- `AnswerList` renders one or more `AnswerScaffold` entries; when `onAdd` is provided it should render add-answer
+  controls.
+- `AnswerScaffold.onRemove` is provided for repeating questions; render a remove action next to the control and disable
+  it when `canRemove` is false.
+- `AnswerScaffold.errors` is provided for per-answer validation; render it near the answer content (it may render
+  nothing).
+- `GroupWrapperScaffold` renders a list of `GroupWrapperScaffoldItem` entries and can show an add control when `onAdd`
+  is provided.
+- `GroupWrapperScaffoldItem` should render a remove action when `onRemove` is provided; use `canRemove` to disable.
 
 ## Renderer guarantees
 
@@ -338,15 +334,19 @@ reachable via aria-describedby.
 Header block for questions and groups that owns label layout, required marker, and optional help/legal/flyover slots. It
 also provides the labelled-by anchor for the main control.
 
-| Prop             | Type        | Required | Description                                                                           |
-| ---------------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
-| `label`          | `ReactNode` | Yes      | Render as the primary label text or markup for the node.                              |
-| `ariaLabelledBy` | `string`    | No       | Use as the id on the label element so the input can reference it via aria-labelledby. |
-| `htmlFor`        | `string`    | No       | Forward to the label element to connect it to the primary control.                    |
-| `required`       | `boolean`   | No       | When true, display a visual required indicator near the label.                        |
-| `help`           | `ReactNode` | No       | Render the help slot content next to or beneath the label.                            |
-| `legal`          | `ReactNode` | No       | Render the legal slot content within the header layout.                               |
-| `flyover`        | `ReactNode` | No       | Render the flyover slot content within the header layout.                             |
+| Prop             | Type                            | Required | Description                                                                           |
+| ---------------- | ------------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `label`          | `ReactNode`                     | Yes      | Render as the primary label text or markup for the node.                              |
+| `as`             | `"legend" \| "label" \| "text"` | No       | Hint for the semantic role of the label; themes can select the appropriate tag.       |
+| `ariaLabelledBy` | `string`                        | No       | Use as the id on the label element so the input can reference it via aria-labelledby. |
+| `htmlFor`        | `string`                        | No       | Forward to the label element to connect it to the primary control.                    |
+| `required`       | `boolean`                       | No       | When true, display a visual required indicator near the label.                        |
+| `help`           | `ReactNode`                     | No       | Render the help slot content next to or beneath the label.                            |
+| `legal`          | `ReactNode`                     | No       | Render the legal slot content within the header layout.                               |
+| `flyover`        | `ReactNode`                     | No       | Render the flyover slot content within the header layout.                             |
+
+`as` is a semantic/styling hint; themes may render a `div` for all values (including `"legend"`) and should not assume
+fieldset/legend markup.
 
 ### InputGroup
 
@@ -596,16 +596,6 @@ file (or null when clearing) so the renderer can update the Attachment.
 | `disabled`        | `boolean`                      | No       | When true, disable file selection and related actions.                       |
 | `onChange`        | `(file: File \| null) => void` | No       | Call with the selected file, or null when clearing the current file.         |
 
-### AnswerAddButton
-
-Add action for repeating question answers. Usually placed in the answer list toolbar.
-
-| Prop       | Type         | Required | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                     |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                |
-| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
-
 ### AnswerRemoveButton
 
 Remove action for a single repeating answer. Usually placed next to the answer control.
@@ -616,65 +606,30 @@ Remove action for a single repeating answer. Usually placed next to the answer c
 | `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                             |
 | `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
-### GroupAddButton
-
-Add action for repeating group instances. Typically placed near the group wrapper toolbar.
-
-| Prop       | Type         | Required | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the add action.                                                     |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the add action.                                |
-| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
-
-### GroupRemoveButton
-
-Remove action for a single group instance inside a repeating wrapper.
-
-| Prop       | Type         | Required | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the remove action.                                                  |
-| `disabled` | `boolean`    | Yes      | When true, render the button disabled and prevent the remove action.                             |
-| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
-
-### FormSubmitButton
-
-Primary submit call to action for the form. Render a button and invoke onClick when you handle submission outside native
-form behavior.
-
-| Prop       | Type         | Required | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | No       | Invoke the callback passed by the renderer when the user activates the submit control directly.  |
-| `disabled` | `boolean`    | No       | When true, render the submit action disabled and prevent submission.                             |
-| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
-
-### FormResetButton
-
-Secondary action that resets the form to its initial state. Render a button that calls onClick.
-
-| Prop       | Type         | Required | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | Yes      | Call when the user activates the reset action.                                                   |
-| `disabled` | `boolean`    | Yes      | When true, render the reset action disabled and prevent reset.                                   |
-| `text`     | `string`     | Yes      | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
-
 ### AnswerList
 
-Container that lays out one or more answers and an optional toolbar. It controls spacing and ordering of answer rows.
+Container that lays out one or more answers and an optional add control. It controls spacing and ordering of answer
+rows.
 
-| Prop       | Type        | Required | Description                                              |
-| ---------- | ----------- | -------- | -------------------------------------------------------- |
-| `children` | `ReactNode` | Yes      | Render the list of answer rows supplied by the renderer. |
-| `toolbar`  | `ReactNode` | No       | Render the add‑answer controls when provided.            |
+| Prop       | Type         | Required | Description                                              |
+| ---------- | ------------ | -------- | -------------------------------------------------------- |
+| `children` | `ReactNode`  | Yes      | Render the list of answer rows supplied by the renderer. |
+| `onAdd`    | `() => void` | No       | When provided, render an add‑answer control.             |
+| `canAdd`   | `boolean`    | No       | When false, render the add control disabled.             |
+| `addLabel` | `string`     | No       | Use as the add‑answer label for icon-only controls.      |
 
 ### AnswerScaffold
 
-Layout for a single answer row, combining the main control, a toolbar area, and nested content such as errors.
+Layout for a single answer row, combining the main control, an optional remove action, and nested content such as child
+nodes and errors.
 
-| Prop       | Type        | Required | Description                                                       |
-| ---------- | ----------- | -------- | ----------------------------------------------------------------- |
-| `control`  | `ReactNode` | Yes      | Render the main input control for this answer instance.           |
-| `toolbar`  | `ReactNode` | No       | Render per-answer actions (typically the remove button).          |
-| `children` | `ReactNode` | No       | Render nested content such as validation messages or child nodes. |
+| Prop        | Type         | Required | Description                                             |
+| ----------- | ------------ | -------- | ------------------------------------------------------- |
+| `control`   | `ReactNode`  | Yes      | Render the main input control for this answer instance. |
+| `onRemove`  | `() => void` | No       | When provided, render a remove action for this answer.  |
+| `canRemove` | `boolean`    | No       | When false, render the remove action disabled.          |
+| `errors`    | `ReactNode`  | No       | Render per-answer validation errors (AnswerErrors).     |
+| `children`  | `ReactNode`  | No       | Render nested content such as child nodes.              |
 
 ### QuestionScaffold
 
@@ -691,22 +646,26 @@ question nodes.
 
 Wrapper around a repeating group that holds the collection of instances and the add control.
 
-| Prop       | Type        | Required | Description                                                                                  |
-| ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
-| `linkId`   | `string`    | Yes      | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
-| `header`   | `ReactNode` | No       | Render the header for the repeating group wrapper.                                           |
-| `children` | `ReactNode` | Yes      | Render each group instance inside the wrapper.                                               |
-| `toolbar`  | `ReactNode` | No       | Render the add‑group controls when provided.                                                 |
+| Prop       | Type         | Required | Description                                                                                  |
+| ---------- | ------------ | -------- | -------------------------------------------------------------------------------------------- |
+| `linkId`   | `string`     | Yes      | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
+| `header`   | `ReactNode`  | No       | Render the header for the repeating group wrapper.                                           |
+| `children` | `ReactNode`  | Yes      | Render each group instance inside the wrapper.                                               |
+| `onAdd`    | `() => void` | No       | When provided, render an add‑group control.                                                  |
+| `canAdd`   | `boolean`    | No       | When false, render the add control disabled.                                                 |
+| `addLabel` | `string`     | No       | Use as the add‑group label for icon-only controls.                                           |
 
 ### GroupWrapperScaffoldItem
 
 Per-instance wrapper inside a repeating group that places the group content alongside its remove action and errors.
 
-| Prop       | Type        | Required | Description                                              |
-| ---------- | ----------- | -------- | -------------------------------------------------------- |
-| `children` | `ReactNode` | Yes      | Render the group instance body and its child nodes.      |
-| `errors`   | `ReactNode` | No       | Render validation errors associated with this instance.  |
-| `toolbar`  | `ReactNode` | No       | Render instance-level actions such as the remove button. |
+| Prop          | Type         | Required | Description                                              |
+| ------------- | ------------ | -------- | -------------------------------------------------------- |
+| `children`    | `ReactNode`  | Yes      | Render the group instance body and its child nodes.      |
+| `errors`      | `ReactNode`  | No       | Render validation errors associated with this instance.  |
+| `onRemove`    | `() => void` | No       | When provided, render a remove action for this instance. |
+| `canRemove`   | `boolean`    | No       | When false, render the remove action disabled.           |
+| `removeLabel` | `string`     | No       | Use as the remove label for icon-only controls.          |
 
 ### GroupScaffold
 
@@ -718,14 +677,6 @@ Wrapper for a non-repeating group that arranges its header and child nodes. data
 | `header`      | `ReactNode` | No       | Render the group header (label, help, legal, flyover).                                       |
 | `children`    | `ReactNode` | Yes      | Render the group body content and nested nodes.                                              |
 | `dataControl` | `string`    | No       | Use as a style or layout hint for specialized group renderers.                               |
-
-### GroupActions
-
-Slot for supplemental group-level content that should appear after the main group body.
-
-| Prop       | Type        | Required | Description                                                                |
-| ---------- | ----------- | -------- | -------------------------------------------------------------------------- |
-| `children` | `ReactNode` | Yes      | Render additional group actions or related nodes provided by the renderer. |
 
 ### DisplayRenderer
 
@@ -744,49 +695,32 @@ List container that renders nodes in order. It should handle spacing and groupin
 | ---------- | ----------- | -------- | -------------------------------------------------------- |
 | `children` | `ReactNode` | Yes      | Render the node items provided by the renderer in order. |
 
-### FormHeader
-
-Form header area for title and description. It is optional and only shown when content is provided.
-
-| Prop          | Type        | Required | Description                                           |
-| ------------- | ----------- | -------- | ----------------------------------------------------- |
-| `title`       | `ReactNode` | No       | Render the form title supplied by the renderer.       |
-| `description` | `ReactNode` | No       | Render the form description supplied by the renderer. |
-
 ### FormErrors
 
 Top-level error summary for the form. Use it to list validation issues after submit attempts.
+The renderer passes an error element to `Form` via the `errors` prop when there are messages to show.
 
 | Prop       | Type       | Required | Description                                           |
 | ---------- | ---------- | -------- | ----------------------------------------------------- |
 | `messages` | `string[]` | Yes      | Render each string as a top-level form error message. |
 
-### FormSection
-
-Section wrapper that groups header, footer, or main content within the form. Use variant to drive layout and styling.
-
-| Prop       | Type                                | Required | Description                                           |
-| ---------- | ----------------------------------- | -------- | ----------------------------------------------------- |
-| `children` | `ReactNode`                         | Yes      | Render the content that belongs to this section.      |
-| `variant`  | `"header" \| "footer" \| "default"` | No       | Use to apply header/footer styling or default layout. |
-
-### FormActions
-
-Container for primary form actions, typically submit and reset. Use it to position action controls consistently.
-
-| Prop       | Type        | Required | Description                                                     |
-| ---------- | ----------- | -------- | --------------------------------------------------------------- |
-| `children` | `ReactNode` | Yes      | Render the action buttons or controls provided by the renderer. |
-
 ### Form
 
 Outer wrapper for the questionnaire. If you render a form element, prevent default and call onSubmit; otherwise invoke
-onSubmit from your own controls.
+onSubmit from your own controls. When pagination is provided, render prev/next controls and keep them aligned with
+submit/cancel.
 
-| Prop       | Type         | Required | Description                                                                |
-| ---------- | ------------ | -------- | -------------------------------------------------------------------------- |
-| `onSubmit` | `() => void` | No       | Call when the user submits; prevent default yourself if you render a form. |
-| `children` | `ReactNode`  | Yes      | Render the full form content inside the form element.                      |
+| Prop          | Type             | Required | Description                                                                |
+| ------------- | ---------------- | -------- | -------------------------------------------------------------------------- |
+| `onSubmit`    | `() => void`     | No       | Call when the user submits; prevent default yourself if you render a form. |
+| `onCancel`    | `() => void`     | No       | Call when the user cancels the form flow (e.g., resets or exits).          |
+| `children`    | `ReactNode`      | Yes      | Render the full form content inside the form element.                      |
+| `pagination`  | `FormPagination` | No       | Render pagination controls and the current/total page context.             |
+| `title`       | `string`         | No       | Render the form title text.                                                |
+| `description` | `string`         | No       | Render the form description text.                                          |
+| `errors`      | `ReactNode`      | No       | Render the provided error element near the top of the form.                |
+| `before`      | `ReactNode`      | No       | Render content before the main form body (pinned headers).                 |
+| `after`       | `ReactNode`      | No       | Render content after the main form body (actions, footers).                |
 
 Example patterns:
 
@@ -804,31 +738,11 @@ Example patterns:
 ```tsx
 <div>
   {children}
-  <FormSubmitButton onClick={onSubmit} text="Submit" />
+  <button type="button" onClick={onSubmit}>
+    Submit
+  </button>
 </div>
 ```
-
-### PageStatus
-
-Indicator for the current page in a paged form. Keep it readable and accessible.
-
-| Prop      | Type     | Required | Description                                               |
-| --------- | -------- | -------- | --------------------------------------------------------- |
-| `current` | `number` | Yes      | Render this as the current page number shown to the user. |
-| `total`   | `number` | Yes      | Render this as the total number of pages available.       |
-
-### PageNavigation
-
-Controls for moving between pages in a paged form. Provide clear prev/next affordances and honor disabled states.
-
-| Prop           | Type         | Required | Description                                                  |
-| -------------- | ------------ | -------- | ------------------------------------------------------------ |
-| `current`      | `number`     | Yes      | Render this as the current page number in the navigation UI. |
-| `total`        | `number`     | Yes      | Render this as the total page count in the navigation UI.    |
-| `onPrev`       | `() => void` | Yes      | Call when the user activates the previous-page control.      |
-| `onNext`       | `() => void` | Yes      | Call when the user activates the next-page control.          |
-| `disabledPrev` | `boolean`    | Yes      | When true, render the previous-page control disabled.        |
-| `disabledNext` | `boolean`    | Yes      | When true, render the next-page control disabled.            |
 
 ### GridTable
 
@@ -862,6 +776,19 @@ Implement tabs with the standard ARIA roles, using `buttonId` and `panelId` to w
 ## Data types
 
 Shared data structures referenced by theme component props.
+
+### FormPagination
+
+Pagination state used by `Form` when rendering paged questionnaires.
+
+| Field          | Type         | Required | Description                                                  |
+| -------------- | ------------ | -------- | ------------------------------------------------------------ |
+| `current`      | `number`     | Yes      | Render this as the current page number in the navigation UI. |
+| `total`        | `number`     | Yes      | Render this as the total page count in the navigation UI.    |
+| `onPrev`       | `() => void` | Yes      | Call when the user activates the previous-page control.      |
+| `onNext`       | `() => void` | Yes      | Call when the user activates the next-page control.          |
+| `disabledPrev` | `boolean`    | Yes      | When true, render the previous-page control disabled.        |
+| `disabledNext` | `boolean`    | Yes      | When true, render the next-page control disabled.            |
 
 ### OptionItem
 
@@ -907,25 +834,32 @@ Attachment shape used by `FileInput` to display metadata and stored content.
 
 ### GridTableColumn
 
-| Field   | Type        | Required | Description                                |
-| ------- | ----------- | -------- | ------------------------------------------ |
-| `token` | `string`    | Yes      | Use as a stable identifier for the column. |
-| `label` | `ReactNode` | Yes      | Render as the column header content.       |
+| Field     | Type        | Required | Description                                               |
+| --------- | ----------- | -------- | --------------------------------------------------------- |
+| `token`   | `string`    | Yes      | Use as a stable identifier for the column.                |
+| `label`   | `ReactNode` | Yes      | Render as the column header content.                      |
+| `labelId` | `string`    | No       | Apply as the id for the header cell for aria-describedby. |
 
 ### GridTableRow
 
-| Field   | Type              | Required | Description                                                |
-| ------- | ----------------- | -------- | ---------------------------------------------------------- |
-| `token` | `string`          | Yes      | Use as a stable identifier for the row.                    |
-| `label` | `ReactNode`       | Yes      | Render as the row label or header cell content (optional). |
-| `cells` | `GridTableCell[]` | Yes      | Render these cells for the row, aligned to columns.        |
+| Field         | Type              | Required | Description                                                |
+| ------------- | ----------------- | -------- | ---------------------------------------------------------- |
+| `token`       | `string`          | Yes      | Use as a stable identifier for the row.                    |
+| `label`       | `ReactNode`       | Yes      | Render as the row label or header cell content (optional). |
+| `labelId`     | `string`          | No       | Apply as the id for the row header cell.                   |
+| `cells`       | `GridTableCell[]` | Yes      | Render these cells for the row, aligned to columns.        |
+| `onRemove`    | `() => void`      | No       | Invoke when the remove action is activated for this row.   |
+| `canRemove`   | `boolean`         | No       | When false, render the remove action disabled.             |
+| `removeLabel` | `string`          | No       | Use as the label for icon-only remove controls.            |
+
+When any row provides `onRemove`, render a trailing remove-action column for all rows.
 
 ### GridTableCell
 
 | Field     | Type        | Required | Description                              |
 | --------- | ----------- | -------- | ---------------------------------------- |
 | `token`   | `string`    | Yes      | Use as a stable identifier for the cell. |
-| `content` | `ReactNode` | Yes      | Render as the cell content.              |
+| `content` | `ReactNode` | No       | Render as the cell content.              |
 
 ### TabItem
 

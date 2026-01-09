@@ -3,7 +3,9 @@ import type { ComponentType, ReactNode } from "react";
 export type GroupWrapperScaffoldItemProps = {
   children: ReactNode;
   errors?: ReactNode;
-  toolbar?: ReactNode;
+  onRemove?: (() => void) | undefined;
+  canRemove?: boolean | undefined;
+  removeLabel?: string | undefined;
 };
 
 export type GroupWrapperScaffoldItemComponent =

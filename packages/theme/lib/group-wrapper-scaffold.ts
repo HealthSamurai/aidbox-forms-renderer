@@ -4,7 +4,9 @@ export type GroupWrapperScaffoldProps = {
   linkId: string;
   header?: ReactNode;
   children: ReactNode;
-  toolbar?: ReactNode;
+  onAdd?: (() => void) | undefined;
+  canAdd?: boolean | undefined;
+  addLabel?: string | undefined;
 };
 
 export type GroupWrapperScaffoldComponent =

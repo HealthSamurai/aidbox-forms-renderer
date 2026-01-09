@@ -1,19 +1,21 @@
 import { observer } from "mobx-react-lite";
 import { Node } from "./node.tsx";
 import { IPresentableNode } from "../../types.ts";
+import { useTheme } from "../../ui/theme.tsx";
 
-export const NodesList = observer(function NodesList({
+export const NodeList = observer(function NodeList({
   nodes,
 }: {
   nodes: IPresentableNode[];
 }) {
-  return (
-    <>
-      {nodes
-        .filter((node) => !node.hidden)
-        .map((node) => (
-          <Node key={node.token} node={node} />
-        ))}
-    </>
-  );
+  const { NodeList: ThemedNodeList } = useTheme();
+  const visibleNodes = nodes.filter((node) => !node.hidden);
+
+  return visibleNodes.length > 0 ? (
+    <ThemedNodeList>
+      {visibleNodes.map((node) => (
+        <Node key={node.token} node={node} />
+      ))}
+    </ThemedNodeList>
+  ) : null;
 });

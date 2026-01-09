@@ -1,12 +1,13 @@
 import type { Coding } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
+import { buildId } from "../../../../../utils.ts";
 
 export type CodingInputProps = {
   value: Coding | null;
   onChange: (value: Coding | null) => void;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
 };
@@ -29,14 +30,10 @@ export function CodingInput({
     onChange(pruneCoding(draft));
   };
 
-  const systemId = id;
-  const codeId = id ? `${id}_/_code` : undefined;
-  const displayId = id ? `${id}_/_display` : undefined;
-
   return (
     <InputGroup layout="grid">
       <TextInput
-        id={systemId}
+        id={id}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.system ?? ""}
@@ -45,7 +42,7 @@ export function CodingInput({
         placeholder={strings.inputs.codingSystemPlaceholder}
       />
       <TextInput
-        id={codeId}
+        id={id ? buildId(id, "code") : undefined}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.code ?? ""}
@@ -54,7 +51,7 @@ export function CodingInput({
         placeholder={strings.inputs.codingCodePlaceholder}
       />
       <TextInput
-        id={displayId}
+        id={id ? buildId(id, "display") : undefined}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.display ?? ""}

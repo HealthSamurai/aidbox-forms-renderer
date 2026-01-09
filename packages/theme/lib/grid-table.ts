@@ -8,7 +8,7 @@ export type GridTableColumn = {
 
 export type GridTableCell = {
   token: string;
-  content: ReactNode;
+  content?: ReactNode;
 };
 
 export type GridTableRow = {
@@ -16,6 +16,9 @@ export type GridTableRow = {
   label: ReactNode;
   labelId?: string;
   cells: GridTableCell[];
+  onRemove?: (() => void) | undefined;
+  canRemove?: boolean | undefined;
+  removeLabel?: string | undefined;
 };
 
 export type GridTableProps = {
