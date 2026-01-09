@@ -1,19 +1,52 @@
 import { styled } from "@linaria/react";
-import type { AnswerScaffoldProps } from "@aidbox-forms/theme";
+import type {
+  AnswerRemoveButtonProps,
+  AnswerScaffoldProps,
+} from "@aidbox-forms/theme";
+import { Trash } from "../icons/trash.tsx";
+import { IconButton } from "./icon-button.tsx";
 
 export function AnswerScaffold({
   control,
-  toolbar,
+  onRemove,
+  canRemove,
+  errors,
   children,
 }: AnswerScaffoldProps) {
   return (
     <Row>
       <MainRow>
         <Control>{control}</Control>
-        {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+        {onRemove ? (
+          <Toolbar>
+            <AnswerRemoveButton
+              onClick={onRemove}
+              disabled={canRemove === false}
+              text="Remove"
+            />
+          </Toolbar>
+        ) : null}
       </MainRow>
-      {children ? <Children>{children}</Children> : null}
+      <Children>
+        {children}
+        {errors}
+      </Children>
     </Row>
+  );
+}
+
+export function AnswerRemoveButton({
+  onClick,
+  disabled,
+  text,
+}: AnswerRemoveButtonProps) {
+  return (
+    <IconButton
+      icon={<Trash />}
+      onClick={onClick}
+      disabled={disabled}
+      label={text}
+    />
   );
 }
 
@@ -40,8 +73,7 @@ const Toolbar = styled.div`
 `;
 
 const Children = styled.div`
-  border-left: 2px solid #e2e8f0;
-  padding-left: 0.5rem;
+  padding: 0.75rem 0 0 0.75rem;
 
   &:empty {
     display: none;

@@ -1,6 +1,7 @@
 import { styled } from "@linaria/react";
-import { useId } from "react";
+import { useId, useRef } from "react";
 import type { SliderInputProps } from "@aidbox-forms/theme";
+import { clamp, useIsWithinGap } from "./utils.ts";
 
 export function SliderInput({
   value,
@@ -23,77 +24,98 @@ export function SliderInput({
     sliderMin,
     sliderMax,
   );
+  const sliderRange = sliderMax - sliderMin;
+  const valuePercent =
+    sliderRange > 0 ? ((normalizedValue - sliderMin) / sliderRange) * 100 : 0;
+  const clampedPercent = clamp(valuePercent, 0, 100);
   const unitId = unitLabel ? `${generatedId}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId]
     .filter(Boolean)
     .join(" ")
     .trim();
 
+  const labelsRef = useRef<HTMLDivElement | null>(null);
+  const valueRef = useRef<HTMLDivElement | null>(null);
+  const lowerRef = useRef<HTMLDivElement | null>(null);
+  const upperRef = useRef<HTMLDivElement | null>(null);
+  const isLowerClose = useIsWithinGap(labelsRef, valueRef, lowerRef, 8);
+  const isUpperClose = useIsWithinGap(labelsRef, valueRef, upperRef, 8);
+
+  const unit = unitLabel ? <Unit id={unitId}>{unitLabel}</Unit> : null;
+
   return (
-    <SliderShell data-disabled={disabled ? "true" : "false"}>
-      <SliderTrack>
-        <input
-          id={generatedId}
-          type="range"
-          min={sliderMin}
-          max={sliderMax}
-          step={step || 1}
-          value={normalizedValue}
-          onChange={(event) => {
-            const nextValue = Number(event.target.value);
-            onChange(Number.isNaN(nextValue) ? null : nextValue);
-          }}
-          disabled={disabled}
-          aria-labelledby={ariaLabelledBy}
-          aria-describedby={describedBy.length > 0 ? describedBy : undefined}
-        />
-        <ValueWrap aria-hidden="true">
-          <SliderValue>{value ?? "—"}</SliderValue>
-          {unitLabel ? <Unit id={unitId}>{unitLabel}</Unit> : null}
-        </ValueWrap>
-      </SliderTrack>
-      <SliderLabels aria-hidden="true">
-        <span>{lowerLabel ?? sliderMin}</span>
-        <span>{upperLabel ?? sliderMax}</span>
-      </SliderLabels>
-    </SliderShell>
+    <Wrapper data-disabled={disabled ? "true" : "false"}>
+      <Slider
+        id={generatedId}
+        type="range"
+        min={sliderMin}
+        max={sliderMax}
+        step={step || 1}
+        value={normalizedValue}
+        onChange={(event) => {
+          const nextValue = Number(event.target.value);
+          onChange(Number.isNaN(nextValue) ? null : nextValue);
+        }}
+        disabled={disabled}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={describedBy.length > 0 ? describedBy : undefined}
+      />
+      <Labels aria-hidden="true" ref={labelsRef}>
+        <Value aria-hidden="true" $left={clampedPercent} ref={valueRef}>
+          {value} {unit}
+        </Value>
+        <div ref={lowerRef} data-hidden={isLowerClose ? "true" : "false"}>
+          {lowerLabel ?? (
+            <>
+              {sliderMin} {unit}
+            </>
+          )}
+        </div>
+        <div ref={upperRef} data-hidden={isUpperClose ? "true" : "false"}>
+          {upperLabel ?? (
+            <>
+              {sliderMax} {unit}
+            </>
+          )}
+        </div>
+      </Labels>
+    </Wrapper>
   );
 }
 
-function clamp(value: number, min: number, max: number) {
-  if (value < min) return min;
-  if (value > max) return max;
-  return value;
-}
-
-const SliderShell = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.15rem;
 `;
 
-const SliderTrack = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+const Slider = styled.input`
+  width: 100%;
+  display: block;
 `;
 
-const ValueWrap = styled.div`
+const Value = styled.div<{ $left: number }>`
+  position: absolute;
+  left: ${(props) => `${props.$left}%`};
+  top: 0;
+  transform: ${(props) => `translate(-${props.$left}%, 0)`};
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  white-space: nowrap;
 `;
 
-const SliderValue = styled.div`
-  min-width: 2rem;
-  text-align: right;
-`;
-
-const SliderLabels = styled.div`
+const Labels = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
   color: #4a5568;
+  width: 100%;
+
+  & [data-hidden="true"] {
+    visibility: hidden;
+  }
 `;
 
 const Unit = styled.span`

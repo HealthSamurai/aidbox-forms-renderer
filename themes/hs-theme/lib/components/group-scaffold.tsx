@@ -13,7 +13,7 @@ export function GroupScaffold({
       data-item-control={dataControl ?? undefined}
       data-control={dataControl ?? undefined}
     >
-      {header ? <Header>{header}</Header> : null}
+      {header}
       <Content>{children}</Content>
     </Container>
   );
@@ -24,8 +24,6 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-
-const Header = styled.div``;
 
 const Content = styled.div`
   display: grid;

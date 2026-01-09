@@ -3,6 +3,7 @@ import { useId } from "react";
 import type { SpinnerInputProps } from "@aidbox-forms/theme";
 import { Minus } from "../icons/minus.tsx";
 import { Plus } from "../icons/plus.tsx";
+import { getPrecision, roundToPrecision } from "./utils.ts";
 
 export function SpinnerInput({
   value,
@@ -26,7 +27,9 @@ export function SpinnerInput({
   const handleAdjust = (direction: 1 | -1) => {
     if (disabled) return;
     const current = value ?? 0;
-    const next = current + direction * step;
+    const safeStep = Number.isFinite(step) && step !== 0 ? step : 1;
+    const precision = Math.max(getPrecision(safeStep), getPrecision(current));
+    const next = roundToPrecision(current + direction * safeStep, precision);
     if (typeof min === "number" && next < min) {
       onChange(min);
       return;
@@ -92,9 +95,11 @@ export function SpinnerInput({
 }
 
 const SpinnerShell = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
 `;
 
 const Spinner = styled.div`

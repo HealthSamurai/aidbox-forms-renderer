@@ -1,17 +1,30 @@
 import { styled } from "@linaria/react";
 import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
+import { IconButton } from "./icon-button.tsx";
 
 export function GroupWrapperScaffold({
   linkId,
   header,
   children,
-  toolbar,
+  onAdd,
+  canAdd,
+  addLabel,
 }: GroupWrapperScaffoldProps) {
+  const addText = addLabel ?? "Add";
   return (
     <Container data-linkid={linkId}>
-      {header ? <Header>{header}</Header> : null}
+      {header}
       {children}
-      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+      {onAdd ? (
+        <Toolbar>
+          <IconButton
+            icon="＋"
+            onClick={onAdd}
+            disabled={canAdd === false}
+            label={addText}
+          />
+        </Toolbar>
+      ) : null}
     </Container>
   );
 }
@@ -21,8 +34,6 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-
-const Header = styled.div``;
 
 const Toolbar = styled.div`
   display: flex;

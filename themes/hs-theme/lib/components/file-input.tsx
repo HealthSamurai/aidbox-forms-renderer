@@ -102,6 +102,7 @@ const Summary = styled.div`
   font-size: 1rem;
   cursor: pointer;
   padding-right: 2.25rem;
+  min-width: 0;
 
   &:focus-within {
     border-color: #3182ce;
@@ -122,8 +123,12 @@ const Summary = styled.div`
 `;
 
 const Label = styled.span`
+  display: block;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &[data-empty="true"] {
     color: #a0aec0;

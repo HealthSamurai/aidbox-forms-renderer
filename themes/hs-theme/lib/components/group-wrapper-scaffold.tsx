@@ -1,17 +1,31 @@
 import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
+import { Plus } from "../icons/plus.tsx";
+import { IconButton } from "./icon-button.tsx";
 
 export function GroupWrapperScaffold({
   linkId,
   header,
   children,
-  toolbar,
+  onAdd,
+  canAdd,
+  addLabel,
 }: GroupWrapperScaffoldProps) {
+  const addText = addLabel ?? "Add";
   return (
     <Container data-linkid={linkId}>
-      {header ? <Header>{header}</Header> : null}
+      {header}
       <Items>{children}</Items>
-      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+      {onAdd ? (
+        <Toolbar>
+          <IconButton
+            icon={<Plus size={16} />}
+            onClick={onAdd}
+            disabled={canAdd === false}
+            label={addText}
+          />
+        </Toolbar>
+      ) : null}
     </Container>
   );
 }
@@ -22,13 +36,15 @@ const Container = styled.div`
   gap: 1rem;
 `;
 
-const Header = styled.div``;
-
 const Items = styled.div`
   interpolate-size: allow-keywords;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  &:empty {
+    display: none;
+  }
 `;
 
 const Toolbar = styled.div`

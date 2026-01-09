@@ -1,13 +1,29 @@
 import { styled } from "@linaria/react";
 import { Children } from "react";
 import type { AnswerListProps } from "@aidbox-forms/theme";
+import { IconButton } from "./icon-button.tsx";
 
-export function AnswerList({ children, toolbar }: AnswerListProps) {
+export function AnswerList({
+  children,
+  onAdd,
+  canAdd,
+  addLabel,
+}: AnswerListProps) {
   const items = Children.toArray(children);
+  const addText = addLabel ?? "Add";
   return (
     <Container>
       {items.length > 0 ? <List>{items}</List> : null}
-      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+      {onAdd ? (
+        <Toolbar>
+          <IconButton
+            icon="＋"
+            onClick={onAdd}
+            disabled={canAdd === false}
+            label={addText}
+          />
+        </Toolbar>
+      ) : null}
     </Container>
   );
 }

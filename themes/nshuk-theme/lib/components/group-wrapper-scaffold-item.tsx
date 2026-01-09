@@ -1,18 +1,31 @@
 import { styled } from "@linaria/react";
 import { Children } from "react";
 import type { GroupWrapperScaffoldItemProps } from "@aidbox-forms/theme";
+import { IconButton } from "./icon-button.tsx";
 
 export function GroupWrapperScaffoldItem({
   children,
   errors,
-  toolbar,
+  onRemove,
+  canRemove,
+  removeLabel,
 }: GroupWrapperScaffoldItemProps) {
   const content = Children.toArray(children);
+  const removeText = removeLabel ?? "Remove";
   return (
     <Container>
       {content.length > 0 ? <Content>{content}</Content> : null}
       {errors}
-      {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+      {onRemove ? (
+        <Toolbar>
+          <IconButton
+            icon="−"
+            onClick={onRemove}
+            disabled={canRemove === false}
+            label={removeText}
+          />
+        </Toolbar>
+      ) : null}
     </Container>
   );
 }
