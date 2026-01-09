@@ -9,7 +9,7 @@ export type CheckboxListProps = {
   specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   isLoading?: boolean | undefined;

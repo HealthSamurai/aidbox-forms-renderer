@@ -61,11 +61,7 @@ export function CheckboxList({
                       (option.disabled &&
                         !(isSpecifyOtherOption && isCustomActive))
                     }
-                    aria-labelledby={
-                      ariaLabelledBy
-                        ? `${ariaLabelledBy} ${optionId}`
-                        : optionId
-                    }
+                    aria-labelledby={`${ariaLabelledBy} ${optionId}`}
                     aria-describedby={optionAriaDescribedBy}
                     onChange={(event) => {
                       if (event.target.checked) {

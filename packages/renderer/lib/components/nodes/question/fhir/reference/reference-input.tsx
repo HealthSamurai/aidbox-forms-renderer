@@ -44,7 +44,7 @@ export function ReferenceInput({
         placeholder={placeholder ?? strings.inputs.referencePlaceholder}
       />
       <TextInput
-        id={id ? buildId(id, "display") : undefined}
+        id={buildId(id, "display")}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={reference.display ?? ""}

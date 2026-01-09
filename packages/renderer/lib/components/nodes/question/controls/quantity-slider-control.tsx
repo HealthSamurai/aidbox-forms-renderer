@@ -39,7 +39,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
         max={getNumericValue(max) ?? undefined}
         step={step}
         disabled={disabled}
-        ariaLabelledBy={ariaLabelledBy ?? id}
+        ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         lowerLabel={answer.question.lower}
         upperLabel={answer.question.upper}
@@ -48,7 +48,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
           id={buildId(id, "unit")}
-          ariaLabelledBy={ariaLabelledBy ?? id}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
@@ -61,7 +61,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
           selectedOption={selectedUnit}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
           id={buildId(id, "unit")}
-          ariaLabelledBy={ariaLabelledBy ?? id}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           disabled={disabled}
         />

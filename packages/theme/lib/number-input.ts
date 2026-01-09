@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 export type NumberInputProps = {
-  id?: string | undefined;
+  id: string;
   value: number | null;
   onChange: (v: number | null) => void;
   disabled?: boolean | undefined;
@@ -9,7 +9,7 @@ export type NumberInputProps = {
   step?: number | "any";
   min?: number | undefined;
   max?: number | undefined;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   unitLabel?: string | undefined;
 };

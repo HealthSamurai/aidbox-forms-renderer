@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import type { TextInputProps } from "@aidbox-forms/theme";
 import { inputClass } from "./tokens.ts";
 
 export function TextInput({
@@ -13,19 +13,7 @@ export function TextInput({
   inputMode,
   minLength,
   maxLength,
-}: {
-  id?: string | undefined;
-  type?: string | undefined;
-  value: string;
-  onChange: (v: string) => void;
-  disabled?: boolean | undefined;
-  placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-  inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
-  minLength?: number | undefined;
-  maxLength?: number | undefined;
-}) {
+}: TextInputProps) {
   return (
     <input
       id={id}

@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type RadioButtonProps = {
-  id?: string | undefined;
+  id: string;
   groupName: string;
   value: string;
   checked: boolean;
@@ -10,7 +10,6 @@ export type RadioButtonProps = {
   ariaDescribedBy?: string | undefined;
   disabled?: boolean;
   label?: ReactNode;
-  hideLabel?: boolean;
 };
 
 export type RadioButtonComponent = ComponentType<RadioButtonProps>;

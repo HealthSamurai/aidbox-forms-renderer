@@ -4,7 +4,7 @@ export type NodeHeaderAs = "legend" | "label" | "text";
 
 export type NodeHeaderProps = {
   label: ReactNode;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   htmlFor?: string | undefined;
   required?: boolean | undefined;
   help?: ReactNode;

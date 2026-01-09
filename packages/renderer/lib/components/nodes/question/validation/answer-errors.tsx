@@ -9,18 +9,14 @@ export const AnswerErrors = observer(function AnswerErrors({
   answer: IAnswerInstance;
 }) {
   const { Errors: ThemedErrors } = useTheme();
-
-  if (answer.issues.length === 0) {
-    return null;
-  }
+  const id = getAnswerErrorId(answer);
+  if (!id) return null;
 
   const messages = answer.issues
     .map((issue) => getIssueMessage(issue))
     .filter((message): message is string => Boolean(message));
 
-  if (messages.length === 0) {
-    return null;
-  }
+  if (messages.length === 0) return null;
 
-  return <ThemedErrors id={getAnswerErrorId(answer)} messages={messages} />;
+  return <ThemedErrors id={id} messages={messages} />;
 });

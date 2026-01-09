@@ -37,13 +37,13 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
         step={0.1}
         disabled={disabled}
         placeholder={valuePlaceholder}
-        ariaLabelledBy={ariaLabelledBy ?? id}
+        ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
       />
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
           id={buildId(id, "unit")}
-          ariaLabelledBy={ariaLabelledBy ?? id}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           value={unitValue}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
@@ -56,7 +56,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
           selectedOption={selectedUnit}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
           id={buildId(id, "unit")}
-          ariaLabelledBy={ariaLabelledBy ?? id}
+          ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           disabled={disabled}
         />

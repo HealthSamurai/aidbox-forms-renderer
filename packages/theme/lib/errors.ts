@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 export type ErrorsProps = {
-  id?: string | undefined;
+  id: string;
   messages: string[];
 };
 

@@ -1,13 +1,13 @@
 import type { ComponentType, HTMLAttributes } from "react";
 
 export type TextInputProps = {
-  id?: string | undefined;
+  id: string;
   type?: string | undefined;
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   inputMode?: HTMLAttributes<Element>["inputMode"] | undefined;
   minLength?: number | undefined;

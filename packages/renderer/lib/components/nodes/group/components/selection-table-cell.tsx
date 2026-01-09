@@ -33,9 +33,11 @@ export const SelectionTableCell = observer(function SelectionTableCell({
 
   const groupName = buildId(questionAxis.token, "table");
   const ariaLabelledBy = `${questionAxis.ariaLabelledBy} ${optionLabelId}`;
+  const controlId = buildId(questionAxis.token, option.token, "control");
 
   return questionAxis.question.repeats ? (
     <Checkbox
+      id={controlId}
       checked={cell.selected}
       disabled={cell.disabled}
       onChange={toggleCell}
@@ -44,6 +46,7 @@ export const SelectionTableCell = observer(function SelectionTableCell({
     />
   ) : (
     <RadioButton
+      id={controlId}
       groupName={groupName}
       value={option.token}
       checked={cell.selected}

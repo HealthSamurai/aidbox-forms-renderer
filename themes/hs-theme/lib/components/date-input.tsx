@@ -1,3 +1,4 @@
+import type { DateInputProps } from "@aidbox-forms/theme";
 import { inputClass } from "./tokens.ts";
 
 export function DateInput({
@@ -10,17 +11,7 @@ export function DateInput({
   ariaDescribedBy,
   min,
   max,
-}: {
-  id?: string | undefined;
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean | undefined;
-  placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
-  ariaDescribedBy?: string | undefined;
-  min?: string | undefined;
-  max?: string | undefined;
-}) {
+}: DateInputProps) {
   return (
     <input
       id={id}

@@ -7,7 +7,7 @@ export type SliderInputProps = {
   min?: number | undefined;
   max?: number | undefined;
   step?: number | undefined;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   lowerLabel?: string | undefined;
   upperLabel?: string | undefined;

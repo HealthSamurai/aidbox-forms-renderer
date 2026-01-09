@@ -9,16 +9,14 @@ export const NodeErrors = observer(function NodeErrors({
   node: INode;
 }) {
   const { Errors: ThemedErrors } = useTheme();
-
-  if (!node.hasErrors) return null;
+  const id = getNodeErrorId(node);
+  if (!id) return null;
 
   const messages = node.issues
     .map((issue) => getIssueMessage(issue))
     .filter((message): message is string => Boolean(message));
 
-  if (messages.length === 0) {
-    return null;
-  }
+  if (messages.length === 0) return null;
 
-  return <ThemedErrors id={getNodeErrorId(node)} messages={messages} />;
+  return id ? <ThemedErrors id={id} messages={messages} /> : null;
 });

@@ -10,8 +10,8 @@ export type Attachment = {
 
 export type FileInputProps = {
   value: Attachment | null;
-  id?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  id: string;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   accept?: string | undefined;

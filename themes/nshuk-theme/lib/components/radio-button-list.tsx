@@ -16,7 +16,7 @@ export function RadioButtonList({
     ? [...options, specifyOtherOption]
     : options;
   const selectedToken = selectedOption?.token ?? "";
-  const makeInputId = (token: string) => (id ? `${id}-${token}` : undefined);
+  const makeInputId = (token: string) => `${id}-${token}`;
 
   return (
     <div className="nhsuk-form-group">

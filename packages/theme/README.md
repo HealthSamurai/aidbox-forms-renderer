@@ -278,7 +278,7 @@ input.
 
 | Prop       | Type       | Required | Description                                                                |
 | ---------- | ---------- | -------- | -------------------------------------------------------------------------- |
-| `id`       | `string`   | No       | Apply as the container id so inputs can reference it via aria-describedby. |
+| `id`       | `string`   | Yes      | Apply as the container id so inputs can reference it via aria-describedby. |
 | `messages` | `string[]` | Yes      | Render each string as a distinct message line.                             |
 
 Consider rendering messages as a list. If you use `aria-live` or `role="alert"` to announce updates, prefer polite
@@ -338,7 +338,7 @@ also provides the labelled-by anchor for the main control.
 | ---------------- | ------------------------------- | -------- | ------------------------------------------------------------------------------------- |
 | `label`          | `ReactNode`                     | Yes      | Render as the primary label text or markup for the node.                              |
 | `as`             | `"legend" \| "label" \| "text"` | No       | Hint for the semantic role of the label; themes can select the appropriate tag.       |
-| `ariaLabelledBy` | `string`                        | No       | Use as the id on the label element so the input can reference it via aria-labelledby. |
+| `ariaLabelledBy` | `string`                        | Yes      | Use as the id on the label element so the input can reference it via aria-labelledby. |
 | `htmlFor`        | `string`                        | No       | Forward to the label element to connect it to the primary control.                    |
 | `required`       | `boolean`                       | No       | When true, display a visual required indicator near the label.                        |
 | `help`           | `ReactNode`                     | No       | Render the help slot content next to or beneath the label.                            |
@@ -366,13 +366,13 @@ ids and placeholder.
 
 | Prop              | Type                                   | Required | Description                                                                 |
 | ----------------- | -------------------------------------- | -------- | --------------------------------------------------------------------------- |
-| `id`              | `string`                               | No       | Set as the input element id so labels can target it.                        |
+| `id`              | `string`                               | Yes      | Set as the input element id so labels can target it.                        |
 | `type`            | `string`                               | No       | Use as the HTML input type (defaults to text in most themes).               |
 | `value`           | `string`                               | Yes      | Render this string as the current input value.                              |
 | `onChange`        | `(value: string) => void`              | Yes      | Call with the new string whenever the user edits the field.                 |
 | `disabled`        | `boolean`                              | No       | When true, render the input in a disabled state and prevent edits.          |
 | `placeholder`     | `string`                               | No       | Show this hint when the input is empty.                                     |
-| `ariaLabelledBy`  | `string`                               | No       | Forward to aria-labelledby to associate the input with its label.           |
+| `ariaLabelledBy`  | `string`                               | Yes      | Forward to aria-labelledby to associate the input with its label.           |
 | `ariaDescribedBy` | `string`                               | No       | Forward to aria-describedby to associate the input with help or error text. |
 | `inputMode`       | `HTMLAttributes<Element>["inputMode"]` | No       | Apply to the inputmode attribute to influence virtual keyboard layouts.     |
 
@@ -383,12 +383,12 @@ placeholder.
 
 | Prop              | Type                      | Required | Description                                                                    |
 | ----------------- | ------------------------- | -------- | ------------------------------------------------------------------------------ |
-| `id`              | `string`                  | No       | Set as the textarea id so labels can target it.                                |
+| `id`              | `string`                  | Yes      | Set as the textarea id so labels can target it.                                |
 | `value`           | `string`                  | Yes      | Render this string as the current textarea value.                              |
 | `onChange`        | `(value: string) => void` | Yes      | Call with the new string whenever the user edits the text.                     |
 | `disabled`        | `boolean`                 | No       | When true, render the textarea in a disabled state and prevent edits.          |
 | `placeholder`     | `string`                  | No       | Show this hint when the textarea is empty.                                     |
-| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby to associate the textarea with its label.           |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the textarea with its label.           |
 | `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the textarea with help or error text. |
 
 ### NumberInput
@@ -397,13 +397,13 @@ Numeric text field for integer, decimal, and quantity values. Accept null for em
 
 | Prop              | Type                              | Required | Description                                                                         |
 | ----------------- | --------------------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `id`              | `string`                          | No       | Set as the input id so labels can target it.                                        |
+| `id`              | `string`                          | Yes      | Set as the input id so labels can target it.                                        |
 | `value`           | `number \| null`                  | Yes      | Render this number as the current value; null means show an empty field.            |
 | `onChange`        | `(value: number \| null) => void` | Yes      | Call with the parsed number when the user edits, or null when the field is cleared. |
 | `disabled`        | `boolean`                         | No       | When true, render the input in a disabled state and prevent edits.                  |
 | `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                             |
 | `step`            | `number \| "any"`                 | No       | Apply as the input step value to control increments and precision.                  |
-| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                   |
+| `ariaLabelledBy`  | `string`                          | Yes      | Forward to aria-labelledby to associate the input with its label.                   |
 | `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.         |
 | `unitLabel`       | `string`                          | No       | Render a static unit label alongside the input when provided.                       |
 
@@ -413,12 +413,12 @@ Date-only field for calendar values. Use a date picker or text input but keep th
 
 | Prop              | Type                      | Required | Description                                                                 |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------- |
-| `id`              | `string`                  | No       | Set as the input id so labels can target it.                                |
+| `id`              | `string`                  | Yes      | Set as the input id so labels can target it.                                |
 | `value`           | `string`                  | Yes      | Render this date string as the current value (typically `YYYY-MM-DD`).      |
 | `onChange`        | `(value: string) => void` | Yes      | Call with the new date string whenever the user edits the field.            |
 | `disabled`        | `boolean`                 | No       | When true, render the input in a disabled state and prevent edits.          |
 | `placeholder`     | `string`                  | No       | Show this hint when the field is empty.                                     |
-| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby to associate the input with its label.           |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the input with its label.           |
 | `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the input with help or error text. |
 
 ### DateTimeInput
@@ -427,12 +427,12 @@ Date and time field for combined values. Use a datetime picker or text input but
 
 | Prop              | Type                      | Required | Description                                                                       |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `id`              | `string`                  | No       | Set as the input id so labels can target it.                                      |
+| `id`              | `string`                  | Yes      | Set as the input id so labels can target it.                                      |
 | `value`           | `string`                  | Yes      | Render this date-time string as the current value (typically `YYYY-MM-DDTHH:mm`). |
 | `onChange`        | `(value: string) => void` | Yes      | Call with the new date-time string whenever the user edits the field.             |
 | `disabled`        | `boolean`                 | No       | When true, render the input in a disabled state and prevent edits.                |
 | `placeholder`     | `string`                  | No       | Show this hint when the field is empty.                                           |
-| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby to associate the input with its label.                 |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the input with its label.                 |
 | `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the input with help or error text.       |
 
 ### TimeInput
@@ -441,12 +441,12 @@ Time-only field for hours and minutes. Use a time picker or text input but keep 
 
 | Prop              | Type                      | Required | Description                                                                 |
 | ----------------- | ------------------------- | -------- | --------------------------------------------------------------------------- |
-| `id`              | `string`                  | No       | Set as the input id so labels can target it.                                |
+| `id`              | `string`                  | Yes      | Set as the input id so labels can target it.                                |
 | `value`           | `string`                  | Yes      | Render this time string as the current value (typically `HH:mm`).           |
 | `onChange`        | `(value: string) => void` | Yes      | Call with the new time string whenever the user edits the field.            |
 | `disabled`        | `boolean`                 | No       | When true, render the input in a disabled state and prevent edits.          |
 | `placeholder`     | `string`                  | No       | Show this hint when the field is empty.                                     |
-| `ariaLabelledBy`  | `string`                  | No       | Forward to aria-labelledby to associate the input with its label.           |
+| `ariaLabelledBy`  | `string`                  | Yes      | Forward to aria-labelledby to associate the input with its label.           |
 | `ariaDescribedBy` | `string`                  | No       | Forward to aria-describedby to associate the input with help or error text. |
 
 ### SliderInput
@@ -461,7 +461,7 @@ Range control for bounded numeric values. Show bounds and current value when ava
 | `min`             | `number`                          | No       | Use as the lower bound for the slider range.                                       |
 | `max`             | `number`                          | No       | Use as the upper bound for the slider range.                                       |
 | `step`            | `number`                          | No       | Apply as the slider step increment.                                                |
-| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the slider with its label.                 |
+| `ariaLabelledBy`  | `string`                          | Yes      | Forward to aria-labelledby to associate the slider with its label.                 |
 | `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the slider with help or error text.       |
 | `lowerLabel`      | `string`                          | No       | Display this label near the minimum value marker when provided.                    |
 | `upperLabel`      | `string`                          | No       | Display this label near the maximum value marker when provided.                    |
@@ -479,7 +479,7 @@ Numeric control with stepper affordances for small ranges. It should support typ
 | `min`             | `number`                          | No       | Use as the lower bound for the value.                                                          |
 | `max`             | `number`                          | No       | Use as the upper bound for the value.                                                          |
 | `step`            | `number`                          | No       | Apply as the step increment for the control.                                                   |
-| `ariaLabelledBy`  | `string`                          | No       | Forward to aria-labelledby to associate the input with its label.                              |
+| `ariaLabelledBy`  | `string`                          | Yes      | Forward to aria-labelledby to associate the input with its label.                              |
 | `ariaDescribedBy` | `string`                          | No       | Forward to aria-describedby to associate the input with help or error text.                    |
 | `placeholder`     | `string`                          | No       | Show this hint when the field is empty.                                                        |
 | `unitLabel`       | `string`                          | No       | Render a unit label alongside the input when provided.                                         |
@@ -497,7 +497,7 @@ clearing the selection when applicable.
 | `specifyOtherOption` | `OptionItem`                      | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
 | `customOptionForm`   | `ReactNode`                       | No       | Render UI associated with the custom option (for example, a custom value input row). |
 | `id`                 | `string`                          | Yes      | Set as the select element id so labels can target it.                                |
-| `ariaLabelledBy`     | `string`                          | No       | Forward to aria-labelledby to associate the select with its label.                   |
+| `ariaLabelledBy`     | `string`                          | Yes      | Forward to aria-labelledby to associate the select with its label.                   |
 | `ariaDescribedBy`    | `string`                          | No       | Forward to aria-describedby to associate the select with help or error text.         |
 | `disabled`           | `boolean`                         | No       | When true, render the select in a disabled state and prevent changes.                |
 | `isLoading`          | `boolean`                         | No       | When true, show a loading indicator or disable option interactions as needed.        |
@@ -518,7 +518,7 @@ Single-select option list presented as radio buttons. Include disabled legacy op
 | `specifyOtherOption` | `OptionItem`                      | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
 | `customOptionForm`   | `ReactNode`                       | No       | Render UI associated with the custom option (for example, a custom value input row). |
 | `id`                 | `string`                          | Yes      | Use as the radio group name/id so options stay grouped.                              |
-| `ariaLabelledBy`     | `string`                          | No       | Forward to aria-labelledby to associate the group with its label.                    |
+| `ariaLabelledBy`     | `string`                          | Yes      | Forward to aria-labelledby to associate the group with its label.                    |
 | `ariaDescribedBy`    | `string`                          | No       | Forward to aria-describedby to associate the group with help or error text.          |
 | `disabled`           | `boolean`                         | No       | When true, render options as disabled and prevent selection changes.                 |
 | `isLoading`          | `boolean`                         | No       | When true, show a loading indicator or busy state for the list.                      |
@@ -536,7 +536,7 @@ Multi-select option list presented as checkboxes. Support per-option errors and 
 | `specifyOtherOption` | `OptionItem`              | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
 | `customOptionForm`   | `ReactNode`               | No       | Render UI associated with the custom option (for example, a custom value input row). |
 | `id`                 | `string`                  | Yes      | Use as the checkbox group name/id so inputs stay grouped.                            |
-| `ariaLabelledBy`     | `string`                  | No       | Forward to aria-labelledby to associate the group with its label.                    |
+| `ariaLabelledBy`     | `string`                  | Yes      | Forward to aria-labelledby to associate the group with its label.                    |
 | `ariaDescribedBy`    | `string`                  | No       | Forward to aria-describedby to associate the group with help or error text.          |
 | `disabled`           | `boolean`                 | No       | When true, render all options as disabled and prevent changes.                       |
 | `isLoading`          | `boolean`                 | No       | When true, show a loading indicator or busy state for the list.                      |
@@ -559,7 +559,7 @@ as chips and allow removal when permitted.
 | `onSearch`           | `(query: string) => void` | No       | Call with the search query when the user types into the picker input.                |
 | `id`                 | `string`                  | Yes      | Set as the input id so the combobox and listbox can be referenced.                   |
 | `specifyOtherOption` | `OptionItem`              | No       | Render an extra option (for example, “Specify other”) alongside the options list.    |
-| `ariaLabelledBy`     | `string`                  | No       | Forward to aria-labelledby for the picker so it associates with the label.           |
+| `ariaLabelledBy`     | `string`                  | Yes      | Forward to aria-labelledby for the picker so it associates with the label.           |
 | `ariaDescribedBy`    | `string`                  | No       | Forward to aria-describedby for the picker so it associates with help or error text. |
 | `disabled`           | `boolean`                 | No       | When true, render the picker and chip actions in a disabled state.                   |
 | `isLoading`          | `boolean`                 | No       | When true, show a loading indicator or busy state for the options.                   |
@@ -590,8 +590,8 @@ file (or null when clearing) so the renderer can update the Attachment.
 | Prop              | Type                           | Required | Description                                                                  |
 | ----------------- | ------------------------------ | -------- | ---------------------------------------------------------------------------- |
 | `value`           | `Attachment \| null`           | Yes      | Render this attachment as the current value; null means no file is selected. |
-| `id`              | `string`                       | No       | Set as the input id so labels can target the underlying file input.          |
-| `ariaLabelledBy`  | `string`                       | No       | Forward to aria-labelledby for the file input and any summary region.        |
+| `id`              | `string`                       | Yes      | Set as the input id so labels can target the underlying file input.          |
+| `ariaLabelledBy`  | `string`                       | Yes      | Forward to aria-labelledby for the file input and any summary region.        |
 | `ariaDescribedBy` | `string`                       | No       | Forward to aria-describedby for the file input and any summary region.       |
 | `disabled`        | `boolean`                      | No       | When true, disable file selection and related actions.                       |
 | `onChange`        | `(file: File \| null) => void` | No       | Call with the selected file, or null when clearing the current file.         |

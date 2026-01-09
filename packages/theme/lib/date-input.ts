@@ -1,12 +1,12 @@
 import type { ComponentType } from "react";
 
 export type DateInputProps = {
-  id?: string | undefined;
+  id: string;
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
-  ariaLabelledBy?: string | undefined;
+  ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   min?: string | undefined;
   max?: string | undefined;

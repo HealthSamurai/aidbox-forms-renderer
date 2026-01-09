@@ -42,7 +42,7 @@ export function CodingInput({
         placeholder={strings.inputs.codingSystemPlaceholder}
       />
       <TextInput
-        id={id ? buildId(id, "code") : undefined}
+        id={buildId(id, "code")}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.code ?? ""}
@@ -51,7 +51,7 @@ export function CodingInput({
         placeholder={strings.inputs.codingCodePlaceholder}
       />
       <TextInput
-        id={id ? buildId(id, "display") : undefined}
+        id={buildId(id, "display")}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.display ?? ""}
