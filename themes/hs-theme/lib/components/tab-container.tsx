@@ -1,8 +1,8 @@
 import { styled } from "@linaria/react";
-import type { TabContainerProps } from "@aidbox-forms/theme";
+import type { TabContainerProperties } from "@aidbox-forms/theme";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EmptyState } from "./empty-state.tsx";
-import { clamp } from "./utils.ts";
+import { clamp } from "./utilities.ts";
 
 export function TabContainer({
   header,
@@ -12,11 +12,11 @@ export function TabContainer({
   errors,
   empty,
   linkId,
-}: TabContainerProps) {
-  const tabListRef = useRef<HTMLDivElement | null>(null);
-  const tabListInnerRef = useRef<HTMLDivElement | null>(null);
-  const leftScrollRef = useRef<HTMLButtonElement | null>(null);
-  const rightScrollRef = useRef<HTMLButtonElement | null>(null);
+}: TabContainerProperties) {
+  const tabListReference = useRef<HTMLDivElement | null>(null);
+  const tabListInnerReference = useRef<HTMLDivElement | null>(null);
+  const leftScrollReference = useRef<HTMLButtonElement | null>(null);
+  const rightScrollReference = useRef<HTMLButtonElement | null>(null);
   const [isScrollable, setIsScrollable] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -24,26 +24,20 @@ export function TabContainer({
   const clampedIndex = clamp(value, 0, Math.max(items.length - 1, 0));
 
   const updateScrollState = useCallback(() => {
-    const list = tabListRef.current;
+    const list = tabListReference.current;
     if (!list) return;
     const maxScrollLeft = Math.max(list.scrollWidth - list.clientWidth, 0);
     const nextScrollable = maxScrollLeft > 1;
     const nextCanScrollLeft = list.scrollLeft > 0;
     const nextCanScrollRight = list.scrollLeft < maxScrollLeft - 1;
 
-    setIsScrollable((prev) =>
-      prev !== nextScrollable ? nextScrollable : prev,
-    );
-    setCanScrollLeft((prev) =>
-      prev !== nextCanScrollLeft ? nextCanScrollLeft : prev,
-    );
-    setCanScrollRight((prev) =>
-      prev !== nextCanScrollRight ? nextCanScrollRight : prev,
-    );
+    setIsScrollable(nextScrollable);
+    setCanScrollLeft(nextCanScrollLeft);
+    setCanScrollRight(nextCanScrollRight);
   }, []);
 
   useEffect(() => {
-    const list = tabListRef.current;
+    const list = tabListReference.current;
     if (!list) return;
     updateScrollState();
 
@@ -52,10 +46,10 @@ export function TabContainer({
 
     if (typeof ResizeObserver === "undefined") {
       const handleResize = () => updateScrollState();
-      window.addEventListener("resize", handleResize);
+      globalThis.addEventListener("resize", handleResize);
       return () => {
         list.removeEventListener("scroll", handleScroll);
-        window.removeEventListener("resize", handleResize);
+        globalThis.removeEventListener("resize", handleResize);
       };
     }
 
@@ -73,18 +67,18 @@ export function TabContainer({
   }, [items, updateScrollState]);
 
   useEffect(() => {
-    const list = tabListRef.current;
+    const list = tabListReference.current;
     if (!list) return;
     const activeTab = list.querySelector<HTMLElement>('[data-selected="true"]');
     if (!activeTab) return;
-    const inner = tabListInnerRef.current;
+    const inner = tabListInnerReference.current;
     if (!inner) return;
 
-    const styles = window.getComputedStyle(inner);
+    const styles = globalThis.getComputedStyle(inner);
     const leftPadding = Number.parseFloat(styles.paddingLeft) || 0;
     const rightPadding = Number.parseFloat(styles.paddingRight) || 0;
-    const leftOverlay = leftScrollRef.current?.offsetWidth ?? 0;
-    const rightOverlay = rightScrollRef.current?.offsetWidth ?? 0;
+    const leftOverlay = leftScrollReference.current?.offsetWidth ?? 0;
+    const rightOverlay = rightScrollReference.current?.offsetWidth ?? 0;
     const leftSafe = isScrollable ? Math.max(leftPadding, leftOverlay) : 0;
     const rightSafe = isScrollable ? Math.max(rightPadding, rightOverlay) : 0;
     const listRect = list.getBoundingClientRect();
@@ -112,7 +106,7 @@ export function TabContainer({
   }, [clampedIndex, isScrollable, items.length]);
 
   const handleScrollButton = (direction: 1 | -1) => {
-    const list = tabListRef.current;
+    const list = tabListReference.current;
     if (!list) return;
     const offset = Math.max(140, Math.round(list.clientWidth * 0.6));
     list.scrollBy({ left: direction * offset, behavior: "smooth" });
@@ -129,7 +123,7 @@ export function TabContainer({
       {Boolean(header) && <Header>{header}</Header>}
       <TabStrip>
         <TabScrollButton
-          ref={leftScrollRef}
+          ref={leftScrollReference}
           type="button"
           aria-label="Scroll tabs left"
           onClick={() => handleScrollButton(-1)}
@@ -137,13 +131,13 @@ export function TabContainer({
           data-visible={isScrollable && canScrollLeft ? "true" : "false"}
           disabled={!canScrollLeft}
         />
-        <TabList role="tablist" ref={tabListRef}>
+        <TabList role="tablist" ref={tabListReference}>
           <TabListInner
-            ref={tabListInnerRef}
+            ref={tabListInnerReference}
             data-scrollable={isScrollable ? "true" : "false"}
           >
-            {items.map((item, idx) => {
-              const selected = idx === clampedIndex;
+            {items.map((item, index) => {
+              const selected = index === clampedIndex;
               return (
                 <TabButton
                   key={item.token}
@@ -152,7 +146,7 @@ export function TabContainer({
                   aria-selected={selected}
                   aria-controls={item.panelId}
                   id={item.buttonId}
-                  onClick={() => onChange(idx)}
+                  onClick={() => onChange(index)}
                   data-selected={selected ? "true" : "false"}
                 >
                   {item.label}
@@ -162,7 +156,7 @@ export function TabContainer({
           </TabListInner>
         </TabList>
         <TabScrollButton
-          ref={rightScrollRef}
+          ref={rightScrollReference}
           type="button"
           aria-label="Scroll tabs right"
           onClick={() => handleScrollButton(1)}

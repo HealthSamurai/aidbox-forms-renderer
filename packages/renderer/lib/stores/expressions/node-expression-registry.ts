@@ -17,7 +17,7 @@ import {
   extractExtensionValueElement,
   findExtensions,
   makeIssue,
-} from "../../utils.ts";
+} from "../../utilities.ts";
 import { BaseExpressionRegistry } from "./base-expression-registry.ts";
 import { observable } from "mobx";
 

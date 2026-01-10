@@ -1,8 +1,8 @@
-import type { ValueDisplayProps } from "../../../../../types.ts";
+import type { ValueDisplayProperties } from "../../../../../types.ts";
 
-export function QuantityDisplay({ value }: ValueDisplayProps<"quantity">) {
+export function QuantityDisplay({ value }: ValueDisplayProperties<"quantity">) {
   const pieces: Array<string | number> = [];
-  if (value.value !== undefined && value.value !== null) {
+  if (value.value !== undefined) {
     pieces.push(value.value);
   }
   if (value.unit) {

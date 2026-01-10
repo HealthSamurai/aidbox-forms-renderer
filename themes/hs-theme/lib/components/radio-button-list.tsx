@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { RadioButtonListProps } from "@aidbox-forms/theme";
+import type { RadioButtonListProperties } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
 
 export function RadioButtonList({
@@ -13,7 +13,7 @@ export function RadioButtonList({
   ariaDescribedBy,
   disabled,
   isLoading = false,
-}: RadioButtonListProps) {
+}: RadioButtonListProperties) {
   const displayOptions = specifyOtherOption
     ? [...options, specifyOtherOption]
     : options;
@@ -45,15 +45,15 @@ export function RadioButtonList({
             </RadioOption>
           ))}
         </RadioGroupContainer>
-      ) : null}
+      ) : undefined}
       {isLoading ? (
         <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
+      ) : undefined}
       {customOptionForm ? (
         <CustomFormSlot>{customOptionForm}</CustomFormSlot>
-      ) : null}
+      ) : undefined}
     </Stack>
   );
 }

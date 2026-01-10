@@ -1,6 +1,8 @@
-import type { ValueDisplayProps } from "../../../../../types.ts";
+import type { ValueDisplayProperties } from "../../../../../types.ts";
 
-export function ReferenceDisplay({ value }: ValueDisplayProps<"reference">) {
+export function ReferenceDisplay({
+  value,
+}: ValueDisplayProperties<"reference">) {
   const label = value.display ?? value.reference ?? "";
   return <>{label}</>;
 }

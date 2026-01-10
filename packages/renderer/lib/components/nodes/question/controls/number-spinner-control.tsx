@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import type { ValueControlProps } from "../../../../types.ts";
-import { getNumericValue } from "../../../../utils.ts";
+import type { ValueControlProperties } from "../../../../types.ts";
+import { getNumericValue } from "../../../../utilities.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
 
@@ -8,14 +8,14 @@ export const NumberSpinnerControl = observer(function SpinnerControl({
   answer,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"integer" | "decimal">) {
+}: ValueControlProperties<"integer" | "decimal">) {
   const { SpinnerInput } = useTheme();
   const { min, max } = answer.bounds;
 
   const onChange = useCallback(
-    (next: number | null) => {
+    (next: number | undefined) => {
       if (answer.question.type === "integer") {
-        answer.setValueByUser(next != null ? Math.round(next) : null);
+        answer.setValueByUser(next == undefined ? undefined : Math.round(next));
         return;
       }
 

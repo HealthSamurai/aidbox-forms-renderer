@@ -16,7 +16,7 @@ export const GroupList = observer(function GroupList({
   const { GroupList: ThemedGroupList } = useTheme();
   const header = list.template.text ? (
     <NodeHeader node={list} as="legend" />
-  ) : null;
+  ) : undefined;
   return (
     <ThemedGroupList
       linkId={list.linkId}
@@ -29,7 +29,7 @@ export const GroupList = observer(function GroupList({
         list.visibleNodes.map((node) => {
           const Renderer = node.renderer;
           if (!Renderer) {
-            return null;
+            return;
           }
 
           return (

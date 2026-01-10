@@ -9,7 +9,7 @@ import {
   SnapshotKind,
   GROUP_ITEM_CONTROLS,
   type GroupItemControl,
-  GroupRendererProps,
+  GroupRendererProperties,
 } from "../../../types.ts";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
@@ -19,7 +19,7 @@ import {
   makeIssue,
   shouldCreateStore,
   withQuestionnaireResponseItemMeta,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import { GroupValidator } from "../../validation/group-validator.ts";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
@@ -44,7 +44,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     scope: IScope,
     token: string,
     responseItem: QuestionnaireResponseItem | undefined,
@@ -61,7 +61,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     this.nodes.replace(
       (this.template.item ?? [])
-        .filter(shouldCreateStore)
+        .filter((item) => shouldCreateStore(item))
         .map((item) =>
           this.form.createNodeStore(
             item,
@@ -78,7 +78,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   }
 
   @computed
-  get renderer(): ComponentType<GroupRendererProps> | undefined {
+  get renderer(): ComponentType<GroupRendererProperties> | undefined {
     return this.form.groupRendererRegistry.resolve(this)?.renderer;
   }
 
@@ -118,10 +118,8 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
     const childItems = this.collectChildItems(kind);
 
-    if (kind === "response") {
-      if (!this.isEnabled || childItems.length === 0) {
-        return [];
-      }
+    if (kind === "response" && (!this.isEnabled || childItems.length === 0)) {
+      return [];
     }
 
     const item = withQuestionnaireResponseItemMeta({
@@ -144,7 +142,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
   @action
   dispose(): void {
-    const children = this.nodes.slice();
+    const children = [...this.nodes];
     this.nodes.clear();
     children.forEach((child) => child.dispose());
   }
@@ -229,13 +227,13 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 }
 
 export function isGroupNode(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
 ): it is IGroupNode {
   return it instanceof GroupStore;
 }
 
 export function assertGroupNode(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
   message?: string,
 ): asserts it is IGroupNode {
   if (!isGroupNode(it)) {

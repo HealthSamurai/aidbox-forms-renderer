@@ -1,12 +1,12 @@
 import type { Attachment } from "fhir/r5";
 import type { Attachment as ThemeAttachment } from "@aidbox-forms/theme";
 import { useCallback, useMemo } from "react";
-import { prepareAttachmentFromFile } from "../../../../../utils.ts";
+import { prepareAttachmentFromFile } from "../../../../../utilities.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type AttachmentInputProps = {
-  value: Attachment | null;
-  onChange: (value: Attachment | null) => void;
+export type AttachmentInputProperties = {
+  value: Attachment | undefined;
+  onChange: (value?: Attachment) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -22,21 +22,21 @@ export function AttachmentInput({
   ariaDescribedBy,
   disabled,
   accept,
-}: AttachmentInputProps) {
+}: AttachmentInputProperties) {
   const { FileInput: ThemedFileInput } = useTheme();
 
   const handleFileChange = useCallback(
-    async (file: File | null) => {
+    async (file: File | undefined) => {
       if (file) {
         onChange(await prepareAttachmentFromFile(file));
       } else {
-        onChange(null);
+        onChange();
       }
     },
     [onChange],
   );
 
-  const themeValue = useMemo<ThemeAttachment | null>(() => {
+  const themeValue = useMemo<ThemeAttachment | undefined>(() => {
     return (
       value && {
         ...value,

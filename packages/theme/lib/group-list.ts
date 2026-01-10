@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type GroupListProps = {
+export type GroupListProperties = {
   linkId: string;
   header?: ReactNode;
   children: ReactNode;
@@ -9,4 +9,4 @@ export type GroupListProps = {
   addLabel?: string | undefined;
 };
 
-export type GroupListComponent = ComponentType<GroupListProps>;
+export type GroupListComponent = ComponentType<GroupListProperties>;

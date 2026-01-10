@@ -1,4 +1,4 @@
-import type { CheckboxProps } from "@aidbox-forms/theme";
+import type { CheckboxProperties } from "@aidbox-forms/theme";
 
 export function Checkbox({
   id,
@@ -8,7 +8,7 @@ export function Checkbox({
   ariaDescribedBy,
   disabled,
   label,
-}: CheckboxProps) {
+}: CheckboxProperties) {
   return (
     <div className="nhsuk-checkboxes">
       <label className="nhsuk-checkboxes__item">
@@ -24,7 +24,7 @@ export function Checkbox({
         />
         {label ? (
           <span className="nhsuk-label nhsuk-checkboxes__label">{label}</span>
-        ) : null}
+        ) : undefined}
       </label>
     </div>
   );

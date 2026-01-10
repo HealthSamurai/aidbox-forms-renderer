@@ -1,9 +1,9 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type NodeFlyoverProps = {
+export type NodeFlyoverProperties = {
   id: string;
   children: ReactNode;
   ariaLabel?: string | undefined;
 };
 
-export type NodeFlyoverComponent = ComponentType<NodeFlyoverProps>;
+export type NodeFlyoverComponent = ComponentType<NodeFlyoverProperties>;

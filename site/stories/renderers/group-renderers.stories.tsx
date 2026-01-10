@@ -11,7 +11,7 @@ import type {
   GroupItemControl,
   QuestionItemControl,
 } from "@aidbox-forms/renderer/types.ts";
-import { EXT, ITEM_CONTROL_SYSTEM } from "@aidbox-forms/renderer/utils.ts";
+import { EXT, ITEM_CONTROL_SYSTEM } from "@aidbox-forms/renderer/utilities.ts";
 import {
   buildQuestionItem,
   buildQuestionnaire,
@@ -111,7 +111,7 @@ function buildPageQuestions(
     });
 
   switch (label) {
-    case "Demographics":
+    case "Demographics": {
       return [
         buildPageItem("first-name", "First name", "string", "text-box"),
         buildPageItem("last-name", "Last name", "string", "text-box"),
@@ -120,7 +120,8 @@ function buildPageQuestions(
         buildPageItem("mobile-phone", "Mobile phone", "string", "text-box"),
         buildPageItem("email", "Email", "string", "text-box"),
       ];
-    case "Current medications":
+    }
+    case "Current medications": {
       return [
         buildPageItem(
           "medication-name",
@@ -134,7 +135,8 @@ function buildPageQuestions(
         buildPageItem("start-date", "Start date", "date"),
         buildPageItem("still-taking", "Still taking", "boolean", "check-box"),
       ];
-    case "Intake details":
+    }
+    case "Intake details": {
       return [
         buildPageItem(
           "reason-for-visit",
@@ -153,7 +155,8 @@ function buildPageQuestions(
           "check-box",
         ),
       ];
-    case "Medical history":
+    }
+    case "Medical history": {
       return [
         buildPageItem("allergies", "Allergies", "text", "text-box"),
         buildPageItem(
@@ -167,7 +170,8 @@ function buildPageQuestions(
         buildPageItem("tobacco-use", "Tobacco use", "string", "text-box"),
         buildPageItem("alcohol-use", "Alcohol use", "string", "text-box"),
       ];
-    case "Care plan":
+    }
+    case "Care plan": {
       return [
         buildPageItem("primary-goal", "Primary goal", "text", "text-box"),
         buildPageItem("target-date", "Target date", "date"),
@@ -186,7 +190,8 @@ function buildPageQuestions(
         ),
         buildPageItem("care-plan-notes", "Care plan notes", "text", "text-box"),
       ];
-    default:
+    }
+    default: {
       return [
         buildPageItem("details", "Details", "text", "text-box"),
         buildPageItem("notes", "Additional notes", "text", "text-box"),
@@ -197,6 +202,7 @@ function buildPageQuestions(
           "check-box",
         ),
       ];
+    }
   }
 }
 
@@ -333,8 +339,8 @@ const booleanOptionSets: TableOptionSet<boolean> = {
 function toSlug(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
 }
 
 function pad2(value: number): string {
@@ -627,7 +633,7 @@ export default meta;
 
 function makeStory(item: QuestionnaireItem): StoryObj {
   return {
-    render: (_args, context) => (
+    render: (_arguments, context) => (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     ),
   };
@@ -658,7 +664,7 @@ const FormStoryFrame = styled.div`
   max-width: 760px;
 `;
 
-type TableGroupArgs = {
+type TableGroupArguments = {
   orientation: "vertical" | "horizontal";
   optionOverlap: TableOptionOverlap;
   answerType: TableAnswerType;
@@ -670,7 +676,7 @@ type TableGroupArgs = {
   readOnly: boolean;
 };
 
-const tableGroupArgTypes = {
+const tableGroupArgumentTypes = {
   orientation: {
     name: "Orientation",
     options: ["vertical", "horizontal"],
@@ -717,13 +723,13 @@ const tableGroupArgTypes = {
   },
 } as const;
 
-type GridGroupArgs = {
+type GridGroupArguments = {
   questionTypes: TableAnswerType[];
   questionOverlap: GridQuestionOverlap;
   readOnly: boolean;
 };
 
-const gridGroupArgTypes = {
+const gridGroupArgumentTypes = {
   questionTypes: {
     name: "Question types",
     options: answerTypeOptions,
@@ -742,12 +748,12 @@ const gridGroupArgTypes = {
 
 type TabLabelStyle = "short" | "long" | "mixed";
 
-type TabContainerGroupArgs = {
+type TabContainerGroupArguments = {
   tabCount: number;
   labelStyle: TabLabelStyle;
 };
 
-const tabContainerArgTypes = {
+const tabContainerArgumentTypes = {
   tabCount: {
     name: "Tab count",
     control: { type: "range", min: 2, max: 12, step: 1 },
@@ -848,32 +854,35 @@ export const TableGroupRenderer = {
     initialSelection: "none",
     readOnly: false,
   },
-  argTypes: tableGroupArgTypes,
-  render: (args: TableGroupArgs, context) => {
-    const control = args.orientation === "horizontal" ? "htable" : "table";
+  argTypes: tableGroupArgumentTypes,
+  render: (arguments_: TableGroupArguments, context) => {
+    const control =
+      arguments_.orientation === "horizontal" ? "htable" : "table";
     const maxSelections =
-      args.maxSelections === "none" ? undefined : Number(args.maxSelections);
+      arguments_.maxSelections === "none"
+        ? undefined
+        : Number(arguments_.maxSelections);
     const tableQuestions = buildTableQuestions({
-      answerType: args.answerType,
-      questionCount: args.questionCount,
-      optionCount: args.optionCount,
-      optionOverlap: args.optionOverlap,
-      selectionMode: args.selectionMode,
+      answerType: arguments_.answerType,
+      questionCount: arguments_.questionCount,
+      optionCount: arguments_.optionCount,
+      optionOverlap: arguments_.optionOverlap,
+      selectionMode: arguments_.selectionMode,
       maxSelections,
-      initialSelection: args.initialSelection,
+      initialSelection: arguments_.initialSelection,
     });
     const item = buildGroupItem({
       linkId: "group-table",
       text: "Selection table",
       control,
-      readOnly: args.readOnly,
+      readOnly: arguments_.readOnly,
       item: tableQuestions,
     });
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
-} satisfies StoryObj<TableGroupArgs>;
+} satisfies StoryObj<TableGroupArguments>;
 
 export const GridGroupRenderer = {
   name: "Grid",
@@ -882,14 +891,14 @@ export const GridGroupRenderer = {
     questionOverlap: "overlap",
     readOnly: false,
   },
-  argTypes: gridGroupArgTypes,
-  render: (args: GridGroupArgs, context) => {
+  argTypes: gridGroupArgumentTypes,
+  render: (arguments_: GridGroupArguments, context) => {
     const questionPool = gridQuestionSpecs.filter((question) =>
-      args.questionTypes.includes(question.type),
+      arguments_.questionTypes.includes(question.type),
     );
     const questionIndexes = buildGridQuestionOverlapSets(
       questionPool.length,
-      args.questionOverlap,
+      arguments_.questionOverlap,
     );
     const rows = gridRowLabels.map((rowLabel, rowIndex) => {
       const rowQuestionIndexes = questionIndexes[rowIndex] ?? [];
@@ -913,14 +922,14 @@ export const GridGroupRenderer = {
       linkId: "group-grid",
       text: "Daily check-in",
       control: "grid",
-      readOnly: args.readOnly,
+      readOnly: arguments_.readOnly,
       item: rows,
     });
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
-} satisfies StoryObj<GridGroupArgs>;
+} satisfies StoryObj<GridGroupArguments>;
 
 export const GridTableGroupRenderer = {
   name: "Grid Table",
@@ -957,7 +966,7 @@ export const GridTableGroupRenderer = {
 
 export const HeaderGroupRenderer: StoryObj = {
   name: "Header",
-  render: (_args, context) => (
+  render: (_arguments, context) => (
     <FormStory
       questionnaire={{
         resourceType: "Questionnaire",
@@ -995,7 +1004,7 @@ export const HeaderGroupRenderer: StoryObj = {
 
 export const FooterGroupRenderer: StoryObj = {
   name: "Footer",
-  render: (_args, context) => (
+  render: (_arguments, context) => (
     <FormStory
       questionnaire={{
         resourceType: "Questionnaire",
@@ -1027,7 +1036,7 @@ export const FooterGroupRenderer: StoryObj = {
 
 export const PageGroupRenderer: StoryObj = {
   name: "Page",
-  render: (_args, context) => (
+  render: (_arguments, context) => (
     <FormStory
       questionnaire={{
         resourceType: "Questionnaire",
@@ -1058,17 +1067,17 @@ export const TabContainerGroupRenderer = {
     tabCount: 6,
     labelStyle: "mixed",
   },
-  argTypes: tabContainerArgTypes,
-  render: (args: TabContainerGroupArgs, context) => {
+  argTypes: tabContainerArgumentTypes,
+  render: (arguments_: TabContainerGroupArguments, context) => {
     const item = buildGroupItem({
       linkId: "group-tabs",
       text: "Profile",
       control: "tab-container",
-      item: buildTabItems(args.tabCount, args.labelStyle),
+      item: buildTabItems(arguments_.tabCount, arguments_.labelStyle),
     });
 
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
-} satisfies StoryObj<TabContainerGroupArgs>;
+} satisfies StoryObj<TabContainerGroupArguments>;

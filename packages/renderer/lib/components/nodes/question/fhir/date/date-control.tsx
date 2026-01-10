@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { DateInput } from "./date-input.tsx";
 
 export function DateControl({
@@ -6,7 +6,7 @@ export function DateControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"date">) {
+}: ValueControlProperties<"date">) {
   const bounds = answer.bounds;
   const min = typeof bounds.min === "string" ? bounds.min : undefined;
   const max = typeof bounds.max === "string" ? bounds.max : undefined;

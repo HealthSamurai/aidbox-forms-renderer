@@ -1,7 +1,7 @@
-import type { ErrorsProps } from "@aidbox-forms/theme";
+import type { ErrorsProperties } from "@aidbox-forms/theme";
 
-export function Errors({ id, messages }: ErrorsProps) {
-  if (messages.length === 0) return null;
+export function Errors({ id, messages }: ErrorsProperties) {
+  if (messages.length === 0) return;
   return (
     <div className="nhsuk-error-message" id={id} role="alert">
       <ul>

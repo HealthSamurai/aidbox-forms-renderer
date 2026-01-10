@@ -19,7 +19,7 @@ import {
   assertGroupListStore,
   isGroupListStore,
 } from "../nodes/groups/group-list-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 function makeCondition(
   type: AnswerType,
@@ -32,41 +32,52 @@ function makeCondition(
   };
 
   switch (type) {
-    case "boolean":
+    case "boolean": {
       condition.answerBoolean = expected as boolean;
       break;
-    case "decimal":
+    }
+    case "decimal": {
       condition.answerDecimal = expected as number;
       break;
-    case "integer":
+    }
+    case "integer": {
       condition.answerInteger = expected as number;
       break;
-    case "date":
+    }
+    case "date": {
       condition.answerDate = expected as string;
       break;
-    case "dateTime":
+    }
+    case "dateTime": {
       condition.answerDateTime = expected as string;
       break;
-    case "time":
+    }
+    case "time": {
       condition.answerTime = expected as string;
       break;
+    }
     case "string":
     case "text":
-    case "url":
+    case "url": {
       // url answers are represented as strings in enableWhen
       condition.answerString = expected as string;
       break;
-    case "coding":
+    }
+    case "coding": {
       condition.answerCoding = expected as Coding;
       break;
-    case "reference":
+    }
+    case "reference": {
       condition.answerReference = expected as Reference;
       break;
-    case "quantity":
+    }
+    case "quantity": {
       condition.answerQuantity = expected as Quantity;
       break;
-    case "attachment":
+    }
+    case "attachment": {
       throw new Error("enableWhen does not support attachment answers");
+    }
     default: {
       throw new Error("Unhandled type");
     }
@@ -235,11 +246,11 @@ describe("enableWhen", () => {
         repeats: true,
       });
 
-      const firstAnswer = control.addAnswer(null);
+      const firstAnswer = control.addAnswer();
       assertDefined(firstAnswer);
       firstAnswer.setValueByUser("first");
 
-      const secondAnswer = control.addAnswer(null);
+      const secondAnswer = control.addAnswer();
       assertDefined(secondAnswer);
       secondAnswer.setValueByUser("target");
 
@@ -273,14 +284,14 @@ describe("enableWhen", () => {
         repeats: true,
       });
 
-      const firstQuantity = control.addAnswer(null);
+      const firstQuantity = control.addAnswer();
       assertDefined(firstQuantity);
       firstQuantity.setValueByUser({
         system: "http://unitsofmeasure.org",
         code: "mg",
         unit: "mg",
       });
-      const secondQuantity = control.addAnswer(null);
+      const secondQuantity = control.addAnswer();
       assertDefined(secondQuantity);
       secondQuantity.setValueByUser({
         system: "http://unitsofmeasure.org",
@@ -414,12 +425,12 @@ describe("enableWhen", () => {
 
         const [firstValue, ...additionalValues] = values;
 
-        const firstAnswer = control.answers[0] ?? control.addAnswer(null);
+        const firstAnswer = control.answers[0] ?? control.addAnswer();
         assertDefined(firstAnswer);
         firstAnswer.setValueByUser(firstValue);
 
         additionalValues.forEach((value) => {
-          const answer = control.addAnswer(null);
+          const answer = control.addAnswer();
           assertDefined(answer);
           answer.setValueByUser(value);
         });

@@ -1,11 +1,14 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from "@storybook/react-vite";
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import linaria from "@wyw-in-js/vite";
 import tsconfig from "../../tsconfig.base.json" with { type: "json" };
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const escapeRegExp = (value: string) =>
+  value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -16,8 +19,7 @@ const config: StorybookConfig = {
     options: {},
   },
   async viteFinal(config, { configType }) {
-    const rootDir = resolve(__dirname, "..", "..");
-
+    const rootDirectory = path.resolve(__dirname, "..", "..");
     const pathAliases = Object.entries(
       tsconfig.compilerOptions?.paths ?? {},
     ).reduce<Record<string, string>>((aliases, [key, paths]) => {
@@ -28,21 +30,19 @@ const config: StorybookConfig = {
       if (!firstPath) {
         return aliases;
       }
-      aliases[key] = resolve(rootDir, firstPath);
+      aliases[key] = path.resolve(rootDirectory, firstPath);
       return aliases;
     }, {});
 
     config.resolve = config.resolve ?? {};
-    const escapeRegExp = (value: string) =>
-      value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const themePackageNames = new Set(
       Object.keys(pathAliases).filter((key) => key.endsWith("-theme")),
     );
-    const themeAliases = Array.from(themePackageNames).map((packageName) => {
+    const themeAliases = [...themePackageNames].map((packageName) => {
       const themeBasePath = pathAliases[packageName];
       const themePath = themeBasePath.endsWith(".ts")
         ? themeBasePath
-        : resolve(themeBasePath, "theme.ts");
+        : path.resolve(themeBasePath, "theme.ts");
       return {
         find: new RegExp(`^${escapeRegExp(packageName)}$`),
         replacement: themePath,

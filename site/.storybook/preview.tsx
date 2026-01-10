@@ -58,10 +58,10 @@ const preview: Preview = {
           link = document.createElement("link");
           link.id = linkId;
           link.rel = "stylesheet";
-          document.head.appendChild(link);
+          document.head.append(link);
         }
         link.dataset["theme"] = theme;
-        link.href = themes[theme].css ?? themes[theme].css;
+        link.href = themes[theme].css;
       }, [theme]);
 
       return (

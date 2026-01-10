@@ -1,4 +1,4 @@
-import type { TextAreaProps } from "@aidbox-forms/theme";
+import type { TextAreaProperties } from "@aidbox-forms/theme";
 
 export function TextArea({
   id,
@@ -11,7 +11,7 @@ export function TextArea({
   inputMode,
   minLength,
   maxLength,
-}: TextAreaProps) {
+}: TextAreaProperties) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy
@@ -23,7 +23,7 @@ export function TextArea({
         id={id}
         className="nhsuk-textarea"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
         placeholder={placeholder}
         aria-labelledby={ariaLabelledBy}

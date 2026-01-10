@@ -6,7 +6,7 @@ import type {
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
-import { buildId } from "../../../../utils.ts";
+import { buildId } from "../../../../utilities.ts";
 
 export const SelectionTableCell = observer(function SelectionTableCell({
   store,
@@ -28,7 +28,7 @@ export const SelectionTableCell = observer(function SelectionTableCell({
   );
 
   if (!cell) {
-    return null;
+    return;
   }
 
   const groupName = buildId(questionAxis.token, "table");

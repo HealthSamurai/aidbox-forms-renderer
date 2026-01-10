@@ -8,7 +8,7 @@ import {
 } from "./expression-fixtures.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { assertGroupNode } from "../nodes/groups/group-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("initialExpression", () => {
   it("runs once when the item first becomes enabled", () => {
@@ -45,7 +45,7 @@ describe("initialExpression", () => {
     assertQuestionNode(name);
 
     expect(name.isEnabled).toBe(false);
-    expect(name.answers[0]?.value).toBeNull();
+    expect(name.answers[0]?.value).toBeUndefined();
 
     const gateAnswer = gate.answers[0];
     assertDefined(gateAnswer);
@@ -161,7 +161,7 @@ describe("initialExpression", () => {
     expect(issue?.diagnostics).toContain(
       "because it references unavailable data",
     );
-    expect(target.answers[0]?.value).toBeNull();
+    expect(target.answers[0]?.value).toBeUndefined();
   });
 
   it("captures syntax errors from initial expressions", () => {
@@ -190,7 +190,7 @@ describe("initialExpression", () => {
     expect(issue?.diagnostics).toContain(
       "because the expression has a syntax error",
     );
-    expect(target.answers[0]?.value).toBeNull();
+    expect(target.answers[0]?.value).toBeUndefined();
   });
 
   describe("readOnly propagation", () => {

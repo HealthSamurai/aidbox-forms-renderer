@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import type { OperationOutcomeIssue } from "fhir/r5";
-import { getIssueMessage } from "../../utils.ts";
+import { getIssueMessage } from "../../utilities.ts";
 import { useTheme } from "../../ui/theme.tsx";
 
 export const FormErrors = observer(function FormErrors({
@@ -11,7 +11,7 @@ export const FormErrors = observer(function FormErrors({
   const { FormErrors: ThemedFormErrors } = useTheme();
   const messages = issues
     .map((issue) => getIssueMessage(issue))
-    .filter((message): message is string => Boolean(message));
+    .filter((message): message is string => message !== undefined);
 
   return <ThemedFormErrors messages={messages} />;
 });

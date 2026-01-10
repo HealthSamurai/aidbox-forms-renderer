@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { TimeInput } from "./time-input.tsx";
 
 export function TimeControl({
@@ -6,7 +6,7 @@ export function TimeControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"time">) {
+}: ValueControlProperties<"time">) {
   const bounds = answer.bounds;
   const min = typeof bounds.min === "string" ? bounds.min : undefined;
   const max = typeof bounds.max === "string" ? bounds.max : undefined;

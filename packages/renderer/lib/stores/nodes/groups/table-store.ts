@@ -23,7 +23,7 @@ import {
   getNodeHelpId,
   getNodeLabelId,
   tokenify,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 
 export class TableStore implements ITableStore {
@@ -36,7 +36,7 @@ export class TableStore implements ITableStore {
 
   @computed
   get questions(): IQuestionNode[] {
-    return this.group.visibleNodes.filter(isQuestionNode);
+    return this.group.visibleNodes.filter((node) => isQuestionNode(node));
   }
 
   @computed
@@ -106,15 +106,15 @@ export class TableStore implements ITableStore {
   getCellState(
     questionToken: string,
     optionToken: OptionToken,
-  ): TableCellState | null {
+  ): TableCellState | undefined {
     const entry = this.questionByToken.get(questionToken);
     if (!entry) {
-      return null;
+      return undefined;
     }
 
     const optionEntry = entry.optionMap.get(optionToken);
     if (!optionEntry) {
-      return null;
+      return undefined;
     }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
@@ -207,9 +207,9 @@ export class TableStore implements ITableStore {
   @computed
   private get questionByToken(): Map<string, QuestionAxisEntry> {
     const map = new Map<string, QuestionAxisEntry>();
-    this.model.questionAxis.forEach((entry) =>
-      map.set(entry.question.token, entry),
-    );
+    this.model.questionAxis.forEach((entry) => {
+      map.set(entry.question.token, entry);
+    });
     return map;
   }
 }

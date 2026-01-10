@@ -4,11 +4,13 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import unicorn from "eslint-plugin-unicorn";
 
-const tsconfigRootDir = new URL("./", import.meta.url).pathname;
+const tsconfigRootDirection = new URL("./", import.meta.url).pathname;
 
 export default tseslint.config(
   { ignores: ["**/dist/**", "**/storybook-static/**"] },
+  unicorn.configs["flat/recommended"],
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -28,6 +30,9 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-explicit-any": "error",
+      "unicorn/no-array-reduce": "off",
+      "unicorn/no-array-for-each": "off",
+      "unicorn/no-nested-ternary": "off",
     },
   },
   {
@@ -35,7 +40,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: ["./packages/renderer/tsconfig.lib.json"],
-        tsconfigRootDir,
+        tsconfigRootDir: tsconfigRootDirection,
       },
     },
     rules: {

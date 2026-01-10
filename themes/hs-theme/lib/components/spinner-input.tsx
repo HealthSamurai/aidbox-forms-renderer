@@ -1,9 +1,9 @@
 import { styled } from "@linaria/react";
 import { useId } from "react";
-import type { SpinnerInputProps } from "@aidbox-forms/theme";
+import type { SpinnerInputProperties } from "@aidbox-forms/theme";
 import { Minus } from "../icons/minus.tsx";
 import { Plus } from "../icons/plus.tsx";
-import { getPrecision, roundToPrecision } from "./utils.ts";
+import { getPrecision, roundToPrecision } from "./utilities.ts";
 
 export function SpinnerInput({
   value,
@@ -16,7 +16,7 @@ export function SpinnerInput({
   ariaDescribedBy,
   placeholder,
   unitLabel,
-}: SpinnerInputProps) {
+}: SpinnerInputProperties) {
   const generatedId = useId();
   const unitId = unitLabel ? `${generatedId}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId]
@@ -57,7 +57,7 @@ export function SpinnerInput({
         onChange={(event) => {
           const next = event.target.value;
           if (next === "") {
-            onChange(null);
+            onChange();
             return;
           }
           const parsed = Number(next);

@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type StringInputProps = {
+export type StringInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
@@ -25,7 +25,7 @@ export function StringInput({
   inputMode,
   minLength,
   maxLength,
-}: StringInputProps) {
+}: StringInputProperties) {
   const { TextInput: ThemedTextInput } = useTheme();
   return (
     <ThemedTextInput

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import type { GroupRendererProps } from "../../../../types.ts";
+import type { GroupRendererProperties } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
@@ -8,7 +8,7 @@ import { FooterRenderer as FooterControl } from "../controls/footer-renderer.tsx
 
 export const FooterRenderer = observer(function FooterRenderer({
   node,
-}: GroupRendererProps) {
+}: GroupRendererProperties) {
   return isGroupListStore(node) ? (
     <GroupList list={node}>
       {node.visibleNodes.map((child) => (

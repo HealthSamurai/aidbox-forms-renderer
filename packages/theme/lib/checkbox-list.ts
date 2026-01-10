@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
-export type CheckboxListProps = {
+export type CheckboxListProperties = {
   options: readonly OptionItem[];
   selectedOptions: readonly SelectedOptionItem[];
   onSelect: (token: string) => void;
@@ -15,4 +15,4 @@ export type CheckboxListProps = {
   isLoading?: boolean | undefined;
 };
 
-export type CheckboxListComponent = ComponentType<CheckboxListProps>;
+export type CheckboxListComponent = ComponentType<CheckboxListProperties>;

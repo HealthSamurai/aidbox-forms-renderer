@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type IconButtonProps = {
+export type IconButtonProperties = {
   icon: ReactNode;
   onClick: () => void;
   disabled?: boolean | undefined;
@@ -12,7 +12,7 @@ export function IconButton({
   onClick,
   disabled,
   label,
-}: IconButtonProps) {
+}: IconButtonProperties) {
   return (
     <button
       type="button"

@@ -1,7 +1,7 @@
 import { styled } from "@linaria/react";
 import { useId, useRef } from "react";
-import type { SliderInputProps } from "@aidbox-forms/theme";
-import { clamp, useIsWithinGap } from "./utils.ts";
+import type { SliderInputProperties } from "@aidbox-forms/theme";
+import { clamp, useIsWithinGap } from "./utilities.ts";
 
 export function SliderInput({
   value,
@@ -15,7 +15,7 @@ export function SliderInput({
   lowerLabel,
   upperLabel,
   unitLabel,
-}: SliderInputProps) {
+}: SliderInputProperties) {
   const generatedId = useId();
   const sliderMin = typeof min === "number" ? min : 0;
   const sliderMax = typeof max === "number" ? max : sliderMin + 100;
@@ -34,12 +34,22 @@ export function SliderInput({
     .join(" ")
     .trim();
 
-  const labelsRef = useRef<HTMLDivElement | null>(null);
-  const valueRef = useRef<HTMLDivElement | null>(null);
-  const lowerRef = useRef<HTMLDivElement | null>(null);
-  const upperRef = useRef<HTMLDivElement | null>(null);
-  const isLowerClose = useIsWithinGap(labelsRef, valueRef, lowerRef, 8);
-  const isUpperClose = useIsWithinGap(labelsRef, valueRef, upperRef, 8);
+  const labelsReference = useRef<HTMLDivElement | null>(null);
+  const valueReference = useRef<HTMLDivElement | null>(null);
+  const lowerReference = useRef<HTMLDivElement | null>(null);
+  const upperReference = useRef<HTMLDivElement | null>(null);
+  const isLowerClose = useIsWithinGap(
+    labelsReference,
+    valueReference,
+    lowerReference,
+    8,
+  );
+  const isUpperClose = useIsWithinGap(
+    labelsReference,
+    valueReference,
+    upperReference,
+    8,
+  );
 
   const unit = Boolean(unitLabel) && <Unit id={unitId}>{unitLabel}</Unit>;
 
@@ -54,24 +64,24 @@ export function SliderInput({
         value={normalizedValue}
         onChange={(event) => {
           const nextValue = Number(event.target.value);
-          onChange(Number.isNaN(nextValue) ? null : nextValue);
+          onChange(Number.isNaN(nextValue) ? undefined : nextValue);
         }}
         disabled={disabled}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy.length > 0 ? describedBy : undefined}
       />
-      <Labels aria-hidden="true" ref={labelsRef}>
-        <Value aria-hidden="true" $left={clampedPercent} ref={valueRef}>
+      <Labels aria-hidden="true" ref={labelsReference}>
+        <Value aria-hidden="true" $left={clampedPercent} ref={valueReference}>
           {value} {unit}
         </Value>
-        <div ref={lowerRef} data-hidden={isLowerClose ? "true" : "false"}>
+        <div ref={lowerReference} data-hidden={isLowerClose ? "true" : "false"}>
           {lowerLabel ?? (
             <>
               {sliderMin} {unit}
             </>
           )}
         </div>
-        <div ref={upperRef} data-hidden={isUpperClose ? "true" : "false"}>
+        <div ref={upperReference} data-hidden={isUpperClose ? "true" : "false"}>
           {upperLabel ?? (
             <>
               {sliderMax} {unit}
@@ -96,9 +106,9 @@ const Slider = styled.input`
 
 const Value = styled.div<{ $left: number }>`
   position: absolute;
-  left: ${(props) => `${props.$left}%`};
+  left: ${(properties) => `${properties.$left}%`};
   top: 0;
-  transform: ${(props) => `translate(-${props.$left}%, 0)`};
+  transform: ${(properties) => `translate(-${properties.$left}%, 0)`};
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;

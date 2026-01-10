@@ -1,5 +1,5 @@
-import type { ValueControlProps } from "../../../../../types.ts";
-import { dedupe } from "../../../../../utils.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
+import { dedupe } from "../../../../../utilities.ts";
 import { AttachmentInput } from "./attachment-input.tsx";
 
 export function AttachmentControl({
@@ -7,7 +7,7 @@ export function AttachmentControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"attachment">) {
+}: ValueControlProperties<"attachment">) {
   const acceptValues = answer.question.mimeTypes;
   const accept =
     acceptValues.length > 0 ? dedupe(acceptValues).join(",") : undefined;
@@ -17,7 +17,7 @@ export function AttachmentControl({
       id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
-      value={answer.value ?? null}
+      value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
       accept={accept}

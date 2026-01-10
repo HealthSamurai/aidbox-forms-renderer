@@ -11,7 +11,7 @@ import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 import { AbstractActualNodeStore } from "../base/abstract-actual-node-store.ts";
 import { computed } from "mobx";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
-import { withQuestionnaireResponseItemMeta } from "../../../utils.ts";
+import { withQuestionnaireResponseItemMeta } from "../../../utilities.ts";
 
 export class DisplayStore
   extends AbstractActualNodeStore
@@ -22,7 +22,7 @@ export class DisplayStore
   constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     scope: IScope,
     token: string,
   ) {
@@ -64,13 +64,13 @@ export class DisplayStore
 }
 
 export function isDisplayNode(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
 ): it is IDisplayNode {
   return it instanceof DisplayStore;
 }
 
 export function assertDisplayNode(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
   message?: string,
 ): asserts it is IDisplayNode {
   if (!isDisplayNode(it)) {

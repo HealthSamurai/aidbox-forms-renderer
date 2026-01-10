@@ -1,16 +1,16 @@
 import { styled } from "@linaria/react";
-import type { CustomOptionFormProps } from "@aidbox-forms/theme";
+import type { CustomOptionFormProperties } from "@aidbox-forms/theme";
 
 export function CustomOptionForm({
   content,
   errors,
   submit,
   cancel,
-}: CustomOptionFormProps) {
+}: CustomOptionFormProperties) {
   return (
     <Stack>
       <div>{content}</div>
-      {errors ?? null}
+      {errors ?? undefined}
       <Actions>
         <button
           type="button"

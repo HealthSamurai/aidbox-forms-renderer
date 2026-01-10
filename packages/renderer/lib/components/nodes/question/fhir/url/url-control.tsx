@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { UrlInput } from "./url-input.tsx";
 
 export function UrlControl({
@@ -6,7 +6,7 @@ export function UrlControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"url">) {
+}: ValueControlProperties<"url">) {
   const maxLength = answer.question.maxLength;
   const minLength = answer.question.minLength;
 

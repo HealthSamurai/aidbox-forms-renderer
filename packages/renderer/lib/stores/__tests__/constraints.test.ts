@@ -3,7 +3,7 @@ import type { Extension, Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 const targetConstraint = (config: {
   key?: string | undefined;
@@ -146,7 +146,7 @@ describe("targetConstraint extensions", () => {
 
     const optionalNoteAnswer = question.answers[0];
     assertDefined(optionalNoteAnswer);
-    optionalNoteAnswer.setValueByUser(null);
+    optionalNoteAnswer.setValueByUser();
 
     expect(question.issues.at(0)?.severity).toBe("warning");
     expect(question.issues.at(0)?.diagnostics).toContain("Consider adding");

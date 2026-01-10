@@ -1,6 +1,6 @@
-import type { OptionsLoadingProps } from "@aidbox-forms/theme";
+import type { OptionsLoadingProperties } from "@aidbox-forms/theme";
 
-export function OptionsLoading({ isLoading }: OptionsLoadingProps) {
+export function OptionsLoading({ isLoading }: OptionsLoadingProperties) {
   if (isLoading) {
     return (
       <div className="nhsuk-hint" role="status">
@@ -8,5 +8,5 @@ export function OptionsLoading({ isLoading }: OptionsLoadingProps) {
       </div>
     );
   }
-  return null;
+  return;
 }

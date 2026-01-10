@@ -10,7 +10,7 @@ import {
   assertGroupListStore,
   isGroupListStore,
 } from "../nodes/groups/group-list-store.ts";
-import { EXT } from "../../utils.ts";
+import { EXT } from "../../utilities.ts";
 
 describe("preferredTerminologyServer resolution", () => {
   it("uses the node-level preferredTerminologyServer extension when present", () => {

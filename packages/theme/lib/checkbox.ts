@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type CheckboxProps = {
+export type CheckboxProperties = {
   id: string;
   checked: boolean;
   onChange: () => void;
@@ -10,4 +10,4 @@ export type CheckboxProps = {
   label?: ReactNode;
 };
 
-export type CheckboxComponent = ComponentType<CheckboxProps>;
+export type CheckboxComponent = ComponentType<CheckboxProperties>;

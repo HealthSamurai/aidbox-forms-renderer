@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { GroupScaffoldProps } from "@aidbox-forms/theme";
+import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
 import { Children } from "react";
 import { IconButton } from "./icon-button.tsx";
 
@@ -10,13 +10,17 @@ export function GroupScaffold({
   onRemove,
   canRemove,
   removeLabel,
-}: GroupScaffoldProps) {
+}: GroupScaffoldProperties) {
   const content = Children.toArray(children);
   const removeText = removeLabel ?? "Remove";
+  let resolvedContent;
+  if (content.length > 0) {
+    resolvedContent = onRemove ? <div>{content}</div> : content;
+  }
   return (
     <Container>
       {header}
-      {content.length > 0 ? onRemove ? <div>{content}</div> : content : null}
+      {resolvedContent}
       {errors}
       {onRemove ? (
         <Toolbar>
@@ -27,7 +31,7 @@ export function GroupScaffold({
             label={removeText}
           />
         </Toolbar>
-      ) : null}
+      ) : undefined}
     </Container>
   );
 }

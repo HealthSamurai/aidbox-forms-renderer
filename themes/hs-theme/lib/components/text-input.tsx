@@ -1,4 +1,4 @@
-import type { TextInputProps } from "@aidbox-forms/theme";
+import type { TextInputProperties } from "@aidbox-forms/theme";
 import { inputClass } from "./tokens.ts";
 
 export function TextInput({
@@ -13,14 +13,14 @@ export function TextInput({
   inputMode,
   minLength,
   maxLength,
-}: TextInputProps) {
+}: TextInputProperties) {
   return (
     <input
       id={id}
       className={inputClass}
       type={type}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(event) => onChange(event.target.value)}
       disabled={disabled}
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}

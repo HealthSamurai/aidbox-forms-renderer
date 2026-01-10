@@ -42,18 +42,18 @@ export function formatString<T extends string>(
   values: Record<ExtractPlaceholders<T>, string | number>,
 ): string {
   const mapped = values as Record<string, string | number>;
-  return template.replace(/\{(\w+)\}/g, (_, key: string) => {
+  return template.replaceAll(/\{(\w+)\}/g, (_, key: string) => {
     const value = mapped[key];
-    return value === undefined || value === null ? "" : String(value);
+    return value === undefined ? "" : String(value);
   });
 }
 
 export function buildId(
   base: string,
-  ...parts: Array<string | number | null | undefined>
+  ...parts: Array<string | number | undefined>
 ): string {
   return [base, ...parts]
-    .filter((value): value is string | number => value != null)
+    .filter((value): value is string | number => value != undefined)
     .map(String)
     .join("_/_");
 }
@@ -83,11 +83,11 @@ export function getAnswerErrorId(answer: IAnswerInstance): string | undefined {
 }
 
 export function concatIds(
-  ...parts: Array<string | number | null | undefined>
+  ...parts: Array<string | number | undefined>
 ): string | undefined {
   return (
     parts
-      .map((value) => (value == null ? "" : String(value)))
+      .map((value) => (value == undefined ? "" : String(value)))
       .filter((value) => value.length > 0)
       .join(" ") || undefined
   );
@@ -112,11 +112,11 @@ export function clamp(value: number, min: number, max: number) {
 }
 
 export function assertDefined<T>(
-  value: T | null | undefined,
+  value: T | undefined,
   message?: string,
 ): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new TypeError(message ?? "Value must not be null or undefined");
+  if (value === undefined) {
+    throw new TypeError(message ?? "Value must not be undefined or undefined");
   }
 }
 
@@ -186,25 +186,18 @@ export const EXT = {
 
 export function answerify<T extends AnswerType>(
   type: T,
-  raw: unknown,
+  raw?: unknown,
 ): QuestionnaireItemAnswerOption[] {
   const dataType = ANSWER_TYPE_TO_DATA_TYPE[type];
   const options: QuestionnaireItemAnswerOption[] = [];
   const normalize = (value: unknown) => {
     switch (type) {
-      case "boolean":
-        if (typeof value === "boolean") {
-          return value as DataTypeToType<AnswerTypeToDataType<T>>;
-        }
-        if (typeof value === "string") {
-          if (/^true$/i.test(value)) {
-            return true as DataTypeToType<AnswerTypeToDataType<T>>;
-          }
-          if (/^false$/i.test(value)) {
-            return false as DataTypeToType<AnswerTypeToDataType<T>>;
-          }
-        }
-        return undefined;
+      case "boolean": {
+        const booleanValue = parseBoolean(value);
+        return booleanValue === undefined
+          ? undefined
+          : (booleanValue as DataTypeToType<AnswerTypeToDataType<T>>);
+      }
       case "decimal":
       case "integer": {
         const numberValue = parseNumber(value);
@@ -217,37 +210,43 @@ export function answerify<T extends AnswerType>(
       case "time":
       case "string":
       case "text":
-      case "url":
+      case "url": {
         if (typeof value === "string") {
           return value as DataTypeToType<AnswerTypeToDataType<T>>;
         }
-        return undefined;
-      case "coding":
+        return;
+      }
+      case "coding": {
         return isCoding(value)
           ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
           : undefined;
-      case "quantity":
+      }
+      case "quantity": {
         return isQuantity(value)
           ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
           : undefined;
-      case "reference":
+      }
+      case "reference": {
         return isReference(value)
           ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
           : undefined;
-      case "attachment":
+      }
+      case "attachment": {
         return isAttachment(value)
           ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
           : undefined;
-      default:
-        return undefined;
+      }
+      default: {
+        return;
+      }
     }
   };
 
   const append = (entry: unknown) => {
-    if (entry == null) return;
+    if (entry == undefined) return;
 
     if (Array.isArray(entry)) {
-      entry.forEach(append);
+      entry.forEach((element) => append(element));
       return;
     }
 
@@ -288,11 +287,11 @@ export function findExtension(
   element: Element,
   url: string,
 ): Extension | undefined {
-  return element.extension?.find((e) => e.url === url);
+  return element.extension?.find((extension) => extension.url === url);
 }
 
 export function findExtensions(element: Element, url: string): Extension[] {
-  return element.extension?.filter((e) => e.url === url) ?? [];
+  return element.extension?.filter((extension) => extension.url === url) ?? [];
 }
 
 export function shouldCreateStore(item: QuestionnaireItem): boolean {
@@ -321,9 +320,9 @@ export function findDisplayItemByControl(
   }
 
   return container.item.find((child) => {
-    return child.type !== "display"
-      ? false
-      : code === getItemControlCode(child);
+    return child.type === "display"
+      ? code === getItemControlCode(child)
+      : false;
   });
 }
 
@@ -342,12 +341,12 @@ export function getSliderStepValue(
 }
 
 export function isEmptyObject(value: unknown): boolean {
-  if (value == null || typeof value !== "object") {
+  if (value == undefined || typeof value !== "object") {
     return true;
   }
 
   return !Object.values(value as Record<string, unknown>).some((entry) => {
-    if (entry == null) {
+    if (entry == undefined) {
       return false;
     }
     if (Array.isArray(entry)) {
@@ -361,7 +360,7 @@ export function isEmptyObject(value: unknown): boolean {
 }
 
 export function isQuantity(value: unknown): value is Quantity {
-  if (typeof value !== "object" || value === null) {
+  if (typeof value !== "object" || value === undefined) {
     return false;
   }
 
@@ -375,12 +374,12 @@ export function isQuantity(value: unknown): value is Quantity {
   );
 }
 
-export function getNumericValue(value: unknown): number | null {
+export function getNumericValue(value: unknown): number | undefined {
   if (isQuantity(value)) {
-    return typeof value.value === "number" ? value.value : null;
+    return typeof value.value === "number" ? value.value : undefined;
   }
 
-  return typeof value === "number" ? value : null;
+  return typeof value === "number" ? value : undefined;
 }
 
 export function parseNumber(value: unknown): number | undefined {
@@ -391,6 +390,23 @@ export function parseNumber(value: unknown): number | undefined {
   if (typeof value === "string") {
     const parsed = Number(value);
     return Number.isNaN(parsed) ? undefined : parsed;
+  }
+
+  return undefined;
+}
+
+export function parseBoolean(value: unknown): boolean | undefined {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    if (/^true$/i.test(value)) {
+      return true;
+    }
+    if (/^false$/i.test(value)) {
+      return false;
+    }
   }
 
   return undefined;
@@ -487,11 +503,12 @@ export function estimateAttachmentSize(
       return 0;
     }
 
-    const padding = attachment.data.endsWith("==")
-      ? 2
-      : attachment.data.endsWith("=")
-        ? 1
-        : 0;
+    let padding = 0;
+    if (attachment.data.endsWith("==")) {
+      padding = 2;
+    } else if (attachment.data.endsWith("=")) {
+      padding = 1;
+    }
     return Math.floor((length * 3) / 4) - padding;
   }
 
@@ -500,15 +517,19 @@ export function estimateAttachmentSize(
 
 export async function prepareAttachmentFromFile(
   file: File,
-): Promise<Attachment | null> {
-  const result = await new Promise<string | ArrayBuffer | null>((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.readAsDataURL(file);
-  });
+): Promise<Attachment | undefined> {
+  const result = await new Promise<string | ArrayBuffer | undefined>(
+    (resolve) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        resolve(reader.result ?? undefined),
+      );
+      reader.readAsDataURL(file);
+    },
+  );
 
   if (typeof result !== "string") {
-    return null;
+    return undefined;
   }
 
   const [, base64] = result.split(",");
@@ -537,18 +558,20 @@ export function makeIssue(
 
 export const OPTIONS_ISSUE_EXPRESSION = "options";
 
-export function getIssueMessage(issue: OperationOutcomeIssue): string | null {
+export function getIssueMessage(
+  issue: OperationOutcomeIssue,
+): string | undefined {
   const message = issue.details?.text ?? issue.diagnostics;
   if (!message) {
-    return null;
+    return undefined;
   }
   const trimmed = message.trim();
-  return trimmed.length > 0 ? trimmed : null;
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 export function answerHasOwnValue(answer: IAnswerInstance): boolean {
   const value = answer.value;
-  if (value == null) {
+  if (value == undefined) {
     return false;
   }
 
@@ -658,27 +681,29 @@ export const DATA_TYPE_TO_SUFFIX: { [K in DataType]: DataTypeToSuffix<K> } = {
 
 export function getPolymorphic<Base extends string, T extends DataType>(
   type: T,
-  obj: PolyCarrierFor<Base, T> | null | undefined,
+  object: PolyCarrierFor<Base, T> | undefined,
   base: Base,
 ): DataTypeToType<T> | undefined {
-  if (!obj) return undefined;
+  if (!object) return undefined;
 
   // Build the key at runtime, e.g., "valueString" | "answerUri" | "fooQuantity"
   const suffix = DATA_TYPE_TO_SUFFIX[type];
   const key = `${base}${suffix}` satisfies PolyKeyFor<Base, T>;
 
-  return (obj as Record<string, unknown>)[key] as DataTypeToType<T> | undefined;
+  return (object as Record<string, unknown>)[key] as
+    | DataTypeToType<T>
+    | undefined;
 }
 
 export const getValue = <T extends DataType>(
   type: T,
-  obj: PolyCarrierFor<"value", T> | null | undefined,
-): DataTypeToType<T> | undefined => getPolymorphic(type, obj, "value");
+  object: PolyCarrierFor<"value", T> | undefined,
+): DataTypeToType<T> | undefined => getPolymorphic(type, object, "value");
 
 export const getAnswer = <T extends DataType>(
   type: T,
-  obj: PolyCarrierFor<"answer", T> | null | undefined,
-): DataTypeToType<T> | undefined => getPolymorphic(type, obj, "answer");
+  object: PolyCarrierFor<"answer", T> | undefined,
+): DataTypeToType<T> | undefined => getPolymorphic(type, object, "answer");
 
 export function extractExtensionValue<T extends DataType>(
   type: T,
@@ -707,7 +732,7 @@ export function extractExtensionsValues<T extends DataType>(
   const extensions = findExtensions(element, url);
   return extensions
     .map((extension) => getValue(type, extension))
-    .filter((value): value is DataTypeToType<T> => value != null);
+    .filter((value): value is DataTypeToType<T> => value != undefined);
 }
 
 export function asAnswerFragment<T extends DataType>(
@@ -723,7 +748,7 @@ export function asAnswerFragment<T extends DataType>(
 export function isCoding(value: unknown): value is Coding {
   return (
     typeof value === "object" &&
-    value !== null &&
+    value !== undefined &&
     ("code" in (value as Coding) ||
       "display" in (value as Coding) ||
       "system" in (value as Coding))
@@ -731,20 +756,20 @@ export function isCoding(value: unknown): value is Coding {
 }
 
 export function isReference(value: unknown): value is Reference {
-  if (typeof value !== "object" || value === null) {
+  if (typeof value !== "object" || value === undefined) {
     return false;
   }
   const reference = value as Reference;
   return (
-    reference.reference != null ||
-    reference.identifier != null ||
-    reference.type != null ||
-    reference.display != null
+    reference.reference != undefined ||
+    reference.identifier != undefined ||
+    reference.type != undefined ||
+    reference.display != undefined
   );
 }
 
 export function isAttachment(value: unknown): value is Attachment {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && value !== undefined;
 }
 
 export function areCodingsEqual(actual: unknown, expected: unknown) {
@@ -752,18 +777,18 @@ export function areCodingsEqual(actual: unknown, expected: unknown) {
     return false;
   }
 
-  const aCode = actual.code ?? null;
-  const bCode = expected.code ?? null;
-  const aSystem = actual.system ?? null;
-  const bSystem = expected.system ?? null;
+  const aCode = actual.code ?? undefined;
+  const bCode = expected.code ?? undefined;
+  const aSystem = actual.system ?? undefined;
+  const bSystem = expected.system ?? undefined;
 
-  if (aCode != null && bCode != null) {
+  if (aCode != undefined && bCode != undefined) {
     return aCode === bCode && aSystem === bSystem;
   }
 
-  const aDisplay = actual.display ?? null;
-  const bDisplay = expected.display ?? null;
-  if (aDisplay != null && bDisplay != null) {
+  const aDisplay = actual.display ?? undefined;
+  const bDisplay = expected.display ?? undefined;
+  if (aDisplay != undefined && bDisplay != undefined) {
     return aDisplay === bDisplay && aSystem === bSystem;
   }
 
@@ -775,7 +800,7 @@ export function areQuantitiesEqual(actual: unknown, expected: unknown) {
     return false;
   }
 
-  if ((actual.comparator ?? null) !== (expected.comparator ?? null)) {
+  if ((actual.comparator ?? undefined) !== (expected.comparator ?? undefined)) {
     return false;
   }
 
@@ -786,10 +811,10 @@ export function areQuantitiesEqual(actual: unknown, expected: unknown) {
 
   if (actualValue === undefined || expectedValue === undefined) {
     return (
-      (actual.value ?? null) === (expected.value ?? null) &&
-      (actual.unit ?? null) === (expected.unit ?? null) &&
-      (actual.system ?? null) === (expected.system ?? null) &&
-      (actual.code ?? null) === (expected.code ?? null)
+      (actual.value ?? undefined) === (expected.value ?? undefined) &&
+      (actual.unit ?? undefined) === (expected.unit ?? undefined) &&
+      (actual.system ?? undefined) === (expected.system ?? undefined) &&
+      (actual.code ?? undefined) === (expected.code ?? undefined)
     );
   }
 
@@ -824,11 +849,12 @@ export function areReferencesEqual(actual: unknown, expected: unknown) {
   }
 
   return (
-    (actual.reference ?? null) === (expected.reference ?? null) &&
-    (actual.type ?? null) === (expected.type ?? null) &&
-    (actual.identifier?.system ?? null) ===
-      (expected.identifier?.system ?? null) &&
-    (actual.identifier?.value ?? null) === (expected.identifier?.value ?? null)
+    (actual.reference ?? undefined) === (expected.reference ?? undefined) &&
+    (actual.type ?? undefined) === (expected.type ?? undefined) &&
+    (actual.identifier?.system ?? undefined) ===
+      (expected.identifier?.system ?? undefined) &&
+    (actual.identifier?.value ?? undefined) ===
+      (expected.identifier?.value ?? undefined)
   );
 }
 
@@ -880,11 +906,11 @@ const TIME_SHORT_FORMATTERS: Record<TimePrecision, Intl.DateTimeFormat> = {
 
 type DatePrecision = "year" | "month" | "day";
 
-export function getDatePrecision(value: string): DatePrecision | null {
+export function getDatePrecision(value: string): DatePrecision | undefined {
   if (/^\d{4}$/.test(value)) return "year";
   if (/^\d{4}-\d{2}$/.test(value)) return "month";
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return "day";
-  return null;
+  return undefined;
 }
 
 export function areFhirDatesEqual(a: string, b: string): boolean {
@@ -902,14 +928,14 @@ export function areDateValuesEqual(a: unknown, b: unknown): boolean {
   );
 }
 
-export function formatDateForDisplay(value: unknown): string | null {
+export function formatDateForDisplay(value: unknown): string | undefined {
   if (typeof value !== "string") {
-    return null;
+    return undefined;
   }
 
   const match = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/.exec(value);
   if (!match) {
-    return null;
+    return undefined;
   }
 
   const year = match[1];
@@ -917,7 +943,7 @@ export function formatDateForDisplay(value: unknown): string | null {
   const day = match[3] ?? "01";
   const date = new Date(`${year}-${month}-${day}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) {
-    return null;
+    return undefined;
   }
 
   if (!match[2]) {
@@ -947,15 +973,17 @@ type ParsedFhirDateTime = {
   epochMillis?: number;
 };
 
-export function parseFhirDateTime(value: string): ParsedFhirDateTime | null {
+export function parseFhirDateTime(
+  value: string,
+): ParsedFhirDateTime | undefined {
   const [datePart, timeAndZone] = value.split("T");
   if (!datePart) {
-    return null;
+    return undefined;
   }
 
   const datePrecision = getDatePrecision(datePart);
   if (!datePrecision) {
-    return null;
+    return undefined;
   }
 
   if (timeAndZone === undefined) {
@@ -973,12 +1001,12 @@ export function parseFhirDateTime(value: string): ParsedFhirDateTime | null {
     : timeAndZone;
 
   if (timePart.length === 0) {
-    return null;
+    return undefined;
   }
 
   const timeInfo = parseFhirTime(timePart);
   if (!timeInfo) {
-    return null;
+    return undefined;
   }
 
   const precisionMap: Record<TimePrecision, DateTimePrecision> = {
@@ -1044,19 +1072,19 @@ export function areFhirDateTimesEqual(a: string, b: string): boolean {
   return a === b;
 }
 
-export function formatDateTimeForDisplay(value: unknown): string | null {
+export function formatDateTimeForDisplay(value: unknown): string | undefined {
   if (typeof value !== "string") {
-    return null;
+    return undefined;
   }
 
   const parsed = parseFhirDateTime(value);
   if (!parsed) {
-    return null;
+    return undefined;
   }
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return null;
+    return undefined;
   }
 
   if (!parsed.hasTime) {
@@ -1076,28 +1104,37 @@ export function areDateTimeValuesEqual(a: unknown, b: unknown): boolean {
 
 type TimePrecision = "hour" | "minute" | "second" | "millisecond";
 
-export function parseFhirTime(value: string): {
-  precision: TimePrecision;
-  millis: number;
-} | null {
+export function parseFhirTime(value: string):
+  | {
+      precision: TimePrecision;
+      millis: number;
+    }
+  | undefined {
   const match = /^(\d{2})(?::(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/.exec(
     value,
   );
   if (!match) {
-    return null;
+    return undefined;
   }
 
-  const [, , minute, second, fractional] = match;
+  const minute = match[2];
+  const second = match[3];
+  const fractional = match[4];
 
   let precision: TimePrecision;
-  if (!minute) precision = "hour";
-  else if (!second) precision = "minute";
-  else if (!fractional) precision = "second";
-  else precision = "millisecond";
+  if (!minute) {
+    precision = "hour";
+  } else if (!second) {
+    precision = "minute";
+  } else if (fractional) {
+    precision = "millisecond";
+  } else {
+    precision = "second";
+  }
 
   const millis = fhirTimeToMillis(value);
-  if (millis == null) {
-    return null;
+  if (millis == undefined) {
+    return undefined;
   }
 
   return { precision, millis };
@@ -1123,25 +1160,27 @@ export function areTimeValuesEqual(a: unknown, b: unknown): boolean {
   );
 }
 
-export function formatTimeValue(value: unknown): string | null {
+export function formatTimeValue(value: unknown): string | undefined {
   if (typeof value !== "string") {
-    return null;
+    return undefined;
   }
 
   const info = parseFhirTime(value);
   if (!info) {
-    return null;
+    return undefined;
   }
 
-  const [hours = "00", minutes = "00", seconds = "00"] = value
-    .split(":")
-    .concat(["00", "00"]);
+  const [hours = "00", minutes = "00", seconds = "00"] = [
+    ...value.split(":"),
+    "00",
+    "00",
+  ];
   const hoursInt = Number.parseInt(hours, 10) || 0;
   const minutesInt = Number.parseInt(minutes, 10) || 0;
   const secondsInt = Number.parseInt(seconds, 10) || 0;
   const date = new Date(1970, 0, 1, hoursInt, minutesInt, secondsInt);
   if (Number.isNaN(date.getTime())) {
-    return null;
+    return undefined;
   }
 
   return TIME_SHORT_FORMATTERS[info.precision].format(date);
@@ -1189,8 +1228,8 @@ export function compareDateTimeValues(
   }
   if (
     parsedA.hasTimezone &&
-    parsedA.epochMillis != null &&
-    parsedB.epochMillis != null
+    parsedA.epochMillis != undefined &&
+    parsedB.epochMillis != undefined
   ) {
     return parsedA.epochMillis - parsedB.epochMillis;
   }
@@ -1260,17 +1299,17 @@ export function fhirTimeToMillis(value: unknown): number | undefined {
 
 const UCUM_SYSTEM_URI = "http://unitsofmeasure.org";
 
-let ucumUtilsInstance: UcumLhcUtils | undefined;
+let ucumUtilitiesInstance: UcumLhcUtils | undefined;
 
-function getUcumUtils(): UcumLhcUtils {
-  if (!ucumUtilsInstance) {
-    ucumUtilsInstance = new UcumLhcUtils();
+function getUcumUtilities(): UcumLhcUtils {
+  if (!ucumUtilitiesInstance) {
+    ucumUtilitiesInstance = new UcumLhcUtils();
   }
-  return ucumUtilsInstance;
+  return ucumUtilitiesInstance;
 }
 
-function isUcumSystem(system: string | null | undefined): boolean {
-  return system == null || system === UCUM_SYSTEM_URI;
+function isUcumSystem(system: string | undefined): boolean {
+  return system == undefined || system === UCUM_SYSTEM_URI;
 }
 
 function getUcumUnitCode(quantity: Quantity): string | undefined {
@@ -1303,7 +1342,7 @@ function convertQuantityValue(
   }
 
   try {
-    const result = getUcumUtils().convertUnitTo(
+    const result = getUcumUtilities().convertUnitTo(
       sourceCode,
       quantity.value,
       targetCode,
@@ -1320,9 +1359,9 @@ function convertQuantityValue(
 
 function haveSameQuantityIdentity(a: Quantity, b: Quantity): boolean {
   return (
-    (a.system ?? null) === (b.system ?? null) &&
-    (a.code ?? null) === (b.code ?? null) &&
-    (a.unit ?? null) === (b.unit ?? null)
+    (a.system ?? undefined) === (b.system ?? undefined) &&
+    (a.code ?? undefined) === (b.code ?? undefined) &&
+    (a.unit ?? undefined) === (b.unit ?? undefined)
   );
 }
 
@@ -1334,7 +1373,7 @@ export function compareQuantities(
     return undefined;
   }
 
-  if ((value.comparator ?? null) !== (expected.comparator ?? null)) {
+  if ((value.comparator ?? undefined) !== (expected.comparator ?? undefined)) {
     return undefined;
   }
 
@@ -1396,7 +1435,9 @@ export function evaluateEnableWhenCondition(
   const answers = question.repeats
     ? question.answers
     : question.answers.slice(0, 1);
-  const populatedAnswers = answers.filter(answerHasOwnValue);
+  const populatedAnswers = answers.filter((answer) =>
+    answerHasOwnValue(answer),
+  );
   const operator = condition.operator;
 
   switch (operator) {
@@ -1421,7 +1462,7 @@ export function evaluateEnableWhenCondition(
 
       for (const answer of populatedAnswers) {
         const actual = answer.value;
-        if (actual == null) continue;
+        if (actual == undefined) continue;
         if (
           valuesEqual(ANSWER_TYPE_TO_DATA_TYPE[question.type], actual, expected)
         ) {
@@ -1443,7 +1484,7 @@ export function evaluateEnableWhenCondition(
       let comparable = false;
       for (const answer of populatedAnswers) {
         const actual = answer.value;
-        if (actual == null) continue;
+        if (actual == undefined) continue;
         comparable = true;
         if (
           valuesEqual(ANSWER_TYPE_TO_DATA_TYPE[question.type], actual, expected)
@@ -1464,47 +1505,53 @@ export function evaluateEnableWhenCondition(
       );
       if (expected === undefined) return false;
 
-      switch (question.type) {
-        case "decimal":
-        case "integer":
-        case "date":
-        case "dateTime":
-        case "time":
-        case "string":
-        case "text":
-        case "url":
-        case "quantity": {
-          for (const answer of populatedAnswers) {
-            const actual = answer.value;
-            if (actual == null) continue;
-            const diff = compareValues(
-              ANSWER_TYPE_TO_DATA_TYPE[question.type],
-              actual,
-              expected,
-            );
-            if (diff === undefined) continue;
-            if (
-              (operator === ">" && diff > 0) ||
-              (operator === ">=" && diff >= 0) ||
-              (operator === "<" && diff < 0) ||
-              (operator === "<=" && diff <= 0)
-            ) {
-              return true;
+      return (() => {
+        switch (question.type) {
+          case "decimal":
+          case "integer":
+          case "date":
+          case "dateTime":
+          case "time":
+          case "string":
+          case "text":
+          case "url":
+          case "quantity": {
+            for (const answer of populatedAnswers) {
+              const actual = answer.value;
+              if (actual == undefined) continue;
+              const diff = compareValues(
+                ANSWER_TYPE_TO_DATA_TYPE[question.type],
+                actual,
+                expected,
+              );
+              if (diff === undefined) continue;
+              if (
+                (operator === ">" && diff > 0) ||
+                (operator === ">=" && diff >= 0) ||
+                (operator === "<" && diff < 0) ||
+                (operator === "<=" && diff <= 0)
+              ) {
+                return true;
+              }
             }
+            return false;
           }
-          return false;
+          case "boolean":
+          case "coding":
+          case "attachment":
+          case "reference": {
+            return false;
+          }
+          default: {
+            return false;
+          }
         }
-        case "boolean":
-        case "coding":
-        case "reference":
-        case "attachment":
-        default:
-          return false;
-      }
+      })();
     }
 
-    default:
+    default: {
       return false;
+    }
   }
 }
 
@@ -1518,22 +1565,30 @@ export function valuesEqual(
     case "integer":
     case "string":
     case "url":
-    case "boolean":
+    case "boolean": {
       return actual === expected;
-    case "date":
+    }
+    case "date": {
       return areDateValuesEqual(actual, expected);
-    case "dateTime":
+    }
+    case "dateTime": {
       return areDateTimeValuesEqual(actual, expected);
-    case "time":
+    }
+    case "time": {
       return areTimeValuesEqual(actual, expected);
-    case "Coding":
+    }
+    case "Coding": {
       return areCodingsEqual(actual, expected);
-    case "Quantity":
+    }
+    case "Quantity": {
       return areQuantitiesEqual(actual, expected);
-    case "Reference":
+    }
+    case "Reference": {
       return areReferencesEqual(actual, expected);
-    case "Attachment":
+    }
+    case "Attachment": {
       return areAttachmentsEqual(actual, expected);
+    }
     case "base64Binary":
     case "canonical":
     case "code":
@@ -1578,8 +1633,9 @@ export function valuesEqual(
     case "Meta": {
       throw new Error('Not implemented yet: "Meta" case');
     }
-    default:
+    default: {
       return actual === expected;
+    }
   }
 }
 
@@ -1590,19 +1646,25 @@ export function compareValues(
 ): number | undefined {
   switch (type) {
     case "decimal":
-    case "integer":
+    case "integer": {
       return compareNumbers(actual, expected);
-    case "date":
+    }
+    case "date": {
       return compareDateValues(actual, expected);
-    case "dateTime":
+    }
+    case "dateTime": {
       return compareDateTimeValues(actual, expected);
-    case "time":
+    }
+    case "time": {
       return compareTimeValues(actual, expected);
+    }
     case "string":
-    case "url":
+    case "url": {
       return compareStringValues(actual, expected);
-    case "Quantity":
+    }
+    case "Quantity": {
       return compareQuantities(actual, expected);
+    }
     case "boolean":
     case "base64Binary":
     case "canonical":
@@ -1659,7 +1721,7 @@ export function booleanify(value: unknown): boolean {
     if (value.length === 0) {
       return false;
     }
-    return booleanify(value[value.length - 1]);
+    return booleanify(value.at(-1));
   }
 
   if (typeof value === "boolean") {
@@ -1674,11 +1736,11 @@ export function booleanify(value: unknown): boolean {
     return value.length > 0;
   }
 
-  return value != null;
+  return value != undefined;
 }
 
 function normalizeCodingKey(value: Coding) {
-  const system = value.system ?? null;
+  const system = value.system ?? undefined;
   if (value.code) {
     return { system, code: value.code };
   }
@@ -1689,49 +1751,50 @@ function normalizeCodingKey(value: Coding) {
 }
 
 function normalizeQuantityKey(value: Quantity) {
-  const unitCode = getUcumUnitCode(value) ?? null;
-  const quantityValue = typeof value.value === "number" ? value.value : null;
+  const unitCode = getUcumUnitCode(value);
+  const quantityValue =
+    typeof value.value === "number" ? value.value : undefined;
   return {
     value: quantityValue,
-    comparator: value.comparator ?? null,
-    system: value.system ?? null,
+    comparator: value.comparator,
+    system: value.system,
     code: unitCode,
   };
 }
 
 function normalizeReferenceKey(value: Reference) {
-  const identifierSystem = value.identifier?.system ?? null;
-  const identifierValue = value.identifier?.value ?? null;
+  const identifierSystem = value.identifier?.system;
+  const identifierValue = value.identifier?.value;
   const identifier =
-    identifierSystem != null || identifierValue != null
+    identifierSystem != undefined || identifierValue != undefined
       ? { system: identifierSystem, value: identifierValue }
       : undefined;
 
   return {
-    reference: value.reference ?? null,
-    type: value.type ?? null,
+    reference: value.reference,
+    type: value.type,
     ...(identifier ? { identifier } : {}),
   };
 }
 
 type AttachmentKey = {
-  contentType: string | null;
-  url: string | null;
-  size: number | string | null;
-  hash: string | null;
-  creation: string | null;
-  language: string | null;
+  contentType: string | undefined;
+  url: string | undefined;
+  size: number | string | undefined;
+  hash: string | undefined;
+  creation: string | undefined;
+  language: string | undefined;
   data?: string;
 };
 
 function normalizeAttachmentKey(value: Attachment): AttachmentKey {
   const normalized: AttachmentKey = {
-    contentType: value.contentType ?? null,
-    url: value.url ?? null,
-    size: value.size ?? null,
-    hash: value.hash ?? null,
-    creation: value.creation ?? null,
-    language: value.language ?? null,
+    contentType: value.contentType,
+    url: value.url,
+    size: value.size,
+    hash: value.hash,
+    creation: value.creation,
+    language: value.language,
   };
 
   if (!normalized.url && !normalized.hash && value.data) {
@@ -1743,10 +1806,10 @@ function normalizeAttachmentKey(value: Attachment): AttachmentKey {
 
 function normalizeValueKey<T extends DataType>(
   type: T,
-  value: DataTypeToType<T> | null,
+  value: DataTypeToType<T> | undefined,
 ) {
-  if (value == null) {
-    return null;
+  if (value == undefined) {
+    return;
   }
 
   if (type === "dateTime") {
@@ -1807,7 +1870,7 @@ const tokenHasher = new Hashery({
 
 export function tokenify<T extends DataType>(
   type: T,
-  value: DataTypeToType<T> | null,
+  value: DataTypeToType<T> | undefined,
 ): string {
   try {
     return tokenHasher.toHashSync({
@@ -1824,10 +1887,10 @@ export function tokenify<T extends DataType>(
 
 export function stringifyValue<T extends DataType>(
   type: T,
-  value: DataTypeToType<T> | null,
+  value: DataTypeToType<T> | undefined,
   fallback: string = "",
 ): string {
-  if (value == null) {
+  if (value == undefined) {
     return fallback;
   }
 
@@ -1862,15 +1925,15 @@ export function stringifyValue<T extends DataType>(
   if (type === "Quantity" && isQuantity(value)) {
     const quantity = value as Quantity;
     const pieces = [
-      quantity.value != null ? String(quantity.value) : undefined,
+      quantity.value == undefined ? undefined : String(quantity.value),
       quantity.unit,
     ].filter(Boolean);
     return pieces.join(" ") || fallback;
   }
 
   if (type === "Reference") {
-    const ref = value as Reference;
-    return ref.display ?? ref.reference ?? fallback;
+    const reference = value as Reference;
+    return reference.display ?? reference.reference ?? fallback;
   }
 
   if (type === "Attachment") {
@@ -1889,21 +1952,25 @@ export function stringifyValue<T extends DataType>(
 
 export function areValuesEqual<T extends DataType>(
   type: T,
-  a: DataTypeToType<T> | null,
-  b: DataTypeToType<T> | null,
+  a: DataTypeToType<T> | undefined,
+  b: DataTypeToType<T> | undefined,
 ): boolean {
-  if (a == null || b == null) {
+  if (a == undefined || b == undefined) {
     return a === b;
   }
   switch (type) {
-    case "Coding":
+    case "Coding": {
       return areCodingsEqual(a, b);
-    case "Quantity":
+    }
+    case "Quantity": {
       return areQuantitiesEqual(a, b);
-    case "Reference":
+    }
+    case "Reference": {
       return areReferencesEqual(a, b);
-    case "Attachment":
+    }
+    case "Attachment": {
       return areAttachmentsEqual(a, b);
+    }
     case "string":
     case "boolean":
     case "decimal":
@@ -1919,16 +1986,21 @@ export function areValuesEqual<T extends DataType>(
     case "positiveInt":
     case "unsignedInt":
     case "uri":
-    case "uuid":
+    case "uuid": {
       return a === b;
-    case "instant":
+    }
+    case "instant": {
       return areDateTimeValuesEqual(a, b);
-    case "date":
+    }
+    case "date": {
       return areDateValuesEqual(a, b);
-    case "dateTime":
+    }
+    case "dateTime": {
       return areDateTimeValuesEqual(a, b);
-    case "time":
+    }
+    case "time": {
       return areTimeValuesEqual(a, b);
+    }
     case "Address":
     case "Age":
     case "Annotation":
@@ -1967,9 +2039,13 @@ export function areValuesEqual<T extends DataType>(
 export function normalizeExpressionValues<T extends AnswerType>(
   type: T,
   value: unknown,
-): Array<DataTypeToType<AnswerTypeToDataType<T>> | null> {
+): Array<DataTypeToType<AnswerTypeToDataType<T>> | undefined> {
+  if (value === undefined) {
+    return [];
+  }
+
   const collection = Array.isArray(value) ? value : [value];
-  const result: Array<DataTypeToType<AnswerTypeToDataType<T>> | null> = [];
+  const result: Array<DataTypeToType<AnswerTypeToDataType<T>> | undefined> = [];
   collection.forEach((entry) => {
     const coerced = coerceExpressionValue(type, entry);
     if (coerced !== undefined) {
@@ -1982,26 +2058,18 @@ export function normalizeExpressionValues<T extends AnswerType>(
 export function coerceExpressionValue<T extends AnswerType>(
   type: T,
   value: unknown,
-): DataTypeToType<AnswerTypeToDataType<T>> | null | undefined {
+): DataTypeToType<AnswerTypeToDataType<T>> | undefined {
   if (value === undefined) {
     return undefined;
   }
 
-  if (value === null) {
-    return null;
-  }
-
   switch (type) {
-    case "boolean":
-      if (typeof value === "boolean")
-        return value as DataTypeToType<AnswerTypeToDataType<T>>;
-      if (typeof value === "string") {
-        if (/^true$/i.test(value))
-          return true as DataTypeToType<AnswerTypeToDataType<T>>;
-        if (/^false$/i.test(value))
-          return false as DataTypeToType<AnswerTypeToDataType<T>>;
-      }
-      return undefined;
+    case "boolean": {
+      const booleanValue = parseBoolean(value);
+      return booleanValue === undefined
+        ? undefined
+        : (booleanValue as DataTypeToType<AnswerTypeToDataType<T>>);
+    }
     case "decimal":
     case "integer": {
       const numberValue = parseNumber(value);
@@ -2012,17 +2080,19 @@ export function coerceExpressionValue<T extends AnswerType>(
     case "time":
     case "string":
     case "text":
-    case "url":
+    case "url": {
       return typeof value === "string"
         ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
         : undefined;
+    }
     case "coding":
     case "attachment":
-    case "reference":
+    case "reference": {
       return value && typeof value === "object"
         ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
         : undefined;
-    case "quantity":
+    }
+    case "quantity": {
       if (typeof value === "string") {
         const parsedQuantity = parseQuantityString(value);
         if (parsedQuantity) {
@@ -2033,8 +2103,10 @@ export function coerceExpressionValue<T extends AnswerType>(
       return value && typeof value === "object" && isQuantity(value)
         ? (value as DataTypeToType<AnswerTypeToDataType<T>>)
         : undefined;
-    default:
+    }
+    default: {
       return undefined;
+    }
   }
 }
 
@@ -2051,8 +2123,8 @@ export function withQuestionnaireResponseItemMeta(
         fhirNodeDataType: "QuestionnaireResponse.item",
         propName: "item",
         path: "QuestionnaireResponse.item",
-        parentResNode: null,
-        index: null,
+        parentResNode: undefined,
+        index: undefined,
       },
     });
   }

@@ -8,7 +8,7 @@ export type TabItem = {
   content: ReactNode;
 };
 
-export type TabContainerProps = {
+export type TabContainerProperties = {
   header?: ReactNode;
   items: TabItem[];
   value: number;
@@ -18,4 +18,4 @@ export type TabContainerProps = {
   linkId: string;
 };
 
-export type TabContainerComponent = ComponentType<TabContainerProps>;
+export type TabContainerComponent = ComponentType<TabContainerProperties>;

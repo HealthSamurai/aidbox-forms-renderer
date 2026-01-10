@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { styled } from "@linaria/react";
 
-export type IconButtonProps = {
+export type IconButtonProperties = {
   icon: ReactNode;
   onClick: () => void;
   disabled?: boolean | undefined;
@@ -13,7 +13,7 @@ export function IconButton({
   onClick,
   disabled,
   label,
-}: IconButtonProps) {
+}: IconButtonProperties) {
   return (
     <ButtonRoot
       type="button"

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { IPresentableNode } from "../../types.ts";
-import { getNodeLegalId } from "../../utils.ts";
+import { getNodeLegalId } from "../../utilities.ts";
 import { useTheme } from "../../ui/theme.tsx";
 import { strings } from "../../strings.ts";
 
@@ -12,7 +12,7 @@ export const NodeLegal = observer(function NodeLegal({
   const { NodeLegal: ThemedNodeLegal } = useTheme();
 
   if (!node.legal) {
-    return null;
+    return;
   }
 
   const legalId = getNodeLegalId(node);

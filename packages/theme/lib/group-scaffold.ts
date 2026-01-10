@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type GroupScaffoldProps = {
+export type GroupScaffoldProperties = {
   header?: ReactNode;
   children?: ReactNode;
   errors?: ReactNode;
@@ -9,4 +9,4 @@ export type GroupScaffoldProps = {
   removeLabel?: string | undefined;
 };
 
-export type GroupScaffoldComponent = ComponentType<GroupScaffoldProps>;
+export type GroupScaffoldComponent = ComponentType<GroupScaffoldProperties>;

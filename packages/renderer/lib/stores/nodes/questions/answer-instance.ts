@@ -21,7 +21,7 @@ import {
   ANSWER_TYPE_TO_DATA_TYPE,
   asAnswerFragment,
   shouldCreateStore,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import { AnswerValidator } from "../../validation/answer-validator.ts";
 import { QuantityAnswer } from "./quantity-answer.ts";
 
@@ -35,20 +35,21 @@ export class AnswerInstance<
   private readonly validator: AnswerValidator<T>;
 
   @action.bound
-  setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void {
-    this._value = value === "" ? null : value;
+  setValueByUser(value?: DataTypeToType<AnswerTypeToDataType<T>>): void {
+    this._value = value === "" ? undefined : value;
     this.question.markDirty();
     this.question.markUserOverridden();
   }
 
   @action.bound
-  setValueBySystem(next: DataTypeToType<AnswerTypeToDataType<T>> | null): void {
+  setValueBySystem(next?: DataTypeToType<AnswerTypeToDataType<T>>): void {
     this._value = next;
     this.question.markDirty();
   }
 
   @observable.ref
-  private _value: DataTypeToType<AnswerTypeToDataType<T>> | null = null;
+  private _value: DataTypeToType<AnswerTypeToDataType<T>> | undefined =
+    undefined;
 
   readonly nodes = observable.array<IPresentableNode>([], {
     deep: false,
@@ -59,7 +60,7 @@ export class AnswerInstance<
     question: IQuestionNode<T>,
     scope: IScope,
     token: AnswerToken,
-    initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
+    initial: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
     responseItems: QuestionnaireResponseItem[] = [],
   ) {
     makeObservable(this);
@@ -70,7 +71,7 @@ export class AnswerInstance<
 
     const children =
       question.template.item
-        ?.filter(shouldCreateStore)
+        ?.filter((item) => shouldCreateStore(item))
         .map((item) =>
           question.form.createNodeStore(
             item,
@@ -90,12 +91,12 @@ export class AnswerInstance<
   }
 
   @computed.struct
-  get responseAnswer(): QuestionnaireResponseItemAnswer | null {
+  get responseAnswer(): QuestionnaireResponseItemAnswer | undefined {
     return this.buildAnswerSnapshot("response");
   }
 
   @computed.struct
-  get expressionAnswer(): QuestionnaireResponseItemAnswer | null {
+  get expressionAnswer(): QuestionnaireResponseItemAnswer | undefined {
     return this.buildAnswerSnapshot("expression");
   }
 
@@ -111,7 +112,7 @@ export class AnswerInstance<
 
   private buildAnswerSnapshot(
     kind: SnapshotKind,
-  ): QuestionnaireResponseItemAnswer | null {
+  ): QuestionnaireResponseItemAnswer | undefined {
     const { value } = this;
 
     const childItems =
@@ -119,13 +120,13 @@ export class AnswerInstance<
         ? this.nodes.flatMap((child) => child.responseItems)
         : this.nodes.flatMap((child) => child.expressionItems);
 
-    if (value == null && childItems.length === 0) {
-      return null;
+    if (value == undefined && childItems.length === 0) {
+      return undefined;
     }
 
     const answer: QuestionnaireResponseItemAnswer = {};
 
-    if (value != null) {
+    if (value != undefined) {
       Object.assign(
         answer,
         this.question.answerOption.constraint === "optionsOrString" &&
@@ -147,12 +148,12 @@ export class AnswerInstance<
 
   @action
   dispose(): void {
-    const children = this.nodes.slice();
+    const children = [...this.nodes];
     this.nodes.clear();
     children.forEach((child) => child.dispose());
   }
 
-  get value(): DataTypeToType<AnswerTypeToDataType<T>> | null {
+  get value(): DataTypeToType<AnswerTypeToDataType<T>> | undefined {
     return this._value;
   }
 

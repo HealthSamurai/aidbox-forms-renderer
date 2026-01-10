@@ -1,11 +1,11 @@
 import { styled } from "@linaria/react";
-import type { OptionsLoadingProps } from "@aidbox-forms/theme";
+import type { OptionsLoadingProperties } from "@aidbox-forms/theme";
 
-export function OptionsLoading({ isLoading }: OptionsLoadingProps) {
+export function OptionsLoading({ isLoading }: OptionsLoadingProperties) {
   if (isLoading) {
     return <Hint role="status">Loading options…</Hint>;
   }
-  return null;
+  return;
 }
 
 const Hint = styled.div`

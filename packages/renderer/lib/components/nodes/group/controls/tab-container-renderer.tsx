@@ -6,7 +6,7 @@ import { NodeHeader } from "../../../form/node-header.tsx";
 import { NodeErrors } from "../../../form/node-errors.tsx";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { strings } from "../../../../strings.ts";
-import { buildId } from "../../../../utils.ts";
+import { buildId } from "../../../../utilities.ts";
 
 export const TabContainerRenderer = observer(function TabContainerRenderer({
   node,
@@ -19,11 +19,11 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
   const maxIndex = Math.max(visibleNodes.length - 1, 0);
   const activeIndex = Math.min(activeTab, maxIndex);
   const header = <NodeHeader node={node} as="text" />;
-  const items = visibleNodes.map((child, idx) => ({
+  const items = visibleNodes.map((child, index) => ({
     token: child.token,
     label: <NodeHeader node={child} as="text" />,
-    buttonId: buildId(node.token, "tab", idx),
-    panelId: buildId(node.token, "panel", idx),
+    buttonId: buildId(node.token, "tab", index),
+    panelId: buildId(node.token, "panel", index),
     content: <Node node={child} />,
   }));
 

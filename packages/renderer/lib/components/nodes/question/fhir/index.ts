@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import type {
   AnswerType,
-  ValueControlProps,
+  ValueControlProperties,
   ValueDisplayComponent,
 } from "../../../../types.ts";
 import { StringDisplay } from "./string/string-display.tsx";
@@ -50,7 +50,7 @@ export const VALUE_DISPLAY_BY_TYPE: {
 };
 
 export const VALUE_CONTROL_BY_TYPE: {
-  [K in AnswerType]: ComponentType<ValueControlProps<K>>;
+  [K in AnswerType]: ComponentType<ValueControlProperties<K>>;
 } = {
   string: StringControl,
   text: TextControl,
@@ -69,6 +69,6 @@ export const VALUE_CONTROL_BY_TYPE: {
 
 export function getValueControl<T extends AnswerType>(
   type: T,
-): ComponentType<ValueControlProps<T>> {
+): ComponentType<ValueControlProperties<T>> {
   return VALUE_CONTROL_BY_TYPE[type];
 }

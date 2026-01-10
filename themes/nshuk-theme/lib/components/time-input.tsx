@@ -1,4 +1,4 @@
-import type { TimeInputProps } from "@aidbox-forms/theme";
+import type { TimeInputProperties } from "@aidbox-forms/theme";
 
 export function TimeInput({
   id,
@@ -10,7 +10,7 @@ export function TimeInput({
   ariaDescribedBy,
   min,
   max,
-}: TimeInputProps) {
+}: TimeInputProperties) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy

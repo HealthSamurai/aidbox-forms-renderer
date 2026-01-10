@@ -1,5 +1,5 @@
-import type { ValueDisplayProps } from "../../../../../types.ts";
+import type { ValueDisplayProperties } from "../../../../../types.ts";
 
-export function IntegerDisplay({ value }: ValueDisplayProps<"integer">) {
+export function IntegerDisplay({ value }: ValueDisplayProperties<"integer">) {
   return <>{value}</>;
 }

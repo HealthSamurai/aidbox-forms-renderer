@@ -96,7 +96,7 @@ describe("coding-renderer", () => {
       fireEvent.change(systemInput, { target: { value: "" } });
       fireEvent.change(codeInput, { target: { value: "" } });
 
-      await waitFor(() => expect(question.answers[0]?.value).toBeNull());
+      await waitFor(() => expect(question.answers[0]?.value).toBeUndefined());
     });
   });
 });

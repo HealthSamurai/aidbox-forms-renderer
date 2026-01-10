@@ -1,6 +1,11 @@
-import type { FileInputProps } from "@aidbox-forms/theme";
+import type { FileInputProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
-import { type ChangeEvent, useRef } from "react";
+import {
+  type ChangeEvent,
+  type MouseEvent,
+  type KeyboardEvent,
+  useRef,
+} from "react";
 
 export function FileInput({
   id,
@@ -10,24 +15,25 @@ export function FileInput({
   accept,
   value,
   onChange,
-}: FileInputProps) {
-  const isEmpty = value == null;
+}: FileInputProperties) {
+  const isEmpty = value == undefined;
+  const hasValue = value != undefined;
   const displayLabel =
     value?.title ??
     value?.url ??
     (isEmpty ? "Choose file" : "Attachment selected");
   const displaySizeLabel =
-    value?.size != null ? `${Math.round(value.size / 1024)} KB` : undefined;
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+    value?.size == undefined ? "" : `${Math.round(value.size / 1024)} KB`;
+  const fileInputReference = useRef<HTMLInputElement | null>(null);
 
   const handlePickFile = () => {
     if (disabled) return;
-    fileInputRef.current?.click();
+    fileInputReference.current?.click();
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
-    if (!file) return;
+    if (file === undefined) return;
     try {
       onChange?.(file);
     } finally {
@@ -35,14 +41,14 @@ export function FileInput({
     }
   };
 
-  const handleSummaryClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleSummaryClick = (event: MouseEvent<HTMLDivElement>) => {
     if (disabled) return;
     const target = event.target as HTMLElement;
     if (target.closest("button")) return;
     handlePickFile();
   };
 
-  const handleSummaryKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleSummaryKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -61,7 +67,7 @@ export function FileInput({
       onKeyDown={handleSummaryKeyDown}
     >
       <HiddenInput
-        ref={fileInputRef}
+        ref={fileInputReference}
         id={id}
         type="file"
         onChange={handleFileChange}
@@ -74,16 +80,16 @@ export function FileInput({
         {displayLabel}
         {displaySizeLabel ? ` (${displaySizeLabel})` : ""}
       </Label>
-      {value != null ? (
+      {hasValue && (
         <ClearButton
           type="button"
-          onClick={() => onChange?.(null)}
+          onClick={() => onChange?.()}
           disabled={disabled}
           aria-label="Clear attachment"
         >
           ×
         </ClearButton>
-      ) : null}
+      )}
     </Summary>
   );
 }

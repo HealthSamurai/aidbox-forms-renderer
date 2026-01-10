@@ -1,4 +1,4 @@
-import type { DateInputProps } from "@aidbox-forms/theme";
+import type { DateInputProperties } from "@aidbox-forms/theme";
 
 export function DateInput({
   id,
@@ -10,7 +10,7 @@ export function DateInput({
   ariaDescribedBy,
   min,
   max,
-}: DateInputProps) {
+}: DateInputProperties) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy

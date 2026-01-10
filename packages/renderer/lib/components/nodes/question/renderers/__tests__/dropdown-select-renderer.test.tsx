@@ -16,7 +16,7 @@ import type {
 import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
-import { EXT, buildId } from "../../../../../utils.ts";
+import { EXT, buildId } from "../../../../../utilities.ts";
 import { strings } from "../../../../../strings.ts";
 import { DropdownSelectRenderer } from "../dropdown-select-renderer.tsx";
 import { VALUE_DISPLAY_BY_TYPE } from "../../fhir/index.ts";
@@ -33,13 +33,13 @@ function getQuestion<T extends AnswerType>(
   return node as IQuestionNode<T>;
 }
 
-function getStringAnswers(question: IQuestionNode<AnswerType>) {
+function getStringAnswers(question: IQuestionNode) {
   return question.answers
     .map((answer) => answer.value)
     .filter((value): value is string => typeof value === "string");
 }
 
-function getAnswerValues(question: IQuestionNode<AnswerType>) {
+function getAnswerValues(question: IQuestionNode) {
   return question.answers.map((answer) => answer.value);
 }
 
@@ -62,7 +62,9 @@ function getComboboxValue(combobox: HTMLElement) {
 function getListbox(input: HTMLElement) {
   const listboxId = input.getAttribute("aria-controls");
   expect(listboxId).toBeTruthy();
-  const listbox = document.getElementById(listboxId!);
+  const listbox = document.querySelector<HTMLElement>(
+    `#${CSS.escape(listboxId!)}`,
+  );
   expect(listbox).not.toBeNull();
   return listbox as HTMLElement;
 }
@@ -221,7 +223,7 @@ describe("dropdown-select-renderer", () => {
         );
       });
 
-      it("renders boolean tri-state options and clears to null", () => {
+      it("renders boolean tri-state options and clears to undefined", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -240,7 +242,7 @@ describe("dropdown-select-renderer", () => {
         render(<DropdownSelectRenderer node={question} />);
 
         let input = screen.getByRole("combobox") as HTMLElement;
-        expect(getComboboxValue(input)).toBe(strings.value.null);
+        expect(getComboboxValue(input)).toBe(strings.value.undefined);
 
         fireEvent.click(input);
         let listbox = getListbox(input);
@@ -256,10 +258,10 @@ describe("dropdown-select-renderer", () => {
         listbox = getListbox(input);
         fireEvent.click(
           within(listbox).getByRole("option", {
-            name: strings.value.null,
+            name: strings.value.undefined,
           }),
         );
-        expect(getAnswerValues(question)).toEqual([null]);
+        expect(getAnswerValues(question)).toEqual([undefined]);
       });
     });
 
@@ -351,7 +353,10 @@ describe("dropdown-select-renderer", () => {
         expect(
           within(listbox).queryByRole("option", { name: /specify other/i }),
         ).toBeNull();
-        expect(getStringAnswers(question).sort()).toEqual(["Alpha", "Zulu"]);
+        expect(getStringAnswers(question).toSorted()).toEqual([
+          "Alpha",
+          "Zulu",
+        ]);
       });
     });
   });
@@ -819,11 +824,11 @@ describe("dropdown-select-renderer", () => {
 
         fireEvent.change(customInput, { target: { value: "Cats" } });
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
-        expect(getStringAnswers(question).sort()).toEqual(["Cats", "Dust"]);
+        expect(getStringAnswers(question).toSorted()).toEqual(["Cats", "Dust"]);
         expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
 
         selectOption("Allergy", "Pollen");
-        expect(getStringAnswers(question).sort()).toEqual([
+        expect(getStringAnswers(question).toSorted()).toEqual([
           "Cats",
           "Dust",
           "Pollen",
@@ -831,7 +836,10 @@ describe("dropdown-select-renderer", () => {
 
         fireEvent.click(getChipButton("Cats"));
         expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
-        expect(getStringAnswers(question).sort()).toEqual(["Dust", "Pollen"]);
+        expect(getStringAnswers(question).toSorted()).toEqual([
+          "Dust",
+          "Pollen",
+        ]);
         const input = getCombobox("Allergy");
         fireEvent.click(input);
         const listbox = getListbox(input);
@@ -1061,7 +1069,7 @@ describe("dropdown-select-renderer", () => {
           name: "Dose",
         }) as HTMLInputElement;
         expect(customInput.value).toBe("");
-        expect(getAnswerValues(question)).toEqual([null]);
+        expect(getAnswerValues(question)).toEqual([undefined]);
 
         fireEvent.change(customInput, { target: { value: "5" } });
         expect(customInput.value).toBe("5");
@@ -1069,7 +1077,7 @@ describe("dropdown-select-renderer", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
         expect(screen.queryByRole("spinbutton", { name: "Dose" })).toBeNull();
-        expect(getAnswerValues(question)).toEqual([null]);
+        expect(getAnswerValues(question)).toEqual([undefined]);
         selectOption("Dose", "2");
         expect(getAnswerValues(question)).toEqual([2]);
 
@@ -1078,7 +1086,7 @@ describe("dropdown-select-renderer", () => {
           name: "Dose",
         }) as HTMLInputElement;
         expect(customAgain.value).toBe("");
-        expect(getAnswerValues(question)).toEqual([null]);
+        expect(getAnswerValues(question)).toEqual([undefined]);
       });
 
       it("cycles between option and specify other for multi select", () => {
@@ -1112,13 +1120,13 @@ describe("dropdown-select-renderer", () => {
         fireEvent.change(customInput, { target: { value: "5" } });
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
         expect(screen.queryByRole("spinbutton", { name: "Dose" })).toBeNull();
-        expect(getAnswerValues(question).sort()).toEqual([1, 5]);
+        expect(getAnswerValues(question).toSorted()).toEqual([1, 5]);
 
         selectOption("Dose", "2");
-        expect(getAnswerValues(question).sort()).toEqual([1, 2, 5]);
+        expect(getAnswerValues(question).toSorted()).toEqual([1, 2, 5]);
 
         fireEvent.click(getChipButton("5"));
-        expect(getAnswerValues(question).sort()).toEqual([1, 2]);
+        expect(getAnswerValues(question).toSorted()).toEqual([1, 2]);
 
         selectOption("Dose", /specify other/i);
         customInput = screen.getByRole("spinbutton", {
@@ -1488,9 +1496,9 @@ describe("dropdown-select-renderer", () => {
         const answer = question.answers[0];
         expect(answer).toBeDefined();
         const unitInputId = buildId(answer!.token, "control", "unit");
-        const unitInput = document.getElementById(
-          unitInputId,
-        ) as HTMLInputElement | null;
+        const unitInput = document.querySelector<HTMLElement>(
+          `#${CSS.escape(unitInputId)}`,
+        ) as HTMLInputElement | undefined;
         expect(unitInput).not.toBeNull();
         expect(screen.queryByRole("textbox", { name: "Dosage" })).toBeNull();
         fireEvent.click(unitInput!);
@@ -1530,9 +1538,9 @@ describe("dropdown-select-renderer", () => {
 
         selectOption("Document", /specify other/i);
 
-        const fileInput = container.querySelector(
-          'input[type="file"]',
-        ) as HTMLInputElement | null;
+        const fileInput = container.querySelector('input[type="file"]') as
+          | HTMLInputElement
+          | undefined;
         expect(fileInput).not.toBeNull();
         expect(fileInput).toHaveAttribute(
           "accept",

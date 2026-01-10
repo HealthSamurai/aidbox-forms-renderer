@@ -1,8 +1,8 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type DecimalInputProps = {
-  value: number | null;
-  onChange: (value: number | null) => void;
+export type DecimalInputProperties = {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -26,7 +26,7 @@ export function DecimalInput({
   min,
   max,
   step,
-}: DecimalInputProps) {
+}: DecimalInputProperties) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
     <ThemedNumberInput
@@ -34,7 +34,7 @@ export function DecimalInput({
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}
-      value={value ?? null}
+      value={value}
       onChange={onChange}
       disabled={disabled}
       step={step ?? "any"}

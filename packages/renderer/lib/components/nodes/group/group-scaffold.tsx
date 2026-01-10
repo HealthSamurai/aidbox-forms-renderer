@@ -19,9 +19,9 @@ export function GroupScaffold({
 }) {
   const { GroupScaffold: ThemedGroupScaffold } = useTheme();
 
-  const header = !node.isHeaderless ? (
+  const header = node.isHeaderless ? undefined : (
     <NodeHeader node={node} as="legend" />
-  ) : null;
+  );
   return (
     <ThemedGroupScaffold
       header={header}

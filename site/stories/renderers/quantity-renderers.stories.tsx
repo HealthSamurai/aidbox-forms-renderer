@@ -10,11 +10,11 @@ import {
   makeInitialValues,
 } from "../helpers.tsx";
 import { Renderer } from "../renderer.tsx";
-import { EXT } from "@aidbox-forms/renderer/utils.ts";
+import { EXT } from "@aidbox-forms/renderer/utilities.ts";
 
 type UnitMode = "freeText" | "singleOption" | "multipleOptions";
 
-type QuantitySliderArgs = {
+type QuantitySliderArguments = {
   unitMode: UnitMode;
   repeats: boolean;
   readOnly: boolean;
@@ -27,7 +27,7 @@ type QuantitySliderArgs = {
   initialUnit: string;
 };
 
-type QuantitySpinnerArgs = {
+type QuantitySpinnerArguments = {
   unitMode: UnitMode;
   repeats: boolean;
   readOnly: boolean;
@@ -63,7 +63,7 @@ function buildUnitOptions(mode: UnitMode): Coding[] {
 }
 
 function buildQuantityExtensions(
-  args: {
+  arguments_: {
     unitMode: UnitMode;
     boundsMode: "none" | "min" | "max" | "minMax";
     minValue: number;
@@ -82,18 +82,18 @@ function buildQuantityExtensions(
 
   const defaultUnit = unitOptions[0]?.code;
   const minQuantity =
-    args.boundsMode === "min" || args.boundsMode === "minMax"
+    arguments_.boundsMode === "min" || arguments_.boundsMode === "minMax"
       ? {
-          value: args.minValue,
+          value: arguments_.minValue,
           unit: defaultUnit,
           system: defaultUnit ? UNIT_SYSTEM : undefined,
           code: defaultUnit,
         }
       : undefined;
   const maxQuantity =
-    args.boundsMode === "max" || args.boundsMode === "minMax"
+    arguments_.boundsMode === "max" || arguments_.boundsMode === "minMax"
       ? {
-          value: args.maxValue,
+          value: arguments_.maxValue,
           unit: defaultUnit,
           system: defaultUnit ? UNIT_SYSTEM : undefined,
           code: defaultUnit,
@@ -147,14 +147,16 @@ function buildInitialValues(
   return makeInitialValues("quantity", base);
 }
 
-function buildQuantitySliderItem(args: QuantitySliderArgs): QuestionnaireItem {
-  const unitOptions = buildUnitOptions(args.unitMode);
-  const extensions = buildQuantityExtensions(args, unitOptions);
+function buildQuantitySliderItem(
+  arguments_: QuantitySliderArguments,
+): QuestionnaireItem {
+  const unitOptions = buildUnitOptions(arguments_.unitMode);
+  const extensions = buildQuantityExtensions(arguments_, unitOptions);
 
-  if (args.useStep) {
+  if (arguments_.useStep) {
     extensions.push({
       url: EXT.SLIDER_STEP_VALUE,
-      valueDecimal: args.step,
+      valueDecimal: arguments_.step,
     });
   }
 
@@ -163,40 +165,40 @@ function buildQuantitySliderItem(args: QuantitySliderArgs): QuestionnaireItem {
     text: "Quantity slider",
     type: "quantity",
     control: "slider",
-    repeats: args.repeats,
-    readOnly: args.readOnly,
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
     extensions,
     initial: buildInitialValues(
-      args.repeats,
-      args.initialValue,
-      args.initialUnit,
+      arguments_.repeats,
+      arguments_.initialValue,
+      arguments_.initialUnit,
     ),
   });
 }
 
 function buildQuantitySpinnerItem(
-  args: QuantitySpinnerArgs,
+  arguments_: QuantitySpinnerArguments,
 ): QuestionnaireItem {
-  const unitOptions = buildUnitOptions(args.unitMode);
-  const extensions = buildQuantityExtensions(args, unitOptions);
+  const unitOptions = buildUnitOptions(arguments_.unitMode);
+  const extensions = buildQuantityExtensions(arguments_, unitOptions);
 
   return buildQuestionItem({
     linkId: "quantity-spinner",
     text: "Quantity spinner",
     type: "quantity",
     control: "spinner",
-    repeats: args.repeats,
-    readOnly: args.readOnly,
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
     extensions,
     initial: buildInitialValues(
-      args.repeats,
-      args.initialValue,
-      args.initialUnit,
+      arguments_.repeats,
+      arguments_.initialValue,
+      arguments_.initialUnit,
     ),
   });
 }
 
-const baseArgTypes = {
+const baseArgumentTypes = {
   unitMode: {
     name: "Unit mode",
     options: ["freeText", "singleOption", "multipleOptions"],
@@ -233,40 +235,41 @@ const baseArgTypes = {
   },
 } as const;
 
-const meta: Meta<QuantitySliderArgs & Partial<QuantitySpinnerArgs>> = {
-  title: "Renderers/Quantity",
-  parameters: {
-    layout: "padded",
-    docs: {
-      description: {
-        component:
-          "Quantity renderer playgrounds for slider and spinner behaviors.",
+const meta: Meta<QuantitySliderArguments & Partial<QuantitySpinnerArguments>> =
+  {
+    title: "Renderers/Quantity",
+    parameters: {
+      layout: "padded",
+      docs: {
+        description: {
+          component:
+            "Quantity renderer playgrounds for slider and spinner behaviors.",
+        },
       },
     },
-  },
-  argTypes: baseArgTypes,
-  args: {
-    unitMode: "multipleOptions",
-    repeats: false,
-    readOnly: false,
-    boundsMode: "minMax",
-    minValue: 0,
-    maxValue: 100,
-    initialValue: 12,
-    initialUnit: "mg",
-  },
-};
+    argTypes: baseArgumentTypes,
+    args: {
+      unitMode: "multipleOptions",
+      repeats: false,
+      readOnly: false,
+      boundsMode: "minMax",
+      minValue: 0,
+      maxValue: 100,
+      initialValue: 12,
+      initialUnit: "mg",
+    },
+  };
 
 export default meta;
 
-export const QuantitySliderRenderer: StoryObj<QuantitySliderArgs> = {
+export const QuantitySliderRenderer: StoryObj<QuantitySliderArguments> = {
   name: "Quantity slider",
   args: {
     useStep: true,
     step: 2.5,
   },
   argTypes: {
-    ...baseArgTypes,
+    ...baseArgumentTypes,
     useStep: {
       name: "Use step extension",
       control: { type: "boolean" },
@@ -277,19 +280,19 @@ export const QuantitySliderRenderer: StoryObj<QuantitySliderArgs> = {
       if: { arg: "useStep", truthy: true },
     },
   },
-  render: (args, context) => {
-    const item = buildQuantitySliderItem(args);
+  render: (arguments_, context) => {
+    const item = buildQuantitySliderItem(arguments_);
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
 };
 
-export const QuantitySpinnerRenderer: StoryObj<QuantitySpinnerArgs> = {
+export const QuantitySpinnerRenderer: StoryObj<QuantitySpinnerArguments> = {
   name: "Quantity spinner",
-  argTypes: baseArgTypes,
-  render: (args, context) => {
-    const item = buildQuantitySpinnerItem(args);
+  argTypes: baseArgumentTypes,
+  render: (arguments_, context) => {
+    const item = buildQuantitySpinnerItem(arguments_);
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );

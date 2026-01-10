@@ -1,4 +1,4 @@
-import type { GroupListProps } from "@aidbox-forms/theme";
+import type { GroupListProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { Plus } from "../icons/plus.tsx";
 import { IconButton } from "./icon-button.tsx";
@@ -10,7 +10,7 @@ export function GroupList({
   onAdd,
   canAdd,
   addLabel,
-}: GroupListProps) {
+}: GroupListProperties) {
   const addText = addLabel ?? "Add";
   return (
     <Container data-linkid={linkId}>
@@ -25,7 +25,7 @@ export function GroupList({
             label={addText}
           />
         </Toolbar>
-      ) : null}
+      ) : undefined}
     </Container>
   );
 }

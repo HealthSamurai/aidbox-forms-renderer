@@ -1,7 +1,7 @@
 import { styled } from "@linaria/react";
 import type {
-  AnswerRemoveButtonProps,
-  AnswerScaffoldProps,
+  AnswerRemoveButtonProperties,
+  AnswerScaffoldProperties,
 } from "@aidbox-forms/theme";
 import { Trash } from "../icons/trash.tsx";
 import { IconButton } from "./icon-button.tsx";
@@ -12,7 +12,7 @@ export function AnswerScaffold({
   canRemove,
   errors,
   children,
-}: AnswerScaffoldProps) {
+}: AnswerScaffoldProperties) {
   return (
     <Row>
       <MainRow>
@@ -25,7 +25,7 @@ export function AnswerScaffold({
               text="Remove"
             />
           </Toolbar>
-        ) : null}
+        ) : undefined}
       </MainRow>
       <Children>
         {children}
@@ -39,7 +39,7 @@ export function AnswerRemoveButton({
   onClick,
   disabled,
   text,
-}: AnswerRemoveButtonProps) {
+}: AnswerRemoveButtonProperties) {
   return (
     <IconButton
       icon={<Trash />}

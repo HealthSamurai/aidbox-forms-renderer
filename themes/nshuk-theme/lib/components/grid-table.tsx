@@ -1,4 +1,4 @@
-import type { GridTableProps } from "@aidbox-forms/theme";
+import type { GridTableProperties } from "@aidbox-forms/theme";
 import type { ReactElement } from "react";
 import { IconButton } from "./icon-button.tsx";
 
@@ -6,7 +6,7 @@ export function GridTable({
   columns,
   rows,
   empty,
-}: GridTableProps): ReactElement | null {
+}: GridTableProperties): ReactElement | undefined {
   if (rows.length === 0 || columns.length === 0) {
     return empty ? (
       <>{empty}</>
@@ -15,8 +15,8 @@ export function GridTable({
     );
   }
 
-  const hasRowHeader = rows.some((row) => row.label != null);
-  const hasRowAction = rows.some((row) => row.onRemove != null);
+  const hasRowHeader = rows.some((row) => row.label != undefined);
+  const hasRowAction = rows.some((row) => row.onRemove != undefined);
 
   return (
     <table className="nhsuk-table nhsuk-table-responsive">

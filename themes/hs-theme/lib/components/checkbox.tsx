@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { CheckboxProps } from "@aidbox-forms/theme";
+import type { CheckboxProperties } from "@aidbox-forms/theme";
 
 export function Checkbox({
   id,
@@ -9,7 +9,7 @@ export function Checkbox({
   ariaDescribedBy,
   disabled,
   label,
-}: CheckboxProps) {
+}: CheckboxProperties) {
   return (
     <CheckboxLabel>
       <input

@@ -5,7 +5,7 @@ import { NodeHelp } from "./node-help.tsx";
 import { NodeFlyover } from "./node-flyover.tsx";
 import { NodeLegal } from "./node-legal.tsx";
 import { useTheme } from "../../ui/theme.tsx";
-import { getNodeLabelId } from "../../utils.ts";
+import { getNodeLabelId } from "../../utilities.ts";
 import type { NodeHeaderAs } from "@aidbox-forms/theme";
 
 export const NodeHeader = observer(function NodeHeader({

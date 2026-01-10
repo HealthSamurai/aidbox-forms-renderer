@@ -1,11 +1,11 @@
 import type { Coding } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
-import { buildId } from "../../../../../utils.ts";
+import { buildId } from "../../../../../utilities.ts";
 
-export type CodingInputProps = {
-  value: Coding | null;
-  onChange: (value: Coding | null) => void;
+export type CodingInputProperties = {
+  value: Coding | undefined;
+  onChange: (value: Coding | undefined) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -19,7 +19,7 @@ export function CodingInput({
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
-}: CodingInputProps) {
+}: CodingInputProperties) {
   const { InputGroup, TextInput } = useTheme();
   const coding = value ?? {};
   const handleChange = (field: keyof Coding, nextValue: string) => {
@@ -63,12 +63,12 @@ export function CodingInput({
   );
 }
 
-function pruneCoding(value: Coding): Coding | null {
+function pruneCoding(value: Coding): Coding | undefined {
   const next: Coding = { ...value };
   (["system", "code", "display", "version"] as const).forEach((key) => {
     if (!next[key]) {
       delete next[key];
     }
   });
-  return Object.keys(next).length > 0 ? next : null;
+  return Object.keys(next).length > 0 ? next : undefined;
 }

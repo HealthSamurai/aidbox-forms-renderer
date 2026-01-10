@@ -1,6 +1,6 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type TimeInputProps = {
+export type TimeInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
@@ -22,7 +22,7 @@ export function TimeInput({
   disabled,
   min,
   max,
-}: TimeInputProps) {
+}: TimeInputProperties) {
   const { TimeInput: ThemedTimeInput } = useTheme();
   return (
     <ThemedTimeInput

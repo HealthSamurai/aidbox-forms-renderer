@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
 
-export type SpinnerInputProps = {
-  value: number | null;
-  onChange: (v: number | null) => void;
+export type SpinnerInputProperties = {
+  value: number | undefined;
+  onChange: (v?: number) => void;
   disabled?: boolean | undefined;
   min?: number | undefined;
   max?: number | undefined;
@@ -13,4 +13,4 @@ export type SpinnerInputProps = {
   unitLabel?: string | undefined;
 };
 
-export type SpinnerInputComponent = ComponentType<SpinnerInputProps>;
+export type SpinnerInputComponent = ComponentType<SpinnerInputProperties>;

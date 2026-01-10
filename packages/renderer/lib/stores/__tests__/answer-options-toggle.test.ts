@@ -8,7 +8,7 @@ import type {
 import { FormStore } from "../form/form-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeAnswerOptionToggle, makeVariable } from "./expression-fixtures.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 const RED_CODING: QuestionnaireItemAnswerOption = {
   valueCoding: {
@@ -76,7 +76,7 @@ describe("answerOptionsToggleExpression", () => {
 
     const getEntry = (code: string) =>
       color.answerOption.inherentOptions.find((entry) => {
-        const coding = entry.value as Coding | null;
+        const coding = entry.value as Coding | undefined;
         return coding?.code === code;
       });
 

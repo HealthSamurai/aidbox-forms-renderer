@@ -1,6 +1,6 @@
 import type { ComponentType, HTMLAttributes } from "react";
 
-export type TextInputProps = {
+export type TextInputProperties = {
   id: string;
   type?: string | undefined;
   value: string;
@@ -14,4 +14,4 @@ export type TextInputProps = {
   maxLength?: number | undefined;
 };
 
-export type TextInputComponent = ComponentType<TextInputProps>;
+export type TextInputComponent = ComponentType<TextInputProperties>;

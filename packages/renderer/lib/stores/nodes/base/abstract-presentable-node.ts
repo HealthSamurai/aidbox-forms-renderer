@@ -12,17 +12,17 @@ import {
   extractExtensionsValues,
   findDisplayItemByControl,
   findExtension,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 
 export abstract class AbstractPresentableNode implements IPresentableNode {
   readonly form: IForm;
   readonly template: QuestionnaireItem;
-  readonly parentStore: INode | null;
+  readonly parentStore: INode | undefined;
 
   protected constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
   ) {
     makeObservable(this);
 
@@ -139,12 +139,12 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
 
   @computed
   get unitOptions(): readonly Coding[] {
-    return this.template.type !== "quantity"
-      ? []
-      : (this.template.extension ?? [])
+    return this.template.type === "quantity"
+      ? (this.template.extension ?? [])
           .filter(({ url }) => url === EXT.QUESTIONNAIRE_UNIT_OPTION)
           .map((extension) => extension.valueCoding)
-          .filter((coding): coding is Coding => coding != null);
+          .filter((coding): coding is Coding => coding != undefined)
+      : [];
   }
 
   @computed

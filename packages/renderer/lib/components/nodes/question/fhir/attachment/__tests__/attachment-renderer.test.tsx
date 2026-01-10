@@ -6,7 +6,7 @@ import type { Questionnaire } from "fhir/r5";
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
 import { AttachmentRenderer } from "../attachment-renderer.tsx";
-import { EXT } from "../../../../../../utils.ts";
+import { EXT } from "../../../../../../utilities.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 
 function getAttachmentQuestion(form: FormStore, linkId: string) {
@@ -54,7 +54,7 @@ describe("attachment-renderer", () => {
       const user = userEvent.setup();
       await user.click(clearButton);
 
-      expect(question.answers[0]?.value).toBeNull();
+      expect(question.answers[0]?.value).toBeUndefined();
     });
   });
 
@@ -87,9 +87,9 @@ describe("attachment-renderer", () => {
 
       const { container } = render(<AttachmentRenderer node={question} />);
 
-      const input = container.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement | null;
+      const input = container.querySelector("input[type='file']") as
+        | HTMLInputElement
+        | undefined;
       expect(input).not.toBeNull();
       if (!input) {
         throw new Error("Missing file input");

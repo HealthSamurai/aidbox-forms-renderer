@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-export type TimeInputProps = {
+export type TimeInputProperties = {
   id: string;
   value: string;
   onChange: (v: string) => void;
@@ -12,4 +12,4 @@ export type TimeInputProps = {
   max?: string | undefined;
 };
 
-export type TimeInputComponent = ComponentType<TimeInputProps>;
+export type TimeInputComponent = ComponentType<TimeInputProperties>;

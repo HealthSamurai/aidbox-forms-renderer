@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { IntegerInput } from "./integer-input.tsx";
 
 export function IntegerControl({
@@ -6,20 +6,8 @@ export function IntegerControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"integer">) {
-  const bounds = answer.bounds;
-  let min =
-    typeof bounds.min === "number" && Number.isFinite(bounds.min)
-      ? bounds.min
-      : undefined;
-  let max =
-    typeof bounds.max === "number" && Number.isFinite(bounds.max)
-      ? bounds.max
-      : undefined;
-  if (min != null && max != null && min > max) {
-    min = undefined;
-    max = undefined;
-  }
+}: ValueControlProperties<"integer">) {
+  const { min, max } = answer.bounds;
 
   return (
     <IntegerInput
@@ -27,7 +15,7 @@ export function IntegerControl({
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
-      value={answer.value ?? null}
+      value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
       unitLabel={answer.question.unitDisplay}

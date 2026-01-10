@@ -1,4 +1,4 @@
-import type { NodeHeaderProps } from "@aidbox-forms/theme";
+import type { NodeHeaderProperties } from "@aidbox-forms/theme";
 
 export function NodeHeader({
   label,
@@ -9,7 +9,7 @@ export function NodeHeader({
   legal,
   flyover,
   as = "label",
-}: NodeHeaderProps) {
+}: NodeHeaderProperties) {
   if (as === "legend") {
     return (
       <div className="nhsuk-label nhsuk-label--xl">

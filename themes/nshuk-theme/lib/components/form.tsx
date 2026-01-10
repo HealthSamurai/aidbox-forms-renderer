@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import type { FormProps } from "@aidbox-forms/theme";
+import type { FormProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
 export function Form({
@@ -12,7 +12,7 @@ export function Form({
   before,
   after,
   pagination,
-}: FormProps) {
+}: FormProperties) {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit?.();
@@ -39,7 +39,7 @@ export function Form({
         {Boolean(title) && <h1 className="nhsuk-heading-l">{title}</h1>}
         {Boolean(description) && <p className="nhsuk-body">{description}</p>}
       </header>
-    ) : null;
+    ) : undefined;
 
   if (pagination) {
     return (

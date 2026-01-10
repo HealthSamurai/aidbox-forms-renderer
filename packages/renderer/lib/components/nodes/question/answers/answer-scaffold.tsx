@@ -11,15 +11,15 @@ import {
   getNodeHelpId,
   getNodeLabelId,
   buildId,
-} from "../../../../utils.ts";
+} from "../../../../utilities.ts";
 import {
   AnswerType,
   IAnswerInstance,
-  ValueControlProps,
+  ValueControlProperties,
 } from "../../../../types.ts";
 
 export type AnswerRenderCallback<T extends AnswerType = AnswerType> =
-  ComponentType<ValueControlProps<T>>;
+  ComponentType<ValueControlProperties<T>>;
 
 export const AnswerScaffold = observer(function AnswerScaffold<
   T extends AnswerType,

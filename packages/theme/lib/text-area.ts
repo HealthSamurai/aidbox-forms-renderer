@@ -1,6 +1,6 @@
 import type { ComponentType, HTMLAttributes } from "react";
 
-export type TextAreaProps = {
+export type TextAreaProperties = {
   id: string;
   value: string;
   onChange: (v: string) => void;
@@ -13,4 +13,4 @@ export type TextAreaProps = {
   maxLength?: number | undefined;
 };
 
-export type TextAreaComponent = ComponentType<TextAreaProps>;
+export type TextAreaComponent = ComponentType<TextAreaProperties>;

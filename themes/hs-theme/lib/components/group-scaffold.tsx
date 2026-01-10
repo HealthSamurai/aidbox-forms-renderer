@@ -1,4 +1,4 @@
-import type { GroupScaffoldProps } from "@aidbox-forms/theme";
+import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { Children } from "react";
 import { Trash } from "../icons/trash.tsx";
@@ -11,7 +11,7 @@ export function GroupScaffold({
   onRemove,
   canRemove,
   removeLabel,
-}: GroupScaffoldProps) {
+}: GroupScaffoldProperties) {
   const content = Children.toArray(children);
   const removeText = removeLabel ?? "Remove";
   return (
@@ -23,7 +23,7 @@ export function GroupScaffold({
         ) : (
           <GroupContent>{content}</GroupContent>
         )
-      ) : null}
+      ) : undefined}
       {errors}
       {onRemove ? (
         <Toolbar>
@@ -34,7 +34,7 @@ export function GroupScaffold({
             label={removeText}
           />
         </Toolbar>
-      ) : null}
+      ) : undefined}
     </Container>
   );
 }

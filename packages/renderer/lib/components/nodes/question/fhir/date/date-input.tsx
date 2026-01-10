@@ -1,6 +1,6 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type DateInputProps = {
+export type DateInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
@@ -22,7 +22,7 @@ export function DateInput({
   disabled,
   min,
   max,
-}: DateInputProps) {
+}: DateInputProperties) {
   const { DateInput: ThemedDateInput } = useTheme();
   return (
     <ThemedDateInput

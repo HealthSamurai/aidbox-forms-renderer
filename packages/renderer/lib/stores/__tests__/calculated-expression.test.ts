@@ -8,7 +8,7 @@ import {
   makeVariable,
 } from "./expression-fixtures.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 const bmiQuestionnaire: Questionnaire = {
   resourceType: "Questionnaire",
@@ -202,9 +202,7 @@ describe("calculatedExpression", () => {
 
     assertQuestionNode(multiStore);
 
-    const multi = multiStore;
-
-    expect(multi.answers.map((answer) => answer.value)).toEqual([
+    expect(multiStore.answers.map((answer) => answer.value)).toEqual([
       "A",
       "B",
       "C",
@@ -322,7 +320,7 @@ describe("calculatedExpression", () => {
     expect(issue?.diagnostics).toContain(
       "because the expression has a syntax error",
     );
-    expect(resultStore.answers[0]?.value).toBeNull();
+    expect(resultStore.answers[0]?.value).toBeUndefined();
   });
 
   it("surfaces runtime errors from calculated expressions", () => {
@@ -355,7 +353,7 @@ describe("calculatedExpression", () => {
     expect(issue?.diagnostics).toContain(
       "because it calls an unsupported function",
     );
-    expect(resultStore.answers[0]?.value).toBeNull();
+    expect(resultStore.answers[0]?.value).toBeUndefined();
   });
 
   it("overwrites read-only answers with calculated results", () => {

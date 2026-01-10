@@ -17,7 +17,7 @@ import {
   asAnswerFragment,
   EXT,
   ITEM_CONTROL_SYSTEM,
-} from "@aidbox-forms/renderer/utils.ts";
+} from "@aidbox-forms/renderer/utilities.ts";
 
 export type QuestionItemConfig<T extends AnswerType> = {
   linkId: string;

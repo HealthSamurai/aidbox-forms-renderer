@@ -1,7 +1,10 @@
 import { styled } from "@linaria/react";
-import type { DisplayRendererProps } from "@aidbox-forms/theme";
+import type { DisplayRendererProperties } from "@aidbox-forms/theme";
 
-export function DisplayRenderer({ linkId, children }: DisplayRendererProps) {
+export function DisplayRenderer({
+  linkId,
+  children,
+}: DisplayRendererProperties) {
   return <Wrapper data-linkid={linkId}>{children}</Wrapper>;
 }
 

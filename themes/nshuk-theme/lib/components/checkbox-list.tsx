@@ -1,4 +1,4 @@
-import type { CheckboxListProps } from "@aidbox-forms/theme";
+import type { CheckboxListProperties } from "@aidbox-forms/theme";
 
 export function CheckboxList({
   options,
@@ -12,7 +12,7 @@ export function CheckboxList({
   ariaDescribedBy,
   disabled,
   isLoading,
-}: CheckboxListProps) {
+}: CheckboxListProperties) {
   const resolvedOptions = specifyOtherOption
     ? [...options, specifyOtherOption]
     : options;
@@ -74,7 +74,7 @@ export function CheckboxList({
             >
               {option.label}
             </label>
-            {selectedOption?.errors ?? null}
+            {selectedOption?.errors ?? undefined}
           </div>
         );
       })}

@@ -1,7 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue } from "fhir/r5";
 
-import { formatString, groupHasResponses, makeIssue } from "../../utils.ts";
+import { formatString, groupHasResponses, makeIssue } from "../../utilities.ts";
 import type { INodeValidator, IGroupList } from "../../types.ts";
 import { strings } from "../../strings.ts";
 
@@ -28,7 +28,7 @@ export class GroupListValidator implements INodeValidator {
       return [];
     }
 
-    const occurs = list.nodes.filter(groupHasResponses).length;
+    const occurs = list.nodes.filter((node) => groupHasResponses(node)).length;
     const issues: OperationOutcomeIssue[] = [];
 
     if (list.minOccurs > 0 && occurs < list.minOccurs) {
@@ -42,7 +42,7 @@ export class GroupListValidator implements INodeValidator {
       );
     }
 
-    if (list.maxOccurs != null && occurs > list.maxOccurs) {
+    if (list.maxOccurs != undefined && occurs > list.maxOccurs) {
       issues.push(
         makeIssue(
           "structure",

@@ -31,6 +31,6 @@ export class QuestionRendererRegistry {
   private sortDefinitions(
     definitions: QuestionRendererDefinition[],
   ): QuestionRendererDefinition[] {
-    return [...definitions].sort((a, b) => b.priority - a.priority);
+    return definitions.toSorted((a, b) => b.priority - a.priority);
   }
 }

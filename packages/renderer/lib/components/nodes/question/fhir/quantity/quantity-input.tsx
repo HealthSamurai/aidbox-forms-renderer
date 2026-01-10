@@ -1,9 +1,9 @@
 import type { IAnswerInstance } from "../../../../../types.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
-import { buildId } from "../../../../../utils.ts";
+import { buildId } from "../../../../../utilities.ts";
 
-export type QuantityInputProps = {
+export type QuantityInputProperties = {
   answer: IAnswerInstance<"quantity">;
   id: string;
   ariaLabelledBy: string;
@@ -12,6 +12,7 @@ export type QuantityInputProps = {
   disabled?: boolean | undefined;
 };
 
+// todo: avoid direct access to answer
 export function QuantityInput({
   answer,
   id,
@@ -19,37 +20,13 @@ export function QuantityInput({
   ariaDescribedBy,
   placeholder,
   disabled,
-}: QuantityInputProps) {
+}: QuantityInputProperties) {
   const { InputGroup, NumberInput, SelectInput, TextInput } = useTheme();
-  const bounds = answer.bounds;
-  const minBound = bounds.min;
-  const maxBound = bounds.max;
-  let minValue =
-    typeof minBound?.value === "number" && Number.isFinite(minBound.value)
-      ? minBound.value
-      : undefined;
-  let maxValue =
-    typeof maxBound?.value === "number" && Number.isFinite(maxBound.value)
-      ? maxBound.value
-      : undefined;
-  if (minValue != null && maxValue != null && minValue > maxValue) {
-    minValue = undefined;
-    maxValue = undefined;
-  }
+  const { min, max } = answer.bounds;
 
-  const unitValue = answer.quantity.isUnitFreeForm
-    ? (answer.value?.unit ?? "")
-    : answer.quantity.unitToken;
-  const selectedUnit =
-    answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
-
-  const unitInputId = buildId(id, "unit");
-  const valuePlaceholder =
-    placeholder ?? strings.inputs.quantityValuePlaceholder;
-
-  const handleValueChange = (nextValue: number | null) => {
+  const handleValueChange = (nextValue: number | undefined) => {
     answer.quantity.handleNumberInput(
-      nextValue === null ? "" : String(nextValue),
+      nextValue === undefined ? "" : String(nextValue),
     );
   };
 
@@ -59,20 +36,20 @@ export function QuantityInput({
         id={id}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
-        value={answer.value?.value ?? null}
+        value={answer.value?.value ?? undefined}
         onChange={handleValueChange}
         disabled={disabled}
-        placeholder={valuePlaceholder}
+        placeholder={placeholder ?? strings.inputs.quantityValuePlaceholder}
         step="any"
-        min={minValue}
-        max={maxValue}
+        min={min?.value}
+        max={max?.value}
       />
       {answer.quantity.isUnitFreeForm ? (
         <TextInput
-          id={unitInputId}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
-          value={unitValue}
+          value={answer.value?.unit ?? ""}
           onChange={(text) => answer.quantity.handleFreeTextChange(text)}
           disabled={disabled}
           placeholder={strings.inputs.quantityUnitPlaceholder}
@@ -80,9 +57,11 @@ export function QuantityInput({
       ) : (
         <SelectInput
           options={answer.quantity.entries}
-          selectedOption={selectedUnit}
+          selectedOption={answer.quantity.entries.find(
+            (entry) => entry.token === answer.quantity.unitToken,
+          )}
           onChange={(token) => answer.quantity.handleSelectChange(token ?? "")}
-          id={unitInputId}
+          id={buildId(id, "unit")}
           ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={ariaDescribedBy}
           disabled={Boolean(disabled)}

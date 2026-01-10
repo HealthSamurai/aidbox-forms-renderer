@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type NodeListProps = {
+export type NodeListProperties = {
   children: ReactNode;
 };
 
-export type NodeListComponent = ComponentType<NodeListProps>;
+export type NodeListComponent = ComponentType<NodeListProperties>;

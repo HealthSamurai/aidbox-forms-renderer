@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type AnswerScaffoldProps = {
+export type AnswerScaffoldProperties = {
   control: ReactNode;
   onRemove?: (() => void) | undefined;
   canRemove?: boolean | undefined;
@@ -8,4 +8,4 @@ export type AnswerScaffoldProps = {
   children?: ReactNode;
 };
 
-export type AnswerScaffoldComponent = ComponentType<AnswerScaffoldProps>;
+export type AnswerScaffoldComponent = ComponentType<AnswerScaffoldProperties>;

@@ -12,7 +12,7 @@ describe("boolean-input", () => {
           id="consent"
           ariaLabelledBy="consent-label"
           ariaDescribedBy="consent-help"
-          value={null}
+          value={undefined}
           onChange={handleChange}
         />,
       );

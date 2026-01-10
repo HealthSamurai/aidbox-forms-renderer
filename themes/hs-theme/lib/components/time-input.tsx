@@ -1,4 +1,4 @@
-import type { TimeInputProps } from "@aidbox-forms/theme";
+import type { TimeInputProperties } from "@aidbox-forms/theme";
 import { inputClass } from "./tokens.ts";
 
 export function TimeInput({
@@ -11,14 +11,14 @@ export function TimeInput({
   ariaDescribedBy,
   min,
   max,
-}: TimeInputProps) {
+}: TimeInputProperties) {
   return (
     <input
       id={id}
       className={inputClass}
       type="time"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(event) => onChange(event.target.value)}
       disabled={disabled}
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}

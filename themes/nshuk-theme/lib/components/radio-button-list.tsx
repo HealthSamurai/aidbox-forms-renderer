@@ -1,4 +1,4 @@
-import type { RadioButtonListProps } from "@aidbox-forms/theme";
+import type { RadioButtonListProperties } from "@aidbox-forms/theme";
 
 export function RadioButtonList({
   options,
@@ -11,7 +11,7 @@ export function RadioButtonList({
   ariaDescribedBy,
   disabled,
   isLoading,
-}: RadioButtonListProps) {
+}: RadioButtonListProperties) {
   const displayOptions = specifyOtherOption
     ? [...options, specifyOtherOption]
     : options;
@@ -56,10 +56,10 @@ export function RadioButtonList({
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
+      ) : undefined}
       {customOptionForm ? (
         <div className="nhsuk-u-padding-left-4">{customOptionForm}</div>
-      ) : null}
+      ) : undefined}
     </div>
   );
 }

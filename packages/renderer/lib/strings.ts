@@ -7,7 +7,7 @@ export const strings = {
   value: {
     yes: "Yes",
     no: "No",
-    null: "Unanswered",
+    undefined: "Unanswered",
   },
   dialog: {
     cancel: "Cancel",

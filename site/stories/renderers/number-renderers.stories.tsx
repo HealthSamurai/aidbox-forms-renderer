@@ -11,11 +11,11 @@ import {
   makeInitialValues,
 } from "../helpers.tsx";
 import { Renderer } from "../renderer.tsx";
-import { EXT } from "@aidbox-forms/renderer/utils.ts";
+import { EXT } from "@aidbox-forms/renderer/utilities.ts";
 
 type NumericType = "integer" | "decimal";
 
-type NumberSliderArgs = {
+type NumberSliderArguments = {
   answerType: NumericType;
   repeats: boolean;
   readOnly: boolean;
@@ -30,7 +30,7 @@ type NumberSliderArgs = {
   initialValue: number | undefined;
 };
 
-type NumberSpinnerArgs = {
+type NumberSpinnerArguments = {
   answerType: NumericType;
   repeats: boolean;
   readOnly: boolean;
@@ -54,7 +54,7 @@ function buildNumberBoundExtension(
     : { url, valueDecimal: value };
 }
 
-function buildNumberExtensions(args: {
+function buildNumberExtensions(arguments_: {
   answerType: NumericType;
   boundsMode: "none" | "min" | "max" | "minMax";
   minValue: number;
@@ -64,29 +64,37 @@ function buildNumberExtensions(args: {
 }): Extension[] {
   const extensions: Extension[] = [];
 
-  if (args.boundsMode === "min" || args.boundsMode === "minMax") {
+  if (arguments_.boundsMode === "min" || arguments_.boundsMode === "minMax") {
     extensions.push(
-      buildNumberBoundExtension(args.answerType, EXT.MIN_VALUE, args.minValue),
+      buildNumberBoundExtension(
+        arguments_.answerType,
+        EXT.MIN_VALUE,
+        arguments_.minValue,
+      ),
     );
   }
 
-  if (args.boundsMode === "max" || args.boundsMode === "minMax") {
+  if (arguments_.boundsMode === "max" || arguments_.boundsMode === "minMax") {
     extensions.push(
-      buildNumberBoundExtension(args.answerType, EXT.MAX_VALUE, args.maxValue),
+      buildNumberBoundExtension(
+        arguments_.answerType,
+        EXT.MAX_VALUE,
+        arguments_.maxValue,
+      ),
     );
   }
 
-  if (args.unitLabel.trim().length > 0) {
+  if (arguments_.unitLabel.trim().length > 0) {
     extensions.push({
       url: EXT.QUESTIONNAIRE_UNIT,
-      valueCoding: { display: args.unitLabel },
+      valueCoding: { display: arguments_.unitLabel },
     });
   }
 
-  if (args.placeholder && args.placeholder.trim().length > 0) {
+  if (arguments_.placeholder && arguments_.placeholder.trim().length > 0) {
     extensions.push({
       url: EXT.ENTRY_FORMAT,
-      valueString: args.placeholder,
+      valueString: arguments_.placeholder,
     });
   }
 
@@ -120,34 +128,38 @@ function buildInitialValues<T extends NumericType>(
   return makeInitialValues(type, base);
 }
 
-function buildNumberSliderItem(args: NumberSliderArgs): QuestionnaireItem {
+function buildNumberSliderItem(
+  arguments_: NumberSliderArguments,
+): QuestionnaireItem {
   const extensions = buildNumberExtensions({
-    answerType: args.answerType,
-    boundsMode: args.boundsMode,
-    minValue: args.minValue,
-    maxValue: args.maxValue,
-    unitLabel: args.unitLabel,
+    answerType: arguments_.answerType,
+    boundsMode: arguments_.boundsMode,
+    minValue: arguments_.minValue,
+    maxValue: arguments_.maxValue,
+    unitLabel: arguments_.unitLabel,
   });
 
-  if (args.useStep) {
-    extensions.push(buildSliderStepExtension(args.answerType, args.step));
+  if (arguments_.useStep) {
+    extensions.push(
+      buildSliderStepExtension(arguments_.answerType, arguments_.step),
+    );
   }
 
   const items: QuestionnaireItem[] = [];
-  if (args.lowerLabel.trim().length > 0) {
+  if (arguments_.lowerLabel.trim().length > 0) {
     items.push(
       buildDisplayItem({
         linkId: "lower-label",
-        text: args.lowerLabel,
+        text: arguments_.lowerLabel,
         control: "lower",
       }),
     );
   }
-  if (args.upperLabel.trim().length > 0) {
+  if (arguments_.upperLabel.trim().length > 0) {
     items.push(
       buildDisplayItem({
         linkId: "upper-label",
-        text: args.upperLabel,
+        text: arguments_.upperLabel,
         control: "upper",
       }),
     );
@@ -155,48 +167,50 @@ function buildNumberSliderItem(args: NumberSliderArgs): QuestionnaireItem {
 
   return buildQuestionItem({
     linkId: "number-slider",
-    text: `Number slider (${args.answerType})`,
-    type: args.answerType,
+    text: `Number slider (${arguments_.answerType})`,
+    type: arguments_.answerType,
     control: "slider",
-    repeats: args.repeats,
-    readOnly: args.readOnly,
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
     extensions,
     initial: buildInitialValues(
-      args.answerType,
-      args.repeats,
-      args.initialValue,
+      arguments_.answerType,
+      arguments_.repeats,
+      arguments_.initialValue,
     ),
     item: items,
   });
 }
 
-function buildNumberSpinnerItem(args: NumberSpinnerArgs): QuestionnaireItem {
+function buildNumberSpinnerItem(
+  arguments_: NumberSpinnerArguments,
+): QuestionnaireItem {
   const extensions = buildNumberExtensions({
-    answerType: args.answerType,
-    boundsMode: args.boundsMode,
-    minValue: args.minValue,
-    maxValue: args.maxValue,
-    unitLabel: args.unitLabel,
-    placeholder: args.placeholder,
+    answerType: arguments_.answerType,
+    boundsMode: arguments_.boundsMode,
+    minValue: arguments_.minValue,
+    maxValue: arguments_.maxValue,
+    unitLabel: arguments_.unitLabel,
+    placeholder: arguments_.placeholder,
   });
 
   return buildQuestionItem({
     linkId: "number-spinner",
-    text: `Number spinner (${args.answerType})`,
-    type: args.answerType,
+    text: `Number spinner (${arguments_.answerType})`,
+    type: arguments_.answerType,
     control: "spinner",
-    repeats: args.repeats,
-    readOnly: args.readOnly,
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
     extensions,
     initial: buildInitialValues(
-      args.answerType,
-      args.repeats,
-      args.initialValue,
+      arguments_.answerType,
+      arguments_.repeats,
+      arguments_.initialValue,
     ),
   });
 }
 
-const baseArgTypes = {
+const baseArgumentTypes = {
   answerType: {
     name: "Answer type",
     options: numberTypes,
@@ -233,7 +247,7 @@ const baseArgTypes = {
   },
 } as const;
 
-const meta: Meta<NumberSliderArgs & Partial<NumberSpinnerArgs>> = {
+const meta: Meta<NumberSliderArguments & Partial<NumberSpinnerArguments>> = {
   title: "Renderers/Numeric",
   parameters: {
     layout: "padded",
@@ -244,7 +258,7 @@ const meta: Meta<NumberSliderArgs & Partial<NumberSpinnerArgs>> = {
       },
     },
   },
-  argTypes: baseArgTypes,
+  argTypes: baseArgumentTypes,
   args: {
     answerType: "decimal",
     repeats: false,
@@ -259,7 +273,7 @@ const meta: Meta<NumberSliderArgs & Partial<NumberSpinnerArgs>> = {
 
 export default meta;
 
-export const NumberSliderRenderer: StoryObj<NumberSliderArgs> = {
+export const NumberSliderRenderer: StoryObj<NumberSliderArguments> = {
   name: "Number slider",
   args: {
     useStep: true,
@@ -268,7 +282,7 @@ export const NumberSliderRenderer: StoryObj<NumberSliderArgs> = {
     upperLabel: "High",
   },
   argTypes: {
-    ...baseArgTypes,
+    ...baseArgumentTypes,
     useStep: {
       name: "Use step extension",
       control: { type: "boolean" },
@@ -287,28 +301,28 @@ export const NumberSliderRenderer: StoryObj<NumberSliderArgs> = {
       control: { type: "text" },
     },
   },
-  render: (args, context) => {
-    const item = buildNumberSliderItem(args);
+  render: (arguments_, context) => {
+    const item = buildNumberSliderItem(arguments_);
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
 };
 
-export const NumberSpinnerRenderer: StoryObj<NumberSpinnerArgs> = {
+export const NumberSpinnerRenderer: StoryObj<NumberSpinnerArguments> = {
   name: "Number spinner",
   args: {
     placeholder: "Enter value",
   },
   argTypes: {
-    ...baseArgTypes,
+    ...baseArgumentTypes,
     placeholder: {
       name: "Placeholder",
       control: { type: "text" },
     },
   },
-  render: (args, context) => {
-    const item = buildNumberSpinnerItem(args);
+  render: (arguments_, context) => {
+    const item = buildNumberSpinnerItem(arguments_);
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );

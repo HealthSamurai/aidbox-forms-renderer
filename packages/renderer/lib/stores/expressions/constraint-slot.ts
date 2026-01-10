@@ -5,7 +5,7 @@ import type {
   IExpressionSlot,
   TargetConstraintDefinition,
 } from "../../types.ts";
-import { booleanify } from "../../utils.ts";
+import { booleanify } from "../../utilities.ts";
 
 export class ConstraintSlot {
   readonly definition: TargetConstraintDefinition;
@@ -26,7 +26,7 @@ export class ConstraintSlot {
 
     const value = this.slot.value;
 
-    if (value === undefined || value === null) {
+    if (value === undefined) {
       return undefined;
     }
 

@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type TextInputProps = {
+export type TextInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
@@ -25,7 +25,7 @@ export function TextInput({
   inputMode,
   minLength,
   maxLength,
-}: TextInputProps) {
+}: TextInputProperties) {
   const { TextArea: ThemedTextArea } = useTheme();
   return (
     <ThemedTextArea

@@ -1,7 +1,7 @@
 import { action, computed, observable, override } from "mobx";
 import {
   GROUP_ITEM_CONTROLS,
-  GroupRendererProps,
+  GroupRendererProperties,
   type GroupItemControl,
   IForm,
   IGroupNode,
@@ -25,7 +25,7 @@ import {
   getItemControlCode,
   makeIssue,
   withQuestionnaireResponseItemMeta,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { GroupStore } from "./group-store.ts";
 import { GridTableStore } from "./grid-table-store.ts";
@@ -55,7 +55,7 @@ export class GroupListStore
   constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     scope: IScope,
     token: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
@@ -73,7 +73,7 @@ export class GroupListStore
   }
 
   @computed
-  get renderer(): ComponentType<GroupRendererProps> | undefined {
+  get renderer(): ComponentType<GroupRendererProperties> | undefined {
     return this.form.groupRendererRegistry.resolve(this)?.renderer;
   }
 
@@ -202,22 +202,22 @@ export class GroupListStore
 
     if (control === "gtable") {
       this.nodes.forEach((node) => {
-        node.nodes.forEach((node) => {
-          if (!isQuestionNode(node)) {
+        node.nodes.forEach((childNode) => {
+          if (!isQuestionNode(childNode)) {
             this.form.reportRenderingIssue(
               makeIssue(
                 "structure",
-                `Group table "${this.linkId}" expects only question items, but child "${node.linkId}" is type '${node.template.type}'.`,
+                `Group table "${this.linkId}" expects only question items, but child "${childNode.linkId}" is type '${childNode.template.type}'.`,
               ),
             );
             return;
           }
 
-          if (node.repeats) {
+          if (childNode.repeats) {
             this.form.reportRenderingIssue(
               makeIssue(
                 "structure",
-                `Question "${node.linkId}" inside group table group "${this.linkId}" must not allow multiple answers.`,
+                `Question "${childNode.linkId}" inside group table group "${this.linkId}" must not allow multiple answers.`,
               ),
             );
           }
@@ -271,20 +271,20 @@ export class GroupListStore
 
   @action
   dispose(): void {
-    const nodes = this.nodes.slice();
+    const nodes = [...this.nodes];
     this.nodes.clear();
     nodes.forEach((node) => node.dispose());
   }
 }
 
 export function isGroupListStore(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
 ): it is IGroupList {
   return it instanceof GroupListStore;
 }
 
 export function assertGroupListStore(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
   message?: string,
 ): asserts it is IGroupList {
   if (!isGroupListStore(it)) {

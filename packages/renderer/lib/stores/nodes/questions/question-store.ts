@@ -45,7 +45,7 @@ import {
   buildId,
   normalizeExpressionValues,
   withQuestionnaireResponseItemMeta,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import type { HTMLAttributes } from "react";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { AnswerOptionStore } from "./answer-option-store.ts";
@@ -113,7 +113,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     scope: IScope,
     token: string,
     responseItem: QuestionnaireResponseItem | undefined,
@@ -221,9 +221,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   addAnswer(
-    initial: DataTypeToType<AnswerTypeToDataType<T>> | null = null,
+    initial?: DataTypeToType<AnswerTypeToDataType<T>>,
   ): IAnswerInstance | undefined {
-    if (!this.canAdd) return undefined;
+    if (!this.canAdd) return;
     this.markDirty();
     this.markUserOverridden();
     return this.pushAnswer(initial);
@@ -233,7 +233,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   removeAnswer(answer: IAnswerInstance<T>) {
     if (!this.canRemove) return;
     const index = this.answers.indexOf(answer);
-    if (index < 0) return;
+    if (index === -1) return;
     const [removed] = this.answers.splice(index, 1);
     removed?.dispose();
     this.ensureBaselineAnswers();
@@ -251,20 +251,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (this.repeats) {
       const target = Math.min(this.minOccurs, this.maxOccurs);
       while (this.answers.length < target && canSeed) {
-        this.pushAnswer(null);
+        this.pushAnswer();
       }
       return;
     }
 
     if (this.answers.length === 0 && canSeed) {
-      this.pushAnswer(null);
+      this.pushAnswer();
     }
   }
 
   @computed
   private get hasContent() {
     const answers = this.repeats ? this.answers : this.answers.slice(0, 1);
-    return answers.some(answerHasContent);
+    return answers.some((answer) => answerHasContent(answer));
   }
 
   private detectInitialOverride() {
@@ -295,7 +295,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   private unregisterDisposer(disposer: IReactionDisposer) {
     const index = this.disposers.indexOf(disposer);
-    if (index >= 0) {
+    if (index !== -1) {
       this.disposers.splice(index, 1);
     }
   }
@@ -319,7 +319,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     if (initial) {
       const disposer = reaction(
         () => [this.isEnabled, initial.value, this.hasContent, this.lifecycle],
-        (_arg: unknown, _prev: unknown, reaction) => {
+        (_argument: unknown, _previous: unknown, reaction) => {
           if (this.applyInitialExpressionValue()) {
             this.unregisterDisposer(disposer);
             reaction.dispose();
@@ -368,7 +368,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       })
       .filter(
         (value): value is DataTypeToType<AnswerTypeToDataType<T>> | string => {
-          return value != null;
+          return value != undefined;
         },
       );
 
@@ -423,14 +423,14 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         ? values.slice(0, this.maxOccurs)
         : values;
 
-      const existing = this.answers.slice();
+      const existing = [...this.answers];
       this.answers.clear();
       existing.forEach((answer) => answer.dispose());
       cappedValues.forEach((entry) => {
         this.pushAnswer(entry);
       });
     } else {
-      const coerced = values[0] ?? null;
+      const coerced = values[0] ?? undefined;
       this.ensureBaselineAnswers(true);
       const answer = this.answers[0];
       if (answer) {
@@ -456,7 +456,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
           ? getValue("string", answer)
           : undefined;
       this.pushAnswer(
-        (typedValue ?? stringValue ?? null) as DataTypeToType<
+        (typedValue ?? stringValue ?? undefined) as DataTypeToType<
           AnswerTypeToDataType<T>
         >,
         answer.item,
@@ -491,7 +491,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         this.ensureBaselineAnswers(true);
         const answer = this.answers[0];
         if (answer) {
-          answer.setValueBySystem(values[0] ?? null);
+          answer.setValueBySystem(values[0] ?? undefined);
         }
       }
       this.lifecycle = "expression";
@@ -500,10 +500,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   }
 
   private syncRepeatingAnswers(
-    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | null>,
+    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | undefined>,
   ) {
     while (this.answers.length < values.length && this.canAdd) {
-      this.pushAnswer(null);
+      this.pushAnswer();
     }
 
     while (this.answers.length > values.length && this.canRemove) {
@@ -514,12 +514,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     values.forEach((entry, index) => {
       const answer = this.answers[index];
       if (!answer) return;
-      answer.setValueBySystem(entry ?? null);
+      answer.setValueBySystem(entry ?? undefined);
     });
   }
 
   private answersMatch(
-    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | null>,
+    values: Array<DataTypeToType<AnswerTypeToDataType<T>> | undefined>,
   ) {
     if (this.repeats) {
       if (values.length !== this.answers.length) {
@@ -531,7 +531,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const first = this.answers[0];
-    return (values[0] ?? null) === (first?.value ?? null);
+    return (values[0] ?? undefined) === (first?.value ?? undefined);
   }
 
   @action
@@ -541,7 +541,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @action
   private pushAnswer(
-    initial: DataTypeToType<AnswerTypeToDataType<T>> | null,
+    initial?: DataTypeToType<AnswerTypeToDataType<T>>,
     responseItems?: QuestionnaireResponseItem[],
   ) {
     const answer = new AnswerInstance(
@@ -560,7 +560,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const disposers = this.disposers.splice(0);
     disposers.forEach((dispose) => dispose());
 
-    const existingAnswers = this.answers.slice();
+    const existingAnswers = [...this.answers];
     this.answers.clear();
     existingAnswers.forEach((answer) => answer.dispose());
   }
@@ -578,10 +578,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
     const answers = this.collectAnswers(kind);
 
-    if (kind === "response") {
-      if (!this.isEnabled || answers.length === 0) {
-        return [];
-      }
+    if (kind === "response" && (!this.isEnabled || answers.length === 0)) {
+      return [];
     }
 
     const item = withQuestionnaireResponseItemMeta({
@@ -610,19 +608,20 @@ export class QuestionStore<T extends AnswerType = AnswerType>
         kind === "response" ? answer.responseAnswer : answer.expressionAnswer,
       )
       .filter(
-        (answer): answer is QuestionnaireResponseItemAnswer => answer != null,
+        (answer): answer is QuestionnaireResponseItemAnswer =>
+          answer != undefined,
       );
   }
 }
 
 export function isQuestionNode<TType extends AnswerType = AnswerType>(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
 ): it is IQuestionNode<TType> {
   return it instanceof QuestionStore;
 }
 
 export function assertQuestionNode<TType extends AnswerType = AnswerType>(
-  it: IPresentableNode | undefined | null,
+  it: IPresentableNode | undefined,
   message?: string,
 ): asserts it is IQuestionNode<TType> {
   if (!isQuestionNode(it)) {

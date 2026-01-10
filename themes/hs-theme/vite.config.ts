@@ -2,13 +2,13 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import linaria from "@wyw-in-js/vite";
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
-import pkg from "./package.json";
+import packageJson from "./package.json";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const peerDependencies = Object.keys(pkg.peerDependencies ?? {});
-const dependencies = Object.keys(pkg.dependencies ?? {});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const peerDependencies = Object.keys(packageJson.peerDependencies ?? {});
+const dependencies = Object.keys(packageJson.dependencies ?? {});
 const externalDeps = new Set([
   ...peerDependencies,
   ...dependencies,
@@ -23,7 +23,7 @@ const rollupExternal = [
   "react/jsx-runtime",
   ...subpathMatchers,
 ];
-const typescriptCompilerFolder = resolve(
+const typescriptCompilerFolder = path.resolve(
   __dirname,
   "../../node_modules/typescript",
 );
@@ -33,11 +33,11 @@ export default defineConfig(() => {
     plugins: [
       react(),
       linaria({
-        include: ["lib/**/*.{ts,tsx}"],
+        include: ["lib/components/**/*.{ts,tsx}"],
       }),
       dts({
         rollupTypes: true,
-        tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+        tsconfigPath: path.resolve(__dirname, "tsconfig.lib.json"),
         rollupOptions: {
           typescriptCompilerFolder,
         },
@@ -45,7 +45,7 @@ export default defineConfig(() => {
     ],
     build: {
       lib: {
-        entry: resolve(__dirname, "lib/index.ts"),
+        entry: path.resolve(__dirname, "lib/index.ts"),
         fileName: "index",
         formats: ["es"],
       },

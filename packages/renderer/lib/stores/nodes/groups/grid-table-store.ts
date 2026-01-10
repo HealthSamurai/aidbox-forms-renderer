@@ -7,7 +7,7 @@ import type {
   IQuestionNode,
 } from "../../../types.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-import { buildId } from "../../../utils.ts";
+import { buildId } from "../../../utilities.ts";
 
 export class GridTableStore implements IGridTableStore {
   private readonly list: IGroupList;
@@ -59,14 +59,14 @@ export class GridTableStore implements IGridTableStore {
     return this.list.visibleNodes.map((node) => {
       const questionMap = new Map<string, IQuestionNode>(
         node.nodes
-          .filter(isQuestionNode)
+          .filter((question) => isQuestionNode(question))
           .map((question) => [question.linkId, question]),
       );
 
       return {
         token: node.token,
         node,
-        label: null,
+        label: undefined,
         cells: this.columns.map((column) => ({
           token: buildId(node.token, column.token),
           question: questionMap.get(column.token),

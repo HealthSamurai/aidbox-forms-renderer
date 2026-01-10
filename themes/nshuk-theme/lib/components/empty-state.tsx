@@ -1,5 +1,5 @@
-import type { EmptyStateProps } from "@aidbox-forms/theme";
+import type { EmptyStateProperties } from "@aidbox-forms/theme";
 
-export function EmptyState({ children }: EmptyStateProps) {
+export function EmptyState({ children }: EmptyStateProperties) {
   return <p className="nhsuk-hint">{children}</p>;
 }

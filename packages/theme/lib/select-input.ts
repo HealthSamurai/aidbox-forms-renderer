@@ -1,10 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
-export type SelectInputProps = {
+export type SelectInputProperties = {
   options: readonly OptionItem[];
-  selectedOption: SelectedOptionItem | null;
-  onChange: (token: string | null) => void;
+  selectedOption: SelectedOptionItem | undefined;
+  onChange: (token?: string) => void;
   onSearch?: (query: string) => void;
   specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
@@ -16,4 +16,4 @@ export type SelectInputProps = {
   placeholder?: string | undefined;
 };
 
-export type SelectInputComponent = ComponentType<SelectInputProps>;
+export type SelectInputComponent = ComponentType<SelectInputProperties>;

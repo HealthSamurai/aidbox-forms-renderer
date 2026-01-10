@@ -10,7 +10,7 @@ import { useTheme } from "../../../../ui/theme.tsx";
 import { ValueDisplay } from "../../question/fhir/value-display.tsx";
 import { SelectionTableCell } from "../components/selection-table-cell.tsx";
 import { strings } from "../../../../strings.ts";
-import { buildId } from "../../../../utils.ts";
+import { buildId } from "../../../../utilities.ts";
 
 export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   node,
@@ -44,7 +44,7 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
       <NodeHeader node={entry.question} as="text" />
       {entry.question.answerOption.isLoading ? (
         <OptionsLoading isLoading />
-      ) : null}
+      ) : undefined}
       {entry.question.hasErrors && <NodeErrors node={entry.question} />}
     </>
   );

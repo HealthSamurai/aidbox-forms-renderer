@@ -1,6 +1,9 @@
-import type { DisplayRendererProps } from "@aidbox-forms/theme";
+import type { DisplayRendererProperties } from "@aidbox-forms/theme";
 
-export function DisplayRenderer({ linkId, children }: DisplayRendererProps) {
+export function DisplayRenderer({
+  linkId,
+  children,
+}: DisplayRendererProperties) {
   return (
     <div className="nhsuk-body" data-linkid={linkId}>
       {children}

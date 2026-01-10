@@ -1,7 +1,7 @@
 import { styled } from "@linaria/react";
-import type { NodeLegalProps } from "@aidbox-forms/theme";
+import type { NodeLegalProperties } from "@aidbox-forms/theme";
 
-export function NodeLegal({ id, children, ariaLabel }: NodeLegalProps) {
+export function NodeLegal({ id, children, ariaLabel }: NodeLegalProperties) {
   return (
     <Wrapper>
       <LegalButton type="button" aria-describedby={id} aria-label={ariaLabel}>

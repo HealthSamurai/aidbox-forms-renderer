@@ -30,7 +30,7 @@ import {
   getValue,
   OPTIONS_ISSUE_EXPRESSION,
   tokenify,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import type { IPromiseBasedObservable } from "mobx-utils";
 import { fromPromise } from "mobx-utils";
 import { strings } from "../../../strings.ts";
@@ -39,7 +39,7 @@ function getOptionsErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
-  if (error == null) {
+  if (error == undefined) {
     return strings.errors.unknown;
   }
   return String(error);
@@ -94,36 +94,33 @@ export class AnswerOptionStore<
   @computed.struct
   private get expandedValueSetOptions():
     | QuestionnaireItemAnswerOption[]
-    | null {
-    return (
-      this.expansion?.case({
-        fulfilled: (value) =>
-          value.map((coding: Coding) => ({
-            valueCoding: coding,
-          })),
-      }) ?? null
-    );
+    | undefined {
+    return this.expansion?.case({
+      fulfilled: (value) =>
+        value.map((coding: Coding) => ({
+          valueCoding: coding,
+        })),
+    });
   }
 
   @computed({ keepAlive: true })
-  private get expansion(): IPromiseBasedObservable<Coding[]> | null {
-    return this.question.template.answerValueSet
-      ? fromPromise(
-          this.question.form.valueSetExpander.expand(
-            this.question.template.answerValueSet,
-            this.question.preferredTerminologyServers,
-          ),
-        )
-      : null;
+  private get expansion(): IPromiseBasedObservable<Coding[]> | undefined {
+    if (this.question.template.answerValueSet) {
+      return fromPromise(
+        this.question.form.valueSetExpander.expand(
+          this.question.template.answerValueSet,
+          this.question.preferredTerminologyServers,
+        ),
+      );
+    }
+    return;
   }
 
   @computed
-  get error(): OperationOutcomeIssue | null {
-    return (
-      this.expansion?.case({
-        rejected: (error) => toOptionsIssue(error),
-      }) ?? null
-    );
+  get error(): OperationOutcomeIssue | undefined {
+    return this.expansion?.case({
+      rejected: (error) => toOptionsIssue(error),
+    });
   }
 
   @computed
@@ -147,7 +144,7 @@ export class AnswerOptionStore<
           : [
               {
                 token: buildId(this.question.token, "null"),
-                value: null,
+                value: undefined,
                 disabled: false,
                 answerType: "boolean",
               },
@@ -158,7 +155,7 @@ export class AnswerOptionStore<
     const seen = new Set<OptionToken>();
     return this.answerOptions.flatMap((option) => {
       const value = getValue(this.dataType, option);
-      if (value == null) {
+      if (value == undefined) {
         return [];
       }
 
@@ -254,9 +251,9 @@ export class AnswerOptionStore<
     AnswerOption<T> | AnswerOption<"string">
   > {
     return this.buildOptions(
-      !this.searchQuery
-        ? this.inherentOptions
-        : this.searchIndex.search(this.searchQuery),
+      this.searchQuery
+        ? this.searchIndex.search(this.searchQuery)
+        : this.inherentOptions,
     );
   }
 
@@ -267,16 +264,17 @@ export class AnswerOptionStore<
         if (
           answer.token === this.pendingCustomOptionForm?.answer.token ||
           this.customAnswerTokens.has(answer.token)
-        )
+        ) {
           return false;
+        }
         return areValuesEqual(this.dataType, answer.value, option.value);
       });
-      return !match
-        ? matches
-        : matches.set(match.token, {
+      return match
+        ? matches.set(match.token, {
             token: option.token,
             disabled: option.disabled,
-          });
+          })
+        : matches;
     }, new Map<AnswerToken, { token: OptionToken; disabled: boolean }>());
   }
 
@@ -350,11 +348,9 @@ export class AnswerOptionStore<
 
   getSelectedOption(
     answer: IAnswerInstance<T>,
-  ): SelectedAnswerOption<T> | null {
-    return (
-      this.selectedOptions.find(
-        (entry) => entry.answer.token === answer.token,
-      ) ?? null
+  ): SelectedAnswerOption<T> | undefined {
+    return this.selectedOptions.find(
+      (entry) => entry.answer.token === answer.token,
     );
   }
 
@@ -371,7 +367,7 @@ export class AnswerOptionStore<
       return;
     }
     const entry = this.findOptionByToken(token);
-    if (!entry || entry.disabled || entry.value == null) return;
+    if (!entry || entry.disabled || entry.value == undefined) return;
     if (!this.isInherentToken(entry.token)) {
       if (this.allowCustom) {
         this.addCustomValue(entry.value);
@@ -401,21 +397,18 @@ export class AnswerOptionStore<
   }
 
   @action.bound
-  selectOptionForAnswer(
-    answer: IAnswerInstance<T>,
-    token: OptionToken | null,
-  ): void {
+  selectOptionForAnswer(answer: IAnswerInstance<T>, token?: OptionToken): void {
     const isCustomActive =
       this.customOptionFormState?.answer.token === answer.token;
 
-    if (token == null) {
+    if (token == undefined) {
       if (isCustomActive) {
         this.cancelCustomOptionForm();
         return;
       }
       this.rememberAnswerValue(answer);
       this.customAnswerTokens.delete(answer.token);
-      answer.setValueByUser(null);
+      answer.setValueByUser();
       return;
     }
 
@@ -434,13 +427,13 @@ export class AnswerOptionStore<
     const entry = this.findOptionByToken(token);
     if (!entry || entry.disabled) return;
 
-    if (entry.value == null) {
+    if (entry.value == undefined) {
       if (isCustomActive) {
         this.cancelCustomOptionForm();
       }
       this.rememberAnswerValue(answer);
       this.customAnswerTokens.delete(answer.token);
-      answer.setValueByUser(null);
+      answer.setValueByUser();
       return;
     }
 
@@ -463,7 +456,7 @@ export class AnswerOptionStore<
     if (this.pendingCustomOptionForm.isNew) {
       this.question.removeAnswer(this.pendingCustomOptionForm.answer);
     } else {
-      this.pendingCustomOptionForm.answer.setValueByUser(null);
+      this.pendingCustomOptionForm.answer.setValueByUser();
     }
     this.pendingCustomOptionForm = undefined;
   }
@@ -484,28 +477,28 @@ export class AnswerOptionStore<
   }
 
   private getCustomTokenForValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | string | undefined,
   ): OptionToken {
-    if (value == null) return "";
+    if (value == undefined) return "";
     const baseToken = tokenify(this.customDataType, value);
     return baseToken ? buildId(this.question.token, "custom", baseToken) : "";
   }
 
   private getLegacyTokenForValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
   ): OptionToken {
-    if (value == null) return "";
+    if (value == undefined) return "";
     const baseToken = tokenify(this.dataType, value);
     return baseToken ? buildId(this.question.token, "legacy", baseToken) : "";
   }
 
   @action.bound
   private rememberCustomValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | string | undefined,
   ) {
     if (!this.allowCustom) return;
     if (
-      value == null ||
+      value == undefined ||
       (typeof value === "string" && value.trim().length === 0)
     )
       return;
@@ -524,11 +517,11 @@ export class AnswerOptionStore<
 
   @action.bound
   private rememberLegacyValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | null,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
   ) {
     if (this.allowCustom) return;
     if (
-      value == null ||
+      value == undefined ||
       (typeof value === "string" && value.trim().length === 0)
     )
       return;
@@ -544,12 +537,12 @@ export class AnswerOptionStore<
 
   @action.bound
   private addCustomValue(
-    value: DataTypeToType<AnswerTypeToDataType<T>> | string | null,
+    value: DataTypeToType<AnswerTypeToDataType<T>> | string | undefined,
   ) {
     if (!this.allowCustom) return;
     if (this.isLoading || !this.canAddSelection) return;
     if (
-      value == null ||
+      value == undefined ||
       (typeof value === "string" && value.trim().length === 0)
     )
       return;
@@ -572,7 +565,7 @@ export class AnswerOptionStore<
   }
 
   private rememberAnswerValue(answer: IAnswerInstance<T>) {
-    if (answer.value == null) return;
+    if (answer.value == undefined) return;
     const selection = this.getSelectedOption(answer);
     if (!selection) return;
     if (this.isInherentToken(selection.token)) return;
@@ -591,13 +584,16 @@ export class AnswerOptionStore<
   private openCustomOptionForm(answer?: IAnswerInstance<T>) {
     if (!this.allowCustom) return;
     if (this.pendingCustomOptionForm) return;
-    if (answer?.value == null && (this.isLoading || !this.canAddSelection)) {
+    if (
+      answer?.value == undefined &&
+      (this.isLoading || !this.canAddSelection)
+    ) {
       return;
     }
 
     if (answer) {
       this.customAnswerTokens.add(answer.token);
-      answer.setValueByUser(null);
+      answer.setValueByUser();
       this.pendingCustomOptionForm = {
         answer,
         isNew: false,
@@ -617,7 +613,7 @@ export class AnswerOptionStore<
       return;
     }
     if (this.question.canAdd) {
-      const created = this.question.addAnswer(null);
+      const created = this.question.addAnswer();
       if (created) {
         this.customAnswerTokens.add(created.token);
         this.pendingCustomOptionForm = {
@@ -674,7 +670,7 @@ export class AnswerOptionStore<
   private findAvailableAnswer() {
     return this.question.answers.find(
       (answer) =>
-        answer.value == null &&
+        answer.value == undefined &&
         answer.token !== this.pendingCustomOptionForm?.answer.token &&
         !this.customAnswerTokens.has(answer.token),
     );

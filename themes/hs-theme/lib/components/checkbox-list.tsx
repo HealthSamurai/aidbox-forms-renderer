@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { CheckboxListProps } from "@aidbox-forms/theme";
+import type { CheckboxListProperties } from "@aidbox-forms/theme";
 import { optionStatusClass } from "./option-status.ts";
 
 export function CheckboxList({
@@ -14,7 +14,7 @@ export function CheckboxList({
   ariaDescribedBy,
   disabled,
   isLoading = false,
-}: CheckboxListProps) {
+}: CheckboxListProperties) {
   const displayOptions = specifyOtherOption
     ? [...options, specifyOtherOption]
     : options;
@@ -73,17 +73,17 @@ export function CheckboxList({
                   />
                   <span id={optionId}>{option.label}</span>
                 </CheckboxLabel>
-                {selectedOption?.errors ?? null}
+                {selectedOption?.errors ?? undefined}
               </CheckboxOption>
             );
           })}
         </OptionsList>
-      ) : null}
+      ) : undefined}
       {isLoading ? (
         <div className={optionStatusClass} role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
+      ) : undefined}
       {Boolean(customOptionForm) && <div>{customOptionForm}</div>}
     </Stack>
   );

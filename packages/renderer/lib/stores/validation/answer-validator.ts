@@ -15,7 +15,7 @@ import {
   makeIssue,
   normalizeExpressionValues,
   stringifyValue,
-} from "../../utils.ts";
+} from "../../utilities.ts";
 import type {
   AnswerType,
   AnswerTypeToDataType,
@@ -69,7 +69,7 @@ export class AnswerValidator<
 
         const stringIssues: OperationOutcomeIssue[] = [];
 
-        if (minLength != null && value.length < minLength) {
+        if (minLength != undefined && value.length < minLength) {
           stringIssues.push(
             makeIssue(
               "invalid",
@@ -78,7 +78,7 @@ export class AnswerValidator<
           );
         }
 
-        if (maxLength != null && value.length > maxLength) {
+        if (maxLength != undefined && value.length > maxLength) {
           stringIssues.push(
             makeIssue(
               "invalid",
@@ -90,33 +90,42 @@ export class AnswerValidator<
         issues = stringIssues;
         break;
       }
-      case "integer":
+      case "integer": {
         {
           let numberMin = this.resolveNumberBound("min", type);
           let numberMax = this.resolveNumberBound("max", type);
-          if (numberMin != null && numberMax != null && numberMin > numberMax) {
+          if (
+            numberMin != undefined &&
+            numberMax != undefined &&
+            numberMin > numberMax
+          ) {
             numberMin = undefined;
             numberMax = undefined;
           }
           issues = this.validateNumericValue(
-            value as DataTypeToType<"integer"> | null,
+            value as DataTypeToType<"integer"> | undefined,
             numberMin,
             numberMax,
             type,
           );
         }
         break;
-      case "decimal":
+      }
+      case "decimal": {
         {
           let numberMin = this.resolveNumberBound("min", type);
           let numberMax = this.resolveNumberBound("max", type);
-          if (numberMin != null && numberMax != null && numberMin > numberMax) {
+          if (
+            numberMin != undefined &&
+            numberMax != undefined &&
+            numberMin > numberMax
+          ) {
             numberMin = undefined;
             numberMax = undefined;
           }
           const maxDecimalPlaces = this.question.maxDecimalPlaces;
           issues = this.validateNumericValue(
-            value as DataTypeToType<"decimal"> | null,
+            value as DataTypeToType<"decimal"> | undefined,
             numberMin,
             numberMax,
             type,
@@ -124,6 +133,7 @@ export class AnswerValidator<
           );
         }
         break;
+      }
       case "date":
       case "dateTime":
       case "time": {
@@ -133,15 +143,15 @@ export class AnswerValidator<
         let comparableMin = this.resolveTemporalBound("min", type);
         let comparableMax = this.resolveTemporalBound("max", type);
         if (
-          comparableMin != null &&
-          comparableMax != null &&
+          comparableMin != undefined &&
+          comparableMax != undefined &&
           comparableMin > comparableMax
         ) {
           comparableMin = undefined;
           comparableMax = undefined;
         }
         issues = this.validateTemporalValue(
-          value as DataTypeToType<"date" | "dateTime" | "time"> | null,
+          value as DataTypeToType<"date" | "dateTime" | "time"> | undefined,
           {
             minLength,
             maxLength,
@@ -152,7 +162,7 @@ export class AnswerValidator<
         );
         break;
       }
-      case "quantity":
+      case "quantity": {
         {
           let quantityMin = this.resolveQuantityBound("min");
           let quantityMax = this.resolveQuantityBound("max");
@@ -170,7 +180,7 @@ export class AnswerValidator<
               quantityMax = undefined;
             }
           }
-          const quantityValue = value as DataTypeToType<"Quantity"> | null;
+          const quantityValue = value as DataTypeToType<"Quantity"> | undefined;
           if (!quantityValue || typeof quantityValue.value !== "number") {
             issues = [];
             break;
@@ -211,9 +221,10 @@ export class AnswerValidator<
           issues = quantityIssues;
         }
         break;
-      case "attachment":
+      }
+      case "attachment": {
         {
-          const attachment = value as DataTypeToType<"Attachment"> | null;
+          const attachment = value as DataTypeToType<"Attachment"> | undefined;
           if (!attachment) {
             issues = [];
             break;
@@ -249,9 +260,12 @@ export class AnswerValidator<
           }
 
           const maxAttachmentSize = this.question.maxSize;
-          if (maxAttachmentSize != null) {
+          if (maxAttachmentSize != undefined) {
             const effectiveSize = estimateAttachmentSize(attachment);
-            if (effectiveSize != null && effectiveSize > maxAttachmentSize) {
+            if (
+              effectiveSize != undefined &&
+              effectiveSize > maxAttachmentSize
+            ) {
               attachmentIssues.push(
                 makeIssue(
                   "invalid",
@@ -266,19 +280,21 @@ export class AnswerValidator<
           issues = attachmentIssues;
         }
         break;
+      }
       case "boolean":
       case "url":
       case "coding":
-      case "reference":
+      case "reference": {
         issues = [];
         break;
+      }
     }
 
     return issues;
   }
 
   private validateNumericValue(
-    value: number | null,
+    value: number | undefined,
     min: number | undefined,
     max: number | undefined,
     type: "integer" | "decimal",
@@ -290,7 +306,7 @@ export class AnswerValidator<
 
     const issues: OperationOutcomeIssue[] = [];
 
-    if (min != null && value < min) {
+    if (min != undefined && value < min) {
       const formattedMin = stringifyValue(type, min);
       issues.push(
         makeIssue(
@@ -302,7 +318,7 @@ export class AnswerValidator<
       );
     }
 
-    if (max != null && value > max) {
+    if (max != undefined && value > max) {
       const formattedMax = stringifyValue(type, max);
       issues.push(
         makeIssue(
@@ -314,7 +330,7 @@ export class AnswerValidator<
       );
     }
 
-    if (maxDecimalPlaces != null) {
+    if (maxDecimalPlaces != undefined) {
       const decimals = countDecimalPlaces(value);
       if (decimals > maxDecimalPlaces) {
         issues.push(
@@ -333,61 +349,68 @@ export class AnswerValidator<
 
   @computed.struct
   public get bounds(): ValueBounds<T> {
-    let bounds: ValueBounds<AnswerType>;
+    let bounds: ValueBounds;
 
     switch (this.question.type) {
-      case "integer":
+      case "integer": {
         bounds = {
           min: this.resolveNumberBound("min", "integer"),
           max: this.resolveNumberBound("max", "integer"),
         };
         break;
-      case "decimal":
+      }
+      case "decimal": {
         bounds = {
           min: this.resolveNumberBound("min", "decimal"),
           max: this.resolveNumberBound("max", "decimal"),
         };
         break;
-      case "date":
+      }
+      case "date": {
         bounds = {
           min: this.resolveTemporalBound("min", "date"),
           max: this.resolveTemporalBound("max", "date"),
         };
         break;
-      case "dateTime":
+      }
+      case "dateTime": {
         bounds = {
           min: this.resolveTemporalBound("min", "dateTime"),
           max: this.resolveTemporalBound("max", "dateTime"),
         };
         break;
-      case "time":
+      }
+      case "time": {
         bounds = {
           min: this.resolveTemporalBound("min", "time"),
           max: this.resolveTemporalBound("max", "time"),
         };
         break;
-      case "quantity":
+      }
+      case "quantity": {
         bounds = {
           min: this.resolveQuantityBound("min"),
           max: this.resolveQuantityBound("max"),
         };
         break;
+      }
       case "boolean":
       case "string":
       case "text":
       case "url":
       case "coding":
       case "attachment":
-      case "reference":
-      default:
+      case "reference": {
         bounds = { min: undefined, max: undefined };
+        break;
+      }
     }
 
     return bounds as ValueBounds<T>;
   }
 
   private validateTemporalValue(
-    value: string | null,
+    value: string | undefined,
     constraints: {
       minLength: number | undefined;
       maxLength: number | undefined;
@@ -406,7 +429,10 @@ export class AnswerValidator<
       issues.push(makeIssue("invalid", strings.validation.answer.blank));
     }
 
-    if (constraints.minLength != null && value.length < constraints.minLength) {
+    if (
+      constraints.minLength != undefined &&
+      value.length < constraints.minLength
+    ) {
       issues.push(
         makeIssue(
           "invalid",
@@ -417,7 +443,10 @@ export class AnswerValidator<
       );
     }
 
-    if (constraints.maxLength != null && value.length > constraints.maxLength) {
+    if (
+      constraints.maxLength != undefined &&
+      value.length > constraints.maxLength
+    ) {
       issues.push(
         makeIssue(
           "invalid",
@@ -428,13 +457,13 @@ export class AnswerValidator<
       );
     }
 
-    if (constraints.comparableMin != null) {
+    if (constraints.comparableMin != undefined) {
       const comparison = this.compareTemporal(
         type,
         value,
         constraints.comparableMin,
       );
-      if (comparison != null && comparison < 0) {
+      if (comparison != undefined && comparison < 0) {
         const formattedMin = stringifyValue(type, constraints.comparableMin);
         issues.push(
           makeIssue(
@@ -447,13 +476,13 @@ export class AnswerValidator<
       }
     }
 
-    if (constraints.comparableMax != null) {
+    if (constraints.comparableMax != undefined) {
       const comparison = this.compareTemporal(
         type,
         value,
         constraints.comparableMax,
       );
-      if (comparison != null && comparison > 0) {
+      if (comparison != undefined && comparison > 0) {
         const formattedMax = stringifyValue(type, constraints.comparableMax);
         issues.push(
           makeIssue(
@@ -473,20 +502,24 @@ export class AnswerValidator<
     type: "date" | "dateTime" | "time",
     actual: string,
     expected: string,
-  ): number | null {
+  ): number | undefined {
     let comparison: number | undefined;
     switch (type) {
-      case "date":
+      case "date": {
         comparison = compareDateValues(actual, expected);
         break;
-      case "dateTime":
+      }
+      case "dateTime": {
         comparison = compareDateTimeValues(actual, expected);
         break;
-      case "time":
+      }
+      case "time": {
         comparison = compareTimeValues(actual, expected);
         break;
-      default:
+      }
+      default: {
         comparison = undefined;
+      }
     }
 
     if (comparison === undefined) {

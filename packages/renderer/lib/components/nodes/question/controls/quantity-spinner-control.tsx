@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
-import type { ValueControlProps } from "../../../../types.ts";
+import type { ValueControlProperties } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
-import { getNumericValue, buildId } from "../../../../utils.ts";
+import { getNumericValue, buildId } from "../../../../utilities.ts";
 import { strings } from "../../../../strings.ts";
 
 export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
@@ -9,21 +9,22 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"quantity">) {
+}: ValueControlProperties<"quantity">) {
   const { InputGroup, SpinnerInput, SelectInput, TextInput } = useTheme();
   const unitValue = answer.quantity.isUnitFreeForm
     ? (answer.value?.unit ?? "")
     : answer.quantity.unitToken;
   const selectedUnit =
-    answer.quantity.entries.find((entry) => entry.token === unitValue) ?? null;
+    answer.quantity.entries.find((entry) => entry.token === unitValue) ??
+    undefined;
   const { min, max } = answer.bounds;
   const disabled = answer.question.readOnly;
   const valuePlaceholder =
     answer.question.placeholder ?? strings.inputs.quantityValuePlaceholder;
 
-  const handleValueChange = (nextValue: number | null) => {
+  const handleValueChange = (nextValue: number | undefined) => {
     answer.quantity.handleNumberInput(
-      nextValue === null ? "" : String(nextValue),
+      nextValue === undefined ? "" : String(nextValue),
     );
   };
 

@@ -97,7 +97,7 @@ describe("reference-renderer", () => {
       fireEvent.change(referenceInput, { target: { value: "" } });
       fireEvent.change(displayInput, { target: { value: "" } });
 
-      await waitFor(() => expect(question.answers[0]?.value).toBeNull());
+      await waitFor(() => expect(question.answers[0]?.value).toBeUndefined());
     });
   });
 });

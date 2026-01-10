@@ -9,7 +9,7 @@ import type {
 import { isGroupNode } from "./group-store.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { strings } from "../../../strings.ts";
-import { buildId } from "../../../utils.ts";
+import { buildId } from "../../../utilities.ts";
 
 export class GridStore implements IGridStore {
   private readonly group: IGroupNode;
@@ -21,7 +21,7 @@ export class GridStore implements IGridStore {
 
   @computed
   get rowGroups(): IGroupNode[] {
-    return this.group.nodes.filter(isGroupNode);
+    return this.group.nodes.filter((node) => isGroupNode(node));
   }
 
   @computed
@@ -36,7 +36,7 @@ export class GridStore implements IGridStore {
 
     this.visibleRows.forEach((row) => {
       row.nodes
-        .filter(isQuestionNode)
+        .filter((node) => isQuestionNode(node))
         .filter((question) => !question.hidden)
         .forEach((question) => {
           if (!seen.has(question.linkId)) {
@@ -60,7 +60,7 @@ export class GridStore implements IGridStore {
     const columns = this.columns;
     return this.visibleRows.map((row) => {
       const questions = row.nodes
-        .filter(isQuestionNode)
+        .filter((node) => isQuestionNode(node))
         .filter((question) => !question.hidden);
       const questionMap = new Map<string, IQuestionNode>(
         questions.map((question) => [question.linkId, question]),
@@ -79,7 +79,7 @@ export class GridStore implements IGridStore {
   }
 
   @computed
-  get emptyMessage(): string | null {
+  get emptyMessage(): string | undefined {
     if (this.rowGroups.length === 0) {
       return strings.grid.emptyNoRowGroups;
     }
@@ -92,6 +92,6 @@ export class GridStore implements IGridStore {
       return strings.grid.emptyNoQuestions;
     }
 
-    return null;
+    return undefined;
   }
 }

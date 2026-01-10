@@ -1,9 +1,9 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type NodeHelpProps = {
+export type NodeHelpProperties = {
   id: string;
   children: ReactNode;
   ariaLabel?: string | undefined;
 };
 
-export type NodeHelpComponent = ComponentType<NodeHelpProps>;
+export type NodeHelpComponent = ComponentType<NodeHelpProperties>;

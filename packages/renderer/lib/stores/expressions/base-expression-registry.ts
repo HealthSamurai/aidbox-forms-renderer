@@ -14,7 +14,7 @@ import {
   extractExtensionValue,
   findExtensions,
   makeIssue,
-} from "../../utils.ts";
+} from "../../utilities.ts";
 import { ExpressionSlot } from "./expression-slot.ts";
 import { ConstraintSlot } from "./constraint-slot.ts";
 import { DuplicateExpressionNameError } from "./scope.ts";
@@ -103,10 +103,10 @@ export class BaseExpressionRegistry implements IExpressionRegistry {
 
     try {
       this.scope.registerExpression(slot);
-    } catch (e) {
-      if (e instanceof DuplicateExpressionNameError)
-        this.registrationIssues.push(makeIssue("invalid", e.message));
-      else throw e;
+    } catch (error) {
+      if (error instanceof DuplicateExpressionNameError)
+        this.registrationIssues.push(makeIssue("invalid", error.message));
+      else throw error;
     }
 
     return slot;

@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { QuantityInput } from "./quantity-input.tsx";
 
 export function QuantityControl({
@@ -6,7 +6,7 @@ export function QuantityControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"quantity">) {
+}: ValueControlProperties<"quantity">) {
   return (
     <QuantityInput
       answer={answer}

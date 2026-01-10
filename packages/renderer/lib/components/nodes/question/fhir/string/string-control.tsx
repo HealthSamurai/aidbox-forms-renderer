@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { StringInput } from "./string-input.tsx";
 
 export function StringControl({
@@ -6,7 +6,7 @@ export function StringControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"string">) {
+}: ValueControlProperties<"string">) {
   const maxLength = answer.question.maxLength;
   const minLength = answer.question.minLength;
 

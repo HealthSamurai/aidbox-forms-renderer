@@ -13,7 +13,7 @@ import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
 import { QuantityRenderer } from "../quantity-renderer.tsx";
-import { EXT } from "../../../../../../utils.ts";
+import { EXT } from "../../../../../../utilities.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 import { strings } from "../../../../../../strings.ts";
 
@@ -29,7 +29,9 @@ function getQuantityQuestion(form: FormStore, linkId: string) {
 function getListbox(input: HTMLElement) {
   const listboxId = input.getAttribute("aria-controls");
   expect(listboxId).toBeTruthy();
-  const listbox = document.getElementById(listboxId!);
+  const listbox = document.querySelector<HTMLElement>(
+    `#${CSS.escape(listboxId!)}`,
+  );
   expect(listbox).not.toBeNull();
   return listbox as HTMLElement;
 }
@@ -206,7 +208,7 @@ describe("quantity-renderer", () => {
       const user = userEvent.setup();
       const clearButton = combobox.parentElement?.querySelector(
         "button[aria-label='Clear']",
-      ) as HTMLButtonElement | null;
+      ) as HTMLButtonElement | undefined;
       expect(clearButton).not.toBeNull();
       await user.click(clearButton as HTMLButtonElement);
 
@@ -302,10 +304,10 @@ describe("quantity-renderer", () => {
           strings.selection.selectPlaceholder,
         ),
       );
-      const tempInput = screen.getByRole("spinbutton", {
+      const temporaryInput = screen.getByRole("spinbutton", {
         name: /temperature/i,
       }) as HTMLInputElement;
-      expect(tempInput.value).toBe("39");
+      expect(temporaryInput.value).toBe("39");
     });
 
     it("shows a disabled option for legacy units until a new selection is made", async () => {
@@ -447,7 +449,7 @@ describe("quantity-renderer", () => {
       const selectedCombobox = getByRole("combobox") as HTMLElement;
       const clearButton = selectedCombobox.parentElement?.querySelector(
         "button[aria-label='Clear']",
-      ) as HTMLButtonElement | null;
+      ) as HTMLButtonElement | undefined;
       expect(clearButton).not.toBeNull();
       await user.click(clearButton as HTMLButtonElement);
 

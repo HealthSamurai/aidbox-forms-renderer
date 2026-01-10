@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { TabContainerProps } from "@aidbox-forms/theme";
+import type { TabContainerProperties } from "@aidbox-forms/theme";
 import classNames from "classnames";
 
 export function TabContainer({
@@ -10,7 +10,7 @@ export function TabContainer({
   errors,
   empty,
   linkId,
-}: TabContainerProps) {
+}: TabContainerProperties) {
   if (items.length === 0) {
     return (
       <div className="nhsuk-form-group">
@@ -28,8 +28,8 @@ export function TabContainer({
     <TabsShell className="nhsuk-tabs" data-linkid={linkId}>
       {Boolean(header) && <h2 className="nhsuk-tabs__title">{header}</h2>}
       <ul className="nhsuk-tabs__list" role="tablist">
-        {items.map((item, idx) => {
-          const selected = idx === clampedIndex;
+        {items.map((item, index) => {
+          const selected = index === clampedIndex;
           return (
             <li
               key={item.token}
@@ -44,7 +44,7 @@ export function TabContainer({
                 id={item.buttonId}
                 aria-selected={selected}
                 aria-controls={item.panelId}
-                onClick={() => onChange(idx)}
+                onClick={() => onChange(index)}
               >
                 {item.label}
               </button>
@@ -52,8 +52,8 @@ export function TabContainer({
           );
         })}
       </ul>
-      {items.map((item, idx) => {
-        const selected = idx === clampedIndex;
+      {items.map((item, index) => {
+        const selected = index === clampedIndex;
         return (
           <TabPanel
             key={item.token}

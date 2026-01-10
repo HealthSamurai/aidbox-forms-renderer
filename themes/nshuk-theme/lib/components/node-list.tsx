@@ -1,5 +1,5 @@
-import type { NodeListProps } from "@aidbox-forms/theme";
+import type { NodeListProperties } from "@aidbox-forms/theme";
 
-export function NodeList({ children }: NodeListProps) {
+export function NodeList({ children }: NodeListProperties) {
   return <div className="nhsuk-form-group">{children}</div>;
 }

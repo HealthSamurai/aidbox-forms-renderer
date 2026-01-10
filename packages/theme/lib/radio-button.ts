@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type RadioButtonProps = {
+export type RadioButtonProperties = {
   id: string;
   groupName: string;
   value: string;
@@ -12,4 +12,4 @@ export type RadioButtonProps = {
   label?: ReactNode;
 };
 
-export type RadioButtonComponent = ComponentType<RadioButtonProps>;
+export type RadioButtonComponent = ComponentType<RadioButtonProperties>;

@@ -1,4 +1,4 @@
-import type { ValueControlProps } from "../../../../../types.ts";
+import type { ValueControlProperties } from "../../../../../types.ts";
 import { CodingInput } from "./coding-input.tsx";
 
 export function CodingControl({
@@ -6,13 +6,13 @@ export function CodingControl({
   id,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"coding">) {
+}: ValueControlProperties<"coding">) {
   return (
     <CodingInput
       id={id}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
-      value={answer.value ?? null}
+      value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
     />

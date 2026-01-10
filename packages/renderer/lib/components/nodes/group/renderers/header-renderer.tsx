@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import type { GroupRendererProps } from "../../../../types.ts";
+import type { GroupRendererProperties } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
@@ -8,7 +8,7 @@ import { HeaderRenderer as HeaderControl } from "../controls/header-renderer.tsx
 
 export const HeaderRenderer = observer(function HeaderRenderer({
   node,
-}: GroupRendererProps) {
+}: GroupRendererProperties) {
   return isGroupListStore(node) ? (
     <GroupList list={node}>
       {node.visibleNodes.map((child) => (

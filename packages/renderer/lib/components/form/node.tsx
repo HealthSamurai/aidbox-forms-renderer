@@ -13,16 +13,16 @@ export const Node = observer(function Node({
 }) {
   if (isQuestionNode(node)) {
     const Renderer = node.renderer;
-    return Renderer ? <Renderer node={node} /> : null;
+    return Renderer ? <Renderer node={node} /> : undefined;
   }
   if (isGroupNode(node)) {
     const Renderer = node.renderer;
-    return Renderer ? <Renderer node={node} /> : null;
+    return Renderer ? <Renderer node={node} /> : undefined;
   }
   if (isGroupListStore(node)) {
     const Renderer = node.renderer;
-    return Renderer ? <Renderer node={node} /> : null;
+    return Renderer ? <Renderer node={node} /> : undefined;
   }
   if (isDisplayNode(node)) return <DisplayRenderer node={node} />;
-  return null;
+  return;
 });

@@ -1,5 +1,5 @@
-import type { ValueDisplayProps } from "../../../../../types.ts";
+import type { ValueDisplayProperties } from "../../../../../types.ts";
 
-export function DateDisplay({ value }: ValueDisplayProps<"date">) {
+export function DateDisplay({ value }: ValueDisplayProperties<"date">) {
   return <>{value}</>;
 }

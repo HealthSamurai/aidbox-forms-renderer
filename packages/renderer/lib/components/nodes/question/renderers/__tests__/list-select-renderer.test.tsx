@@ -11,7 +11,7 @@ import { FormStore } from "../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
 import { ListSelectRenderer } from "../../renderers/list-select-renderer.tsx";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
-import { EXT } from "../../../../../utils.ts";
+import { EXT } from "../../../../../utilities.ts";
 import { strings } from "../../../../../strings.ts";
 import { VALUE_DISPLAY_BY_TYPE } from "../../fhir/index.ts";
 
@@ -27,24 +27,27 @@ function getQuestion<T extends AnswerType>(
   return node as IQuestionNode<T>;
 }
 
-function getStringAnswers(question: IQuestionNode<AnswerType>) {
+function getStringAnswers(question: IQuestionNode) {
   return question.answers
     .map((answer) => answer.value)
     .filter((value): value is string => typeof value === "string");
 }
 
-function getQuantityAnswers(question: IQuestionNode<AnswerType>) {
+function getQuantityAnswers(question: IQuestionNode) {
   return question.answers
     .map((answer) => answer.value)
     .filter(
-      (value): value is Quantity => typeof value === "object" && value !== null,
+      (value): value is Quantity =>
+        typeof value === "object" && value !== undefined,
     );
 }
 
 function getListbox(input: HTMLElement) {
   const listboxId = input.getAttribute("aria-controls");
   expect(listboxId).toBeTruthy();
-  const listbox = document.getElementById(listboxId!);
+  const listbox = document.querySelector<HTMLElement>(
+    `#${CSS.escape(listboxId!)}`,
+  );
   expect(listbox).not.toBeNull();
   return listbox as HTMLElement;
 }
@@ -122,7 +125,7 @@ describe("list-select-renderer", () => {
         ).toBeNull();
       });
 
-      it("renders boolean tri-state options and clears to null", () => {
+      it("renders boolean tri-state options and clears to undefined", () => {
         const questionnaire: Questionnaire = {
           resourceType: "Questionnaire",
           status: "active",
@@ -147,7 +150,7 @@ describe("list-select-renderer", () => {
           name: strings.value.no,
         }) as HTMLInputElement;
         const unanswered = screen.getByRole("radio", {
-          name: strings.value.null,
+          name: strings.value.undefined,
         }) as HTMLInputElement;
 
         expect(unanswered).toBeChecked();
@@ -159,7 +162,7 @@ describe("list-select-renderer", () => {
         expect(question.answers[0]?.value).toBe(false);
 
         fireEvent.click(unanswered);
-        expect(question.answers[0]?.value).toBeNull();
+        expect(question.answers[0]?.value).toBeUndefined();
       });
     });
 
@@ -669,7 +672,7 @@ describe("list-select-renderer", () => {
         assertOptionsEnabled();
 
         fireEvent.change(customInput, { target: { value: "Cats" } });
-        expect(getStringAnswers(question).sort()).toEqual(["Cats", "Dust"]);
+        expect(getStringAnswers(question).toSorted()).toEqual(["Cats", "Dust"]);
         assertOptionsEnabled();
 
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
@@ -680,7 +683,7 @@ describe("list-select-renderer", () => {
 
         fireEvent.click(pollen);
         expect(pollen).toBeChecked();
-        expect(getStringAnswers(question).sort()).toEqual([
+        expect(getStringAnswers(question).toSorted()).toEqual([
           "Cats",
           "Dust",
           "Pollen",
@@ -697,7 +700,7 @@ describe("list-select-renderer", () => {
         fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
-        expect(getStringAnswers(question).sort()).toEqual([
+        expect(getStringAnswers(question).toSorted()).toEqual([
           "Cats",
           "Dust",
           "Pollen",
@@ -1036,7 +1039,9 @@ describe("list-select-renderer", () => {
           name: /dose/i,
         }) as HTMLInputElement;
         expect(customAgain.value).toBe("");
-        expect(question.answers.map((answer) => answer.value)).toEqual([null]);
+        expect(question.answers.map((answer) => answer.value)).toEqual([
+          undefined,
+        ]);
         assertOptionsEnabled();
       });
 
@@ -1086,9 +1091,9 @@ describe("list-select-renderer", () => {
         assertOptionsEnabled();
 
         fireEvent.change(customInput, { target: { value: "5" } });
-        expect(question.answers.map((answer) => answer.value).sort()).toEqual([
-          1, 5,
-        ]);
+        expect(
+          question.answers.map((answer) => answer.value).toSorted(),
+        ).toEqual([1, 5]);
         assertOptionsEnabled();
 
         fireEvent.click(screen.getByRole("button", { name: "Add" }));
@@ -1101,9 +1106,9 @@ describe("list-select-renderer", () => {
 
         fireEvent.click(two);
         expect(two).toBeChecked();
-        expect(question.answers.map((answer) => answer.value).sort()).toEqual([
-          1, 2, 5,
-        ]);
+        expect(
+          question.answers.map((answer) => answer.value).toSorted(),
+        ).toEqual([1, 2, 5]);
         assertOptionsEnabled();
 
         fireEvent.click(specifyOther);
@@ -1116,9 +1121,9 @@ describe("list-select-renderer", () => {
         fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
-        expect(question.answers.map((answer) => answer.value).sort()).toEqual([
-          1, 2, 5,
-        ]);
+        expect(
+          question.answers.map((answer) => answer.value).toSorted(),
+        ).toEqual([1, 2, 5]);
         assertOptionsEnabled();
       });
 
@@ -1589,9 +1594,9 @@ describe("list-select-renderer", () => {
 
         fireEvent.click(screen.getByRole("radio", { name: /specify other/i }));
 
-        const fileInput = container.querySelector(
-          'input[type="file"]',
-        ) as HTMLInputElement | null;
+        const fileInput = container.querySelector('input[type="file"]') as
+          | HTMLInputElement
+          | undefined;
         expect(fileInput).not.toBeNull();
         expect(fileInput).toHaveAttribute(
           "accept",

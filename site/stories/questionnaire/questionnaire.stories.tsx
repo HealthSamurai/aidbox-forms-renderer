@@ -33,14 +33,14 @@ import targetConstraint from "./samples/target-constraint.json" with { type: "js
 import textControls from "./samples/text-controls.json" with { type: "json" };
 import validation from "./samples/validation.json" with { type: "json" };
 
-type PlaygroundArgs = {
+type PlaygroundArguments = {
   questionnaire: Questionnaire;
 };
 
 function Renderer({
   questionnaire,
   storyId,
-}: PlaygroundArgs & { storyId: string }) {
+}: PlaygroundArguments & { storyId: string }) {
   const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
 
   const handleSubmit = useCallback(() => {
@@ -74,19 +74,19 @@ const meta = {
       description: "Input questionnaire",
     },
   },
-} satisfies Meta<PlaygroundArgs>;
+} satisfies Meta<PlaygroundArguments>;
 
 export default meta;
 
 function makeStory(
   label: string,
   questionnaire: Questionnaire,
-): StoryObj<PlaygroundArgs> {
+): StoryObj<PlaygroundArguments> {
   return {
     name: label,
     args: { questionnaire },
-    render: (args, context) => {
-      return <Renderer {...args} storyId={context.id} />;
+    render: (arguments_, context) => {
+      return <Renderer {...arguments_} storyId={context.id} />;
     },
   };
 }

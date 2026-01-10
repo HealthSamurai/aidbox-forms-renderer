@@ -4,7 +4,7 @@ import type { Questionnaire } from "fhir/r5";
 import { FormStore } from "../form/form-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { makeAnswerExpression, makeVariable } from "./expression-fixtures.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("answerExpression", () => {
   it("builds answer options from expression output", () => {

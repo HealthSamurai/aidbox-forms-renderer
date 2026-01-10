@@ -39,10 +39,14 @@ import { TabContainer } from "./components/tab-container.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { Link } from "./components/link.tsx";
 
-export { TextInput, TextArea, NumberInput };
-export { TabContainer, DisplayRenderer, Link };
+export { TextInput } from "./components/text-input.tsx";
+export { TextArea } from "./components/text-area.tsx";
+export { NumberInput } from "./components/number-input.tsx";
+export { TabContainer } from "./components/tab-container.tsx";
+export { DisplayRenderer } from "./components/display-renderer.tsx";
+export { Link } from "./components/link.tsx";
 
-const passthrough: Theme = {
+export const theme: Theme = {
   TextInput,
   TextArea,
   NumberInput,
@@ -81,7 +85,3 @@ const passthrough: Theme = {
   DisplayRenderer,
   Link,
 };
-
-export const theme: Theme = passthrough;
-
-export default theme;

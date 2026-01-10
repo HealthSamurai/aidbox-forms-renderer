@@ -1,5 +1,5 @@
 import { useId } from "react";
-import type { SliderInputProps } from "@aidbox-forms/theme";
+import type { SliderInputProperties } from "@aidbox-forms/theme";
 
 export function SliderInput({
   value,
@@ -13,7 +13,7 @@ export function SliderInput({
   lowerLabel,
   upperLabel,
   unitLabel,
-}: SliderInputProps) {
+}: SliderInputProperties) {
   const generatedId = useId();
   const unitId = unitLabel ? `${generatedId}-unit` : undefined;
   const hintId =
@@ -30,7 +30,7 @@ export function SliderInput({
         value={value ?? 0}
         onChange={(event) => {
           const raw = event.target.value;
-          onChange(raw === "" ? null : Number(raw));
+          onChange(raw === "" ? undefined : Number(raw));
         }}
         disabled={disabled}
         min={min}
@@ -43,7 +43,7 @@ export function SliderInput({
         <div className="nhsuk-hint" id={unitId}>
           {unitLabel}
         </div>
-      ) : null}
+      ) : undefined}
       {(lowerLabel || upperLabel) && (
         <div className="nhsuk-hint" id={hintId}>
           {lowerLabel ?? ""} {upperLabel ? `— ${upperLabel}` : ""}

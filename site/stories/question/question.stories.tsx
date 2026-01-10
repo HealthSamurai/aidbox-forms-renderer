@@ -12,14 +12,14 @@ import {
 } from "../helpers.tsx";
 import { Renderer } from "../renderer.tsx";
 
-type PlaygroundArgs = {
+type PlaygroundArguments = {
   itemControl: QuestionItemControl | "none";
   repeats: boolean;
   hasAnswerOptions: boolean;
   answerConstraint: "optionsOnly" | "optionsOrType" | "optionsOrString";
 };
 
-const playgroundArgTypes = {
+const playgroundArgumentTypes = {
   itemControl: {
     name: "Item control",
     options: [
@@ -207,7 +207,7 @@ const PLAYGROUND_CONFIGS: PlaygroundConfig<AnswerType>[] = [
   },
 ];
 
-const meta: Meta<PlaygroundArgs> = {
+const meta: Meta<PlaygroundArguments> = {
   title: "Questions",
   parameters: {
     layout: "padded",
@@ -218,7 +218,7 @@ const meta: Meta<PlaygroundArgs> = {
       },
     },
   },
-  argTypes: playgroundArgTypes,
+  argTypes: playgroundArgumentTypes,
   args: {
     itemControl: "none",
     repeats: false,
@@ -231,20 +231,23 @@ export default meta;
 
 function makeStory<T extends AnswerType>(
   config: PlaygroundConfig<T>,
-): StoryObj<PlaygroundArgs> {
+): StoryObj<PlaygroundArguments> {
   return {
     name: config.label,
-    render: (args, context) => {
+    render: (arguments_, context) => {
       const item = buildQuestionItem({
         linkId: `${config.answerType}-playground`,
         text: config.label,
         type: config.answerType,
-        repeats: args.repeats,
-        control: args.itemControl === "none" ? undefined : args.itemControl,
-        answerConstraint: args.hasAnswerOptions
-          ? args.answerConstraint
+        repeats: arguments_.repeats,
+        control:
+          arguments_.itemControl === "none"
+            ? undefined
+            : arguments_.itemControl,
+        answerConstraint: arguments_.hasAnswerOptions
+          ? arguments_.answerConstraint
           : undefined,
-        answerOption: args.hasAnswerOptions
+        answerOption: arguments_.hasAnswerOptions
           ? makeAnswerOptions(config.answerType, config.samples)
           : undefined,
       });
@@ -255,34 +258,42 @@ function makeStory<T extends AnswerType>(
   };
 }
 
-export const Boolean: StoryObj<PlaygroundArgs> = makeStory(
+export const Boolean: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[0],
 );
-export const Integer: StoryObj<PlaygroundArgs> = makeStory(
+export const Integer: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[1],
 );
-export const Decimal: StoryObj<PlaygroundArgs> = makeStory(
+export const Decimal: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[2],
 );
-export const String: StoryObj<PlaygroundArgs> = makeStory(
+export const String: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[3],
 );
-export const Text: StoryObj<PlaygroundArgs> = makeStory(PLAYGROUND_CONFIGS[4]);
-export const Date: StoryObj<PlaygroundArgs> = makeStory(PLAYGROUND_CONFIGS[5]);
-export const DateTime: StoryObj<PlaygroundArgs> = makeStory(
+export const Text: StoryObj<PlaygroundArguments> = makeStory(
+  PLAYGROUND_CONFIGS[4],
+);
+export const Date: StoryObj<PlaygroundArguments> = makeStory(
+  PLAYGROUND_CONFIGS[5],
+);
+export const DateTime: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[6],
 );
-export const Time: StoryObj<PlaygroundArgs> = makeStory(PLAYGROUND_CONFIGS[7]);
-export const Quantity: StoryObj<PlaygroundArgs> = makeStory(
+export const Time: StoryObj<PlaygroundArguments> = makeStory(
+  PLAYGROUND_CONFIGS[7],
+);
+export const Quantity: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[8],
 );
-export const Coding: StoryObj<PlaygroundArgs> = makeStory(
+export const Coding: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[9],
 );
-export const Reference: StoryObj<PlaygroundArgs> = makeStory(
+export const Reference: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[10],
 );
-export const Url: StoryObj<PlaygroundArgs> = makeStory(PLAYGROUND_CONFIGS[11]);
-export const Attachment: StoryObj<PlaygroundArgs> = makeStory(
+export const Url: StoryObj<PlaygroundArguments> = makeStory(
+  PLAYGROUND_CONFIGS[11],
+);
+export const Attachment: StoryObj<PlaygroundArguments> = makeStory(
   PLAYGROUND_CONFIGS[12],
 );

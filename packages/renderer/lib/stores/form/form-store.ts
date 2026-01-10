@@ -54,7 +54,7 @@ import {
   buildId,
   makeIssue,
   shouldCreateStore,
-} from "../../utils.ts";
+} from "../../utilities.ts";
 import { ValueSetExpander } from "../services/valueset-expander.ts";
 import type { FormPagination } from "@aidbox-forms/theme";
 
@@ -119,11 +119,11 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     runInAction(() => {
       this.nodes.replace(
         (questionnaire.item ?? [])
-          .filter(shouldCreateStore)
+          .filter((item) => shouldCreateStore(item))
           .map((item) =>
             this.createNodeStore(
               item,
-              null,
+              undefined,
               this.scope,
               "",
               this.initialResponse?.item,
@@ -221,7 +221,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   @action
   createNodeStore(
     item: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     parentScope: IScope,
     parentToken: string,
     parentResponseItems: QuestionnaireResponseItem[] | undefined,
@@ -238,7 +238,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
         parentScope.registerNode(store);
         return store;
       }
-      case "group":
+      case "group": {
         if (item.repeats) {
           // todo: handle dynamic repeats changes
           const store = new GroupListStore(
@@ -263,6 +263,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
           parentScope.registerNode(store);
           return store;
         }
+      }
 
       case "string":
       case "boolean":
@@ -352,7 +353,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
   @action
   dispose(): void {
-    const nodes = this.nodes.slice();
+    const nodes = [...this.nodes];
     this.nodes.clear();
     nodes.forEach((node) => node.dispose());
   }
@@ -389,7 +390,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   }
 
   private validateTopLevelStructure() {
-    const groupNodes = this.nodes.filter(isGroupControlNode);
+    const groupNodes = this.nodes.filter((node) => isGroupControlNode(node));
     const headerNodes = groupNodes.filter(
       (node): node is IGroupNode =>
         isGroupNode(node) && node.control === "header",
@@ -430,18 +431,6 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       linkIds: string[];
     }> = [];
 
-    const isPageGroupItem = (item: QuestionnaireItem) =>
-      item.type === "group" && getItemControlCode(item) === "page";
-
-    const isAllowedPageSibling = (item: QuestionnaireItem) => {
-      if (item.type !== "group") {
-        return false;
-      }
-
-      const control = getItemControlCode(item);
-      return control === "page" || control === "header" || control === "footer";
-    };
-
     const visit = (
       items: QuestionnaireItem[] | undefined,
       depth: number,
@@ -451,7 +440,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
         return;
       }
 
-      const hasPage = items.some(isPageGroupItem);
+      const hasPage = items.some((item) => isPageGroupItem(item));
       if (hasPage) {
         const invalidLinkIds: string[] = [];
         items.forEach((item) => {
@@ -528,4 +517,17 @@ function isGroupControlNode(
   node: IPresentableNode,
 ): node is IGroupNode | IGroupList {
   return isGroupNode(node) || isGroupListStore(node);
+}
+
+function isPageGroupItem(item: QuestionnaireItem) {
+  return item.type === "group" && getItemControlCode(item) === "page";
+}
+
+function isAllowedPageSibling(item: QuestionnaireItem) {
+  if (item.type !== "group") {
+    return false;
+  }
+
+  const control = getItemControlCode(item);
+  return control === "page" || control === "header" || control === "footer";
 }

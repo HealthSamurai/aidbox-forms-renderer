@@ -44,14 +44,8 @@ import {
 import type { GroupRendererRegistry } from "./stores/registries/group-renderer-registry.ts";
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionRendererRegistry } from "./stores/registries/question-renderer-registry.ts";
-import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
-import type {
-  FormPagination,
-  OptionItem,
-  SelectedOptionItem,
-} from "@aidbox-forms/theme";
-
-export type { OptionItem, SelectedOptionItem };
+import { PolyCarrierFor, PolyKeyFor } from "./utilities.ts";
+import type { FormPagination, OptionItem } from "@aidbox-forms/theme";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -219,7 +213,7 @@ export type EnableWhenAnswer =
   | Coding
   | Quantity
   | Reference
-  | null;
+  | undefined;
 
 export type AnswerLifecycle =
   | "pristine"
@@ -230,20 +224,20 @@ export type AnswerLifecycle =
 
 export type AnswerOption<T extends AnswerType> = {
   readonly token: OptionToken;
-  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
   readonly disabled: boolean;
   readonly answerType: AnswerType;
 };
 
-export type ValueDisplayProps<T extends AnswerType> = {
+export type ValueDisplayProperties<T extends AnswerType> = {
   value: DataTypeToType<AnswerTypeToDataType<T>>;
 };
 
 export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
-  ValueDisplayProps<T>
+  ValueDisplayProperties<T>
 >;
 
-export type ValueControlProps<T extends AnswerType> = {
+export type ValueControlProperties<T extends AnswerType> = {
   answer: IAnswerInstance<T>;
   id: string;
   ariaLabelledBy: string;
@@ -447,7 +441,7 @@ export interface IPresentableNode {
   readonly form: IForm;
   readonly scope: IScope;
   readonly token: string;
-  readonly parentStore: INode | null;
+  readonly parentStore: INode | undefined;
 
   readonly linkId: string;
   readonly text: string | undefined;
@@ -489,7 +483,7 @@ export interface IActualNode extends IPresentableNode {
   readonly isDirty: boolean;
 }
 
-export type GroupRendererProps = { node: IGroupNode | IGroupList };
+export type GroupRendererProperties = { node: IGroupNode | IGroupList };
 
 export type GroupRendererMatcher = (target: IGroupNode | IGroupList) => boolean;
 
@@ -497,7 +491,7 @@ export interface GroupRendererDefinition {
   name: string;
   priority: number;
   matcher: GroupRendererMatcher;
-  renderer: ComponentType<GroupRendererProps>;
+  renderer: ComponentType<GroupRendererProperties>;
 }
 
 export type GridColumnState = {
@@ -519,13 +513,13 @@ export type GridRowState = {
 export interface IGridStore {
   readonly columns: Array<GridColumnState>;
   readonly rows: Array<GridRowState>;
-  readonly emptyMessage: string | null;
+  readonly emptyMessage: string | undefined;
 }
 
 export type OptionAxisItem = {
   token: OptionToken;
   type: AnswerType;
-  value: DataTypeToType<AnswerTypeToDataType<AnswerType>> | null;
+  value: DataTypeToType<AnswerTypeToDataType<AnswerType>> | undefined;
 };
 
 export type TableCellState = {
@@ -565,7 +559,7 @@ export interface ITableStore {
   getCellState(
     questionToken: string,
     optionToken: OptionToken,
-  ): TableCellState | null;
+  ): TableCellState | undefined;
   toggleCell(questionToken: string, optionToken: OptionToken): void;
 }
 
@@ -581,7 +575,7 @@ export type GridTableCellState = {
 
 export type GridTableRowState = {
   token: string;
-  label: string | null;
+  label: string | undefined;
   node: IGroupNode;
   cells: Array<GridTableCellState>;
 };
@@ -595,7 +589,7 @@ export interface IGroupNode extends IActualNode {
   readonly nodes: Array<IPresentableNode>;
   readonly visibleNodes: Array<IPresentableNode>;
   readonly control: GroupItemControl | undefined;
-  readonly renderer: ComponentType<GroupRendererProps> | undefined;
+  readonly renderer: ComponentType<GroupRendererProperties> | undefined;
   readonly gridStore: IGridStore;
   readonly tableStore: ITableStore;
 }
@@ -611,7 +605,7 @@ export interface IGroupList extends IPresentableNode {
   readonly minOccurs: number;
   readonly maxOccurs: number;
   readonly control: GroupItemControl | undefined;
-  readonly renderer: ComponentType<GroupRendererProps> | undefined;
+  readonly renderer: ComponentType<GroupRendererProperties> | undefined;
   readonly gridTableStore: IGridTableStore;
   addNode(): void;
   removeNode(instance: IGroupNode): void;
@@ -625,12 +619,12 @@ export interface ValueBounds<T extends AnswerType = AnswerType> {
 export interface IAnswerInstance<T extends AnswerType = AnswerType> {
   readonly token: AnswerToken;
   readonly question: IQuestionNode<T>;
-  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
-  setValueByUser(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
-  setValueBySystem(value: DataTypeToType<AnswerTypeToDataType<T>> | null): void;
+  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
+  setValueByUser(value?: DataTypeToType<AnswerTypeToDataType<T>>): void;
+  setValueBySystem(value?: DataTypeToType<AnswerTypeToDataType<T>>): void;
   readonly nodes: Array<IPresentableNode>;
-  readonly responseAnswer: QuestionnaireResponseItemAnswer | null;
-  readonly expressionAnswer: QuestionnaireResponseItemAnswer | null;
+  readonly responseAnswer: QuestionnaireResponseItemAnswer | undefined;
+  readonly expressionAnswer: QuestionnaireResponseItemAnswer | undefined;
   readonly scope: IScope;
   readonly issues: Array<OperationOutcomeIssue>;
   readonly bounds: ValueBounds<T>;
@@ -649,7 +643,7 @@ export interface IQuantityAnswer {
 
 export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly isLoading: boolean;
-  readonly error: OperationOutcomeIssue | null;
+  readonly error: OperationOutcomeIssue | undefined;
   readonly inherentOptions: ReadonlyArray<AnswerOption<T>>;
   readonly constraint: QuestionnaireItem["answerConstraint"];
   readonly allowCustom: boolean;
@@ -660,25 +654,27 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly specifyOtherToken: OptionToken;
   readonly canAddSelection: boolean;
   readonly customOptionFormState: CustomOptionFormState<T> | undefined;
-  getSelectedOption(answer: IAnswerInstance<T>): SelectedAnswerOption<T> | null;
+  getSelectedOption(
+    answer: IAnswerInstance<T>,
+  ): SelectedAnswerOption<T> | undefined;
   setSearchQuery(query: string): void;
   selectOption(token: OptionToken): void;
   deselectOption(token: OptionToken): void;
   selectOptionForAnswer(
     answer: IAnswerInstance<T>,
-    token: OptionToken | null,
+    token: OptionToken | undefined,
   ): void;
   cancelCustomOptionForm(): void;
   submitCustomOptionForm(): void;
 }
 
-export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
+export type QuestionRendererProperties<T extends AnswerType = AnswerType> = {
   node: IQuestionNode<T>;
 };
 
 export type QuestionRendererComponent<T extends AnswerType = AnswerType> = {
   bivarianceHack(
-    props: QuestionRendererProps<T>,
+    properties: QuestionRendererProperties<T>,
   ): ReactNode | Promise<ReactNode>;
 }["bivarianceHack"];
 
@@ -720,18 +716,13 @@ export interface IQuestionNode<
   readonly canRemove: boolean;
 
   addAnswer(
-    initial?: DataTypeToType<AnswerTypeToDataType<T>> | null,
+    initial?: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
   ): IAnswerInstance | undefined;
   removeAnswer(answer: IAnswerInstance<T>): void;
   markUserOverridden(): void;
 }
 
-export type INode =
-  | IDisplayNode
-  | IGroupNode
-  | IGroupList
-  | IGroupNode
-  | IQuestionNode;
+export type INode = IDisplayNode | IGroupList | IGroupNode | IQuestionNode;
 
 export interface INodeValidator {
   readonly issues: Array<OperationOutcomeIssue>;
@@ -771,7 +762,7 @@ export interface IForm {
 
   createNodeStore(
     item: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     parentScope: IScope,
     parentToken: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
@@ -792,3 +783,5 @@ export interface TargetConstraintDefinition {
 export type ValueKeyFor<T extends DataType> = PolyKeyFor<"value", T>;
 
 export type ValueCarrierFor<T extends DataType> = PolyCarrierFor<"value", T>;
+
+export { type SelectedOptionItem, type OptionItem } from "@aidbox-forms/theme";

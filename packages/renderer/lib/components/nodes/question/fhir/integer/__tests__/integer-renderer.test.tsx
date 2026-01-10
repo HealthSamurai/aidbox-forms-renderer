@@ -9,7 +9,7 @@ import {
   EXT,
   getItemControlCode,
   ITEM_CONTROL_SYSTEM,
-} from "../../../../../../utils.ts";
+} from "../../../../../../utilities.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 
 function getIntegerQuestion(form: FormStore, linkId: string) {

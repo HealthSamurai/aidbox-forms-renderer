@@ -5,7 +5,11 @@ import type {
   IQuantityAnswer,
   OptionItem,
 } from "../../../types.ts";
-import { areCodingsEqual, isEmptyObject, tokenify } from "../../../utils.ts";
+import {
+  areCodingsEqual,
+  isEmptyObject,
+  tokenify,
+} from "../../../utilities.ts";
 
 const LEGACY_UNIT_PREFIX = "_/_legacy_unit_/_";
 
@@ -20,8 +24,8 @@ export class QuantityAnswer implements IQuantityAnswer {
   @observable
   private hasManualSelection = false;
 
-  private get quantityValue(): Quantity | null {
-    return (this.answer.value as Quantity | null) ?? null;
+  private get quantityValue(): Quantity | undefined {
+    return (this.answer.value as Quantity | undefined) ?? undefined;
   }
 
   @computed
@@ -37,24 +41,24 @@ export class QuantityAnswer implements IQuantityAnswer {
   }
 
   @computed
-  private get fallbackOption(): OptionItem | null {
+  private get fallbackOption(): OptionItem | undefined {
     if (this.unitEntries.length === 0) {
-      return null;
+      return undefined;
     }
 
     const tokenForQuantity = this.getUnitTokenForQuantity(this.quantityValue);
     if (tokenForQuantity) {
-      return null;
+      return undefined;
     }
 
     const quantity = this.quantityValue;
     if (!quantity) {
-      return null;
+      return undefined;
     }
 
     const label = quantity.unit ?? quantity.code ?? quantity.system;
     if (!label) {
-      return null;
+      return undefined;
     }
 
     return {
@@ -91,9 +95,9 @@ export class QuantityAnswer implements IQuantityAnswer {
     return this.unitEntries.length === 0;
   }
 
-  private get firstEnabledOptionToken(): string | null {
+  private get firstEnabledOptionToken(): string | undefined {
     const option = this.entries.find((entry) => !entry.disabled);
-    return option?.token ?? null;
+    return option?.token ?? undefined;
   }
 
   private get hasSingleUnit(): boolean {
@@ -123,11 +127,7 @@ export class QuantityAnswer implements IQuantityAnswer {
       return false;
     }
 
-    if (quantity.value != null) {
-      return false;
-    }
-
-    return true;
+    return quantity.value == undefined;
   }
 
   @computed
@@ -225,17 +225,17 @@ export class QuantityAnswer implements IQuantityAnswer {
   }
 
   private applyQuantityChange(builder: (draft: Quantity) => void) {
-    const draft: Quantity = { ...(this.quantityValue ?? {}) };
+    const draft: Quantity = { ...this.quantityValue };
     builder(draft);
-    this.answer.setValueByUser(isEmptyObject(draft) ? null : draft);
+    this.answer.setValueByUser(isEmptyObject(draft) ? undefined : draft);
   }
 
-  private getCodingForToken(token: string): Coding | null {
+  private getCodingForToken(token: string): Coding | undefined {
     const found = this.unitEntries.find(([entryToken]) => entryToken === token);
-    return found?.[1] ?? null;
+    return found?.[1] ?? undefined;
   }
 
-  private getUnitTokenForCoding(coding: Coding | null | undefined): string {
+  private getUnitTokenForCoding(coding: Coding | undefined): string {
     if (!coding) {
       return "";
     }
@@ -249,7 +249,7 @@ export class QuantityAnswer implements IQuantityAnswer {
     return "";
   }
 
-  private getUnitTokenForQuantity(quantity: Quantity | null): string {
+  private getUnitTokenForQuantity(quantity: Quantity | undefined): string {
     if (!quantity) {
       return "";
     }

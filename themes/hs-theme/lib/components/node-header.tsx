@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { NodeHeaderProps } from "@aidbox-forms/theme";
+import type { NodeHeaderProperties } from "@aidbox-forms/theme";
 
 export function NodeHeader({
   label,
@@ -10,7 +10,7 @@ export function NodeHeader({
   legal,
   flyover,
   as = "label",
-}: NodeHeaderProps) {
+}: NodeHeaderProperties) {
   const labelTag = as === "label" ? "label" : "div";
   const labelFor = labelTag === "label" ? htmlFor : undefined;
   const labelRowTag = labelTag === "div" ? "div" : "span";

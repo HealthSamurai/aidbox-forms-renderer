@@ -1,7 +1,7 @@
-import type { FormErrorsProps } from "@aidbox-forms/theme";
+import type { FormErrorsProperties } from "@aidbox-forms/theme";
 
-export function FormErrors({ messages }: FormErrorsProps) {
-  if (messages.length === 0) return null;
+export function FormErrors({ messages }: FormErrorsProperties) {
+  if (messages.length === 0) return;
   return (
     <div className="nhsuk-error-summary" role="alert">
       <h2 className="nhsuk-error-summary__title">There is a problem</h2>

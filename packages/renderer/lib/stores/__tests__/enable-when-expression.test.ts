@@ -16,7 +16,7 @@ import {
   isGroupListStore,
 } from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("enableWhenExpression", () => {
   it("toggles enablement using scoped variables", () => {

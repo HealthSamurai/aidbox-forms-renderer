@@ -1,11 +1,11 @@
-import type { QuestionScaffoldProps } from "@aidbox-forms/theme";
+import type { QuestionScaffoldProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 
 export function QuestionScaffold({
   linkId,
   header,
   children,
-}: QuestionScaffoldProps) {
+}: QuestionScaffoldProperties) {
   return (
     <Container data-linkid={linkId}>
       {header}

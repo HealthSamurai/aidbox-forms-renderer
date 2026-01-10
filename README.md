@@ -44,6 +44,12 @@ import { theme } from "@aidbox-forms/nshuk-theme";
 
 Bring your own theme is supported; see the theme contract and component reference in [packages/theme/README.md](packages/theme/README.md).
 
+## Compatibility
+
+The workspace TypeScript target is **ES2023**, so published/consumed output assumes a modern JS runtime.
+In particular, the codebase uses ES2023 built-ins like `Array.prototype.toSorted`.
+Use a modern evergreen browser and Node runtime, or provide a transpile/polyfill step if you need to support older environments.
+
 Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle), `npm test`, `npm run lint`.
 Packages live under `packages/` and the workspace uses pnpm:
 

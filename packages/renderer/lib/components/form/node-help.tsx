@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { IPresentableNode } from "../../types.ts";
-import { getNodeHelpId } from "../../utils.ts";
+import { getNodeHelpId } from "../../utilities.ts";
 import { useTheme } from "../../ui/theme.tsx";
 import { strings } from "../../strings.ts";
 
@@ -16,5 +16,5 @@ export const NodeHelp = observer(function NodeHelp({
     <ThemedNodeHelp id={id} ariaLabel={strings.aria.help}>
       {node.help}
     </ThemedNodeHelp>
-  ) : null;
+  ) : undefined;
 });

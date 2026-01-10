@@ -1,6 +1,6 @@
 import type { Coding, ValueSet } from "fhir/r5";
 import type { ExpansionCache, IValueSetExpander } from "../../types.ts";
-import { dedupe, hasHttpStatus } from "../../utils.ts";
+import { dedupe, hasHttpStatus } from "../../utilities.ts";
 
 const DEFAULT_TERMINOLOGY_SERVER = "https://tx.fhir.org/r5";
 

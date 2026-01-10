@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
 
-export type ErrorsProps = {
+export type ErrorsProperties = {
   id: string;
   messages: string[];
 };
 
-export type ErrorsComponent = ComponentType<ErrorsProps>;
+export type ErrorsComponent = ComponentType<ErrorsProperties>;

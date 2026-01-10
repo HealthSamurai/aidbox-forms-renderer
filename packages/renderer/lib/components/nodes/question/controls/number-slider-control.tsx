@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import type { ValueControlProps } from "../../../../types.ts";
-import { getNumericValue, getSliderStepValue } from "../../../../utils.ts";
+import type { ValueControlProperties } from "../../../../types.ts";
+import { getNumericValue, getSliderStepValue } from "../../../../utilities.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { useCallback } from "react";
 
@@ -8,7 +8,7 @@ export const NumberSliderControl = observer(function SliderControl({
   answer,
   ariaLabelledBy,
   ariaDescribedBy,
-}: ValueControlProps<"integer" | "decimal">) {
+}: ValueControlProperties<"integer" | "decimal">) {
   const { SliderInput } = useTheme();
   const { min, max } = answer.bounds;
   const step =
@@ -16,9 +16,9 @@ export const NumberSliderControl = observer(function SliderControl({
     (answer.question.type === "integer" ? 1 : 0.1);
 
   const onChange = useCallback(
-    (next: number | null) => {
+    (next: number | undefined) => {
       if (answer.question.type === "integer") {
-        answer.setValueByUser(next != null ? Math.round(next) : null);
+        answer.setValueByUser(next == undefined ? undefined : Math.round(next));
         return;
       }
 

@@ -3,7 +3,7 @@ import type {
   Quantity,
   QuestionnaireItemAnswerOption,
 } from "fhir/r5";
-import { EXT } from "../../utils.ts";
+import { EXT } from "../../utilities.ts";
 
 export function makeVariable(name: string, expression: string): Extension {
   return {

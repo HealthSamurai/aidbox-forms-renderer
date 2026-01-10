@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type EmptyStateProps = {
+export type EmptyStateProperties = {
   children: ReactNode;
 };
 
-export type EmptyStateComponent = ComponentType<EmptyStateProps>;
+export type EmptyStateComponent = ComponentType<EmptyStateProperties>;

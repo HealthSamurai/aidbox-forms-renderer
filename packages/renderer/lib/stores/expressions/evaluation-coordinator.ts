@@ -15,10 +15,11 @@ export class EvaluationCoordinator implements IEvaluationCoordinator {
   trackEvaluation<T>(slot: IExpressionSlot, run: () => T): T {
     const existingIndex = this.evaluationStack.indexOf(slot.toString());
 
-    if (existingIndex >= 0) {
-      slot.setCycleDetected(
-        this.evaluationStack.slice(existingIndex).concat(slot.toString()),
-      );
+    if (existingIndex !== -1) {
+      slot.setCycleDetected([
+        ...this.evaluationStack.slice(existingIndex),
+        slot.toString(),
+      ]);
       throw new CircularDependencyError("Circular dependency detected.");
     }
 

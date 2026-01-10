@@ -17,7 +17,7 @@ import {
   getNodeHelpId,
   getNodeLabelId,
   buildId,
-} from "../../../../utils.ts";
+} from "../../../../utilities.ts";
 
 export const MultiDropdownSelectControl = observer(
   function MultiDropdownSelectControl<T extends AnswerType>({

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type BooleanInputProps = {
-  value: boolean | null;
-  onChange: (value: boolean | null) => void;
+export type BooleanInputProperties = {
+  value: boolean | undefined;
+  onChange: (value: boolean | undefined) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -19,7 +19,7 @@ export function BooleanInput({
   ariaDescribedBy,
   disabled,
   label,
-}: BooleanInputProps) {
+}: BooleanInputProperties) {
   const { Checkbox } = useTheme();
   const checked = value === true;
 

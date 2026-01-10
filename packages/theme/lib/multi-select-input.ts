@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
-export type MultiSelectInputProps = {
+export type MultiSelectInputProperties = {
   options: readonly OptionItem[];
   selectedOptions: readonly SelectedOptionItem[];
   onSelect: (token: string) => void;
@@ -17,4 +17,5 @@ export type MultiSelectInputProps = {
   placeholder?: string | undefined;
 };
 
-export type MultiSelectInputComponent = ComponentType<MultiSelectInputProps>;
+export type MultiSelectInputComponent =
+  ComponentType<MultiSelectInputProperties>;

@@ -6,7 +6,7 @@ import {
   IExpressionEnvironmentProvider,
   IExpressionSlot,
 } from "../../types.ts";
-import { makeIssue } from "../../utils.ts";
+import { makeIssue } from "../../utilities.ts";
 import fhirpath, { Model } from "fhirpath";
 import r5 from "fhirpath/fhir-context/r5";
 
@@ -98,7 +98,7 @@ export class ExpressionSlot implements IExpressionSlot {
         console.warn("Unrecognized expression evaluation error:", error);
 
         this.setError(makeIssue("invalid", message));
-        return undefined;
+        return;
       }
     });
   }

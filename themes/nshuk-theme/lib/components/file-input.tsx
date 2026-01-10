@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { FileInputProps } from "@aidbox-forms/theme";
+import type { FileInputProperties } from "@aidbox-forms/theme";
 import { type ChangeEvent, useRef } from "react";
 
 export function FileInput({
@@ -10,20 +10,21 @@ export function FileInput({
   accept,
   value,
   onChange,
-}: FileInputProps) {
+}: FileInputProperties) {
   const displayLabel = value?.title ?? value?.url ?? "Attachment selected";
+  const hasValue = value != undefined;
   const displaySizeLabel =
-    value?.size != null ? `${Math.round(value.size / 1024)} KB` : undefined;
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+    value?.size == undefined ? "" : `${Math.round(value.size / 1024)} KB`;
+  const fileInputReference = useRef<HTMLInputElement | null>(null);
 
   const handlePickFile = () => {
     if (disabled) return;
-    fileInputRef.current?.click();
+    fileInputReference.current?.click();
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
-    if (!file) return;
+    if (file === undefined) return;
     try {
       onChange?.(file);
     } finally {
@@ -34,7 +35,7 @@ export function FileInput({
   return (
     <Container>
       <HiddenInput
-        ref={fileInputRef}
+        ref={fileInputReference}
         id={id}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
@@ -44,7 +45,7 @@ export function FileInput({
         onChange={handleFileChange}
         accept={accept}
       />
-      {value != null ? (
+      {hasValue ? (
         <Details
           role="group"
           aria-labelledby={ariaLabelledBy}
@@ -53,9 +54,9 @@ export function FileInput({
           <div className="nhsuk-body">{displayLabel}</div>
           {displaySizeLabel ? (
             <div className="nhsuk-hint">{displaySizeLabel}</div>
-          ) : null}
+          ) : undefined}
           <Actions>
-            {!disabled ? (
+            {disabled ? undefined : (
               <button
                 className="nhsuk-button nhsuk-button--secondary"
                 type="button"
@@ -63,11 +64,11 @@ export function FileInput({
               >
                 Change file
               </button>
-            ) : null}
+            )}
             <button
               className="nhsuk-button nhsuk-button--secondary"
               type="button"
-              onClick={() => onChange?.(null)}
+              onClick={() => onChange?.()}
               disabled={disabled}
             >
               Clear attachment

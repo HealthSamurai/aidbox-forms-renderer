@@ -1,7 +1,7 @@
 import { styled } from "@linaria/react";
-import type { NodeListProps } from "@aidbox-forms/theme";
+import type { NodeListProperties } from "@aidbox-forms/theme";
 
-export function NodeList({ children }: NodeListProps) {
+export function NodeList({ children }: NodeListProperties) {
   return <Container>{children}</Container>;
 }
 

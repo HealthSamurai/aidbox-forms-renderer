@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { NumberInputProps } from "@aidbox-forms/theme";
+import type { NumberInputProperties } from "@aidbox-forms/theme";
 
 export function NumberInput({
   id,
@@ -13,7 +13,7 @@ export function NumberInput({
   ariaLabelledBy,
   ariaDescribedBy,
   unitLabel,
-}: NumberInputProps) {
+}: NumberInputProperties) {
   const described = [ariaDescribedBy].filter(Boolean).join(" ").trim();
   const describedBy = described.length > 0 ? described : undefined;
 
@@ -28,7 +28,7 @@ export function NumberInput({
             value={value ?? ""}
             onChange={(event) => {
               const raw = event.target.value;
-              onChange(raw === "" ? null : Number(raw));
+              onChange(raw === "" ? undefined : Number(raw));
             }}
             disabled={disabled}
             placeholder={placeholder}
@@ -54,7 +54,7 @@ export function NumberInput({
           value={value ?? ""}
           onChange={(event) => {
             const raw = event.target.value;
-            onChange(raw === "" ? null : Number(raw));
+            onChange(raw === "" ? undefined : Number(raw));
           }}
           disabled={disabled}
           placeholder={placeholder}

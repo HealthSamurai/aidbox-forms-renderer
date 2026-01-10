@@ -1,6 +1,6 @@
-import type { ValueDisplayProps } from "../../../../../types.ts";
+import type { ValueDisplayProperties } from "../../../../../types.ts";
 
-export function CodingDisplay({ value }: ValueDisplayProps<"coding">) {
+export function CodingDisplay({ value }: ValueDisplayProperties<"coding">) {
   const parts: string[] = [];
   if (value.display) {
     parts.push(value.display);

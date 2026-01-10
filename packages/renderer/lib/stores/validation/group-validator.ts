@@ -1,7 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue } from "fhir/r5";
 
-import { makeIssue } from "../../utils.ts";
+import { makeIssue } from "../../utilities.ts";
 import type { IGroupNode, INodeValidator } from "../../types.ts";
 import { strings } from "../../strings.ts";
 

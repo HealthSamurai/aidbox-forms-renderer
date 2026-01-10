@@ -1,4 +1,4 @@
-import type { SelectInputProps } from "@aidbox-forms/theme";
+import type { SelectInputProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
@@ -16,14 +16,16 @@ export function SelectInput({
   disabled = false,
   isLoading = false,
   placeholder,
-}: SelectInputProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+}: SelectInputProperties) {
+  const containerReference = useRef<HTMLDivElement | null>(null);
+  const inputReference = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
-  const [activeToken, setActiveToken] = useState<string | null>(null);
-  const optionRefs = useRef(new Map<string, HTMLButtonElement | null>());
+  const [activeToken, setActiveToken] = useState<string | undefined>();
+  const optionReferences = useRef(
+    new Map<string, HTMLButtonElement | undefined>(),
+  );
   const hasCustomOptionForm = Boolean(customOptionForm);
   const isOpenWithCustom = isOpen || hasCustomOptionForm;
   const isSearchable = Boolean(onSearch);
@@ -48,7 +50,7 @@ export function SelectInput({
   const stickyIndex = specifyOtherOption ? options.length : -1;
   const resolvedActiveToken = useMemo(() => {
     if (!isOpenWithCustom || visibleOptions.length === 0) {
-      return null;
+      return;
     }
     const currentActive = activeToken
       ? visibleOptions.find((entry) => entry.token === activeToken)
@@ -63,23 +65,23 @@ export function SelectInput({
       return selectedEntry.token;
     }
     const firstEnabled = visibleOptions.find((entry) => !entry.disabled);
-    return firstEnabled?.token ?? null;
+    return firstEnabled?.token;
   }, [activeToken, isOpenWithCustom, selectedToken, visibleOptions]);
   const activeIndex = visibleOptions.findIndex(
     (entry) => entry.token === resolvedActiveToken,
   );
   const activeDescendantId =
-    activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined;
+    activeIndex === -1 ? undefined : `${listboxId}-option-${activeIndex}`;
 
   useEffect(() => {
-    if (!isOpenWithCustom || !resolvedActiveToken) return;
-    const option = optionRefs.current.get(resolvedActiveToken);
+    if (!isOpenWithCustom || resolvedActiveToken === undefined) return;
+    const option = optionReferences.current.get(resolvedActiveToken);
     option?.scrollIntoView?.({ block: "nearest" });
   }, [isOpenWithCustom, resolvedActiveToken]);
 
   useEffect(() => {
     if (!isOpen) return;
-    inputRef.current?.focus();
+    inputReference.current?.focus();
   }, [isOpen]);
 
   const handleSelect = (nextToken: string) => {
@@ -87,60 +89,61 @@ export function SelectInput({
     onChange(nextToken);
     updateQuery("");
     setIsDirty(false);
-    setActiveToken(null);
+    setActiveToken(undefined);
     setIsOpen(false);
   };
 
   const handleClear = () => {
-    onChange(null);
+    onChange();
     updateQuery("");
     setIsDirty(false);
-    setActiveToken(null);
+    setActiveToken(undefined);
     setIsOpen(false);
   };
 
   const findNextEnabledIndex = (startIndex: number, direction: 1 | -1) => {
     if (visibleOptions.length === 0) return -1;
-    let index = startIndex;
-    if (index < 0) {
-      index = direction === 1 ? -1 : visibleOptions.length;
-    }
-    for (let i = 0; i < visibleOptions.length; i += 1) {
-      index += direction;
-      if (index < 0 || index >= visibleOptions.length) {
-        index = direction === 1 ? 0 : visibleOptions.length - 1;
-      }
-      if (!visibleOptions[index].disabled) {
-        return index;
+    const count = visibleOptions.length;
+    const startPoint =
+      startIndex < 0 ? (direction === 1 ? -1 : count) : startIndex;
+    for (const offset of visibleOptions.keys()) {
+      const nextIndex = startPoint + direction * (offset + 1);
+      const wrappedIndex = ((nextIndex % count) + count) % count;
+      if (!visibleOptions[wrappedIndex].disabled) {
+        return wrappedIndex;
       }
     }
     return -1;
   };
 
   const findEdgeEnabledIndex = (direction: 1 | -1) => {
-    if (direction === 1) {
-      for (let i = 0; i < visibleOptions.length; i += 1) {
-        if (!visibleOptions[i].disabled) return i;
-      }
-      return -1;
+    const indices = [...visibleOptions.keys()];
+    if (direction === -1) {
+      indices.reverse();
     }
-    for (let i = visibleOptions.length - 1; i >= 0; i -= 1) {
-      if (!visibleOptions[i].disabled) return i;
+    for (const index of indices) {
+      if (!visibleOptions[index].disabled) return index;
     }
     return -1;
   };
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     if (hasCustomOptionForm) return;
-    if (!containerRef.current) return;
-    const nextTarget = event.relatedTarget as Node | null;
-    if (nextTarget && containerRef.current.contains(nextTarget)) {
+    if (containerReference.current == undefined) return;
+    const nextTarget = event.relatedTarget as Node | undefined;
+    if (nextTarget && containerReference.current.contains(nextTarget)) {
       return;
     }
-    if (!disabled && !isLoading && isDirty && !query.trim() && selectedOption) {
-      onChange(null);
+    const shouldClear =
+      !disabled &&
+      !isLoading &&
+      isDirty &&
+      query.trim().length === 0 &&
+      Boolean(selectedOption);
+    if (shouldClear) {
+      onChange();
     }
-    setActiveToken(null);
+    setActiveToken(undefined);
     setIsOpen(false);
   };
 
@@ -155,7 +158,7 @@ export function SelectInput({
       }
       const direction = event.key === "ArrowDown" ? 1 : -1;
       const nextIndex = findNextEnabledIndex(activeIndex, direction);
-      if (nextIndex >= 0) {
+      if (nextIndex !== -1) {
         setActiveToken(visibleOptions[nextIndex].token);
       }
       return;
@@ -169,7 +172,7 @@ export function SelectInput({
       }
       const direction = event.key === "Home" ? 1 : -1;
       const edgeIndex = findEdgeEnabledIndex(direction);
-      if (edgeIndex >= 0) {
+      if (edgeIndex !== -1) {
         setActiveToken(visibleOptions[edgeIndex].token);
       }
       return;
@@ -182,7 +185,7 @@ export function SelectInput({
         setIsOpen(true);
         return;
       }
-      if (activeIndex >= 0) {
+      if (activeIndex !== -1) {
         const entry = visibleOptions[activeIndex];
         if (!entry.disabled) {
           handleSelect(entry.token);
@@ -192,7 +195,7 @@ export function SelectInput({
     }
     if (event.key === "Escape") {
       if (hasCustomOptionForm) return;
-      setActiveToken(null);
+      setActiveToken(undefined);
       setIsOpen(false);
     }
   };
@@ -200,14 +203,14 @@ export function SelectInput({
   return (
     <div
       aria-busy={isLoading || undefined}
-      ref={containerRef}
+      ref={containerReference}
       onBlur={handleBlur}
     >
       <InputRow>
         <InputWrap>
           {showSearchInput ? (
             <SelectInputField
-              ref={inputRef}
+              ref={inputReference}
               id={id}
               className="nhsuk-input"
               data-has-clear={selectedOption ? "true" : undefined}
@@ -284,9 +287,9 @@ export function SelectInput({
               onMouseDown={(event) => event.preventDefault()}
               aria-label="Clear"
             >
-              {"\u00d7"}
+              {"\u00D7"}
             </ClearButton>
-          ) : null}
+          ) : undefined}
           {isOpenWithCustom ? (
             <Listbox
               id={listboxId}
@@ -312,9 +315,9 @@ export function SelectInput({
                       data-active={entry.token === resolvedActiveToken}
                       ref={(node) => {
                         if (node) {
-                          optionRefs.current.set(entry.token, node);
+                          optionReferences.current.set(entry.token, node);
                         } else {
-                          optionRefs.current.delete(entry.token);
+                          optionReferences.current.delete(entry.token);
                         }
                       }}
                       onFocus={() => setActiveToken(entry.token)}
@@ -342,12 +345,14 @@ export function SelectInput({
                       data-sticky="true"
                       ref={(node) => {
                         if (node) {
-                          optionRefs.current.set(
+                          optionReferences.current.set(
                             specifyOtherOption.token,
                             node,
                           );
                         } else {
-                          optionRefs.current.delete(specifyOtherOption.token);
+                          optionReferences.current.delete(
+                            specifyOtherOption.token,
+                          );
                         }
                       }}
                       onFocus={() => setActiveToken(specifyOtherOption.token)}
@@ -360,18 +365,18 @@ export function SelectInput({
                     >
                       {specifyOtherOption.label}
                     </OptionButton>
-                  ) : null}
+                  ) : undefined}
                 </>
               )}
             </Listbox>
-          ) : null}
+          ) : undefined}
         </InputWrap>
       </InputRow>
       {isLoading ? (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
+      ) : undefined}
     </div>
   );
 }

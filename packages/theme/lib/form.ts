@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type FormProps = {
+export type FormProperties = {
   onSubmit?: (() => void) | undefined;
   onCancel?: (() => void) | undefined;
   children: ReactNode;
@@ -12,7 +12,7 @@ export type FormProps = {
   after?: ReactNode;
 };
 
-export type FormComponent = ComponentType<FormProps>;
+export type FormComponent = ComponentType<FormProperties>;
 
 export type FormPagination = {
   current: number;

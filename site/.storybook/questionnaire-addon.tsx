@@ -18,7 +18,7 @@ export function QuestionnairePanel() {
         return;
       }
 
-      const encoded = JSON.stringify(payload.questionnaire, null, 2);
+      const encoded = JSON.stringify(payload.questionnaire, undefined, 2);
       setValue(encoded);
     };
 
@@ -55,6 +55,8 @@ addons.register("aidbox/questionnaire", () => {
     title: "Questionnaire",
     type: types.PANEL,
     render: ({ active }) =>
-      active ? <QuestionnairePanel key={`aidbox/questionnaire/panel`} /> : null,
+      active ? (
+        <QuestionnairePanel key={`aidbox/questionnaire/panel`} />
+      ) : undefined,
   });
 });

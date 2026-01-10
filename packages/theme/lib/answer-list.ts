@@ -1,10 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type AnswerListProps = {
+export type AnswerListProperties = {
   children: ReactNode;
   onAdd?: (() => void) | undefined;
   canAdd?: boolean | undefined;
   addLabel?: string | undefined;
 };
 
-export type AnswerListComponent = ComponentType<AnswerListProps>;
+export type AnswerListComponent = ComponentType<AnswerListProperties>;

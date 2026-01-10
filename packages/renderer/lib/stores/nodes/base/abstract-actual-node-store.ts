@@ -26,7 +26,7 @@ import {
   EXT,
   findExtension,
   normalizeExpressionValues,
-} from "../../../utils.ts";
+} from "../../../utilities.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { AbstractPresentableNode } from "./abstract-presentable-node.ts";
 
@@ -45,7 +45,7 @@ export abstract class AbstractActualNodeStore
   protected constructor(
     form: IForm,
     template: QuestionnaireItem,
-    parentStore: INode | null,
+    parentStore: INode | undefined,
     scope: IScope,
     token: string,
   ) {
@@ -81,7 +81,11 @@ export abstract class AbstractActualNodeStore
     if (minOccursSlot) {
       const values = normalizeExpressionValues("integer", minOccursSlot.value);
       const candidate = values[0];
-      if (candidate != null && Number.isFinite(candidate) && candidate >= 0) {
+      if (
+        candidate != undefined &&
+        Number.isFinite(candidate) &&
+        candidate >= 0
+      ) {
         return Math.floor(candidate);
       }
     }
@@ -103,7 +107,11 @@ export abstract class AbstractActualNodeStore
     if (maxOccursSlot) {
       const values = normalizeExpressionValues("integer", maxOccursSlot.value);
       const candidate = values[0];
-      if (candidate != null && Number.isFinite(candidate) && candidate >= 0) {
+      if (
+        candidate != undefined &&
+        Number.isFinite(candidate) &&
+        candidate >= 0
+      ) {
         return Math.floor(candidate);
       }
     }
@@ -169,10 +177,10 @@ export abstract class AbstractActualNodeStore
       return [];
     }
 
-    const issues: OperationOutcomeIssue[] = [];
-
-    issues.push(...this.expressionRegistry.registrationIssues);
-    issues.push(...this.expressionRegistry.slotsIssues);
+    const issues: OperationOutcomeIssue[] = [
+      ...this.expressionRegistry.registrationIssues,
+      ...this.expressionRegistry.slotsIssues,
+    ];
 
     const shouldApplyConstraints = this.shouldValidate && !this.readOnly;
     if (shouldApplyConstraints) {
@@ -188,18 +196,18 @@ export abstract class AbstractActualNodeStore
 
   @computed
   get isHeaderless(): boolean {
-    if (isQuestionNode(this)) {
-      if (
-        this.type === "boolean" &&
-        this.control !== "radio-button" &&
-        this.control !== "check-box"
-      ) {
-        return true;
-      }
+    if (
+      isQuestionNode(this) &&
+      this.type === "boolean" &&
+      this.control !== "radio-button" &&
+      this.control !== "check-box"
+    ) {
+      return true;
     }
 
     const parent = this.parentStore;
-    const parentControl = parent && "control" in parent ? parent.control : null;
+    const parentControl =
+      parent && "control" in parent ? parent.control : undefined;
     if (parentControl === "tab-container" || parentControl === "gtable") {
       return true;
     }

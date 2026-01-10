@@ -1,4 +1,4 @@
-import type { TextInputProps } from "@aidbox-forms/theme";
+import type { TextInputProperties } from "@aidbox-forms/theme";
 
 export function TextInput({
   id,
@@ -12,7 +12,7 @@ export function TextInput({
   inputMode,
   minLength,
   maxLength,
-}: TextInputProps) {
+}: TextInputProperties) {
   const describedBy =
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy
@@ -24,7 +24,7 @@ export function TextInput({
       className="nhsuk-input"
       type={type}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(event) => onChange(event.target.value)}
       disabled={disabled}
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}

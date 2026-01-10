@@ -20,7 +20,7 @@ export const GridRenderer = observer(function GridRenderer({
         label: row.label,
         cells: row.cells.map((cell) => ({
           token: cell.token,
-          content: cell.question ? <Node node={cell.question} /> : null,
+          content: cell.question ? <Node node={cell.question} /> : undefined,
         })),
       }))}
     />

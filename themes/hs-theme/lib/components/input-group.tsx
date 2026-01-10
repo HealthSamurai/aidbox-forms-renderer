@@ -1,15 +1,19 @@
 import { styled } from "@linaria/react";
 import { Children } from "react";
-import type { InputGroupProps } from "@aidbox-forms/theme";
+import type { InputGroupProperties } from "@aidbox-forms/theme";
 
-export function InputGroup({ children, layout, weights }: InputGroupProps) {
+export function InputGroup({
+  children,
+  layout,
+  weights,
+}: InputGroupProperties) {
   if (layout === "row") {
     const items = Children.toArray(children);
     return (
       <RowGroup>
         {items.map((child, index) => {
           const weight = weights?.[index];
-          if (weight == null) {
+          if (weight == undefined) {
             return <RowItem key={index}>{child}</RowItem>;
           }
           return (
@@ -38,7 +42,7 @@ const RowGroup = styled.div`
 `;
 
 const RowItem = styled.div<{ $weight?: number }>`
-  flex: ${(props) =>
-    props.$weight == null ? "1 1 0" : `${props.$weight} 1 0`};
+  flex: ${(properties) =>
+    properties.$weight == undefined ? "1 1 0" : `${properties.$weight} 1 0`};
   min-width: 0;
 `;

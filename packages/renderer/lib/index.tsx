@@ -6,7 +6,7 @@ import { autorun } from "mobx";
 import type { Theme } from "@aidbox-forms/theme";
 import { ThemeProvider } from "./ui/theme.tsx";
 
-type RendererProps = {
+type RendererProperties = {
   questionnaire: Questionnaire;
   initialResponse?: QuestionnaireResponse | undefined;
   onChange?: ((response: QuestionnaireResponse) => void) | undefined;
@@ -22,7 +22,7 @@ function Renderer({
   onChange,
   terminologyServerUrl,
   theme,
-}: RendererProps) {
+}: RendererProperties) {
   const store = useMemo(
     () => new FormStore(questionnaire, initialResponse, terminologyServerUrl),
     [questionnaire, initialResponse, terminologyServerUrl],

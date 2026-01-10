@@ -16,7 +16,7 @@ import { Renderer } from "../renderer.tsx";
 
 type AnswerConstraint = QuestionnaireItem["answerConstraint"];
 
-type DropdownArgs = {
+type DropdownArguments = {
   answerType: AnswerType;
   repeats: boolean;
   hasNestedItems: boolean;
@@ -26,7 +26,7 @@ type DropdownArgs = {
   readOnly: boolean;
 };
 
-type ListSelectArgs = {
+type ListSelectArguments = {
   answerType: AnswerType;
   repeats: boolean;
   hasNestedItems: boolean;
@@ -55,7 +55,7 @@ const selectionAnswerTypes: AnswerType[] = [
 
 const optionCountOptions = [3, 5, 8, 12];
 
-const baseArgTypes = {
+const baseArgumentTypes = {
   answerType: {
     name: "Answer type",
     options: selectionAnswerTypes,
@@ -95,17 +95,20 @@ function getSelectionSamples<T extends AnswerType>(
   type: T,
 ): Array<DataTypeToType<AnswerTypeToDataType<T>>> {
   switch (type) {
-    case "boolean":
+    case "boolean": {
       return [true, false] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "integer":
+    }
+    case "integer": {
       return [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144] as Array<
         DataTypeToType<AnswerTypeToDataType<T>>
       >;
-    case "decimal":
+    }
+    case "decimal": {
       return [
         0.5, 1.25, 2.75, 3.5, 4.25, 5.75, 6.5, 7.25, 8.5, 9.75, 10.25, 11.5,
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "string":
+    }
+    case "string": {
       return [
         "Alpha",
         "Bravo",
@@ -120,7 +123,8 @@ function getSelectionSamples<T extends AnswerType>(
         "Kilo",
         "Lima",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "text":
+    }
+    case "text": {
       return [
         "Short note",
         "Longer text",
@@ -135,7 +139,8 @@ function getSelectionSamples<T extends AnswerType>(
         "Clarifying remark",
         "Closing comment",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "date":
+    }
+    case "date": {
       return [
         "2024-01-01",
         "2024-02-14",
@@ -150,7 +155,8 @@ function getSelectionSamples<T extends AnswerType>(
         "2025-07-12",
         "2025-08-08",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "dateTime":
+    }
+    case "dateTime": {
       return [
         "2024-01-01T09:00:00Z",
         "2024-03-15T13:15:00Z",
@@ -165,7 +171,8 @@ function getSelectionSamples<T extends AnswerType>(
         "2025-07-22T07:50:00Z",
         "2025-08-30T21:30:00Z",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "time":
+    }
+    case "time": {
       return [
         "08:00:00",
         "09:15:00",
@@ -180,7 +187,8 @@ function getSelectionSamples<T extends AnswerType>(
         "21:00:00",
         "23:15:00",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "url":
+    }
+    case "url": {
       return [
         "https://example.org/alpha",
         "https://example.org/bravo",
@@ -195,7 +203,8 @@ function getSelectionSamples<T extends AnswerType>(
         "https://example.org/kilo",
         "https://example.org/lima",
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "quantity":
+    }
+    case "quantity": {
       return [
         {
           value: 1,
@@ -270,7 +279,8 @@ function getSelectionSamples<T extends AnswerType>(
           code: "mg",
         },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "coding":
+    }
+    case "coding": {
       return [
         {
           system: "http://loinc.org",
@@ -333,7 +343,8 @@ function getSelectionSamples<T extends AnswerType>(
           display: "Option L",
         },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "reference":
+    }
+    case "reference": {
       return [
         { reference: "Patient/example", display: "Jane Doe" },
         { reference: "Patient/alpha", display: "John Doe" },
@@ -350,7 +361,8 @@ function getSelectionSamples<T extends AnswerType>(
         { reference: "Patient/lima", display: "Quinn Doe" },
         { reference: "Patient/mike", display: "Parker Doe" },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    case "attachment":
+    }
+    case "attachment": {
       return [
         {
           contentType: "text/plain",
@@ -413,8 +425,10 @@ function getSelectionSamples<T extends AnswerType>(
           title: "Document L",
         },
       ] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
-    default:
+    }
+    default: {
       return [] as Array<DataTypeToType<AnswerTypeToDataType<T>>>;
+    }
   }
 }
 
@@ -422,52 +436,66 @@ function getCustomSelectionValue<T extends AnswerType>(
   type: T,
 ): DataTypeToType<AnswerTypeToDataType<T>> {
   switch (type) {
-    case "boolean":
+    case "boolean": {
       return true as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "integer":
+    }
+    case "integer": {
       return 42 as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "decimal":
+    }
+    case "decimal": {
       return 9.99 as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "string":
+    }
+    case "string": {
       return "Custom entry" as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "text":
+    }
+    case "text": {
       return "Custom text" as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "date":
+    }
+    case "date": {
       return "2025-01-15" as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "dateTime":
+    }
+    case "dateTime": {
       return "2025-01-15T10:00:00Z" as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "time":
+    }
+    case "time": {
       return "10:15:00" as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "url":
+    }
+    case "url": {
       return "https://custom.example.org" as DataTypeToType<
         AnswerTypeToDataType<T>
       >;
-    case "quantity":
+    }
+    case "quantity": {
       return {
         value: 33,
         unit: "mg",
         system: "http://unitsofmeasure.org",
         code: "mg",
       } as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "coding":
+    }
+    case "coding": {
       return {
         system: "http://loinc.org",
         code: "9999-9",
         display: "Custom code",
       } as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "reference":
+    }
+    case "reference": {
       return {
         reference: "Patient/custom",
         display: "Custom patient",
       } as DataTypeToType<AnswerTypeToDataType<T>>;
-    case "attachment":
+    }
+    case "attachment": {
       return {
         contentType: "text/plain",
         url: "https://example.org/custom.txt",
         title: "Custom attachment",
       } as DataTypeToType<AnswerTypeToDataType<T>>;
-    default:
+    }
+    default: {
       return "" as DataTypeToType<AnswerTypeToDataType<T>>;
+    }
   }
 }
 
@@ -520,90 +548,92 @@ function buildInitialValues<T extends AnswerType>(options: {
 }
 
 function buildSelectionItem(
-  args: DropdownArgs,
+  arguments_: DropdownArguments,
   control: QuestionItemControl,
 ): QuestionnaireItem {
-  const optionValues = getSelectionSamples(args.answerType).slice(
+  const optionValues = getSelectionSamples(arguments_.answerType).slice(
     0,
-    args.optionCount,
+    arguments_.optionCount,
   );
   const initialValues = buildInitialValues({
-    type: args.answerType,
-    repeats: args.repeats,
-    selection: args.initialSelection,
-    answerConstraint: args.answerConstraint,
+    type: arguments_.answerType,
+    repeats: arguments_.repeats,
+    selection: arguments_.initialSelection,
+    answerConstraint: arguments_.answerConstraint,
     optionValues,
   });
 
-  const childItems = args.hasNestedItems
+  const childItems = arguments_.hasNestedItems
     ? [
         buildQuestionItem({
           linkId: "nested-question",
           text: "Nested question",
           type: "string",
           control: "text-box",
-          readOnly: args.readOnly,
+          readOnly: arguments_.readOnly,
         }),
       ]
     : undefined;
 
   return buildQuestionItem({
-    linkId: `${args.answerType}-selection`,
-    text: `Dropdown (${args.answerType})`,
-    type: args.answerType,
+    linkId: `${arguments_.answerType}-selection`,
+    text: `Dropdown (${arguments_.answerType})`,
+    type: arguments_.answerType,
     control,
-    repeats: args.repeats,
-    readOnly: args.readOnly,
-    answerConstraint: args.answerConstraint,
-    answerOption: makeAnswerOptions(args.answerType, optionValues),
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
+    answerConstraint: arguments_.answerConstraint,
+    answerOption: makeAnswerOptions(arguments_.answerType, optionValues),
     initial: initialValues,
     item: childItems,
   });
 }
 
-function buildListSelectItem(args: ListSelectArgs): QuestionnaireItem {
-  const optionValues = getSelectionSamples(args.answerType).slice(
+function buildListSelectItem(
+  arguments_: ListSelectArguments,
+): QuestionnaireItem {
+  const optionValues = getSelectionSamples(arguments_.answerType).slice(
     0,
-    args.optionCount,
+    arguments_.optionCount,
   );
   const includeOptions =
-    args.answerType === "boolean" ? args.includeOptions !== false : true;
+    arguments_.answerType === "boolean" ? arguments_.includeOptions : true;
   const initialValues = buildInitialValues({
-    type: args.answerType,
-    repeats: args.repeats,
-    selection: args.initialSelection,
-    answerConstraint: args.answerConstraint,
+    type: arguments_.answerType,
+    repeats: arguments_.repeats,
+    selection: arguments_.initialSelection,
+    answerConstraint: arguments_.answerConstraint,
     optionValues,
   });
-  const childItems = args.hasNestedItems
+  const childItems = arguments_.hasNestedItems
     ? [
         buildQuestionItem({
           linkId: "nested-question",
           text: "Nested question",
           type: "string",
           control: "text-box",
-          readOnly: args.readOnly,
+          readOnly: arguments_.readOnly,
         }),
       ]
     : undefined;
 
   return buildQuestionItem({
-    linkId: `${args.answerType}-list-select`,
-    text: `List select (${args.answerType})`,
-    type: args.answerType,
-    control: args.repeats ? "check-box" : "radio-button",
-    repeats: args.repeats,
-    readOnly: args.readOnly,
-    answerConstraint: args.answerConstraint,
+    linkId: `${arguments_.answerType}-list-select`,
+    text: `List select (${arguments_.answerType})`,
+    type: arguments_.answerType,
+    control: arguments_.repeats ? "check-box" : "radio-button",
+    repeats: arguments_.repeats,
+    readOnly: arguments_.readOnly,
+    answerConstraint: arguments_.answerConstraint,
     answerOption: includeOptions
-      ? makeAnswerOptions(args.answerType, optionValues)
+      ? makeAnswerOptions(arguments_.answerType, optionValues)
       : undefined,
     initial: initialValues,
     item: childItems,
   });
 }
 
-const meta: Meta<DropdownArgs & Partial<ListSelectArgs>> = {
+const meta: Meta<DropdownArguments & Partial<ListSelectArguments>> = {
   title: "Renderers/Selection",
   parameters: {
     layout: "padded",
@@ -614,7 +644,7 @@ const meta: Meta<DropdownArgs & Partial<ListSelectArgs>> = {
       },
     },
   },
-  argTypes: baseArgTypes,
+  argTypes: baseArgumentTypes,
   args: {
     answerType: "string",
     repeats: false,
@@ -628,31 +658,31 @@ const meta: Meta<DropdownArgs & Partial<ListSelectArgs>> = {
 
 export default meta;
 
-export const DropdownRenderer: StoryObj<DropdownArgs> = {
+export const DropdownRenderer: StoryObj<DropdownArguments> = {
   name: "Dropdown renderer",
-  render: (args, context) => {
-    const item = buildSelectionItem(args, "drop-down");
+  render: (arguments_, context) => {
+    const item = buildSelectionItem(arguments_, "drop-down");
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );
   },
 };
 
-export const ListSelectRenderer: StoryObj<ListSelectArgs> = {
+export const ListSelectRenderer: StoryObj<ListSelectArguments> = {
   name: "List-select renderer",
   args: {
     includeOptions: true,
   },
   argTypes: {
-    ...baseArgTypes,
+    ...baseArgumentTypes,
     includeOptions: {
       name: "Include answer options",
       control: { type: "boolean" },
       if: { arg: "answerType", eq: "boolean" },
     },
   },
-  render: (args, context) => {
-    const item = buildListSelectItem(args);
+  render: (arguments_, context) => {
+    const item = buildListSelectItem(arguments_);
     return (
       <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
     );

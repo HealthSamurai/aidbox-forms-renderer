@@ -1,11 +1,11 @@
 import type { Reference } from "fhir/r5";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
-import { buildId } from "../../../../../utils.ts";
+import { buildId } from "../../../../../utilities.ts";
 
-export type ReferenceInputProps = {
-  value: Reference | null;
-  onChange: (value: Reference | null) => void;
+export type ReferenceInputProperties = {
+  value: Reference | undefined;
+  onChange: (value: Reference | undefined) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -21,7 +21,7 @@ export function ReferenceInput({
   ariaDescribedBy,
   placeholder,
   disabled,
-}: ReferenceInputProps) {
+}: ReferenceInputProperties) {
   const { InputGroup, TextInput } = useTheme();
   const reference = value ?? {};
   const setField = (field: keyof Reference, nextValue: string) => {
@@ -56,12 +56,16 @@ export function ReferenceInput({
   );
 }
 
-function pruneReference(value: Reference): Reference | null {
+function pruneReference(value: Reference): Reference | undefined {
   const next: Reference = { ...value };
   (Object.keys(next) as (keyof Reference)[]).forEach((key) => {
-    if (next[key] === undefined || next[key] === null || next[key] === "") {
+    if (
+      next[key] === undefined ||
+      next[key] === undefined ||
+      next[key] === ""
+    ) {
       delete next[key];
     }
   });
-  return Object.keys(next).length > 0 ? next : null;
+  return Object.keys(next).length > 0 ? next : undefined;
 }

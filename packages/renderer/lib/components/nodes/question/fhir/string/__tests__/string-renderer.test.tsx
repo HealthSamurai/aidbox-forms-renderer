@@ -5,7 +5,7 @@ import type { Questionnaire } from "fhir/r5";
 import { FormStore } from "../../../../../../stores/form/form-store.ts";
 import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
 import { StringRenderer } from "../string-renderer.tsx";
-import { EXT, ITEM_CONTROL_SYSTEM } from "../../../../../../utils.ts";
+import { EXT, ITEM_CONTROL_SYSTEM } from "../../../../../../utilities.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";
 
 function getQuestion(form: FormStore, linkId: string) {

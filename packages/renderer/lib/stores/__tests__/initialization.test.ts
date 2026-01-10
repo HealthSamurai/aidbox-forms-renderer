@@ -22,7 +22,7 @@ import {
   isQuestionNode,
 } from "../nodes/questions/question-store.ts";
 import { makeInitialExpression } from "./expression-fixtures.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -304,7 +304,7 @@ describe("initialization", () => {
         expect(question && isQuestionNode(question)).toBe(true);
         assertQuestionNode(question);
         expect(question.answers).toHaveLength(1);
-        expect(question.answers.at(0)?.value).toBeNull();
+        expect(question.answers.at(0)?.value).toBeUndefined();
       });
     });
   });
@@ -535,7 +535,7 @@ describe("initialization", () => {
         expect(firstQuestion && isQuestionNode(firstQuestion)).toBe(true);
         if (firstQuestion && isQuestionNode(firstQuestion)) {
           expect(firstQuestion.answers).toHaveLength(1);
-          expect(firstQuestion.answers.at(0)?.value).toBeNull();
+          expect(firstQuestion.answers.at(0)?.value).toBeUndefined();
         }
       });
 
@@ -696,7 +696,7 @@ describe("initialization", () => {
         expect(question && isQuestionNode(question)).toBe(true);
         assertQuestionNode(question);
         expect(question.answers).toHaveLength(1);
-        expect(question.answers.at(0)?.value).toBeNull();
+        expect(question.answers.at(0)?.value).toBeUndefined();
       });
 
       it("prevents removal when at minimum occurrences", () => {
@@ -944,7 +944,7 @@ describe("initialization", () => {
         );
         expect(scopedFirst.token).not.toBe(scopedSecond.token);
         expect(scopedFirst.answers.at(0)?.value).toBe("alice@example.org");
-        expect(scopedSecond.answers.at(0)?.value).toBeNull();
+        expect(scopedSecond.answers.at(0)?.value).toBeUndefined();
       });
     });
     describe("when response omits answers", () => {
@@ -977,9 +977,9 @@ describe("initialization", () => {
         expect(question && isQuestionNode(question)).toBe(true);
         assertQuestionNode(question);
         expect(question.answers).toHaveLength(2);
-        expect(question.answers.every((answer) => answer.value === null)).toBe(
-          true,
-        );
+        expect(
+          question.answers.every((answer) => answer.value === undefined),
+        ).toBe(true);
       });
 
       it("disallows removal until above the minimum", () => {
@@ -1164,7 +1164,7 @@ describe("initialization", () => {
         expect(childStore && isQuestionNode(childStore)).toBe(true);
         assertQuestionNode(childStore);
         expect(childStore.answers).toHaveLength(1);
-        expect(childStore.answers.at(0)?.value).toBeNull();
+        expect(childStore.answers.at(0)?.value).toBeUndefined();
       });
     });
 
@@ -1363,7 +1363,7 @@ describe("initialization", () => {
       expect(node.answers.map((answer) => answer.value)).toEqual([
         "Cough",
         "Fever",
-        null,
+        undefined,
       ]);
       expect(node.canRemove).toBe(false);
     });

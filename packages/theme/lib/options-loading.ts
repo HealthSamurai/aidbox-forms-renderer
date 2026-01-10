@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
-export type OptionsLoadingProps = {
+export type OptionsLoadingProperties = {
   isLoading: boolean;
 };
 
-export type OptionsLoadingComponent = ComponentType<OptionsLoadingProps>;
+export type OptionsLoadingComponent = ComponentType<OptionsLoadingProperties>;

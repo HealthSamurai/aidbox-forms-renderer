@@ -17,7 +17,7 @@ import {
   getNodeHelpId,
   getNodeLabelId,
   buildId,
-} from "../../../../utils.ts";
+} from "../../../../utilities.ts";
 
 export const MultiListSelectControl = observer(function MultiListSelectControl<
   T extends AnswerType,

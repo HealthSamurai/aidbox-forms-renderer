@@ -16,7 +16,7 @@ import {
   assertQuestionNode,
   isQuestionNode,
 } from "../nodes/questions/question-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 import type { DataType, DataTypeToType, ValueCarrierFor } from "../../types.ts";
 
 describe("response generation", () => {
@@ -331,7 +331,7 @@ describe("response generation", () => {
 
     question.addAnswer("Peanuts");
     question.addAnswer("Dust");
-    question.addAnswer(null);
+    question.addAnswer();
 
     expect(form.response).toEqual({
       resourceType: "QuestionnaireResponse",

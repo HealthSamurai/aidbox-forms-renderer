@@ -9,7 +9,7 @@ import {
 import { assertGroupListStore } from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode } from "../nodes/groups/group-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("variable expressions", () => {
   it("records questionnaire-level variable name collisions on the form", () => {
@@ -160,14 +160,12 @@ describe("variable expressions", () => {
     assertDefined(secondNode);
 
     const findQuestion = (linkId: string, nodeIndex: number) => {
-      const node =
+      const resolvedNode =
         nodeIndex === 0
           ? firstNode
           : nodeIndex === 1
             ? secondNode
             : household.nodes[nodeIndex];
-
-      const resolvedNode = node;
       assertDefined(resolvedNode);
 
       const child = resolvedNode.nodes.find((item) => item.linkId === linkId);
@@ -182,9 +180,9 @@ describe("variable expressions", () => {
     const secondEcho = findQuestion("echo", 1);
 
     expect(firstEcho.answers).toHaveLength(1);
-    expect(firstEcho.answers[0]?.value).toBeNull();
+    expect(firstEcho.answers[0]?.value).toBeUndefined();
     expect(secondEcho.answers).toHaveLength(1);
-    expect(secondEcho.answers[0]?.value).toBeNull();
+    expect(secondEcho.answers[0]?.value).toBeUndefined();
 
     const firstNameAnswer0 = firstName.answers[0];
     assertDefined(firstNameAnswer0);
@@ -205,7 +203,7 @@ describe("variable expressions", () => {
     const thirdEcho = findQuestion("echo", 2);
 
     expect(thirdEcho.answers).toHaveLength(1);
-    expect(thirdEcho.answers[0]?.value).toBeNull();
+    expect(thirdEcho.answers[0]?.value).toBeUndefined();
 
     const thirdNameAnswer0 = thirdName.answers[0];
     assertDefined(thirdNameAnswer0);
@@ -704,21 +702,25 @@ describe("variable expressions", () => {
     );
     assertQuestionNode(secondCopy1);
 
-    const firstCopy0Var = firstCopy0.scope.lookupExpression("residentName");
-    assertDefined(firstCopy0Var);
-    const firstCopy1Var = firstCopy1.scope.lookupExpression("residentName");
-    assertDefined(firstCopy1Var);
-    const secondCopy0Var = secondCopy0.scope.lookupExpression("residentName");
-    assertDefined(secondCopy0Var);
-    const secondCopy1Var = secondCopy1.scope.lookupExpression("residentName");
-    assertDefined(secondCopy1Var);
+    const firstCopy0Variable =
+      firstCopy0.scope.lookupExpression("residentName");
+    assertDefined(firstCopy0Variable);
+    const firstCopy1Variable =
+      firstCopy1.scope.lookupExpression("residentName");
+    assertDefined(firstCopy1Variable);
+    const secondCopy0Variable =
+      secondCopy0.scope.lookupExpression("residentName");
+    assertDefined(secondCopy0Variable);
+    const secondCopy1Variable =
+      secondCopy1.scope.lookupExpression("residentName");
+    assertDefined(secondCopy1Variable);
 
-    expect(firstCopy0Var).not.toBe(firstCopy1Var);
-    expect(firstCopy0Var).not.toBe(secondCopy0Var);
-    expect(firstCopy0Var).not.toBe(secondCopy1Var);
-    expect(firstCopy1Var).not.toBe(secondCopy0Var);
-    expect(firstCopy1Var).not.toBe(secondCopy1Var);
-    expect(secondCopy0Var).not.toBe(secondCopy1Var);
+    expect(firstCopy0Variable).not.toBe(firstCopy1Variable);
+    expect(firstCopy0Variable).not.toBe(secondCopy0Variable);
+    expect(firstCopy0Variable).not.toBe(secondCopy1Variable);
+    expect(firstCopy1Variable).not.toBe(secondCopy0Variable);
+    expect(firstCopy1Variable).not.toBe(secondCopy1Variable);
+    expect(secondCopy0Variable).not.toBe(secondCopy1Variable);
 
     expect(firstCopy0.answers[0]?.value).toBe("Alpha-0");
     expect(firstCopy1.answers[0]?.value).toBe("Alpha-1");
@@ -773,15 +775,15 @@ describe("variable expressions", () => {
     const mystery = form.scope.lookupNode("mystery");
     assertQuestionNode(mystery);
 
-    const missingVarIssue = mystery.issues.find(
+    const missingVariableIssue = mystery.issues.find(
       (issue) => issue.code === "invalid",
     );
 
-    expect(missingVarIssue).toBeTruthy();
-    expect(missingVarIssue?.diagnostics).toContain(
+    expect(missingVariableIssue).toBeTruthy();
+    expect(missingVariableIssue?.diagnostics).toContain(
       "Failed to evaluate calculated expression",
     );
-    expect(missingVarIssue?.diagnostics).toContain(
+    expect(missingVariableIssue?.diagnostics).toContain(
       "because it references unavailable data",
     );
   });
@@ -894,7 +896,7 @@ describe("variable expressions", () => {
     expect(issue?.diagnostics).toContain(
       "because it calls an unsupported function",
     );
-    expect(runtime.answers[0]?.value).toBeNull();
+    expect(runtime.answers[0]?.value).toBeUndefined();
   });
 
   it("flags circular dependencies between variables", () => {
@@ -996,6 +998,6 @@ describe("variable expressions", () => {
     const mirror = form.scope.lookupNode("mirror");
     assertQuestionNode(mirror);
 
-    expect(mirror.answers[0]?.value).toBeNull();
+    expect(mirror.answers[0]?.value).toBeUndefined();
   });
 });

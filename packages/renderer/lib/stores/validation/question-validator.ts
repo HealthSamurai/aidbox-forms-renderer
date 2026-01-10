@@ -1,7 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import type { OperationOutcomeIssue } from "fhir/r5";
 
-import { answerHasContent, formatString, makeIssue } from "../../utils.ts";
+import { answerHasContent, formatString, makeIssue } from "../../utilities.ts";
 import type { INodeValidator, IQuestionNode } from "../../types.ts";
 import { strings } from "../../strings.ts";
 
@@ -30,7 +30,9 @@ export class QuestionValidator implements INodeValidator {
     const answers = this.question.repeats
       ? this.question.answers
       : this.question.answers.slice(0, 1);
-    const populatedAnswers = answers.filter(answerHasContent);
+    const populatedAnswers = answers.filter((answer) =>
+      answerHasContent(answer),
+    );
 
     if (
       this.question.minOccurs > 0 &&
@@ -49,7 +51,7 @@ export class QuestionValidator implements INodeValidator {
     }
 
     if (
-      this.question.maxOccurs != null &&
+      this.question.maxOccurs != undefined &&
       populatedAnswers.length > this.question.maxOccurs
     ) {
       issues.push(

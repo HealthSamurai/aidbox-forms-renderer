@@ -10,7 +10,7 @@ import {
   makeVariable,
 } from "./expression-fixtures.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("min/max value expressions", () => {
   it("enforces a calculated minimum", () => {

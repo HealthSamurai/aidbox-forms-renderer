@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import { Children } from "react";
-import type { AnswerListProps } from "@aidbox-forms/theme";
+import type { AnswerListProperties } from "@aidbox-forms/theme";
 import { IconButton } from "./icon-button.tsx";
 
 export function AnswerList({
@@ -8,7 +8,7 @@ export function AnswerList({
   onAdd,
   canAdd,
   addLabel,
-}: AnswerListProps) {
+}: AnswerListProperties) {
   const items = Children.toArray(children);
   const addText = addLabel ?? "Add";
   return (

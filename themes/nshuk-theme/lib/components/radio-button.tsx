@@ -1,4 +1,4 @@
-import type { RadioButtonProps } from "@aidbox-forms/theme";
+import type { RadioButtonProperties } from "@aidbox-forms/theme";
 
 export function RadioButton({
   id,
@@ -10,7 +10,7 @@ export function RadioButton({
   ariaDescribedBy,
   disabled,
   label,
-}: RadioButtonProps) {
+}: RadioButtonProperties) {
   return (
     <div className="nhsuk-radios">
       <label className="nhsuk-radios__item">
@@ -28,7 +28,7 @@ export function RadioButton({
         />
         {label ? (
           <span className="nhsuk-label nhsuk-radios__label">{label}</span>
-        ) : null}
+        ) : undefined}
       </label>
     </div>
   );

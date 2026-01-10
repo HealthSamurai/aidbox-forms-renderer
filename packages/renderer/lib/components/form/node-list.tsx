@@ -17,5 +17,5 @@ export const NodeList = observer(function NodeList({
         <Node key={node.token} node={node} />
       ))}
     </ThemedNodeList>
-  ) : null;
+  ) : undefined;
 });

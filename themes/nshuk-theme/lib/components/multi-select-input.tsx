@@ -1,9 +1,9 @@
-import type { MultiSelectInputProps } from "@aidbox-forms/theme";
+import type { MultiSelectInputProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
 
-function isInteractiveTarget(target: EventTarget | null): boolean {
+function isInteractiveTarget(target: EventTarget | undefined): boolean {
   if (!(target instanceof Element)) return false;
   return Boolean(
     target.closest("input,textarea,select,button,a,[contenteditable]"),
@@ -24,12 +24,14 @@ export function MultiSelectInput({
   selectedOptions,
   customOptionForm,
   placeholder,
-}: MultiSelectInputProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+}: MultiSelectInputProperties) {
+  const containerReference = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [activeToken, setActiveToken] = useState<string | null>(null);
-  const optionRefs = useRef(new Map<string, HTMLButtonElement | null>());
+  const [activeToken, setActiveToken] = useState<string | undefined>();
+  const optionReferences = useRef(
+    new Map<string, HTMLButtonElement | undefined>(),
+  );
   const hasCustomOptionForm = Boolean(customOptionForm);
   const isOpenWithCustom = isOpen || hasCustomOptionForm;
   const isSearchable = Boolean(onSearch);
@@ -54,7 +56,7 @@ export function MultiSelectInput({
   const stickyIndex = specifyOtherOption ? displayOptions.length : -1;
   const resolvedActiveToken = useMemo(() => {
     if (!isOpenWithCustom || visibleOptions.length === 0) {
-      return null;
+      return;
     }
     const currentActive = activeToken
       ? visibleOptions.find((entry) => entry.token === activeToken)
@@ -63,25 +65,25 @@ export function MultiSelectInput({
       return currentActive.token;
     }
     const firstEnabled = visibleOptions.find((entry) => !entry.disabled);
-    return firstEnabled?.token ?? null;
+    return firstEnabled?.token;
   }, [activeToken, isOpenWithCustom, visibleOptions]);
   const activeIndex = visibleOptions.findIndex(
     (entry) => entry.token === resolvedActiveToken,
   );
   const activeDescendantId =
-    activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined;
+    activeIndex === -1 ? undefined : `${listboxId}-option-${activeIndex}`;
 
   useEffect(() => {
-    if (!isOpenWithCustom || !resolvedActiveToken) return;
-    const option = optionRefs.current.get(resolvedActiveToken);
+    if (!isOpenWithCustom || resolvedActiveToken === undefined) return;
+    const option = optionReferences.current.get(resolvedActiveToken);
     option?.scrollIntoView?.({ block: "nearest" });
   }, [resolvedActiveToken, isOpenWithCustom]);
 
   const handleSelect = (nextToken: string) => {
-    if (!nextToken || disabled || isLoading) return;
+    if (nextToken.length === 0 || disabled || isLoading) return;
     onSelect(nextToken);
     updateQuery("");
-    setActiveToken(null);
+    setActiveToken(undefined);
     setIsOpen(false);
   };
   const openOptions = () => {
@@ -91,44 +93,39 @@ export function MultiSelectInput({
 
   const findNextEnabledIndex = (startIndex: number, direction: 1 | -1) => {
     if (visibleOptions.length === 0) return -1;
-    let index = startIndex;
-    if (index < 0) {
-      index = direction === 1 ? -1 : visibleOptions.length;
-    }
-    for (let i = 0; i < visibleOptions.length; i += 1) {
-      index += direction;
-      if (index < 0 || index >= visibleOptions.length) {
-        index = direction === 1 ? 0 : visibleOptions.length - 1;
-      }
-      if (!visibleOptions[index].disabled) {
-        return index;
+    const count = visibleOptions.length;
+    const startPoint =
+      startIndex < 0 ? (direction === 1 ? -1 : count) : startIndex;
+    for (const offset of visibleOptions.keys()) {
+      const nextIndex = startPoint + direction * (offset + 1);
+      const wrappedIndex = ((nextIndex % count) + count) % count;
+      if (!visibleOptions[wrappedIndex].disabled) {
+        return wrappedIndex;
       }
     }
     return -1;
   };
 
   const findEdgeEnabledIndex = (direction: 1 | -1) => {
-    if (direction === 1) {
-      for (let i = 0; i < visibleOptions.length; i += 1) {
-        if (!visibleOptions[i].disabled) return i;
-      }
-      return -1;
+    const indices = [...visibleOptions.keys()];
+    if (direction === -1) {
+      indices.reverse();
     }
-    for (let i = visibleOptions.length - 1; i >= 0; i -= 1) {
-      if (!visibleOptions[i].disabled) return i;
+    for (const index of indices) {
+      if (!visibleOptions[index].disabled) return index;
     }
     return -1;
   };
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     if (hasCustomOptionForm) return;
-    if (!containerRef.current) return;
-    const nextTarget = event.relatedTarget as Node | null;
-    if (nextTarget && containerRef.current.contains(nextTarget)) {
+    if (!containerReference.current) return;
+    const nextTarget = event.relatedTarget as Node | undefined;
+    if (nextTarget && containerReference.current.contains(nextTarget)) {
       return;
     }
     updateQuery("");
-    setActiveToken(null);
+    setActiveToken(undefined);
     setIsOpen(false);
   };
 
@@ -141,7 +138,7 @@ export function MultiSelectInput({
       }
       const direction = event.key === "ArrowDown" ? 1 : -1;
       const nextIndex = findNextEnabledIndex(activeIndex, direction);
-      if (nextIndex >= 0) {
+      if (nextIndex !== -1) {
         setActiveToken(visibleOptions[nextIndex].token);
       }
       return;
@@ -153,7 +150,7 @@ export function MultiSelectInput({
       }
       const direction = event.key === "Home" ? 1 : -1;
       const edgeIndex = findEdgeEnabledIndex(direction);
-      if (edgeIndex >= 0) {
+      if (edgeIndex !== -1) {
         setActiveToken(visibleOptions[edgeIndex].token);
       }
       return;
@@ -164,7 +161,7 @@ export function MultiSelectInput({
         openOptions();
         return;
       }
-      if (activeIndex >= 0) {
+      if (activeIndex !== -1) {
         const entry = visibleOptions[activeIndex];
         if (!entry.disabled) {
           handleSelect(entry.token);
@@ -175,7 +172,7 @@ export function MultiSelectInput({
     if (event.key === "Escape") {
       if (hasCustomOptionForm) return;
       updateQuery("");
-      setActiveToken(null);
+      setActiveToken(undefined);
       setIsOpen(false);
     }
   };
@@ -183,7 +180,7 @@ export function MultiSelectInput({
   return (
     <div className="nhsuk-form-group" aria-busy={isLoading || undefined}>
       <SelectField
-        ref={containerRef}
+        ref={containerReference}
         onBlur={handleBlur}
         data-disabled={disabled ? "true" : undefined}
       >
@@ -274,7 +271,7 @@ export function MultiSelectInput({
                 <PlaceholderText>
                   {placeholder ?? "Select an option"}
                 </PlaceholderText>
-              ) : null}
+              ) : undefined}
             </SelectTrigger>
           )}
         </SelectWrapper>
@@ -303,9 +300,9 @@ export function MultiSelectInput({
                     data-active={option.token === resolvedActiveToken}
                     ref={(node) => {
                       if (node) {
-                        optionRefs.current.set(option.token, node);
+                        optionReferences.current.set(option.token, node);
                       } else {
-                        optionRefs.current.delete(option.token);
+                        optionReferences.current.delete(option.token);
                       }
                     }}
                     onFocus={() => setActiveToken(option.token)}
@@ -333,9 +330,14 @@ export function MultiSelectInput({
                     }
                     ref={(node) => {
                       if (node) {
-                        optionRefs.current.set(specifyOtherOption.token, node);
+                        optionReferences.current.set(
+                          specifyOtherOption.token,
+                          node,
+                        );
                       } else {
-                        optionRefs.current.delete(specifyOtherOption.token);
+                        optionReferences.current.delete(
+                          specifyOtherOption.token,
+                        );
                       }
                     }}
                     onFocus={() => setActiveToken(specifyOtherOption.token)}
@@ -348,17 +350,17 @@ export function MultiSelectInput({
                   >
                     {specifyOtherOption.label}
                   </StickyOption>
-                ) : null}
+                ) : undefined}
               </>
             )}
           </DropdownPanel>
-        ) : null}
+        ) : undefined}
       </SelectField>
       {isLoading ? (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
+      ) : undefined}
     </div>
   );
 }

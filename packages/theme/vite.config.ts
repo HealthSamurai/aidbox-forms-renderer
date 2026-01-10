@@ -1,12 +1,12 @@
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
-import pkg from "./package.json";
+import package_ from "./package.json";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const peerDependencies = Object.keys(pkg.peerDependencies ?? {});
-const dependencies = Object.keys(pkg.dependencies ?? {});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const peerDependencies = Object.keys(package_.peerDependencies ?? {});
+const dependencies = Object.keys(package_.dependencies ?? {});
 const externalDeps = new Set([
   ...peerDependencies,
   ...dependencies,
@@ -21,7 +21,7 @@ const rollupExternal = [
   "react/jsx-runtime",
   ...subpathMatchers,
 ];
-const typescriptCompilerFolder = resolve(
+const typescriptCompilerFolder = path.resolve(
   __dirname,
   "../../node_modules/typescript",
 );
@@ -31,7 +31,7 @@ export default defineConfig(() => {
     plugins: [
       dts({
         rollupTypes: true,
-        tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+        tsconfigPath: path.resolve(__dirname, "tsconfig.lib.json"),
         pathsToAliases: true,
         rollupOptions: {
           typescriptCompilerFolder,
@@ -40,7 +40,7 @@ export default defineConfig(() => {
     ],
     build: {
       lib: {
-        entry: resolve(__dirname, "lib/index.ts"),
+        entry: path.resolve(__dirname, "lib/index.ts"),
         fileName: "index",
         formats: ["es"],
       },

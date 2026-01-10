@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
 
-export type SliderInputProps = {
-  value: number | null;
-  onChange: (v: number | null) => void;
+export type SliderInputProperties = {
+  value: number | undefined;
+  onChange: (v?: number) => void;
   disabled?: boolean | undefined;
   min?: number | undefined;
   max?: number | undefined;
@@ -14,4 +14,4 @@ export type SliderInputProps = {
   unitLabel?: string | undefined;
 };
 
-export type SliderInputComponent = ComponentType<SliderInputProps>;
+export type SliderInputComponent = ComponentType<SliderInputProperties>;

@@ -1,6 +1,6 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type UrlInputProps = {
+export type UrlInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
@@ -22,7 +22,7 @@ export function UrlInput({
   disabled,
   minLength,
   maxLength,
-}: UrlInputProps) {
+}: UrlInputProperties) {
   const { TextInput: ThemedTextInput } = useTheme();
   return (
     <ThemedTextInput

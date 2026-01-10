@@ -5,7 +5,7 @@ import { FormStore } from "../form/form-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { assertGroupNode } from "../nodes/groups/group-store.ts";
 import { makeCqfExpression, makeVariable } from "./expression-fixtures.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 describe("fhirpath metadata", () => {
   it("attaches hidden __path__ metadata to expression snapshot items", () => {

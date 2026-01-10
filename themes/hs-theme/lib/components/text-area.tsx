@@ -1,5 +1,5 @@
 import { css } from "@linaria/core";
-import type { TextAreaProps } from "@aidbox-forms/theme";
+import type { TextAreaProperties } from "@aidbox-forms/theme";
 
 const textAreaClass = css`
   width: 100%;
@@ -26,13 +26,13 @@ export function TextArea({
   inputMode,
   minLength,
   maxLength,
-}: TextAreaProps) {
+}: TextAreaProperties) {
   return (
     <textarea
       id={id}
       className={textAreaClass}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(event) => onChange(event.target.value)}
       disabled={disabled}
       placeholder={placeholder}
       aria-labelledby={ariaLabelledBy}

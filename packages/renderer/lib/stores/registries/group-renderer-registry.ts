@@ -8,7 +8,7 @@ export class GroupRendererRegistry {
   private readonly definitions: GroupRendererDefinition[];
 
   constructor(initialDefinitions: GroupRendererDefinition[]) {
-    this.definitions = [...initialDefinitions].sort(
+    this.definitions = initialDefinitions.toSorted(
       (a, b) => b.priority - a.priority,
     );
   }

@@ -1,8 +1,8 @@
 import { useTheme } from "../../../../../ui/theme.tsx";
 
-export type IntegerInputProps = {
-  value: number | null;
-  onChange: (value: number | null) => void;
+export type IntegerInputProperties = {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -24,7 +24,7 @@ export function IntegerInput({
   unitLabel,
   min,
   max,
-}: IntegerInputProps) {
+}: IntegerInputProperties) {
   const { NumberInput: ThemedNumberInput } = useTheme();
   return (
     <ThemedNumberInput
@@ -32,8 +32,10 @@ export function IntegerInput({
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}
-      value={value ?? null}
-      onChange={(next) => onChange(next != null ? Math.round(next) : null)}
+      value={value}
+      onChange={(next) =>
+        onChange(next == undefined ? undefined : Math.round(next))
+      }
       disabled={disabled}
       step={1}
       unitLabel={unitLabel}

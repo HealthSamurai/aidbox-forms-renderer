@@ -6,11 +6,12 @@ export type CustomOptionAction = {
   disabled?: boolean | undefined;
 };
 
-export type CustomOptionFormProps = {
+export type CustomOptionFormProperties = {
   content: ReactNode;
   errors?: ReactNode;
   submit: CustomOptionAction;
   cancel: CustomOptionAction;
 };
 
-export type CustomOptionFormComponent = ComponentType<CustomOptionFormProps>;
+export type CustomOptionFormComponent =
+  ComponentType<CustomOptionFormProperties>;

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import {
   AnswerType,
-  ValueControlProps,
+  ValueControlProperties,
   OptionItem,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
@@ -17,7 +17,7 @@ export const SingleListSelectControl = observer(
     ariaDescribedBy,
     ariaLabelledBy,
     id,
-  }: ValueControlProps<T>) {
+  }: ValueControlProperties<T>) {
     const { CustomOptionForm, RadioButtonList } = useTheme();
     const node = answer.question;
     const store = node.answerOption;
@@ -70,10 +70,10 @@ export const SingleListSelectControl = observer(
       : undefined;
     const selectedOption = (() => {
       if (isCustomActive) {
-        return specifyOtherOption ?? null;
+        return specifyOtherOption;
       }
       if (!selection) {
-        return null;
+        return;
       }
       return {
         token: selection.token,

@@ -1,9 +1,9 @@
 import type { ComponentType } from "react";
 
-export type NumberInputProps = {
+export type NumberInputProperties = {
   id: string;
-  value: number | null;
-  onChange: (v: number | null) => void;
+  value: number | undefined;
+  onChange: (v?: number) => void;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
   step?: number | "any";
@@ -14,4 +14,4 @@ export type NumberInputProps = {
   unitLabel?: string | undefined;
 };
 
-export type NumberInputComponent = ComponentType<NumberInputProps>;
+export type NumberInputComponent = ComponentType<NumberInputProperties>;

@@ -17,7 +17,7 @@ import {
   makeMinOccursExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { assertDefined } from "../../utils.ts";
+import { assertDefined } from "../../utilities.ts";
 
 const minOccurs = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
@@ -37,6 +37,20 @@ const minValueInteger = (value: number) => ({
 const maxValueInteger = (value: number) => ({
   url: "http://hl7.org/fhir/StructureDefinition/maxValue",
   valueInteger: value,
+});
+
+const mgQuantity = (value: number) => ({
+  value,
+  unit: "mg",
+  system: "http://unitsofmeasure.org",
+  code: "mg",
+});
+
+const mlQuantity = (value: number) => ({
+  value,
+  unit: "ml",
+  system: "http://unitsofmeasure.org",
+  code: "ml",
 });
 
 const minValueDate = (value: string) => ({
@@ -138,7 +152,7 @@ describe("validation", () => {
 
       const answer1 = question.answers[0];
       assertDefined(answer1);
-      answer1.setValueByUser(null);
+      answer1.setValueByUser();
       expect(question.issues).toHaveLength(1);
 
       const answer2 = question.answers[0];
@@ -328,8 +342,8 @@ describe("validation", () => {
       expect(question.canAdd).toBe(false);
       expect(question.hasErrors).toBe(false);
 
-      question.answers[1]!.setValueByUser(null);
-      question.answers[2]!.setValueByUser(null);
+      question.answers[1]!.setValueByUser();
+      question.answers[2]!.setValueByUser();
       expect(question.issues.at(0)?.diagnostics).toMatch(/least 2/);
     });
 
@@ -738,13 +752,6 @@ describe("validation", () => {
       const answer = question.answers[0];
       assertDefined(answer);
 
-      const mgQuantity = (value: number) => ({
-        value,
-        unit: "mg",
-        system: "http://unitsofmeasure.org",
-        code: "mg",
-      });
-
       {
         const answer = question.answers[0];
         assertDefined(answer);
@@ -844,13 +851,6 @@ describe("validation", () => {
       const answer = question.answers[0];
       assertDefined(answer);
 
-      const mgQuantity = (value: number) => ({
-        value,
-        unit: "mg",
-        system: "http://unitsofmeasure.org",
-        code: "mg",
-      });
-
       {
         const answer = question.answers[0];
         assertDefined(answer);
@@ -904,13 +904,6 @@ describe("validation", () => {
             },
           ],
         },
-      });
-
-      const mlQuantity = (value: number) => ({
-        value,
-        unit: "ml",
-        system: "http://unitsofmeasure.org",
-        code: "ml",
       });
 
       {

@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { styled } from "@linaria/react";
-import type { SpinnerInputProps } from "@aidbox-forms/theme";
+import type { SpinnerInputProperties } from "@aidbox-forms/theme";
 
 export function SpinnerInput({
   value,
@@ -13,7 +13,7 @@ export function SpinnerInput({
   ariaDescribedBy,
   placeholder,
   unitLabel,
-}: SpinnerInputProps) {
+}: SpinnerInputProperties) {
   const generatedId = useId();
   const unitId = unitLabel ? `${generatedId}-unit` : undefined;
   const describedBy =
@@ -28,7 +28,7 @@ export function SpinnerInput({
           value={value ?? ""}
           onChange={(event) => {
             const raw = event.target.value;
-            onChange(raw === "" ? null : Number(raw));
+            onChange(raw === "" ? undefined : Number(raw));
           }}
           disabled={disabled}
           min={min}

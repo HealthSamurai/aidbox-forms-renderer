@@ -19,7 +19,7 @@ export function QuestionnaireResponsePanel() {
       }
 
       if (payload.response) {
-        const encoded = JSON.stringify(payload.response, null, 2);
+        const encoded = JSON.stringify(payload.response, undefined, 2);
         setValue(encoded);
       } else {
         setValue("");
@@ -63,6 +63,6 @@ addons.register("aidbox/questionnaire-response", () => {
         <QuestionnaireResponsePanel
           key={`aidbox/questionnaire-response/panel`}
         />
-      ) : null,
+      ) : undefined,
   });
 });

@@ -1,10 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
-export type RadioButtonListProps = {
+export type RadioButtonListProperties = {
   options: readonly OptionItem[];
-  selectedOption: SelectedOptionItem | null;
-  onChange: (token: string | null) => void;
+  selectedOption: SelectedOptionItem | undefined;
+  onChange: (token?: string) => void;
   specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
@@ -14,4 +14,4 @@ export type RadioButtonListProps = {
   isLoading?: boolean | undefined;
 };
 
-export type RadioButtonListComponent = ComponentType<RadioButtonListProps>;
+export type RadioButtonListComponent = ComponentType<RadioButtonListProperties>;

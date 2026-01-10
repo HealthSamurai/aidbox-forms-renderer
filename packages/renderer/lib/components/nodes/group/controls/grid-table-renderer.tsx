@@ -20,7 +20,7 @@ export const GridTableRenderer = observer(function GridTableRenderer({
     removeLabel: strings.group.removeSection,
     cells: row.cells.map((cell) => ({
       token: cell.token,
-      content: cell.question ? <Node node={cell.question} /> : null,
+      content: cell.question ? <Node node={cell.question} /> : undefined,
     })),
   }));
 

@@ -1,8 +1,8 @@
 import { styled } from "@linaria/react";
-import type { ErrorsProps } from "@aidbox-forms/theme";
+import type { ErrorsProperties } from "@aidbox-forms/theme";
 
-export function Errors({ id, messages }: ErrorsProps) {
-  if (messages.length === 0) return null;
+export function Errors({ id, messages }: ErrorsProperties) {
+  if (messages.length === 0) return;
   return (
     <List id={id} role="alert">
       {messages.map((message, index) => (

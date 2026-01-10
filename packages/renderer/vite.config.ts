@@ -1,19 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
-import pkg from "./package.json";
+import package_ from "./package.json";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const peerDependencies = Object.keys(pkg.peerDependencies);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const peerDependencies = Object.keys(package_.peerDependencies);
 
 export default defineConfig({
   plugins: [
     react(),
     dts({
       rollupTypes: true,
-      tsconfigPath: resolve(__dirname, "tsconfig.lib.json"),
+      tsconfigPath: path.resolve(__dirname, "tsconfig.lib.json"),
       pathsToAliases: false,
       compilerOptions: {
         paths: {
@@ -24,7 +24,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, "lib/index.tsx"),
+      entry: path.resolve(__dirname, "lib/index.tsx"),
       fileName: "index",
       formats: ["es"],
     },

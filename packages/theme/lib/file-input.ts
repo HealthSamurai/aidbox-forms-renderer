@@ -8,14 +8,14 @@ export type Attachment = {
   data?: string | undefined;
 };
 
-export type FileInputProps = {
-  value: Attachment | null;
+export type FileInputProperties = {
+  value: Attachment | undefined;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   accept?: string | undefined;
-  onChange?: ((file: File | null) => void) | undefined;
+  onChange?: ((file?: File) => void) | undefined;
 };
 
-export type FileInputComponent = ComponentType<FileInputProps>;
+export type FileInputComponent = ComponentType<FileInputProperties>;

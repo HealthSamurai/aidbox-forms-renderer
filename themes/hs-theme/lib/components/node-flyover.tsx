@@ -1,7 +1,11 @@
 import { styled } from "@linaria/react";
-import type { NodeFlyoverProps } from "@aidbox-forms/theme";
+import type { NodeFlyoverProperties } from "@aidbox-forms/theme";
 
-export function NodeFlyover({ id, children, ariaLabel }: NodeFlyoverProps) {
+export function NodeFlyover({
+  id,
+  children,
+  ariaLabel,
+}: NodeFlyoverProperties) {
   return (
     <Wrapper>
       <FlyoverButton type="button" aria-describedby={id} aria-label={ariaLabel}>

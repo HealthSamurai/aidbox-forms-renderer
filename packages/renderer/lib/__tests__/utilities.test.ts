@@ -19,7 +19,7 @@ import {
   normalizeExpressionValues,
   stringifyValue,
   tokenify,
-} from "../utils.ts";
+} from "../utilities.ts";
 
 describe("getValue", () => {
   it("returns boolean", () => {
@@ -391,8 +391,8 @@ describe("answerify", () => {
     expect(option.extension).toBe(original.extension);
   });
 
-  it("filters unsupported values", () => {
-    const result = answerify("boolean", [null, undefined, 1, "maybe"]);
+  it("filters unsupported boolean values", () => {
+    const result = answerify("boolean", [1, "maybe"]);
     expect(result).toEqual([]);
   });
 
@@ -453,12 +453,12 @@ describe("answerify", () => {
   });
 
   it("accepts time values", () => {
-    const result = answerify("time", ["08:15:00", null]);
+    const result = answerify("time", ["08:15:00", undefined]);
     expect(result).toEqual([{ valueTime: "08:15:00" }]);
   });
 
   it("rejects unsupported types", () => {
-    const result = answerify("reference", ["string", 42, null]);
+    const result = answerify("reference", ["string", 42, undefined]);
     expect(result).toEqual([]);
   });
 
@@ -467,7 +467,7 @@ describe("answerify", () => {
   });
 
   it("ignores undefined root value", () => {
-    expect(answerify("string", undefined)).toEqual([]);
+    expect(answerify("string")).toEqual([]);
   });
 });
 
@@ -761,9 +761,13 @@ describe("areValuesEqual", () => {
 });
 
 describe("normalizeExpressionValues", () => {
-  it("drops undefined entries but keeps null placeholders", () => {
+  it("drops undefined values", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined
     expect(normalizeExpressionValues("string", undefined)).toEqual([]);
-    expect(normalizeExpressionValues("string", null)).toEqual([null]);
+    expect(normalizeExpressionValues("string", ["a", undefined, "b"])).toEqual([
+      "a",
+      "b",
+    ]);
   });
 
   it("parses booleans from primitives and strings", () => {
