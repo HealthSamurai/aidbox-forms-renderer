@@ -145,9 +145,9 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   @computed
   get preferredTerminologyServers(): readonly string[] {
     return extractExtensionsValues(
+      "url",
       this.questionnaire,
       EXT.PREFERRED_TERMINOLOGY_SERVER,
-      "url",
     );
   }
 

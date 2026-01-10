@@ -534,7 +534,7 @@ export interface IGridStore {
 export type OptionAxisItem = {
   token: OptionToken;
   type: AnswerType;
-  value: DataTypeToType<AnswerTypeToDataType<AnswerType>>;
+  value: DataTypeToType<AnswerTypeToDataType<AnswerType>> | null;
 };
 
 export type TableCellState = {

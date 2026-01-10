@@ -75,7 +75,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
   @computed
   get minLength(): number | undefined {
-    return extractExtensionValue(this.template, EXT.MIN_LENGTH, "integer");
+    return extractExtensionValue("integer", this.template, EXT.MIN_LENGTH);
   }
 
   @computed
@@ -86,9 +86,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   @computed
   get maxDecimalPlaces(): number | undefined {
     return extractExtensionValue(
+      "integer",
       this.template,
       EXT.MAX_DECIMAL_PLACES,
-      "integer",
     );
   }
 
@@ -98,7 +98,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       return [];
     }
 
-    return extractExtensionsValues(this.template, EXT.MIME_TYPE, "code");
+    return extractExtensionsValues("code", this.template, EXT.MIME_TYPE);
   }
 
   @computed
@@ -107,7 +107,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
       return undefined;
     }
 
-    return extractExtensionValue(this.template, EXT.MAX_SIZE, "decimal");
+    return extractExtensionValue("decimal", this.template, EXT.MAX_SIZE);
   }
 
   constructor(
@@ -176,9 +176,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     const coding = extractExtensionValue(
+      "Coding",
       this.template,
       EXT.SDC_KEYBOARD,
-      "Coding",
     );
 
     const keyboardMap: Record<string, HTMLAttributes<Element>["inputMode"]> = {
@@ -357,12 +357,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
 
     const values = entries
       .map((entry) => {
-        const value = getValue(entry, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
+        const value = getValue(ANSWER_TYPE_TO_DATA_TYPE[this.type], entry);
         if (
           value === undefined &&
           this.answerOption.constraint === "optionsOrString"
         ) {
-          return getValue(entry, "string");
+          return getValue("string", entry);
         }
         return value;
       })
@@ -450,10 +450,10 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     }
 
     answers.forEach((answer) => {
-      const typedValue = getValue(answer, ANSWER_TYPE_TO_DATA_TYPE[this.type]);
+      const typedValue = getValue(ANSWER_TYPE_TO_DATA_TYPE[this.type], answer);
       const stringValue =
         this.answerOption.constraint === "optionsOrString"
-          ? getValue(answer, "string")
+          ? getValue("string", answer)
           : undefined;
       this.pushAnswer(
         (typedValue ?? stringValue ?? null) as DataTypeToType<

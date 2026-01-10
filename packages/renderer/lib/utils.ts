@@ -131,9 +131,9 @@ export function getItemControlCode(
   item: QuestionnaireItem,
 ): ItemControl | undefined {
   const concept = extractExtensionValue(
+    "CodeableConcept",
     item,
     EXT.ITEM_CONTROL,
-    "CodeableConcept",
   );
 
   if (!concept) {
@@ -185,13 +185,13 @@ export const EXT = {
 } as const;
 
 export function answerify<T extends AnswerType>(
-  answerType: T,
+  type: T,
   raw: unknown,
 ): QuestionnaireItemAnswerOption[] {
-  const dataType = ANSWER_TYPE_TO_DATA_TYPE[answerType];
+  const dataType = ANSWER_TYPE_TO_DATA_TYPE[type];
   const options: QuestionnaireItemAnswerOption[] = [];
   const normalize = (value: unknown) => {
-    switch (answerType) {
+    switch (type) {
       case "boolean":
         if (typeof value === "boolean") {
           return value as DataTypeToType<AnswerTypeToDataType<T>>;
@@ -253,8 +253,8 @@ export function answerify<T extends AnswerType>(
 
     if (entry && typeof entry === "object") {
       const optionValue = getValue(
-        entry as QuestionnaireItemAnswerOption,
         dataType,
+        entry as QuestionnaireItemAnswerOption,
       );
 
       if (optionValue !== undefined) {
@@ -657,9 +657,9 @@ export const DATA_TYPE_TO_SUFFIX: { [K in DataType]: DataTypeToSuffix<K> } = {
 } as const;
 
 export function getPolymorphic<Base extends string, T extends DataType>(
+  type: T,
   obj: PolyCarrierFor<Base, T> | null | undefined,
   base: Base,
-  type: T,
 ): DataTypeToType<T> | undefined {
   if (!obj) return undefined;
 
@@ -671,28 +671,28 @@ export function getPolymorphic<Base extends string, T extends DataType>(
 }
 
 export const getValue = <T extends DataType>(
-  obj: PolyCarrierFor<"value", T> | null | undefined,
   type: T,
-): DataTypeToType<T> | undefined => getPolymorphic(obj, "value", type);
+  obj: PolyCarrierFor<"value", T> | null | undefined,
+): DataTypeToType<T> | undefined => getPolymorphic(type, obj, "value");
 
 export const getAnswer = <T extends DataType>(
-  obj: PolyCarrierFor<"answer", T> | null | undefined,
   type: T,
-): DataTypeToType<T> | undefined => getPolymorphic(obj, "answer", type);
+  obj: PolyCarrierFor<"answer", T> | null | undefined,
+): DataTypeToType<T> | undefined => getPolymorphic(type, obj, "answer");
 
 export function extractExtensionValue<T extends DataType>(
+  type: T,
   element: Pick<Element, "extension"> | undefined,
   url: string,
-  type: T,
 ): DataTypeToType<T> | undefined {
   const extension = element && findExtension(element, url);
-  return extension ? getValue(extension, type) : undefined;
+  return extension ? getValue(type, extension) : undefined;
 }
 
 export function extractExtensionValueElement<T extends DataType>(
+  type: T,
   element: Pick<Element, "extension">,
   url: string,
-  type: T,
 ): Element | undefined {
   const extension = findExtension(element, url);
   const key = `_value${DATA_TYPE_TO_SUFFIX[type]}` as keyof Extension;
@@ -700,13 +700,13 @@ export function extractExtensionValueElement<T extends DataType>(
 }
 
 export function extractExtensionsValues<T extends DataType>(
+  type: T,
   element: Pick<Element, "extension">,
   url: string,
-  type: T,
 ): DataTypeToType<T>[] {
   const extensions = findExtensions(element, url);
   return extensions
-    .map((extension) => getValue(extension, type))
+    .map((extension) => getValue(type, extension))
     .filter((value): value is DataTypeToType<T> => value != null);
 }
 
@@ -1412,8 +1412,8 @@ export function evaluateEnableWhenCondition(
 
     case "=": {
       const expected = getAnswer(
-        condition,
         ANSWER_TYPE_TO_DATA_TYPE[question.type],
+        condition,
       );
       if (expected === undefined) {
         return false;
@@ -1423,7 +1423,7 @@ export function evaluateEnableWhenCondition(
         const actual = answer.value;
         if (actual == null) continue;
         if (
-          valuesEqual(actual, expected, ANSWER_TYPE_TO_DATA_TYPE[question.type])
+          valuesEqual(ANSWER_TYPE_TO_DATA_TYPE[question.type], actual, expected)
         ) {
           return true;
         }
@@ -1433,8 +1433,8 @@ export function evaluateEnableWhenCondition(
 
     case "!=": {
       const expected = getAnswer(
-        condition,
         ANSWER_TYPE_TO_DATA_TYPE[question.type],
+        condition,
       );
       if (expected === undefined) {
         return false;
@@ -1446,7 +1446,7 @@ export function evaluateEnableWhenCondition(
         if (actual == null) continue;
         comparable = true;
         if (
-          valuesEqual(actual, expected, ANSWER_TYPE_TO_DATA_TYPE[question.type])
+          valuesEqual(ANSWER_TYPE_TO_DATA_TYPE[question.type], actual, expected)
         ) {
           return false;
         }
@@ -1459,8 +1459,8 @@ export function evaluateEnableWhenCondition(
     case "<":
     case "<=": {
       const expected = getAnswer(
-        condition,
         ANSWER_TYPE_TO_DATA_TYPE[question.type],
+        condition,
       );
       if (expected === undefined) return false;
 
@@ -1478,9 +1478,9 @@ export function evaluateEnableWhenCondition(
             const actual = answer.value;
             if (actual == null) continue;
             const diff = compareValues(
+              ANSWER_TYPE_TO_DATA_TYPE[question.type],
               actual,
               expected,
-              ANSWER_TYPE_TO_DATA_TYPE[question.type],
             );
             if (diff === undefined) continue;
             if (
@@ -1509,9 +1509,9 @@ export function evaluateEnableWhenCondition(
 }
 
 export function valuesEqual(
+  type: DataType,
   actual: unknown,
   expected: unknown,
-  type: DataType,
 ) {
   switch (type) {
     case "decimal":
@@ -1584,9 +1584,9 @@ export function valuesEqual(
 }
 
 export function compareValues(
+  type: DataType,
   actual: unknown,
   expected: unknown,
-  type: DataType,
 ): number | undefined {
   switch (type) {
     case "decimal":

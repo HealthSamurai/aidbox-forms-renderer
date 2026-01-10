@@ -59,47 +59,47 @@ export class NodeExpressionRegistry
     super(coordinator, scope, environmentProvider, element);
 
     this.enableWhen = this.createSlot(
-      extractExtensionValue(element, EXT.SDC_ENABLE_WHEN_EXPR, "Expression"),
+      extractExtensionValue("Expression", element, EXT.SDC_ENABLE_WHEN_EXPR),
       "enable-when",
     );
 
     this.initial = this.createSlot(
-      extractExtensionValue(element, EXT.SDC_INITIAL_EXPR, "Expression"),
+      extractExtensionValue("Expression", element, EXT.SDC_INITIAL_EXPR),
       "initial",
     );
 
     this.calculated = this.createSlot(
-      extractExtensionValue(element, EXT.SDC_CALCULATED_EXPR, "Expression"),
+      extractExtensionValue("Expression", element, EXT.SDC_CALCULATED_EXPR),
       "calculated",
     );
 
     this.answer = this.createSlot(
-      extractExtensionValue(element, EXT.SDC_ANSWER_EXPR, "Expression"),
+      extractExtensionValue("Expression", element, EXT.SDC_ANSWER_EXPR),
       "answer",
     );
 
     this.minValue = this.createSlot(
       extractExtensionValue(
+        "Expression",
         extractExtensionValueElement(
+          ANSWER_TYPE_TO_DATA_TYPE[type],
           element,
           EXT.MIN_VALUE,
-          ANSWER_TYPE_TO_DATA_TYPE[type],
         ),
         EXT.CQF_EXPRESSION,
-        "Expression",
       ),
       "min-value",
     );
 
     this.maxValue = this.createSlot(
       extractExtensionValue(
+        "Expression",
         extractExtensionValueElement(
+          ANSWER_TYPE_TO_DATA_TYPE[type],
           element,
           EXT.MAX_VALUE,
-          ANSWER_TYPE_TO_DATA_TYPE[type],
         ),
         EXT.CQF_EXPRESSION,
-        "Expression",
       ),
       "max-value",
     );
@@ -107,18 +107,18 @@ export class NodeExpressionRegistry
     if (type === "quantity") {
       this.minQuantity = this.createSlot(
         extractExtensionValue(
-          extractExtensionValue(element, EXT.SDC_MIN_QUANTITY, "Quantity"),
-          EXT.CQF_EXPRESSION,
           "Expression",
+          extractExtensionValue("Quantity", element, EXT.SDC_MIN_QUANTITY),
+          EXT.CQF_EXPRESSION,
         ),
         "min-quantity",
       );
 
       this.maxQuantity = this.createSlot(
         extractExtensionValue(
-          extractExtensionValue(element, EXT.SDC_MAX_QUANTITY, "Quantity"),
-          EXT.CQF_EXPRESSION,
           "Expression",
+          extractExtensionValue("Quantity", element, EXT.SDC_MAX_QUANTITY),
+          EXT.CQF_EXPRESSION,
         ),
         "max-quantity",
       );
@@ -126,55 +126,55 @@ export class NodeExpressionRegistry
 
     this.minOccurs = this.createSlot(
       extractExtensionValue(
-        extractExtensionValueElement(element, EXT.MIN_OCCURS, "integer"),
-        EXT.CQF_EXPRESSION,
         "Expression",
+        extractExtensionValueElement("integer", element, EXT.MIN_OCCURS),
+        EXT.CQF_EXPRESSION,
       ),
       "min-occurs",
     );
 
     this.maxOccurs = this.createSlot(
       extractExtensionValue(
-        extractExtensionValueElement(element, EXT.MAX_OCCURS, "integer"),
-        EXT.CQF_EXPRESSION,
         "Expression",
+        extractExtensionValueElement("integer", element, EXT.MAX_OCCURS),
+        EXT.CQF_EXPRESSION,
       ),
       "max-occurs",
     );
 
     this.required = this.createSlot(
       extractExtensionValue(
+        "Expression",
         element._required,
         EXT.CQF_EXPRESSION,
-        "Expression",
       ),
       "required",
     );
 
     this.text = this.createSlot(
-      extractExtensionValue(element._text, EXT.CQF_EXPRESSION, "Expression"),
+      extractExtensionValue("Expression", element._text, EXT.CQF_EXPRESSION),
       "text",
     );
 
     this.readOnly = this.createSlot(
       extractExtensionValue(
+        "Expression",
         element._readOnly,
         EXT.CQF_EXPRESSION,
-        "Expression",
       ),
       "read-only",
     );
     this.repeats = this.createSlot(
-      extractExtensionValue(element._repeats, EXT.CQF_EXPRESSION, "Expression"),
+      extractExtensionValue("Expression", element._repeats, EXT.CQF_EXPRESSION),
       "repeats",
     );
 
     findExtensions(element, EXT.SDC_ANSWER_OPTIONS_TOGGLE).forEach(
       (extension, extensionIndex) => {
         const options = extractExtensionsValues(
+          ANSWER_TYPE_TO_DATA_TYPE[type],
           extension,
           "option",
-          ANSWER_TYPE_TO_DATA_TYPE[type],
         ).map((value) =>
           asAnswerFragment(ANSWER_TYPE_TO_DATA_TYPE[type], value),
         ) as QuestionnaireItemAnswerOption[];
@@ -182,7 +182,7 @@ export class NodeExpressionRegistry
         const expressionSlot =
           options.length > 0
             ? this.createSlot(
-                extractExtensionValue(extension, "expression", "Expression"),
+                extractExtensionValue("Expression", extension, "expression"),
                 "answer-option-toggle",
               )
             : undefined;

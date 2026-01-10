@@ -91,11 +91,7 @@ export class TableStore implements ITableStore {
       if (!optionEntry) {
         return;
       }
-      if (optionEntry.value == null) {
-        return;
-      }
       const selectedAnswer = entry.question.answers.find((answer) => {
-        if (answer.value == null) return false;
         return areValuesEqual(dataType, answer.value, optionEntry.value);
       });
       if (selectedAnswer) {
@@ -120,13 +116,9 @@ export class TableStore implements ITableStore {
     if (!optionEntry) {
       return null;
     }
-    if (optionEntry.value == null) {
-      return null;
-    }
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
     const selectedAnswer = entry.question.answers.find((answer) => {
-      if (answer.value == null) return false;
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
@@ -149,11 +141,9 @@ export class TableStore implements ITableStore {
 
     const optionEntry = entry.optionMap.get(optionToken);
     if (!optionEntry) return;
-    if (optionEntry.value == null) return;
 
     const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
     const selectedAnswer = entry.question.answers.find((answer) => {
-      if (answer.value == null) return false;
       return areValuesEqual(dataType, answer.value, optionEntry.value);
     });
     const isSelected = Boolean(selectedAnswer);
@@ -192,14 +182,8 @@ export class TableStore implements ITableStore {
     this.questions.forEach((question) => {
       const optionEntryMap = new Map<OptionToken, AnswerOption<AnswerType>>();
       question.answerOption.inherentOptions.forEach((entry) => {
-        if (entry.value == null) {
-          return;
-        }
         const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
         const token = tokenify(type, entry.value) as OptionToken;
-        if (!token) {
-          return;
-        }
 
         if (!optionMap.has(token)) {
           const option: OptionAxisItem = {

@@ -516,7 +516,7 @@ export class AnswerValidator<
     }
 
     const url = kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE;
-    return extractExtensionValue(template, url, type);
+    return extractExtensionValue(type, template, url);
   }
 
   private resolveTemporalBound(
@@ -536,7 +536,7 @@ export class AnswerValidator<
     }
 
     const url = kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE;
-    return extractExtensionValue(template, url, type);
+    return extractExtensionValue(type, template, url);
   }
 
   private resolveQuantityBound(
@@ -561,14 +561,14 @@ export class AnswerValidator<
 
     return (
       extractExtensionValue(
+        "Quantity",
         template,
         kind === "min" ? EXT.SDC_MIN_QUANTITY : EXT.SDC_MAX_QUANTITY,
-        "Quantity",
       ) ??
       extractExtensionValue(
+        "Quantity",
         template,
         kind === "min" ? EXT.MIN_VALUE : EXT.MAX_VALUE,
-        "Quantity",
       )
     );
   }

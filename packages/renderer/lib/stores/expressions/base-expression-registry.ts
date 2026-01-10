@@ -44,7 +44,7 @@ export class BaseExpressionRegistry implements IExpressionRegistry {
   ) {
     makeObservable(this);
 
-    extractExtensionsValues(element, EXT.SDC_VARIABLE, "Expression").forEach(
+    extractExtensionsValues("Expression", element, EXT.SDC_VARIABLE).forEach(
       (expression) => {
         this.createSlot(expression, "variable");
       },
@@ -52,21 +52,21 @@ export class BaseExpressionRegistry implements IExpressionRegistry {
 
     const definitions = findExtensions(element, EXT.TARGET_CONSTRAINT).map(
       (extension): TargetConstraintDefinition => ({
-        key: extractExtensionValue(extension, "key", "id"),
-        severity: extractExtensionValue(extension, "severity", "code") as
+        key: extractExtensionValue("id", extension, "key"),
+        severity: extractExtensionValue("code", extension, "severity") as
           | "error"
           | "warning",
-        human: extractExtensionValue(extension, "human", "string"),
+        human: extractExtensionValue("string", extension, "human"),
         expression: extractExtensionValue(
+          "Expression",
           extension,
           "expression",
-          "Expression",
         ),
-        location: extractExtensionValue(extension, "location", "string"),
+        location: extractExtensionValue("string", extension, "location"),
         requirements: extractExtensionValue(
+          "markdown",
           extension,
           "requirements",
-          "markdown",
         ),
       }),
     );

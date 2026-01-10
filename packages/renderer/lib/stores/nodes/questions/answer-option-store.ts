@@ -157,7 +157,7 @@ export class AnswerOptionStore<
 
     const seen = new Set<OptionToken>();
     return this.answerOptions.flatMap((option) => {
-      const value = getValue(option, this.dataType);
+      const value = getValue(this.dataType, option);
       if (value == null) {
         return [];
       }
@@ -192,7 +192,7 @@ export class AnswerOptionStore<
       return true;
     }
 
-    const optionValue = getValue(option, this.dataType);
+    const optionValue = getValue(this.dataType, option);
     if (optionValue === undefined) {
       return true;
     }
@@ -200,7 +200,7 @@ export class AnswerOptionStore<
     let matched = false;
     for (const toggle of toggles) {
       const toggleMatches = toggle.options.some((candidate) => {
-        const candidateValue = getValue(candidate, this.dataType);
+        const candidateValue = getValue(this.dataType, candidate);
         return candidateValue === undefined
           ? false
           : areValuesEqual(this.dataType, candidateValue, optionValue);

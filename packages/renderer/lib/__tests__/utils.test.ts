@@ -23,67 +23,67 @@ import {
 
 describe("getValue", () => {
   it("returns boolean", () => {
-    expect(getValue({ valueBoolean: true }, "boolean")).toBe(true);
+    expect(getValue("boolean", { valueBoolean: true })).toBe(true);
   });
 
   it("returns decimal", () => {
-    expect(getValue({ valueDecimal: 3.14 }, "decimal")).toBe(3.14);
+    expect(getValue("decimal", { valueDecimal: 3.14 })).toBe(3.14);
   });
 
   it("returns integer", () => {
-    expect(getValue({ valueInteger: 5 }, "integer")).toBe(5);
+    expect(getValue("integer", { valueInteger: 5 })).toBe(5);
   });
 
   it("returns date", () => {
-    expect(getValue({ valueDate: "2024-01-01" }, "date")).toBe("2024-01-01");
+    expect(getValue("date", { valueDate: "2024-01-01" })).toBe("2024-01-01");
   });
 
   it("returns dateTime", () => {
     expect(
-      getValue({ valueDateTime: "2024-01-01T10:00:00Z" }, "dateTime"),
+      getValue("dateTime", { valueDateTime: "2024-01-01T10:00:00Z" }),
     ).toBe("2024-01-01T10:00:00Z");
   });
 
   it("returns time", () => {
-    expect(getValue({ valueTime: "08:30:00" }, "time")).toBe("08:30:00");
+    expect(getValue("time", { valueTime: "08:30:00" })).toBe("08:30:00");
   });
 
   it("returns string", () => {
-    expect(getValue({ valueString: "alpha" }, "string")).toBe("alpha");
+    expect(getValue("string", { valueString: "alpha" })).toBe("alpha");
   });
 
   it("returns url", () => {
-    expect(getValue({ valueUri: "https://example.org" }, "uri")).toBe(
+    expect(getValue("uri", { valueUri: "https://example.org" })).toBe(
       "https://example.org",
     );
   });
 
   it("returns coding", () => {
     const coding: Coding = { system: "http://loinc.org", code: "1234-5" };
-    expect(getValue({ valueCoding: coding }, "Coding")).toEqual(coding);
+    expect(getValue("Coding", { valueCoding: coding })).toEqual(coding);
   });
 
   it("returns attachment", () => {
     const attachment: Attachment = { url: "https://example.org" };
-    expect(getValue({ valueAttachment: attachment }, "Attachment")).toEqual(
+    expect(getValue("Attachment", { valueAttachment: attachment })).toEqual(
       attachment,
     );
   });
 
   it("returns reference", () => {
     const reference: Reference = { reference: "Patient/1" };
-    expect(getValue({ valueReference: reference }, "Reference")).toEqual(
+    expect(getValue("Reference", { valueReference: reference })).toEqual(
       reference,
     );
   });
 
   it("returns quantity", () => {
     const quantity: Quantity = { value: 120, unit: "mmHg" };
-    expect(getValue({ valueQuantity: quantity }, "Quantity")).toEqual(quantity);
+    expect(getValue("Quantity", { valueQuantity: quantity })).toEqual(quantity);
   });
 
   it("returns undefined when the value is absent", () => {
-    expect(getValue({}, "string")).toBeUndefined();
+    expect(getValue("string", {})).toBeUndefined();
   });
 });
 
@@ -128,14 +128,14 @@ describe("extractExtension", () => {
     const element = {
       extension: [{ url: "test", valueInteger: 7 }],
     } as Element;
-    expect(extractExtensionValue(element, "test", "integer")).toBe(7);
+    expect(extractExtensionValue("integer", element, "test")).toBe(7);
   });
 
   it("returns undefined when extension is absent", () => {
     const element = {
       extension: [],
     } as Element;
-    expect(extractExtensionValue(element, "missing", "string")).toBeUndefined();
+    expect(extractExtensionValue("string", element, "missing")).toBeUndefined();
   });
 });
 
@@ -441,7 +441,7 @@ describe("answerify", () => {
 
   it("accepts date values", () => {
     const result = answerify("date", ["2025-01-01", "invalid"]);
-    expect(result.map((option) => getValue(option, "date"))).toEqual([
+    expect(result.map((option) => getValue("date", option))).toEqual([
       "2025-01-01",
       "invalid",
     ]);
