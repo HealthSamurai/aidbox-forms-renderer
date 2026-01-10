@@ -25,7 +25,7 @@ export function RadioButton({
         aria-describedby={ariaDescribedBy}
         onChange={onChange}
       />
-      {label && <LabelText>{label}</LabelText>}
+      {Boolean(label) && <span>{label}</span>}
     </RadioLabel>
   );
 }
@@ -35,5 +35,3 @@ const RadioLabel = styled.label`
   align-items: center;
   gap: 0.5rem;
 `;
-
-const LabelText = styled.span``;

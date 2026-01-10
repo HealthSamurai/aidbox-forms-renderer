@@ -28,7 +28,7 @@ export function NodeHeader({
           data-size={isLegend ? "legend" : undefined}
         >
           {label}
-          {required ? <Required aria-hidden>*</Required> : null}
+          {required && <Required aria-hidden>*</Required>}
         </Label>
         {help}
         {legal}

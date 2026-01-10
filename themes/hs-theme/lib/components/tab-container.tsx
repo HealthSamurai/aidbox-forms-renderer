@@ -126,7 +126,7 @@ export function TabContainer({
 
   return (
     <Shell data-linkid={linkId}>
-      {header ? <Header>{header}</Header> : null}
+      {Boolean(header) && <Header>{header}</Header>}
       <TabStrip>
         <TabScrollButton
           ref={leftScrollRef}
@@ -178,7 +178,7 @@ export function TabContainer({
       >
         {active.content}
       </Panel>
-      {errors ? <ErrorsSlot>{errors}</ErrorsSlot> : null}
+      {Boolean(errors) && <ErrorsSlot>{errors}</ErrorsSlot>}
     </Shell>
   );
 }

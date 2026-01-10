@@ -1,4 +1,4 @@
-import { action, computed, observable } from "mobx";
+import { action, computed, observable, override } from "mobx";
 import {
   AnswerType,
   IPresentableNode,
@@ -9,7 +9,7 @@ import {
   SnapshotKind,
   GROUP_ITEM_CONTROLS,
   type GroupItemControl,
-  type GroupControlDefinition,
+  GroupRendererProps,
 } from "../../../types.ts";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
@@ -23,9 +23,10 @@ import {
 import { GroupValidator } from "../../validation/group-validator.ts";
 import { NodeExpressionRegistry } from "../../expressions/node-expression-registry.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
-import { isGroupWrapper } from "./group-wrapper.ts";
+import { isGroupListStore } from "./group-list-store.ts";
 import { GridStore } from "./grid-store.ts";
 import { TableStore } from "./table-store.ts";
+import type { ComponentType } from "react";
 
 export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   readonly expressionRegistry: NodeExpressionRegistry;
@@ -77,8 +78,8 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   }
 
   @computed
-  get renderer(): GroupControlDefinition["groupComponent"] | undefined {
-    return this.form.groupControlRegistry.resolveGroup(this)?.groupComponent;
+  get renderer(): ComponentType<GroupRendererProps> | undefined {
+    return this.form.groupRendererRegistry.resolve(this)?.renderer;
   }
 
   @computed({ keepAlive: true })
@@ -107,6 +108,11 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
     return control && GROUP_ITEM_CONTROLS.includes(control as GroupItemControl)
       ? (control as GroupItemControl)
       : undefined;
+  }
+
+  @override
+  override get isHeaderless(): boolean {
+    return super.isHeaderless || isGroupListStore(this.parentStore);
   }
 
   private buildItemSnapshot(kind: SnapshotKind): QuestionnaireResponseItem[] {
@@ -173,7 +179,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     if (control === "tab-container") {
       this.nodes.forEach((child) => {
-        if (!isGroupNode(child) && !isGroupWrapper(child)) {
+        if (!isGroupNode(child) && !isGroupListStore(child)) {
           this.form.reportRenderingIssue(
             makeIssue(
               "structure",
@@ -196,7 +202,7 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     if (control === "grid") {
       this.nodes.forEach((child) => {
-        if (!isGroupNode(child) && !isGroupWrapper(child)) {
+        if (!isGroupNode(child) && !isGroupListStore(child)) {
           this.form.reportRenderingIssue(
             makeIssue(
               "structure",

@@ -21,7 +21,7 @@ export function Checkbox({
         aria-describedby={ariaDescribedBy}
         onChange={onChange}
       />
-      {label && <LabelSlot>{label}</LabelSlot>}
+      {Boolean(label) && <span>{label}</span>}
     </CheckboxLabel>
   );
 }
@@ -31,5 +31,3 @@ const CheckboxLabel = styled.label`
   align-items: center;
   gap: 0.5rem;
 `;
-
-const LabelSlot = styled.div``;

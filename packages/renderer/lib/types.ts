@@ -41,9 +41,9 @@ import {
   TriggerDefinition,
   UsageContext,
 } from "fhir/r5";
-import type { GroupControlRegistry } from "./stores/registries/group-control-registry.ts";
+import type { GroupRendererRegistry } from "./stores/registries/group-renderer-registry.ts";
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
-import { QuestionControlRegistry } from "./stores/registries/question-control-registry.ts";
+import { QuestionRendererRegistry } from "./stores/registries/question-renderer-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utils.ts";
 import type {
   FormPagination,
@@ -489,24 +489,15 @@ export interface IActualNode extends IPresentableNode {
   readonly isDirty: boolean;
 }
 
-export type GroupControlProps = {
-  node: IGroupNode;
-};
+export type GroupRendererProps = { node: IGroupNode | IGroupList };
 
-export type GroupWrapperControlProps = {
-  wrapper: IGroupWrapper;
-};
+export type GroupRendererMatcher = (target: IGroupNode | IGroupList) => boolean;
 
-export type GroupControlMatcher = (
-  target: IGroupNode | IGroupWrapper,
-) => boolean;
-
-export interface GroupControlDefinition {
+export interface GroupRendererDefinition {
   name: string;
   priority: number;
-  matcher: GroupControlMatcher;
-  groupComponent?: ComponentType<GroupControlProps>;
-  wrapperComponent?: ComponentType<GroupWrapperControlProps>;
+  matcher: GroupRendererMatcher;
+  renderer: ComponentType<GroupRendererProps>;
 }
 
 export type GridColumnState = {
@@ -604,7 +595,7 @@ export interface IGroupNode extends IActualNode {
   readonly nodes: Array<IPresentableNode>;
   readonly visibleNodes: Array<IPresentableNode>;
   readonly control: GroupItemControl | undefined;
-  readonly renderer: GroupControlDefinition["groupComponent"] | undefined;
+  readonly renderer: ComponentType<GroupRendererProps> | undefined;
   readonly gridStore: IGridStore;
   readonly tableStore: ITableStore;
 }
@@ -612,7 +603,7 @@ export interface IGroupNode extends IActualNode {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IDisplayNode extends IActualNode {}
 
-export interface IGroupWrapper extends IPresentableNode {
+export interface IGroupList extends IPresentableNode {
   readonly nodes: Array<IGroupNode>;
   readonly visibleNodes: Array<IGroupNode>;
   readonly canAdd: boolean;
@@ -620,7 +611,7 @@ export interface IGroupWrapper extends IPresentableNode {
   readonly minOccurs: number;
   readonly maxOccurs: number;
   readonly control: GroupItemControl | undefined;
-  readonly renderer: GroupControlDefinition["wrapperComponent"] | undefined;
+  readonly renderer: ComponentType<GroupRendererProps> | undefined;
   readonly gridTableStore: IGridTableStore;
   addNode(): void;
   removeNode(instance: IGroupNode): void;
@@ -685,13 +676,13 @@ export type QuestionRendererProps<T extends AnswerType = AnswerType> = {
   node: IQuestionNode<T>;
 };
 
-type QuestionRendererComponent<T extends AnswerType = AnswerType> = {
+export type QuestionRendererComponent<T extends AnswerType = AnswerType> = {
   bivarianceHack(
     props: QuestionRendererProps<T>,
   ): ReactNode | Promise<ReactNode>;
 }["bivarianceHack"];
 
-export interface QuestionControlDefinition<T extends AnswerType = AnswerType> {
+export interface QuestionRendererDefinition<T extends AnswerType = AnswerType> {
   name: string;
   priority: number;
   matcher: (node: IQuestionNode) => boolean;
@@ -718,7 +709,7 @@ export interface IQuestionNode<
   readonly answerOption: IAnswerOptions<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
   readonly answers: Array<IAnswerInstance<T>>;
-  readonly renderer: QuestionControlDefinition["renderer"] | undefined;
+  readonly renderer: QuestionRendererComponent<T> | undefined;
   readonly minLength: number | undefined;
   readonly maxLength: number | undefined;
   readonly maxDecimalPlaces: number | undefined;
@@ -738,7 +729,7 @@ export interface IQuestionNode<
 export type INode =
   | IDisplayNode
   | IGroupNode
-  | IGroupWrapper
+  | IGroupList
   | IGroupNode
   | IQuestionNode;
 
@@ -770,8 +761,8 @@ export interface IForm {
   readonly scope: IScope;
   readonly valueSetExpander: IValueSetExpander;
   readonly preferredTerminologyServers: ReadonlyArray<string>;
-  readonly questionControlRegistry: QuestionControlRegistry;
-  readonly groupControlRegistry: GroupControlRegistry;
+  readonly questionRendererRegistry: QuestionRendererRegistry;
+  readonly groupRendererRegistry: GroupRendererRegistry;
   reportRenderingIssue(issue: OperationOutcomeIssue): void;
 
   readonly isSubmitAttempted: boolean;

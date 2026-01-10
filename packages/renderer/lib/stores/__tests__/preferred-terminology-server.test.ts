@@ -7,9 +7,9 @@ import {
   isQuestionNode,
 } from "../nodes/questions/question-store.ts";
 import {
-  assertGroupWrapper,
-  isGroupWrapper,
-} from "../nodes/groups/group-wrapper.ts";
+  assertGroupListStore,
+  isGroupListStore,
+} from "../nodes/groups/group-list-store.ts";
 import { EXT } from "../../utils.ts";
 
 describe("preferredTerminologyServer resolution", () => {
@@ -153,11 +153,11 @@ describe("preferredTerminologyServer resolution", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const wrapper = form.scope.lookupNode("repeating-group");
-    expect(wrapper && isGroupWrapper(wrapper)).toBe(true);
-    assertGroupWrapper(wrapper);
+    const list = form.scope.lookupNode("repeating-group");
+    expect(list && isGroupListStore(list)).toBe(true);
+    assertGroupListStore(list);
 
-    const node = wrapper.nodes[0];
+    const node = list.nodes[0];
     expect(node).toBeDefined();
     const childQuestion = node?.nodes.find(
       (node) => node.linkId === "group-question",
@@ -240,11 +240,11 @@ describe("preferredTerminologyServer resolution", () => {
     };
 
     const form = new FormStore(questionnaire);
-    const wrapper = form.scope.lookupNode("rg");
-    expect(wrapper && isGroupWrapper(wrapper)).toBe(true);
-    assertGroupWrapper(wrapper);
+    const list = form.scope.lookupNode("rg");
+    expect(list && isGroupListStore(list)).toBe(true);
+    assertGroupListStore(list);
 
-    const node = wrapper.nodes[0];
+    const node = list.nodes[0];
     const question = node?.nodes.find((node) => node.linkId === "rg-question");
     expect(question && isQuestionNode(question)).toBe(true);
     assertQuestionNode(question);

@@ -1,10 +1,12 @@
 import type { ComponentType, ReactNode } from "react";
 
 export type GroupScaffoldProps = {
-  linkId: string;
   header?: ReactNode;
-  children: ReactNode;
-  dataControl?: string | undefined;
+  children?: ReactNode;
+  errors?: ReactNode;
+  onRemove?: (() => void) | undefined;
+  canRemove?: boolean | undefined;
+  removeLabel?: string | undefined;
 };
 
 export type GroupScaffoldComponent = ComponentType<GroupScaffoldProps>;

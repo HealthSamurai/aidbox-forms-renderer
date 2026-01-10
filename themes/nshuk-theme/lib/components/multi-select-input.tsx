@@ -181,7 +181,7 @@ export function MultiSelectInput({
   };
 
   return (
-    <FormGroup className="nhsuk-form-group" aria-busy={isLoading || undefined}>
+    <div className="nhsuk-form-group" aria-busy={isLoading || undefined}>
       <SelectField
         ref={containerRef}
         onBlur={handleBlur}
@@ -359,11 +359,9 @@ export function MultiSelectInput({
           Loading options…
         </div>
       ) : null}
-    </FormGroup>
+    </div>
   );
 }
-
-const FormGroup = styled.div``;
 
 const SelectField = styled.div`
   border: 1px solid #d8dde0;

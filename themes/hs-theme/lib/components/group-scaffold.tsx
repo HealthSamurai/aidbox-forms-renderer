@@ -1,20 +1,40 @@
 import type { GroupScaffoldProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
+import { Children } from "react";
+import { Trash } from "../icons/trash.tsx";
+import { IconButton } from "./icon-button.tsx";
 
 export function GroupScaffold({
-  linkId,
   header,
   children,
-  dataControl,
+  errors,
+  onRemove,
+  canRemove,
+  removeLabel,
 }: GroupScaffoldProps) {
+  const content = Children.toArray(children);
+  const removeText = removeLabel ?? "Remove";
   return (
-    <Container
-      data-linkid={linkId}
-      data-item-control={dataControl ?? undefined}
-      data-control={dataControl ?? undefined}
-    >
+    <Container>
       {header}
-      <Content>{children}</Content>
+      {content.length > 0 ? (
+        onRemove ? (
+          <ItemContent>{content}</ItemContent>
+        ) : (
+          <GroupContent>{content}</GroupContent>
+        )
+      ) : null}
+      {errors}
+      {onRemove ? (
+        <Toolbar>
+          <IconButton
+            icon={<Trash />}
+            onClick={onRemove}
+            disabled={canRemove === false}
+            label={removeText}
+          />
+        </Toolbar>
+      ) : null}
     </Container>
   );
 }
@@ -25,7 +45,19 @@ const Container = styled.div`
   gap: 1rem;
 `;
 
-const Content = styled.div`
+const GroupContent = styled.div`
   display: grid;
   gap: 1rem;
+`;
+
+const ItemContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 `;

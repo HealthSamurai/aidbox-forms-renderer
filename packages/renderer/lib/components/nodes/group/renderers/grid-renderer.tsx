@@ -1,39 +1,31 @@
 import { observer } from "mobx-react-lite";
-import type { GroupControlProps } from "../../../../types.ts";
+import type { GroupRendererProps } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
-import { useTheme } from "../../../../ui/theme.tsx";
-import { Node } from "../../../form/node.tsx";
-import { JSX } from "react";
+import { GroupList } from "../group-list.tsx";
+import { strings } from "../../../../strings.ts";
+import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { GridRenderer as GridControl } from "../controls/grid-renderer.tsx";
 
 export const GridRenderer = observer(function GridRenderer({
   node,
-}: GroupControlProps) {
-  const { EmptyState, GridTable } = useTheme();
-  const store = node.gridStore;
-  const emptyMessage = store.emptyMessage;
-  let children: JSX.Element;
-
-  if (emptyMessage) {
-    children = <EmptyState>{emptyMessage}</EmptyState>;
-  } else {
-    children = (
-      <GridTable
-        columns={store.columns}
-        rows={store.rows.map((row) => ({
-          token: row.token,
-          label: row.label,
-          cells: row.cells.map((cell) => ({
-            token: cell.token,
-            content: cell.question ? <Node node={cell.question} /> : null,
-          })),
-        }))}
-      />
-    );
-  }
-
-  return (
-    <GroupScaffold node={node} dataControl="grid">
-      {children}
+}: GroupRendererProps) {
+  return isGroupListStore(node) ? (
+    <GroupList list={node}>
+      {node.visibleNodes.map((child) => (
+        <GroupScaffold
+          key={child.token}
+          node={child}
+          onRemove={node.canRemove ? () => node.removeNode(child) : undefined}
+          canRemove={node.canRemove}
+          removeLabel={strings.group.removeSection}
+        >
+          <GridControl node={child} />
+        </GroupScaffold>
+      ))}
+    </GroupList>
+  ) : (
+    <GroupScaffold node={node}>
+      <GridControl node={node} />
     </GroupScaffold>
   );
 });

@@ -1,26 +1,24 @@
 import {
   ExpressionEnvironment,
-  GroupControlDefinition,
+  GroupRendererDefinition,
   IExpressionEnvironmentProvider,
   IExpressionRegistry,
   IForm,
   IGroupNode,
-  IGroupWrapper,
+  IGroupList,
   INode,
   IPresentableNode,
   IScope,
   IValueSetExpander,
-  QuestionControlDefinition,
+  QuestionRendererDefinition,
   SnapshotKind,
 } from "../../types.ts";
+import { QuestionRendererRegistry } from "../registries/question-renderer-registry.ts";
+import { GroupRendererRegistry } from "../registries/group-renderer-registry.ts";
 import {
-  defaultQuestionControlDefinitions,
-  QuestionControlRegistry,
-} from "../registries/question-control-registry.ts";
-import {
-  defaultGroupControlDefinitions,
-  GroupControlRegistry,
-} from "../registries/group-control-registry.ts";
+  groups as defaultGroupRenderers,
+  questions as defaultQuestionRenderers,
+} from "../../renderer-definitions.ts";
 import {
   action,
   computed,
@@ -41,7 +39,10 @@ import {
 } from "../nodes/questions/question-store.ts";
 import { GroupStore, isGroupNode } from "../nodes/groups/group-store.ts";
 import { DisplayStore } from "../nodes/display/display-store.ts";
-import { GroupWrapper, isGroupWrapper } from "../nodes/groups/group-wrapper.ts";
+import {
+  GroupListStore,
+  isGroupListStore,
+} from "../nodes/groups/group-list-store.ts";
 import { EvaluationCoordinator } from "../expressions/evaluation-coordinator.ts";
 import { Scope } from "../expressions/scope.ts";
 import { BaseExpressionRegistry } from "../expressions/base-expression-registry.ts";
@@ -82,8 +83,8 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private pageIndex = 0;
 
   readonly coordinator = new EvaluationCoordinator();
-  readonly questionControlRegistry: QuestionControlRegistry;
-  readonly groupControlRegistry: GroupControlRegistry;
+  readonly questionRendererRegistry: QuestionRendererRegistry;
+  readonly groupRendererRegistry: GroupRendererRegistry;
   readonly expressionRegistry: IExpressionRegistry;
   readonly valueSetExpander: IValueSetExpander;
 
@@ -91,15 +92,15 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
     readonly questionnaire: Questionnaire,
     response?: QuestionnaireResponse,
     terminologyServerUrl?: string,
-    questionControls?: QuestionControlDefinition[],
-    groupControls?: GroupControlDefinition[],
+    questionRenderers?: QuestionRendererDefinition[],
+    groupRenderers?: GroupRendererDefinition[],
   ) {
-    this.questionControlRegistry = new QuestionControlRegistry(
-      questionControls ?? defaultQuestionControlDefinitions,
+    this.questionRendererRegistry = new QuestionRendererRegistry(
+      questionRenderers ?? defaultQuestionRenderers,
     );
 
-    this.groupControlRegistry = new GroupControlRegistry(
-      groupControls ?? defaultGroupControlDefinitions,
+    this.groupRendererRegistry = new GroupRendererRegistry(
+      groupRenderers ?? defaultGroupRenderers,
     );
 
     makeObservable(this);
@@ -211,7 +212,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   @computed
   private get pages(): IPresentableNode[] | undefined {
     const pages = this.nodes.filter(
-      (node): node is IGroupNode | IGroupWrapper =>
+      (node): node is IGroupNode | IGroupList =>
         isGroupControlNode(node) && node.control === "page" && !node.hidden,
     );
     return pages.length > 0 ? pages : undefined;
@@ -240,7 +241,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       case "group":
         if (item.repeats) {
           // todo: handle dynamic repeats changes
-          const store = new GroupWrapper(
+          const store = new GroupListStore(
             this,
             item,
             parentStore,
@@ -369,7 +370,7 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   }
 
   private getChildNodes(node: IPresentableNode): IPresentableNode[] {
-    if (isGroupWrapper(node)) {
+    if (isGroupListStore(node)) {
       return node.nodes.flatMap((node) => node.nodes);
     }
     if (isGroupNode(node)) {
@@ -525,6 +526,6 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
 function isGroupControlNode(
   node: IPresentableNode,
-): node is IGroupNode | IGroupWrapper {
-  return isGroupNode(node) || isGroupWrapper(node);
+): node is IGroupNode | IGroupList {
+  return isGroupNode(node) || isGroupListStore(node);
 }

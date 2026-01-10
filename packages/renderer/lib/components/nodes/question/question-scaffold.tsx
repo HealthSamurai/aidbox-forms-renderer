@@ -21,7 +21,7 @@ export function QuestionScaffold({
   );
   return (
     <ThemedQuestionScaffold linkId={node.linkId} header={header}>
-      {showOptionsLoading ? <QuestionOptionsLoading node={node} /> : null}
+      {showOptionsLoading && <QuestionOptionsLoading node={node} />}
       {children}
       <QuestionErrors node={node} />
     </ThemedQuestionScaffold>

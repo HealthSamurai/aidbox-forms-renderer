@@ -20,7 +20,7 @@ import {
   IQuestionNode,
   IScope,
   QUESTION_ITEM_CONTROLS,
-  type QuestionControlDefinition,
+  QuestionRendererComponent,
   type QuestionItemControl,
   SnapshotKind,
 } from "../../../types.ts";
@@ -69,8 +69,8 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private lastIndex = 0;
 
   @computed
-  get renderer(): QuestionControlDefinition["renderer"] | undefined {
-    return this.form.questionControlRegistry.resolve(this)?.renderer;
+  get renderer(): QuestionRendererComponent<T> | undefined {
+    return this.form.questionRendererRegistry.resolve(this)?.renderer;
   }
 
   @computed

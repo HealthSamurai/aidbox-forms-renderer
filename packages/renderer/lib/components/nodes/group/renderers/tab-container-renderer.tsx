@@ -1,39 +1,29 @@
-import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import type { GroupControlProps } from "../../../../types.ts";
-import { Node } from "../../../form/node.tsx";
-import { NodeHeader } from "../../../form/node-header.tsx";
-import { NodeErrors } from "../../../form/node-errors.tsx";
-import { useTheme } from "../../../../ui/theme.tsx";
+import type { GroupRendererProps } from "../../../../types.ts";
+import { GroupScaffold } from "../group-scaffold.tsx";
+import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
-import { buildId } from "../../../../utils.ts";
+import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { TabContainerRenderer as TabContainerControl } from "../controls/tab-container-renderer.tsx";
 
 export const TabContainerRenderer = observer(function TabContainerRenderer({
   node,
-}: GroupControlProps) {
-  const { TabContainer } = useTheme();
-  const [activeTab, setActiveTab] = useState(0);
-  const visibleNodes = node.visibleNodes;
-  const maxIndex = Math.max(visibleNodes.length - 1, 0);
-  const activeIndex = Math.min(activeTab, maxIndex);
-  const header = <NodeHeader node={node} as="text" />;
-  const items = visibleNodes.map((child, idx) => ({
-    token: child.token,
-    label: <NodeHeader node={child} as="text" />,
-    buttonId: buildId(node.token, "tab", idx),
-    panelId: buildId(node.token, "panel", idx),
-    content: <Node node={child} />,
-  }));
-
-  return (
-    <TabContainer
-      header={header}
-      items={items}
-      value={activeIndex}
-      onChange={setActiveTab}
-      errors={<NodeErrors node={node} />}
-      empty={strings.tab.empty}
-      linkId={node.linkId}
-    />
+}: GroupRendererProps) {
+  return isGroupListStore(node) ? (
+    <GroupList list={node}>
+      {node.visibleNodes.map((child) => (
+        <GroupScaffold
+          key={child.token}
+          node={child}
+          onRemove={node.canRemove ? () => node.removeNode(child) : undefined}
+          canRemove={node.canRemove}
+          removeLabel={strings.group.removeSection}
+        >
+          <TabContainerControl node={child} />
+        </GroupScaffold>
+      ))}
+    </GroupList>
+  ) : (
+    <TabContainerControl node={node} />
   );
 });

@@ -68,7 +68,7 @@ export const strings = {
     group: {
       atLeastOneAnswer: "At least one answer is required in this group.",
     },
-    groupWrapper: {
+    groupList: {
       minOccurs: "At least {minOccurs} occurrence(s) required.",
       maxOccurs: "No more than {maxOccurs} occurrence(s) permitted.",
     },

@@ -14,8 +14,8 @@ export function AnswerList({
   const addText = addLabel ?? "Add";
   return (
     <Container>
-      {items.length > 0 ? <List>{items}</List> : null}
-      {onAdd ? (
+      {items.length > 0 && <List>{items}</List>}
+      {onAdd && (
         <Toolbar>
           <IconButton
             icon={<Plus size={15} />}
@@ -24,7 +24,7 @@ export function AnswerList({
             label={addText}
           />
         </Toolbar>
-      ) : null}
+      )}
     </Container>
   );
 }

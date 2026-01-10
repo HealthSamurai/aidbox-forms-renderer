@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 
-export type GroupWrapperScaffoldProps = {
+export type GroupListProps = {
   linkId: string;
   header?: ReactNode;
   children: ReactNode;
@@ -9,5 +9,4 @@ export type GroupWrapperScaffoldProps = {
   addLabel?: string | undefined;
 };
 
-export type GroupWrapperScaffoldComponent =
-  ComponentType<GroupWrapperScaffoldProps>;
+export type GroupListComponent = ComponentType<GroupListProps>;

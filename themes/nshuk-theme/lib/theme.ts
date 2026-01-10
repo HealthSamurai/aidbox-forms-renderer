@@ -30,8 +30,7 @@ import { Form } from "./components/form.tsx";
 import { FormErrors } from "./components/form-errors.tsx";
 import { NodeList } from "./components/node-list.tsx";
 import { EmptyState } from "./components/empty-state.tsx";
-import { GroupWrapperScaffold } from "./components/group-wrapper-scaffold.tsx";
-import { GroupWrapperScaffoldItem } from "./components/group-wrapper-scaffold-item.tsx";
+import { GroupList } from "./components/group-list.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { GridTable } from "./components/grid-table.tsx";
 import { InputGroup } from "./components/input-group.tsx";
@@ -73,8 +72,7 @@ const passthrough: Theme = {
   FormErrors,
   NodeList,
   EmptyState,
-  GroupWrapperScaffold,
-  GroupWrapperScaffoldItem,
+  GroupList,
   GroupScaffold,
   GridTable,
   InputGroup,

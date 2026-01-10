@@ -42,8 +42,7 @@
   - [AnswerList](#answerlist)
   - [AnswerScaffold](#answerscaffold)
   - [QuestionScaffold](#questionscaffold)
-  - [GroupWrapperScaffold](#groupwrapperscaffold)
-  - [GroupWrapperScaffoldItem](#groupwrapperscaffolditem)
+  - [GroupList](#grouplist)
   - [GroupScaffold](#groupscaffold)
   - [DisplayRenderer](#displayrenderer)
   - [NodeList](#nodelist)
@@ -129,12 +128,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  GWS[GroupWrapperScaffold] --> GWH[NodeHeader]
-  GWS --> GWItems[GroupWrapperScaffoldItem...]
-  GWItems --> GS[GroupScaffold or group renderer]
-  GWItems --> GWE[Errors]
-  GWItems --> GWR[Remove action]
-  GWS --> GWAdd[Add action]
+  GLS[GroupList] --> GLH[NodeHeader]
+  GLS --> GS[GroupScaffold...]
+  GS --> GSE[Errors]
+  GS --> GSR[Remove action]
+  GLS --> GLAdd[Add action]
 ```
 
 Typical question node:
@@ -152,15 +150,14 @@ QuestionScaffold
   Errors (question-level)
 ```
 
-Typical repeating group wrapper:
+Typical repeating group list:
 
 ```text
-GroupWrapperScaffold
-  NodeHeader (only when wrapper has text)
-  GroupWrapperScaffoldItem (per instance)
-    GroupScaffold or group renderer content
+GroupList
+  NodeHeader (only when list has text)
+  GroupScaffold (per instance)
     remove action (when onRemove is provided)
-    errors (Errors)
+    errors
   add action (when onAdd is provided)
 ```
 
@@ -233,9 +230,9 @@ All inputs are controlled; callbacks receive values, not DOM events.
   it when `canRemove` is false.
 - `AnswerScaffold.errors` is provided for per-answer validation; render it near the answer content (it may render
   nothing).
-- `GroupWrapperScaffold` renders a list of `GroupWrapperScaffoldItem` entries and can show an add control when `onAdd`
+- `GroupList` renders a list of group instances (`GroupScaffold`) and can show an add control when `onAdd`
   is provided.
-- `GroupWrapperScaffoldItem` should render a remove action when `onRemove` is provided; use `canRemove` to disable.
+- `GroupScaffold` should render a remove action when `onRemove` is provided; use `canRemove` to disable.
 
 ## Renderer guarantees
 
@@ -642,41 +639,31 @@ question nodes.
 | `header`   | `ReactNode` | No       | Render the question header (label, help, legal, flyover).                                    |
 | `children` | `ReactNode` | Yes      | Render the question body content, including controls and errors.                             |
 
-### GroupWrapperScaffold
+### GroupList
 
 Wrapper around a repeating group that holds the collection of instances and the add control.
 
 | Prop       | Type         | Required | Description                                                                                  |
 | ---------- | ------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `linkId`   | `string`     | Yes      | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
-| `header`   | `ReactNode`  | No       | Render the header for the repeating group wrapper.                                           |
-| `children` | `ReactNode`  | Yes      | Render each group instance inside the wrapper.                                               |
+| `header`   | `ReactNode`  | No       | Render the header for the repeating group list.                                              |
+| `children` | `ReactNode`  | Yes      | Render each group instance inside the list.                                                  |
 | `onAdd`    | `() => void` | No       | When provided, render an add‑group control.                                                  |
 | `canAdd`   | `boolean`    | No       | When false, render the add control disabled.                                                 |
 | `addLabel` | `string`     | No       | Use as the add‑group label for icon-only controls.                                           |
 
-### GroupWrapperScaffoldItem
+### GroupScaffold
 
-Per-instance wrapper inside a repeating group that places the group content alongside its remove action and errors.
+Layout shell for a group instance (repeating or not). It can also render an optional remove action and errors.
 
 | Prop          | Type         | Required | Description                                              |
 | ------------- | ------------ | -------- | -------------------------------------------------------- |
-| `children`    | `ReactNode`  | Yes      | Render the group instance body and its child nodes.      |
-| `errors`      | `ReactNode`  | No       | Render validation errors associated with this instance.  |
+| `header`      | `ReactNode`  | No       | Render the group header (label, help, legal, flyover).   |
+| `children`    | `ReactNode`  | No       | Render the group body content and nested nodes.          |
+| `errors`      | `ReactNode`  | No       | Render per-instance validation errors.                   |
 | `onRemove`    | `() => void` | No       | When provided, render a remove action for this instance. |
 | `canRemove`   | `boolean`    | No       | When false, render the remove action disabled.           |
 | `removeLabel` | `string`     | No       | Use as the remove label for icon-only controls.          |
-
-### GroupScaffold
-
-Wrapper for a non-repeating group that arranges its header and child nodes. dataControl can steer specialized layouts.
-
-| Prop          | Type        | Required | Description                                                                                  |
-| ------------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
-| `linkId`      | `string`    | Yes      | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
-| `header`      | `ReactNode` | No       | Render the group header (label, help, legal, flyover).                                       |
-| `children`    | `ReactNode` | Yes      | Render the group body content and nested nodes.                                              |
-| `dataControl` | `string`    | No       | Use as a style or layout hint for specialized group renderers.                               |
 
 ### DisplayRenderer
 

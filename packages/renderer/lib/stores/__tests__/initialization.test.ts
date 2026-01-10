@@ -13,9 +13,9 @@ import {
   isDisplayNode,
 } from "../nodes/display/display-store.ts";
 import {
-  assertGroupWrapper,
-  isGroupWrapper,
-} from "../nodes/groups/group-wrapper.ts";
+  assertGroupListStore,
+  isGroupListStore,
+} from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
 import {
   assertQuestionNode,
@@ -341,29 +341,29 @@ describe("initialization", () => {
       };
 
       const form = new FormStore(questionnaire);
-      const wrapper = form.scope.lookupNode("repeating-group");
+      const list = form.scope.lookupNode("repeating-group");
       const toggle = form.scope.lookupNode("toggle");
 
-      assertGroupWrapper(wrapper);
+      assertGroupListStore(list);
       assertQuestionNode(toggle);
 
-      wrapper.addNode();
-      const node = wrapper.nodes.at(0);
+      list.addNode();
+      const node = list.nodes.at(0);
       assertGroupNode(node);
 
-      expect(wrapper.isEnabled).toBe(true);
+      expect(list.isEnabled).toBe(true);
       expect(node.isEnabled).toBe(false);
 
       const toggleAnswer = toggle.answers[0];
       assertDefined(toggleAnswer);
       toggleAnswer.setValueByUser(true);
 
-      expect(wrapper.isEnabled).toBe(true);
+      expect(list.isEnabled).toBe(true);
       expect(node.isEnabled).toBe(true);
 
       toggleAnswer.setValueByUser(false);
 
-      expect(wrapper.isEnabled).toBe(true);
+      expect(list.isEnabled).toBe(true);
       expect(node.isEnabled).toBe(false);
     });
 
@@ -416,33 +416,33 @@ describe("initialization", () => {
 
     const createStore = () => new FormStore(questionnaire, response);
 
-    const getGroupWrapper = () => {
+    const getGroupList = () => {
       const form = createStore();
       const group = form.scope.lookupNode("repeating-group");
-      assertGroupWrapper(group);
+      assertGroupListStore(group);
       return group;
     };
 
     it("creates one node per response item", () => {
-      const groupWrapper = getGroupWrapper();
-      expect(isGroupWrapper(groupWrapper)).toBe(true);
-      assertGroupWrapper(groupWrapper);
-      expect(groupWrapper.nodes).toHaveLength(2);
-      expect(groupWrapper.nodes.at(0)?.nodes).toHaveLength(1);
-      expect(groupWrapper.nodes.at(1)?.nodes).toHaveLength(1);
+      const groupList = getGroupList();
+      expect(isGroupListStore(groupList)).toBe(true);
+      assertGroupListStore(groupList);
+      expect(groupList.nodes).toHaveLength(2);
+      expect(groupList.nodes.at(0)?.nodes).toHaveLength(1);
+      expect(groupList.nodes.at(1)?.nodes).toHaveLength(1);
     });
 
     it("respects add/remove guards based on cardinality", () => {
-      const groupWrapper = getGroupWrapper();
-      assertGroupWrapper(groupWrapper);
-      expect(groupWrapper.canAdd).toBe(true);
-      expect(groupWrapper.canRemove).toBe(true);
+      const groupList = getGroupList();
+      assertGroupListStore(groupList);
+      expect(groupList.canAdd).toBe(true);
+      expect(groupList.canRemove).toBe(true);
     });
 
     it("hydrates repeating child question answers", () => {
-      const groupWrapper = getGroupWrapper();
-      assertGroupWrapper(groupWrapper);
-      const [firstNode, secondNode] = groupWrapper.nodes;
+      const groupList = getGroupList();
+      assertGroupListStore(groupList);
+      const [firstNode, secondNode] = groupList.nodes;
       const firstRepeat = firstNode?.nodes.at(0);
       const secondRepeat = secondNode?.nodes.at(0);
       expect(firstRepeat && isQuestionNode(firstRepeat)).toBe(true);
@@ -456,9 +456,9 @@ describe("initialization", () => {
     });
 
     it("assigns unique path keys per node child", () => {
-      const groupWrapper = getGroupWrapper();
-      assertGroupWrapper(groupWrapper);
-      const childPaths = groupWrapper.nodes
+      const groupList = getGroupList();
+      assertGroupListStore(groupList);
+      const childPaths = groupList.nodes
         .map((node) => node.nodes.at(0)?.token)
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
@@ -472,8 +472,8 @@ describe("initialization", () => {
       const form = createStore();
       expect(form.scope.lookupNode("repeat-question")).toBeUndefined();
       const group = form.scope.lookupNode("repeating-group");
-      expect(group && isGroupWrapper(group)).toBe(true);
-      assertGroupWrapper(group);
+      expect(group && isGroupListStore(group)).toBe(true);
+      assertGroupListStore(group);
       const [firstNode, secondNode] = group.nodes;
       const firstChild = firstNode?.scope.lookupNode("repeat-question");
       const secondChild = secondNode?.scope.lookupNode("repeat-question");
@@ -518,17 +518,17 @@ describe("initialization", () => {
       const createEmptyGroupStore = () =>
         new FormStore(questionnaire, responseWithoutItems);
 
-      const getEmptyGroupWrapper = () => {
+      const getEmptyGroupList = () => {
         const form = createEmptyGroupStore();
         const group = form.scope.lookupNode("repeating-group");
-        assertGroupWrapper(group);
+        assertGroupListStore(group);
         return group;
       };
 
       it("seeds the minimum number of empty nodes", () => {
-        const group = getEmptyGroupWrapper();
-        expect(isGroupWrapper(group)).toBe(true);
-        assertGroupWrapper(group);
+        const group = getEmptyGroupList();
+        expect(isGroupListStore(group)).toBe(true);
+        assertGroupListStore(group);
         expect(group.nodes).toHaveLength(2);
         expect(group.nodes.every((node) => node.nodes.length === 1)).toBe(true);
         const firstQuestion = group.nodes.at(0)?.nodes.at(0);
@@ -540,14 +540,14 @@ describe("initialization", () => {
       });
 
       it("disallows removing below the minimum", () => {
-        const group = getEmptyGroupWrapper();
-        assertGroupWrapper(group);
+        const group = getEmptyGroupList();
+        assertGroupListStore(group);
         expect(group.canRemove).toBe(false);
       });
 
       it("still allows adding until reaching maxOccurs", () => {
-        const group = getEmptyGroupWrapper();
-        assertGroupWrapper(group);
+        const group = getEmptyGroupList();
+        assertGroupListStore(group);
         expect(group.canAdd).toBe(true);
       });
     });
@@ -606,8 +606,8 @@ describe("initialization", () => {
       it("prevents adding new nodes when maxOccurs reached", () => {
         const form = createMaxGroupStore();
         const group = form.scope.lookupNode("repeating-group");
-        expect(group && isGroupWrapper(group)).toBe(true);
-        assertGroupWrapper(group);
+        expect(group && isGroupListStore(group)).toBe(true);
+        assertGroupListStore(group);
         expect(group.nodes).toHaveLength(2);
         expect(group.canAdd).toBe(false);
       });
@@ -615,7 +615,7 @@ describe("initialization", () => {
       it("allows removing because above the minimum", () => {
         const form = createMaxGroupStore();
         const group = form.scope.lookupNode("repeating-group");
-        assertGroupWrapper(group);
+        assertGroupListStore(group);
         expect(group.canRemove).toBe(true);
       });
     });

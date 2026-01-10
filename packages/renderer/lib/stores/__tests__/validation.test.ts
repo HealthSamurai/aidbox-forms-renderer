@@ -3,9 +3,9 @@ import type { Questionnaire } from "fhir/r5";
 
 import { FormStore } from "../form/form-store.ts";
 import {
-  assertGroupWrapper,
-  isGroupWrapper,
-} from "../nodes/groups/group-wrapper.ts";
+  assertGroupListStore,
+  isGroupListStore,
+} from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
 import {
   assertQuestionNode,
@@ -1194,8 +1194,8 @@ describe("validation", () => {
 
       const form = new FormStore(questionnaire);
       const group = form.scope.lookupNode("family-history");
-      expect(group && isGroupWrapper(group)).toBe(true);
-      assertGroupWrapper(group);
+      expect(group && isGroupListStore(group)).toBe(true);
+      assertGroupListStore(group);
 
       // Submit with empty answers
       expect(form.validateAll()).toBe(false);

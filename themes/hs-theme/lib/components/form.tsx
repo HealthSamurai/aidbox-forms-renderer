@@ -35,17 +35,17 @@ export function Form({
   const header =
     title || description ? (
       <Header>
-        {title ? <Title>{title}</Title> : null}
-        {description ? <Description>{description}</Description> : null}
+        {Boolean(title) && <Title>{title}</Title>}
+        {Boolean(description) && <Description>{description}</Description>}
       </Header>
     ) : null;
 
   if (pagination) {
     return (
       <FormElement onSubmit={handleSubmit}>
-        {header ? <TitleSlot>{header}</TitleSlot> : null}
-        {errors ? <Slot>{errors}</Slot> : null}
-        {before ? <Slot>{before}</Slot> : null}
+        {header && <TitleSlot>{header}</TitleSlot>}
+        {Boolean(errors) && <Slot>{errors}</Slot>}
+        {Boolean(before) && <Slot>{before}</Slot>}
         {children}
         <Controls>
           <Nav>
@@ -69,18 +69,18 @@ export function Form({
           </Nav>
           <Actions>{actions}</Actions>
         </Controls>
-        {after ? <Slot>{after}</Slot> : null}
+        {Boolean(after) && <Slot>{after}</Slot>}
       </FormElement>
     );
   }
 
   return (
     <FormElement onSubmit={handleSubmit}>
-      {header ? <TitleSlot>{header}</TitleSlot> : null}
-      {errors ? <Slot>{errors}</Slot> : null}
-      {before ? <Slot>{before}</Slot> : null}
+      {header && <TitleSlot>{header}</TitleSlot>}
+      {Boolean(errors) && <Slot>{errors}</Slot>}
+      {Boolean(before) && <Slot>{before}</Slot>}
       {children}
-      {after ? <Slot>{after}</Slot> : null}
+      {Boolean(after) && <Slot>{after}</Slot>}
       <Actions>{actions}</Actions>
     </FormElement>
   );

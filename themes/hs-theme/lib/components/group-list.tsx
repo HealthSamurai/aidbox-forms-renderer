@@ -1,16 +1,16 @@
-import type { GroupWrapperScaffoldProps } from "@aidbox-forms/theme";
+import type { GroupListProps } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { Plus } from "../icons/plus.tsx";
 import { IconButton } from "./icon-button.tsx";
 
-export function GroupWrapperScaffold({
+export function GroupList({
   linkId,
   header,
   children,
   onAdd,
   canAdd,
   addLabel,
-}: GroupWrapperScaffoldProps) {
+}: GroupListProps) {
   const addText = addLabel ?? "Add";
   return (
     <Container data-linkid={linkId}>

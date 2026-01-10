@@ -3,32 +3,34 @@ import type { IGroupNode } from "../../../types.ts";
 import { NodeHeader } from "../../form/node-header.tsx";
 import { NodeErrors } from "../../form/node-errors.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
-import { isGroupWrapper } from "../../../stores/nodes/groups/group-wrapper.ts";
 
 export function GroupScaffold({
   node,
-  dataControl,
   children,
+  onRemove,
+  canRemove,
+  removeLabel,
 }: {
   node: IGroupNode;
-  dataControl?: string | undefined;
-  children: ReactNode;
+  children?: ReactNode;
+  onRemove?: (() => void) | undefined;
+  canRemove?: boolean | undefined;
+  removeLabel?: string | undefined;
 }) {
   const { GroupScaffold: ThemedGroupScaffold } = useTheme();
-  const parentIsWrapper = isGroupWrapper(node.parentStore);
 
-  const header =
-    !node.isHeaderless && node.template.text && !parentIsWrapper ? (
-      <NodeHeader node={node} as="legend" />
-    ) : null;
+  const header = !node.isHeaderless ? (
+    <NodeHeader node={node} as="legend" />
+  ) : null;
   return (
     <ThemedGroupScaffold
-      linkId={node.linkId}
-      dataControl={dataControl}
       header={header}
+      errors={<NodeErrors node={node} />}
+      onRemove={onRemove}
+      canRemove={canRemove}
+      removeLabel={removeLabel}
     >
       {children}
-      <NodeErrors node={node} />
     </ThemedGroupScaffold>
   );
 }

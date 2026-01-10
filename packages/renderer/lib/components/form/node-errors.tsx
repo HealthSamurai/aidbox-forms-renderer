@@ -18,5 +18,5 @@ export const NodeErrors = observer(function NodeErrors({
 
   if (messages.length === 0) return null;
 
-  return id ? <ThemedErrors id={id} messages={messages} /> : null;
+  return <ThemedErrors id={id} messages={messages} />;
 });

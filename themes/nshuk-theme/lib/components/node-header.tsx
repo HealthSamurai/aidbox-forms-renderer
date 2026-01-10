@@ -15,7 +15,7 @@ export function NodeHeader({
       <div className="nhsuk-label nhsuk-label--xl">
         <div id={ariaLabelledBy}>
           {label}
-          {required ? <span aria-hidden="true"> *</span> : null}
+          {required && <span aria-hidden="true"> *</span>}
         </div>
         {help}
         {legal}
@@ -36,12 +36,12 @@ export function NodeHeader({
             htmlFor={labelFor}
           >
             {label}
-            {required ? <span aria-hidden="true"> *</span> : null}
+            {required && <span aria-hidden="true"> *</span>}
           </label>
         ) : (
           <div className="nhsuk-label nhsuk-label--m" id={ariaLabelledBy}>
             {label}
-            {required ? <span aria-hidden="true"> *</span> : null}
+            {required && <span aria-hidden="true"> *</span>}
           </div>
         )}
         {help}

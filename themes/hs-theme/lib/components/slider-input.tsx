@@ -41,7 +41,7 @@ export function SliderInput({
   const isLowerClose = useIsWithinGap(labelsRef, valueRef, lowerRef, 8);
   const isUpperClose = useIsWithinGap(labelsRef, valueRef, upperRef, 8);
 
-  const unit = unitLabel ? <Unit id={unitId}>{unitLabel}</Unit> : null;
+  const unit = Boolean(unitLabel) && <Unit id={unitId}>{unitLabel}</Unit>;
 
   return (
     <Wrapper data-disabled={disabled ? "true" : "false"}>

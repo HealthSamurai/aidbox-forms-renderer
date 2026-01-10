@@ -38,7 +38,7 @@ export function SpinnerInput({
           aria-labelledby={ariaLabelledBy}
           aria-describedby={describedBy}
         />
-        {unitLabel ? <UnitLabel id={unitId}>{unitLabel}</UnitLabel> : null}
+        {Boolean(unitLabel) && <UnitLabel id={unitId}>{unitLabel}</UnitLabel>}
       </SpinnerRow>
     </div>
   );

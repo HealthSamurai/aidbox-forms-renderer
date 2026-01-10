@@ -26,7 +26,7 @@ export function TabContainer({
 
   return (
     <TabsShell className="nhsuk-tabs" data-linkid={linkId}>
-      {header ? <h2 className="nhsuk-tabs__title">{header}</h2> : null}
+      {Boolean(header) && <h2 className="nhsuk-tabs__title">{header}</h2>}
       <ul className="nhsuk-tabs__list" role="tablist">
         {items.map((item, idx) => {
           const selected = idx === clampedIndex;

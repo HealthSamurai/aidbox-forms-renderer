@@ -198,7 +198,7 @@ export function SelectInput({
   };
 
   return (
-    <Container
+    <div
       aria-busy={isLoading || undefined}
       ref={containerRef}
       onBlur={handleBlur}
@@ -372,11 +372,9 @@ export function SelectInput({
           Loading options…
         </div>
       ) : null}
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div``;
 
 const InputRow = styled.div`
   display: flex;

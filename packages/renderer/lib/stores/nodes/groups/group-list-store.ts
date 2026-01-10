@@ -1,11 +1,11 @@
 import { action, computed, observable, override } from "mobx";
 import {
   GROUP_ITEM_CONTROLS,
-  type GroupControlDefinition,
+  GroupRendererProps,
   type GroupItemControl,
   IForm,
   IGroupNode,
-  IGroupWrapper,
+  IGroupList,
   INode,
   IPresentableNode,
   IScope,
@@ -17,7 +17,7 @@ import {
   QuestionnaireResponseItem,
 } from "fhir/r5";
 import { AbstractPresentableNode } from "../base/abstract-presentable-node.ts";
-import { GroupWrapperValidator } from "../../validation/group-wrapper-validator.ts";
+import { GroupListValidator } from "../../validation/group-list-validator.ts";
 import {
   buildId,
   EXT,
@@ -29,17 +29,18 @@ import {
 import { isQuestionNode } from "../questions/question-store.ts";
 import { GroupStore } from "./group-store.ts";
 import { GridTableStore } from "./grid-table-store.ts";
+import type { ComponentType } from "react";
 
-export class GroupWrapper
+export class GroupListStore
   extends AbstractPresentableNode
-  implements IGroupWrapper
+  implements IGroupList
 {
   readonly scope: IScope;
   readonly token: string;
 
   readonly nodes = observable.array<IGroupNode>([], {
     deep: false,
-    name: "GroupWrapper.nodes",
+    name: "GroupListStore.nodes",
   });
 
   @computed
@@ -47,7 +48,7 @@ export class GroupWrapper
     return this.nodes.filter((node) => !node.hidden);
   }
 
-  private readonly validator: GroupWrapperValidator;
+  private readonly validator: GroupListValidator;
 
   private lastIndex = 0;
 
@@ -64,7 +65,7 @@ export class GroupWrapper
     this.scope = scope;
     this.token = token;
 
-    this.validator = new GroupWrapperValidator(this);
+    this.validator = new GroupListValidator(this);
 
     responseItems?.forEach((responseItem) => this.pushNode(responseItem));
     this.ensureMinOccurs();
@@ -72,9 +73,8 @@ export class GroupWrapper
   }
 
   @computed
-  get renderer(): GroupControlDefinition["wrapperComponent"] | undefined {
-    return this.form.groupControlRegistry.resolveWrapper(this)
-      ?.wrapperComponent;
+  get renderer(): ComponentType<GroupRendererProps> | undefined {
+    return this.form.groupRendererRegistry.resolve(this)?.renderer;
   }
 
   @computed({ keepAlive: true })
@@ -277,17 +277,17 @@ export class GroupWrapper
   }
 }
 
-export function isGroupWrapper(
+export function isGroupListStore(
   it: IPresentableNode | undefined | null,
-): it is IGroupWrapper {
-  return it instanceof GroupWrapper;
+): it is IGroupList {
+  return it instanceof GroupListStore;
 }
 
-export function assertGroupWrapper(
+export function assertGroupListStore(
   it: IPresentableNode | undefined | null,
   message?: string,
-): asserts it is IGroupWrapper {
-  if (!isGroupWrapper(it)) {
-    throw new Error(message ?? "Expected GroupWrapper instance");
+): asserts it is IGroupList {
+  if (!isGroupListStore(it)) {
+    throw new Error(message ?? "Expected GroupListStore instance");
   }
 }

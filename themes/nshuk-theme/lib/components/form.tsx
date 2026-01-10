@@ -36,17 +36,17 @@ export function Form({
   const header =
     title || description ? (
       <header>
-        {title ? <h1 className="nhsuk-heading-l">{title}</h1> : null}
-        {description ? <p className="nhsuk-body">{description}</p> : null}
+        {Boolean(title) && <h1 className="nhsuk-heading-l">{title}</h1>}
+        {Boolean(description) && <p className="nhsuk-body">{description}</p>}
       </header>
     ) : null;
 
   if (pagination) {
     return (
       <FormElement onSubmit={handleSubmit}>
-        {header ? <TitleSlot>{header}</TitleSlot> : null}
-        {errors ? <Slot>{errors}</Slot> : null}
-        {before ? <Slot>{before}</Slot> : null}
+        {header && <TitleSlot>{header}</TitleSlot>}
+        {Boolean(errors) && <Slot>{errors}</Slot>}
+        {Boolean(before) && <Slot>{before}</Slot>}
         {children}
         <Controls>
           <Nav className="nhsuk-button-group">
@@ -72,18 +72,18 @@ export function Form({
           </Nav>
           <Actions>{actions}</Actions>
         </Controls>
-        {after ? <Slot>{after}</Slot> : null}
+        {Boolean(after) && <Slot>{after}</Slot>}
       </FormElement>
     );
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {header ? <div>{header}</div> : null}
-      {errors ? <div>{errors}</div> : null}
-      {before ? <div>{before}</div> : null}
+      {header}
+      {errors}
+      {before}
       {children}
-      {after ? <div>{after}</div> : null}
+      {after}
       <div className="nhsuk-button-group">{actions}</div>
     </form>
   );

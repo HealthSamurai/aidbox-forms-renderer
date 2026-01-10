@@ -4,7 +4,7 @@
 - rendered questionnaire response item is node (one of the node stores implementing `INodeStore`)
 - questionnaire item is template for node (`QuestionnaireItem` backing each store)
 - nodes can have child nodes (`children` or `instances` on the store)
-- node can be either a display, a group, or a question (`DisplayStore`, `GroupStore`/`RepeatingGroupWrapper`, `QuestionStore`)
+- node can be either a display, a group, or a question (`DisplayStore`, `GroupStore`/`GroupListStore`, `QuestionStore`)
 - display node cannot have child nodes
 - question node is answerable node
 - display node and group node are not answerable nodes
@@ -12,7 +12,7 @@
 - question node can be repeated when `repeats` is true
 - display node is rendered as text block
 - non-repeated group node is rendered as a block with header and list of child nodes
-- repeated group node (`RepeatingGroupWrapper`) is rendered as list of instances exposed through its `nodes` collection plus an add button
+- repeated group node (`GroupListStore`) is rendered as list of instances exposed through its `nodes` collection plus an add button
 - each repeating group instance (`GroupStore`) renders a block with header, remove button, and its child nodes while extending the scope registry for nested `linkId`s
 - repeated question node is rendered as a block with label, list of answers with remove button, and add button
 - non-repeating question node keeps exactly one `AnswerInstance`, hides add/remove controls, and still renders a label with a single input control

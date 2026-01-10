@@ -3,17 +3,17 @@ import type {
   GridTableColumnState,
   GridTableRowState,
   IGridTableStore,
-  IGroupWrapper,
+  IGroupList,
   IQuestionNode,
 } from "../../../types.ts";
 import { isQuestionNode } from "../questions/question-store.ts";
 import { buildId } from "../../../utils.ts";
 
 export class GridTableStore implements IGridTableStore {
-  private readonly wrapper: IGroupWrapper;
+  private readonly list: IGroupList;
 
-  constructor(wrapper: IGroupWrapper) {
-    this.wrapper = wrapper;
+  constructor(list: IGroupList) {
+    this.list = list;
     makeObservable(this);
   }
 
@@ -21,7 +21,7 @@ export class GridTableStore implements IGridTableStore {
   get columns(): GridTableColumnState[] {
     const seen = new Set<string>();
     const columns: Array<{ linkId: string; label: string }> = [];
-    (this.wrapper.template.item ?? []).forEach((item) => {
+    (this.list.template.item ?? []).forEach((item) => {
       if (!item || item.type === "group" || item.type === "display") {
         return;
       }
@@ -32,7 +32,7 @@ export class GridTableStore implements IGridTableStore {
       seen.add(item.linkId);
     });
 
-    this.wrapper.visibleNodes.forEach((node) => {
+    this.list.visibleNodes.forEach((node) => {
       node.nodes.forEach((child) => {
         if (!isQuestionNode(child)) {
           return;
@@ -56,7 +56,7 @@ export class GridTableStore implements IGridTableStore {
 
   @computed
   get rows(): GridTableRowState[] {
-    return this.wrapper.visibleNodes.map((node) => {
+    return this.list.visibleNodes.map((node) => {
       const questionMap = new Map<string, IQuestionNode>(
         node.nodes
           .filter(isQuestionNode)

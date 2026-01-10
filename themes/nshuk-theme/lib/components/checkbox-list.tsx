@@ -78,12 +78,12 @@ export function CheckboxList({
           </div>
         );
       })}
-      {isLoading ? (
+      {isLoading && (
         <div className="nhsuk-hint" role="status" aria-live="polite">
           Loading options…
         </div>
-      ) : null}
-      {customOptionForm ? <div>{customOptionForm}</div> : null}
+      )}
+      {Boolean(customOptionForm) && <div>{customOptionForm}</div>}
     </div>
   );
 }

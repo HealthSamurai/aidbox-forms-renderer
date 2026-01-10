@@ -8,9 +8,9 @@ import type {
 
 import { FormStore } from "../form/form-store.ts";
 import {
-  assertGroupWrapper,
-  isGroupWrapper,
-} from "../nodes/groups/group-wrapper.ts";
+  assertGroupListStore,
+  isGroupListStore,
+} from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode, isGroupNode } from "../nodes/groups/group-store.ts";
 import {
   assertQuestionNode,
@@ -371,8 +371,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
-    expect(group && isGroupWrapper(group)).toBe(true);
-    assertGroupWrapper(group);
+    expect(group && isGroupListStore(group)).toBe(true);
+    assertGroupListStore(group);
 
     group.addNode();
 
@@ -407,8 +407,8 @@ describe("response generation", () => {
 
     const form = new FormStore(questionnaire);
     const group = form.scope.lookupNode("family-history");
-    expect(group && isGroupWrapper(group)).toBe(true);
-    assertGroupWrapper(group);
+    expect(group && isGroupListStore(group)).toBe(true);
+    assertGroupListStore(group);
 
     group.addNode();
     group.addNode();

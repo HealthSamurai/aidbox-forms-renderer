@@ -8,7 +8,7 @@ export function QuestionScaffold({
 }: QuestionScaffoldProps) {
   return (
     <Container data-linkid={linkId}>
-      {header ? <Header>{header}</Header> : null}
+      {header}
       {children}
     </Container>
   );
@@ -19,5 +19,3 @@ const Container = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 `;
-
-const Header = styled.div``;

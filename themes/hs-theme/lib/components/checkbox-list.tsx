@@ -84,9 +84,7 @@ export function CheckboxList({
           Loading options…
         </div>
       ) : null}
-      {customOptionForm ? (
-        <CustomFormSlot>{customOptionForm}</CustomFormSlot>
-      ) : null}
+      {Boolean(customOptionForm) && <div>{customOptionForm}</div>}
     </Stack>
   );
 }
@@ -114,5 +112,3 @@ const CheckboxLabel = styled.label`
   align-items: center;
   gap: 0.5rem;
 `;
-
-const CustomFormSlot = styled.div``;

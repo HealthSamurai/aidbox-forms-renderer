@@ -6,7 +6,7 @@ import {
   makeCalculatedExpression,
   makeVariable,
 } from "./expression-fixtures.ts";
-import { assertGroupWrapper } from "../nodes/groups/group-wrapper.ts";
+import { assertGroupListStore } from "../nodes/groups/group-list-store.ts";
 import { assertGroupNode } from "../nodes/groups/group-store.ts";
 import { assertQuestionNode } from "../nodes/questions/question-store.ts";
 import { assertDefined } from "../../utils.ts";
@@ -149,7 +149,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-    assertGroupWrapper(household);
+    assertGroupListStore(household);
 
     household.addNode();
     household.addNode();
@@ -260,7 +260,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const household = form.scope.lookupNode("household");
-    assertGroupWrapper(household);
+    assertGroupListStore(household);
 
     household.addNode();
     household.addNode();
@@ -375,7 +375,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire);
     const families = form.scope.lookupNode("families");
-    assertGroupWrapper(families);
+    assertGroupListStore(families);
 
     families.addNode();
     families.addNode();
@@ -393,11 +393,11 @@ describe("variable expressions", () => {
       return child;
     };
 
-    const findGroupWrapper = (nodeIndex: number, linkId: string) => {
+    const findGroupList = (nodeIndex: number, linkId: string) => {
       const node = families.nodes[nodeIndex];
       assertDefined(node);
       const child = node.nodes.find((item) => item.linkId === linkId);
-      assertGroupWrapper(child);
+      assertGroupListStore(child);
       return child;
     };
 
@@ -411,8 +411,8 @@ describe("variable expressions", () => {
     assertDefined(secondFamilyNameAnswer0);
     secondFamilyNameAnswer0.setValueByUser("Johnson");
 
-    const firstMembers = findGroupWrapper(0, "members");
-    const secondMembers = findGroupWrapper(1, "members");
+    const firstMembers = findGroupList(0, "members");
+    const secondMembers = findGroupList(1, "members");
 
     firstMembers.addNode();
     secondMembers.addNode();
@@ -507,7 +507,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-    assertGroupWrapper(addresses);
+    assertGroupListStore(addresses);
 
     const [firstNode, secondNode] = addresses.nodes;
 
@@ -672,7 +672,7 @@ describe("variable expressions", () => {
 
     const form = new FormStore(questionnaire, response);
     const addresses = form.scope.lookupNode("addresses");
-    assertGroupWrapper(addresses);
+    assertGroupListStore(addresses);
 
     expect(addresses.nodes.length).toBe(2);
 

@@ -50,9 +50,9 @@ export function FileInput({
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
         >
-          <LabelText className="nhsuk-body">{displayLabel}</LabelText>
+          <div className="nhsuk-body">{displayLabel}</div>
           {displaySizeLabel ? (
-            <HintText className="nhsuk-hint">{displaySizeLabel}</HintText>
+            <div className="nhsuk-hint">{displaySizeLabel}</div>
           ) : null}
           <Actions>
             {!disabled ? (
@@ -103,10 +103,6 @@ const Details = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 `;
-
-const LabelText = styled.div``;
-
-const HintText = styled.div``;
 
 const Actions = styled.div`
   display: flex;

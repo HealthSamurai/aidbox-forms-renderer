@@ -1,14 +1,31 @@
 import { observer } from "mobx-react-lite";
-import type { GroupControlProps } from "../../../../types.ts";
-import { NodeList } from "../../../form/node-list.tsx";
+import type { GroupRendererProps } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
+import { GroupList } from "../group-list.tsx";
+import { strings } from "../../../../strings.ts";
+import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { HeaderRenderer as HeaderControl } from "../controls/header-renderer.tsx";
 
 export const HeaderRenderer = observer(function HeaderRenderer({
   node,
-}: GroupControlProps) {
-  return (
-    <GroupScaffold node={node} dataControl="header">
-      <NodeList nodes={node.visibleNodes} />
+}: GroupRendererProps) {
+  return isGroupListStore(node) ? (
+    <GroupList list={node}>
+      {node.visibleNodes.map((child) => (
+        <GroupScaffold
+          key={child.token}
+          node={child}
+          onRemove={node.canRemove ? () => node.removeNode(child) : undefined}
+          canRemove={node.canRemove}
+          removeLabel={strings.group.removeSection}
+        >
+          <HeaderControl node={child} />
+        </GroupScaffold>
+      ))}
+    </GroupList>
+  ) : (
+    <GroupScaffold node={node}>
+      <HeaderControl node={node} />
     </GroupScaffold>
   );
 });
