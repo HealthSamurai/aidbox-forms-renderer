@@ -4,9 +4,10 @@ export const strings = {
     legal: "Legal information",
     flyover: "More context",
   },
-  boolean: {
+  value: {
     yes: "Yes",
     no: "No",
+    null: "Unanswered",
   },
   dialog: {
     cancel: "Cancel",

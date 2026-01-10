@@ -220,6 +220,47 @@ describe("dropdown-select-renderer", () => {
           strings.selection.selectPlaceholder,
         );
       });
+
+      it("renders boolean tri-state options and clears to null", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "consent",
+              text: "Consent",
+              type: "boolean",
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "consent");
+
+        render(<DropdownSelectRenderer node={question} />);
+
+        let input = screen.getByRole("combobox") as HTMLElement;
+        expect(getComboboxValue(input)).toBe(strings.value.null);
+
+        fireEvent.click(input);
+        let listbox = getListbox(input);
+        fireEvent.click(
+          within(listbox).getByRole("option", {
+            name: strings.value.yes,
+          }),
+        );
+        expect(getAnswerValues(question)).toEqual([true]);
+
+        input = screen.getByRole("combobox") as HTMLElement;
+        fireEvent.click(input);
+        listbox = getListbox(input);
+        fireEvent.click(
+          within(listbox).getByRole("option", {
+            name: strings.value.null,
+          }),
+        );
+        expect(getAnswerValues(question)).toEqual([null]);
+      });
     });
 
     describe("multi (multi-select)", () => {

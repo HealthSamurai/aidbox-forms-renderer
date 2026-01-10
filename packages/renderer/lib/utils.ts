@@ -1810,15 +1810,15 @@ export function tokenify<T extends DataType>(
   value: DataTypeToType<T> | null,
 ): string {
   try {
-    const normalized = normalizeValueKey(type, value);
-    if (normalized === undefined) {
-      return "";
-    }
-    return tokenHasher.toHashSync({ type, value: normalized });
+    return tokenHasher.toHashSync({
+      type,
+      value: normalizeValueKey(type, value),
+    });
   } catch {
-    const fallback = value == null ? null : value;
-    const fallbackString = fallback == null ? "" : String(fallback);
-    return fallbackString ? tokenHasher.toHashSync(fallbackString) : "";
+    return tokenHasher.toHashSync({
+      type,
+      value: String(value),
+    });
   }
 }
 
@@ -1852,7 +1852,7 @@ export function stringifyValue<T extends DataType>(
   }
 
   if (typeof value === "boolean") {
-    return value ? strings.boolean.yes : strings.boolean.no;
+    return value ? strings.value.yes : strings.value.no;
   }
 
   if (type === "Coding" && isCoding(value)) {
@@ -1889,9 +1889,12 @@ export function stringifyValue<T extends DataType>(
 
 export function areValuesEqual<T extends DataType>(
   type: T,
-  a: DataTypeToType<T>,
-  b: DataTypeToType<T>,
+  a: DataTypeToType<T> | null,
+  b: DataTypeToType<T> | null,
 ): boolean {
+  if (a == null || b == null) {
+    return a === b;
+  }
   switch (type) {
     case "Coding":
       return areCodingsEqual(a, b);

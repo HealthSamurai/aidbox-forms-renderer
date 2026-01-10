@@ -26,8 +26,8 @@ import {
   answerify,
   areValuesEqual,
   booleanify,
-  getValue,
   buildId,
+  getValue,
   OPTIONS_ISSUE_EXPRESSION,
   tokenify,
 } from "../../../utils.ts";
@@ -131,29 +131,38 @@ export class AnswerOptionStore<
     if (this.question.type === "boolean" && this.answerOptions.length === 0) {
       return [
         {
-          token: "yes",
+          token: buildId(this.question.token, "true"),
           value: true,
           disabled: false,
           answerType: "boolean",
         },
         {
-          token: "no",
+          token: buildId(this.question.token, "false"),
           value: false,
           disabled: false,
           answerType: "boolean",
         },
+        ...(this.question.repeats
+          ? []
+          : [
+              {
+                token: buildId(this.question.token, "null"),
+                value: null,
+                disabled: false,
+                answerType: "boolean",
+              },
+            ]),
       ] as AnswerOption<T>[];
     }
 
-    const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
     const seen = new Set<OptionToken>();
     return this.answerOptions.flatMap((option) => {
-      const value = getValue(option, dataType);
+      const value = getValue(option, this.dataType);
       if (value == null) {
         return [];
       }
 
-      const token = tokenify(dataType, value) as OptionToken;
+      const token = tokenify(this.dataType, value) as OptionToken;
       if (seen.has(token)) {
         return [];
       }
@@ -183,8 +192,7 @@ export class AnswerOptionStore<
       return true;
     }
 
-    const dataType = ANSWER_TYPE_TO_DATA_TYPE[this.question.type];
-    const optionValue = getValue(option, dataType);
+    const optionValue = getValue(option, this.dataType);
     if (optionValue === undefined) {
       return true;
     }
@@ -192,10 +200,10 @@ export class AnswerOptionStore<
     let matched = false;
     for (const toggle of toggles) {
       const toggleMatches = toggle.options.some((candidate) => {
-        const candidateValue = getValue(candidate, dataType);
+        const candidateValue = getValue(candidate, this.dataType);
         return candidateValue === undefined
           ? false
-          : areValuesEqual(dataType, candidateValue, optionValue);
+          : areValuesEqual(this.dataType, candidateValue, optionValue);
       });
 
       if (toggleMatches) {
@@ -257,16 +265,11 @@ export class AnswerOptionStore<
     return this.inherentOptions.reduce((matches, option) => {
       const match = this.question.answers.find((answer) => {
         if (
-          answer.value == null ||
           answer.token === this.pendingCustomOptionForm?.answer.token ||
           this.customAnswerTokens.has(answer.token)
         )
           return false;
-        return areValuesEqual(
-          this.dataType,
-          answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
-          option.value,
-        );
+        return areValuesEqual(this.dataType, answer.value, option.value);
       });
       return !match
         ? matches
@@ -282,18 +285,14 @@ export class AnswerOptionStore<
     const selectedOptions: SelectedAnswerOption<T>[] = [];
 
     this.question.answers.forEach((answer) => {
-      if (
-        answer.token === this.pendingCustomOptionForm?.answer.token ||
-        answer.value == null
-      )
-        return;
+      if (answer.token === this.pendingCustomOptionForm?.answer.token) return;
 
       const matchedOption = this.matchedOptionsByAnswerToken.get(answer.token);
       if (matchedOption) {
         selectedOptions.push({
           token: matchedOption.token,
           answer,
-          value: answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
+          value: answer.value,
           answerType: this.question.type,
           disabled:
             (this.question.isRepeatingWithoutChildren
@@ -312,7 +311,7 @@ export class AnswerOptionStore<
       selectedOptions.push({
         token,
         answer,
-        value: answer.value as DataTypeToType<AnswerTypeToDataType<T>>,
+        value: answer.value,
         answerType: this.allowCustom
           ? this.customAnswerType
           : this.question.type,
@@ -372,7 +371,7 @@ export class AnswerOptionStore<
       return;
     }
     const entry = this.findOptionByToken(token);
-    if (!entry || entry.disabled) return;
+    if (!entry || entry.disabled || entry.value == null) return;
     if (!this.isInherentToken(entry.token)) {
       if (this.allowCustom) {
         this.addCustomValue(entry.value);
@@ -408,6 +407,7 @@ export class AnswerOptionStore<
   ): void {
     const isCustomActive =
       this.customOptionFormState?.answer.token === answer.token;
+
     if (token == null) {
       if (isCustomActive) {
         this.cancelCustomOptionForm();
@@ -433,11 +433,23 @@ export class AnswerOptionStore<
 
     const entry = this.findOptionByToken(token);
     if (!entry || entry.disabled) return;
+
+    if (entry.value == null) {
+      if (isCustomActive) {
+        this.cancelCustomOptionForm();
+      }
+      this.rememberAnswerValue(answer);
+      this.customAnswerTokens.delete(answer.token);
+      answer.setValueByUser(null);
+      return;
+    }
+
     if (!this.isInherentToken(entry.token) && this.allowCustom) {
       this.customAnswerTokens.add(answer.token);
     } else {
       this.customAnswerTokens.delete(answer.token);
     }
+
     const nextValue = structuredClone(entry.value) as DataTypeToType<
       AnswerTypeToDataType<T>
     >;

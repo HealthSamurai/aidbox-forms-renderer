@@ -12,6 +12,7 @@ import { isQuestionNode } from "../../../../../stores/nodes/questions/question-s
 import { ListSelectRenderer } from "../../renderers/list-select-renderer.tsx";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
 import { EXT } from "../../../../../utils.ts";
+import { strings } from "../../../../../strings.ts";
 import { VALUE_DISPLAY_BY_TYPE } from "../../fhir/index.ts";
 
 function getQuestion<T extends AnswerType>(
@@ -119,6 +120,46 @@ describe("list-select-renderer", () => {
         expect(
           screen.queryByRole("radio", { name: /specify other/i }),
         ).toBeNull();
+      });
+
+      it("renders boolean tri-state options and clears to null", () => {
+        const questionnaire: Questionnaire = {
+          resourceType: "Questionnaire",
+          status: "active",
+          item: [
+            {
+              linkId: "consent",
+              text: "Consent",
+              type: "boolean",
+            },
+          ],
+        };
+
+        const form = new FormStore(questionnaire);
+        const question = getQuestion(form, "consent");
+
+        render(<ListSelectRenderer node={question} />);
+
+        const yes = screen.getByRole("radio", {
+          name: strings.value.yes,
+        }) as HTMLInputElement;
+        const no = screen.getByRole("radio", {
+          name: strings.value.no,
+        }) as HTMLInputElement;
+        const unanswered = screen.getByRole("radio", {
+          name: strings.value.null,
+        }) as HTMLInputElement;
+
+        expect(unanswered).toBeChecked();
+
+        fireEvent.click(yes);
+        expect(question.answers[0]?.value).toBe(true);
+
+        fireEvent.click(no);
+        expect(question.answers[0]?.value).toBe(false);
+
+        fireEvent.click(unanswered);
+        expect(question.answers[0]?.value).toBeNull();
       });
     });
 

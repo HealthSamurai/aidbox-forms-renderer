@@ -229,10 +229,10 @@ export type AnswerLifecycle =
   | "manual";
 
 export type AnswerOption<T extends AnswerType> = {
-  token: OptionToken;
-  value: DataTypeToType<AnswerTypeToDataType<T>>;
-  disabled: boolean;
-  answerType: AnswerType;
+  readonly token: OptionToken;
+  readonly value: DataTypeToType<AnswerTypeToDataType<T>> | null;
+  readonly disabled: boolean;
+  readonly answerType: AnswerType;
 };
 
 export type ValueDisplayProps<T extends AnswerType> = {
