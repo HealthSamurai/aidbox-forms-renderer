@@ -10,7 +10,7 @@ import { assertQuestionNode } from "../../question/question-store.ts";
 import {
   makeAnswerOptionToggle,
   makeVariable,
-} from "../../../__tests__/test-utils/expression-fixtures.ts";
+} from "../../../__tests__/utilities.ts";
 import { assertDefined } from "../../../utilities.ts";
 
 const RED_CODING: QuestionnaireItemAnswerOption = {

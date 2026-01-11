@@ -1,7 +1,6 @@
 import { styled } from "@linaria/react";
 import type { TabContainerProperties } from "@aidbox-forms/theme";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EmptyState } from "./empty-state.tsx";
 import { clamp } from "./utilities.ts";
 
 export function TabContainer({
@@ -10,7 +9,6 @@ export function TabContainer({
   value,
   onChange,
   errors,
-  empty,
   linkId,
 }: TabContainerProperties) {
   const tabListReference = useRef<HTMLDivElement | null>(null);
@@ -113,7 +111,7 @@ export function TabContainer({
   };
 
   if (items.length === 0) {
-    return <EmptyState>{empty ?? "No tab content available."}</EmptyState>;
+    return <Empty>{"No tab content available."}</Empty>;
   }
 
   const active = items[clampedIndex];
@@ -340,4 +338,9 @@ const ErrorsSlot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const Empty = styled.p`
+  font-style: italic;
+  color: #94a3b8;
 `;

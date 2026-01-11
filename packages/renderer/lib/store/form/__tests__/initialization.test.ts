@@ -21,7 +21,7 @@ import {
   assertQuestionNode,
   isQuestionNode,
 } from "../../question/question-store.ts";
-import { makeInitialExpression } from "../../../__tests__/test-utils/expression-fixtures.ts";
+import { makeInitialExpression } from "../../../__tests__/utilities.ts";
 import { assertDefined } from "../../../utilities.ts";
 
 const minOccurs = (value: number) => ({

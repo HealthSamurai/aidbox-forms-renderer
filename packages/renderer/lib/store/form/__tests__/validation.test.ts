@@ -16,7 +16,7 @@ import {
   makeMaxOccursExpression,
   makeMinOccursExpression,
   makeVariable,
-} from "../../../__tests__/test-utils/expression-fixtures.ts";
+} from "../../../__tests__/utilities.ts";
 import { assertDefined } from "../../../utilities.ts";
 
 const minOccurs = (value: number) => ({

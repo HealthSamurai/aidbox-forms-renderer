@@ -22,7 +22,7 @@ export function GroupScaffold({
       {header}
       {resolvedContent}
       {errors}
-      {onRemove ? (
+      {onRemove && (
         <Toolbar>
           <IconButton
             icon="−"
@@ -31,7 +31,7 @@ export function GroupScaffold({
             label={removeText}
           />
         </Toolbar>
-      ) : undefined}
+      )}
     </Container>
   );
 }

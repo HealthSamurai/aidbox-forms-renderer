@@ -22,9 +22,9 @@ export function Checkbox({
           aria-describedby={ariaDescribedBy}
           onChange={onChange}
         />
-        {label ? (
+        {label && (
           <span className="nhsuk-label nhsuk-checkboxes__label">{label}</span>
-        ) : undefined}
+        )}
       </label>
     </div>
   );

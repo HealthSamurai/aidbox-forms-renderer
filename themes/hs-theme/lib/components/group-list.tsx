@@ -16,7 +16,7 @@ export function GroupList({
     <Container data-linkid={linkId}>
       {header}
       <Items>{children}</Items>
-      {onAdd ? (
+      {onAdd && (
         <Toolbar>
           <IconButton
             icon={<Plus size={16} />}
@@ -25,7 +25,7 @@ export function GroupList({
             label={addText}
           />
         </Toolbar>
-      ) : undefined}
+      )}
     </Container>
   );
 }

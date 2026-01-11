@@ -1,0 +1,36 @@
+import type { ReactNode } from "react";
+import type { IGroupNode } from "../../types.ts";
+import { NodeHeader } from "../node/node-header.tsx";
+import { NodeErrors } from "../node/node-errors.tsx";
+import { useTheme } from "../../ui/theme.tsx";
+
+export function GroupScaffold({
+  node,
+  children,
+  onRemove,
+  canRemove,
+  removeLabel,
+}: {
+  node: IGroupNode;
+  children?: ReactNode;
+  onRemove?: (() => void) | undefined;
+  canRemove?: boolean | undefined;
+  removeLabel?: string | undefined;
+}) {
+  const { GroupScaffold: ThemedGroupScaffold } = useTheme();
+
+  const header = node.isHeaderless ? undefined : (
+    <NodeHeader node={node} as="legend" />
+  );
+  return (
+    <ThemedGroupScaffold
+      header={header}
+      errors={<NodeErrors node={node} />}
+      onRemove={onRemove}
+      canRemove={canRemove}
+      removeLabel={removeLabel}
+    >
+      {children}
+    </ThemedGroupScaffold>
+  );
+}

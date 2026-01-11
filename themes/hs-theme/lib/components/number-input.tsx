@@ -42,11 +42,11 @@ export function NumberInput({
           aria-describedby={describedBy}
           $solo={solo}
         />
-        {unitLabel ? (
+        {unitLabel && (
           <Unit id={unitId} aria-hidden="true">
             {unitLabel}
           </Unit>
-        ) : undefined}
+        )}
       </Frame>
     </NumberInputShell>
   );

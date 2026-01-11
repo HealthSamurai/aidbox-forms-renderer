@@ -10,6 +10,7 @@ import {
   IPresentableNode,
   IScope,
   SnapshotKind,
+  IGrid,
 } from "../../types.ts";
 import {
   OperationOutcomeIssue,
@@ -28,7 +29,7 @@ import {
 } from "../../utilities.ts";
 import { isQuestionNode } from "../question/question-store.ts";
 import { GroupStore } from "./group-store.ts";
-import { GridTableStore } from "./view-model/grid-table-store.ts";
+import { GridStore } from "./view-model/grid-store.ts";
 import type { ComponentType } from "react";
 
 export class GroupListStore
@@ -78,8 +79,8 @@ export class GroupListStore
   }
 
   @computed({ keepAlive: true })
-  get gridTableStore(): GridTableStore {
-    return new GridTableStore(this);
+  get grid(): IGrid {
+    return new GridStore(() => this.visibleNodes);
   }
 
   @computed

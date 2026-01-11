@@ -1,4 +1,5 @@
 import type { CheckboxListProperties } from "@aidbox-forms/theme";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function CheckboxList({
   options,
@@ -78,11 +79,7 @@ export function CheckboxList({
           </div>
         );
       })}
-      {isLoading && (
-        <div className="nhsuk-hint" role="status" aria-live="polite">
-          Loading options…
-        </div>
-      )}
+      {isLoading && <LoadingSpinner showLabel />}
       {Boolean(customOptionForm) && <div>{customOptionForm}</div>}
     </div>
   );

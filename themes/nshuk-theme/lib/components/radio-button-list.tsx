@@ -1,4 +1,5 @@
 import type { RadioButtonListProperties } from "@aidbox-forms/theme";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function RadioButtonList({
   options,
@@ -52,14 +53,10 @@ export function RadioButtonList({
           );
         })}
       </div>
-      {isLoading ? (
-        <div className="nhsuk-hint" role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
-      {customOptionForm ? (
+      {isLoading && <LoadingSpinner showLabel />}
+      {customOptionForm && (
         <div className="nhsuk-u-padding-left-4">{customOptionForm}</div>
-      ) : undefined}
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { styled } from "@linaria/react";
 import type { Questionnaire } from "fhir/r5";
 import type { IPresentableNode } from "@aidbox-forms/renderer/types.ts";
 import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
-import { Node } from "@aidbox-forms/renderer/components/form/node.tsx";
+import { Node } from "@aidbox-forms/renderer/component/node/node.tsx";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,

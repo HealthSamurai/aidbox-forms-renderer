@@ -2,31 +2,17 @@ import { computed, makeObservable } from "mobx";
 import type {
   AnswerOption,
   AnswerType,
-  AnswerTypeToDataType,
-  DataTypeToType,
   IGroupNode,
   IQuestionNode,
-  ITableStore,
+  ITable,
   OptionAxisItem,
   OptionToken,
-  QuestionAxisEntry,
-  QuestionAxisItem,
-  QuestionAxisSelection,
-  TableAxisModel,
   TableCellState,
 } from "../../../types.ts";
-import {
-  ANSWER_TYPE_TO_DATA_TYPE,
-  areValuesEqual,
-  concatIds,
-  getNodeErrorId,
-  getNodeHelpId,
-  getNodeLabelId,
-  tokenify,
-} from "../../../utilities.ts";
+import { areValuesEqual } from "../../../utilities.ts";
 import { isQuestionNode } from "../../question/question-store.ts";
 
-export class TableStore implements ITableStore {
+export class TableStore implements ITable {
   private readonly group: IGroupNode;
 
   constructor(group: IGroupNode) {
@@ -41,93 +27,44 @@ export class TableStore implements ITableStore {
 
   @computed
   get optionAxis(): OptionAxisItem[] {
-    return this.model.optionAxis;
-  }
+    const optionAxisItems: OptionAxisItem[] = [];
+    const seen = new Set<OptionToken>();
 
-  @computed
-  get questionAxis(): QuestionAxisItem[] {
-    return this.model.questionAxis.map((entry) => {
-      const question = entry.question;
-
-      const visibleAnswers = question.repeats
-        ? question.answers
-        : question.answers.slice(0, 1);
-      const hasDetails = visibleAnswers.some(
-        (answer) => answer.nodes.length > 0 || answer.issues.length > 0,
-      );
-
-      return {
-        token: question.token,
-        question,
-        ariaLabelledBy: getNodeLabelId(question),
-        ariaDescribedBy: concatIds(
-          getNodeHelpId(question),
-          getNodeErrorId(question),
-        ),
-        hasDetails,
-      };
-    });
-  }
-
-  @computed
-  get detailQuestions(): IQuestionNode[] {
-    return this.questionAxis
-      .filter((questionAxis) => questionAxis.hasDetails)
-      .map((questionAxis) => questionAxis.question);
-  }
-
-  getQuestionSelection(questionToken: string): QuestionAxisSelection {
-    const entry = this.questionByToken.get(questionToken);
-    if (!entry) {
-      return { selectedTokens: new Set<OptionToken>(), selectedToken: "" };
-    }
-
-    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
-    const selectedTokens = new Set<OptionToken>();
-    let selectedToken: OptionToken = "";
-
-    this.optionAxis.forEach((option) => {
-      const optionEntry = entry.optionMap.get(option.token);
-      if (!optionEntry) {
-        return;
-      }
-      const selectedAnswer = entry.question.answers.find((answer) => {
-        return areValuesEqual(dataType, answer.value, optionEntry.value);
+    this.questions.forEach((question) => {
+      question.answerOption.inherentOptions.forEach((option) => {
+        if (!seen.has(option.token)) {
+          seen.add(option.token);
+          optionAxisItems.push({
+            token: option.token,
+            answerType: question.type,
+            value: option.value,
+          });
+        }
       });
-      if (selectedAnswer) {
-        selectedTokens.add(option.token);
-        selectedToken = option.token;
-      }
     });
 
-    return { selectedTokens, selectedToken };
+    return optionAxisItems;
   }
 
+  @computed
   getCellState(
-    questionToken: string,
+    question: IQuestionNode,
     optionToken: OptionToken,
   ): TableCellState | undefined {
-    const entry = this.questionByToken.get(questionToken);
-    if (!entry) {
+    const option = this.lookup.get(question.token)?.get(optionToken);
+    if (!option) {
       return undefined;
     }
 
-    const optionEntry = entry.optionMap.get(optionToken);
-    if (!optionEntry) {
-      return undefined;
-    }
-
-    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
-    const selectedAnswer = entry.question.answers.find((answer) => {
-      return areValuesEqual(dataType, answer.value, optionEntry.value);
+    const selectedAnswer = question.answers.find((answer) => {
+      return areValuesEqual(question.dataType, answer.value, option.value);
     });
     const isSelected = Boolean(selectedAnswer);
     const isReadOnly =
-      entry.question.readOnly || entry.question.answerOption.select.isLoading;
+      question.readOnly || question.answerOption.select.isLoading;
     const disableNewSelection =
       !isSelected &&
-      (optionEntry.disabled ||
-        (entry.question.repeats && !entry.question.canAdd));
+      (option.disabled || (question.repeats && !question.canAdd));
 
     return {
       selected: isSelected,
@@ -135,81 +72,54 @@ export class TableStore implements ITableStore {
     };
   }
 
-  toggleCell(questionToken: string, optionToken: OptionToken): void {
-    const entry = this.questionByToken.get(questionToken);
-    if (!entry) return;
+  toggleCell(question: IQuestionNode, optionToken: OptionToken): void {
+    const option = this.lookup.get(question.token)?.get(optionToken);
+    if (!option) return;
 
-    const optionEntry = entry.optionMap.get(optionToken);
-    if (!optionEntry) return;
-
-    const dataType = ANSWER_TYPE_TO_DATA_TYPE[entry.question.type];
-    const selectedAnswer = entry.question.answers.find((answer) => {
-      return areValuesEqual(dataType, answer.value, optionEntry.value);
+    const selectedAnswer = question.answers.find((answer) => {
+      return areValuesEqual(question.dataType, answer.value, option.value);
     });
-    const isSelected = Boolean(selectedAnswer);
+
     const isReadOnly =
-      entry.question.readOnly || entry.question.answerOption.select.isLoading;
+      question.readOnly || question.answerOption.select.isLoading;
     const disableNewSelection =
-      !isSelected &&
-      (optionEntry.disabled ||
-        (entry.question.repeats && !entry.question.canAdd));
+      !selectedAnswer &&
+      (option.disabled || (question.repeats && !question.canAdd));
 
     if (isReadOnly || disableNewSelection) {
       return;
     }
 
-    if (entry.question.repeats) {
+    if (question.repeats) {
       if (selectedAnswer) {
-        entry.question.removeAnswer(selectedAnswer);
+        question.removeAnswer(selectedAnswer);
         return;
       }
 
-      if (!entry.question.canAdd) return;
-      entry.question.addAnswer(structuredClone(optionEntry.value));
+      if (!question.canAdd) return;
+      question.addAnswer(structuredClone(option.value));
       return;
     }
 
-    const target = entry.question.answers[0];
-    if (target) target.setValueByUser(structuredClone(optionEntry.value));
+    const target = question.answers[0];
+    if (target) target.setValueByUser(structuredClone(option.value));
   }
 
   @computed
-  private get model(): TableAxisModel {
-    const optionAxis: OptionAxisItem[] = [];
-    const optionMap = new Map<OptionToken, OptionAxisItem>();
-    const questionAxis: QuestionAxisEntry[] = [];
-
-    this.questions.forEach((question) => {
-      const optionEntryMap = new Map<OptionToken, AnswerOption<AnswerType>>();
-      question.answerOption.inherentOptions.forEach((entry) => {
-        const type = ANSWER_TYPE_TO_DATA_TYPE[question.type];
-        const token = tokenify(type, entry.value) as OptionToken;
-
-        if (!optionMap.has(token)) {
-          const option: OptionAxisItem = {
-            token,
-            type: question.type,
-            value: entry.value as DataTypeToType<
-              AnswerTypeToDataType<AnswerType>
-            >,
-          };
-          optionMap.set(token, option);
-          optionAxis.push(option);
-        }
-        optionEntryMap.set(token, entry);
-      });
-      questionAxis.push({ question, optionMap: optionEntryMap });
-    });
-
-    return { optionAxis, questionAxis };
-  }
-
-  @computed
-  private get questionByToken(): Map<string, QuestionAxisEntry> {
-    const map = new Map<string, QuestionAxisEntry>();
-    this.model.questionAxis.forEach((entry) => {
-      map.set(entry.question.token, entry);
-    });
-    return map;
+  private get lookup(): Map<
+    IQuestionNode["token"],
+    Map<OptionToken, AnswerOption<AnswerType>>
+  > {
+    return new Map(
+      this.questions.map((question) => [
+        question.token,
+        new Map(
+          question.answerOption.inherentOptions.map((option) => [
+            option.token,
+            option,
+          ]),
+        ),
+      ]),
+    );
   }
 }

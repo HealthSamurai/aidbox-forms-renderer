@@ -26,9 +26,9 @@ export function RadioButton({
           aria-describedby={ariaDescribedBy}
           onChange={onChange}
         />
-        {label ? (
+        {label && (
           <span className="nhsuk-label nhsuk-radios__label">{label}</span>
-        ) : undefined}
+        )}
       </label>
     </div>
   );

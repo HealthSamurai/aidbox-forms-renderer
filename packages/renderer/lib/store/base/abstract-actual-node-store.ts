@@ -212,11 +212,11 @@ export abstract class AbstractActualNodeStore
       return true;
     }
 
-    const parentIsGroup = !!parent && "gridStore" in parent;
+    const parentIsGroup = !!parent && "grid" in parent;
     const grandparent = parent?.parentStore;
     const grandparentIsGridGroup =
       !!grandparent &&
-      "gridStore" in grandparent &&
+      "grid" in grandparent &&
       "control" in grandparent &&
       grandparent.control === "grid";
 

@@ -17,15 +17,14 @@ export function GroupScaffold({
   return (
     <Container>
       {header}
-      {content.length > 0 ? (
-        onRemove ? (
+      {content.length > 0 &&
+        (onRemove ? (
           <ItemContent>{content}</ItemContent>
         ) : (
           <GroupContent>{content}</GroupContent>
-        )
-      ) : undefined}
+        ))}
       {errors}
-      {onRemove ? (
+      {onRemove && (
         <Toolbar>
           <IconButton
             icon={<Trash />}
@@ -34,7 +33,7 @@ export function GroupScaffold({
             label={removeText}
           />
         </Toolbar>
-      ) : undefined}
+      )}
     </Container>
   );
 }

@@ -1,97 +1,53 @@
 import { computed, makeObservable } from "mobx";
 import type {
-  GridColumnState,
-  GridRowState,
-  IGridStore,
+  IGrid,
   IGroupNode,
+  IGroupRow,
   IQuestionNode,
 } from "../../../types.ts";
-import { isGroupNode } from "../group-store.ts";
 import { isQuestionNode } from "../../question/question-store.ts";
-import { strings } from "../../../strings.ts";
-import { buildId } from "../../../utilities.ts";
 
-export class GridStore implements IGridStore {
-  private readonly group: IGroupNode;
-
-  constructor(group: IGroupNode) {
-    this.group = group;
+export class GridStore implements IGrid {
+  constructor(private readonly source: () => IGroupNode[]) {
     makeObservable(this);
   }
 
   @computed
-  get rowGroups(): IGroupNode[] {
-    return this.group.nodes.filter((node) => isGroupNode(node));
+  get groups(): IGroupNode[] {
+    return this.source();
   }
 
   @computed
-  get visibleRows(): IGroupNode[] {
-    return this.rowGroups.filter((row) => !row.hidden);
-  }
-
-  @computed
-  get columns(): GridColumnState[] {
+  get columns(): IQuestionNode[] {
     const seen = new Set<string>();
-    const columns: Array<{ linkId: string; label: string }> = [];
+    const columns: IQuestionNode[] = [];
 
-    this.visibleRows.forEach((row) => {
-      row.nodes
+    this.groups.forEach((group) => {
+      group.visibleNodes
         .filter((node) => isQuestionNode(node))
-        .filter((question) => !question.hidden)
         .forEach((question) => {
           if (!seen.has(question.linkId)) {
             seen.add(question.linkId);
-            columns.push({
-              linkId: question.linkId,
-              label: question.text ?? question.linkId,
-            });
+            columns.push(question);
           }
         });
     });
 
-    return columns.map((column) => ({
-      token: column.linkId,
-      label: column.label,
-    }));
+    return columns;
   }
 
   @computed
-  get rows(): GridRowState[] {
-    const columns = this.columns;
-    return this.visibleRows.map((row) => {
-      const questions = row.nodes
-        .filter((node) => isQuestionNode(node))
-        .filter((question) => !question.hidden);
+  get rows(): IGroupRow[] {
+    return this.groups.map((group) => {
       const questionMap = new Map<string, IQuestionNode>(
-        questions.map((question) => [question.linkId, question]),
+        group.visibleNodes
+          .filter((node) => isQuestionNode(node))
+          .map((question) => [question.linkId, question]),
       );
-      const label = row.text ?? row.linkId ?? strings.grid.rowLabelFallback;
-
       return {
-        token: row.token,
-        label,
-        cells: columns.map((column) => ({
-          token: buildId(row.token, column.token),
-          question: questionMap.get(column.token),
-        })),
+        group,
+        questions: this.columns.map((column) => questionMap.get(column.linkId)),
       };
     });
-  }
-
-  @computed
-  get emptyMessage(): string | undefined {
-    if (this.rowGroups.length === 0) {
-      return strings.grid.emptyNoRowGroups;
-    }
-
-    if (this.visibleRows.length === 0) {
-      return strings.grid.emptyAllHidden;
-    }
-
-    if (this.columns.length === 0) {
-      return strings.grid.emptyNoQuestions;
-    }
-
-    return undefined;
   }
 }

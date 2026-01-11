@@ -39,11 +39,11 @@ export function SliderInput({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={describedBy}
       />
-      {unitLabel ? (
+      {unitLabel && (
         <div className="nhsuk-hint" id={unitId}>
           {unitLabel}
         </div>
-      ) : undefined}
+      )}
       {(lowerLabel || upperLabel) && (
         <div className="nhsuk-hint" id={hintId}>
           {lowerLabel ?? ""} {upperLabel ? `— ${upperLabel}` : ""}

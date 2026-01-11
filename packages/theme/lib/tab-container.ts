@@ -14,7 +14,6 @@ export type TabContainerProperties = {
   value: number;
   onChange: (index: number) => void;
   errors?: ReactNode;
-  empty?: ReactNode;
   linkId: string;
 };
 

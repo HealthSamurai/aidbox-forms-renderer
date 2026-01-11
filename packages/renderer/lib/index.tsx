@@ -1,6 +1,6 @@
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 import { FormStore } from "./store/form/form-store.ts";
-import { Form } from "./components/form/form.tsx";
+import { Form } from "./component/form/form.tsx";
 import { useCallback, useEffect, useMemo } from "react";
 import { autorun } from "mobx";
 import type { Theme } from "@aidbox-forms/theme";

@@ -17,7 +17,7 @@ export function AnswerScaffold({
     <Row>
       <MainRow>
         <Control>{control}</Control>
-        {onRemove ? (
+        {onRemove && (
           <Toolbar>
             <AnswerRemoveButton
               onClick={onRemove}
@@ -25,7 +25,7 @@ export function AnswerScaffold({
               text="Remove"
             />
           </Toolbar>
-        ) : undefined}
+        )}
       </MainRow>
       <Children>
         {children}

@@ -5,11 +5,13 @@ export function QuestionScaffold({
   linkId,
   header,
   children,
+  errors,
 }: QuestionScaffoldProperties) {
   return (
     <Container data-linkid={linkId}>
       {header}
       {children}
+      {errors}
     </Container>
   );
 }

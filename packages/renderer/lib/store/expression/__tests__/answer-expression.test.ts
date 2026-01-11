@@ -6,7 +6,7 @@ import { assertQuestionNode } from "../../question/question-store.ts";
 import {
   makeAnswerExpression,
   makeVariable,
-} from "../../../__tests__/test-utils/expression-fixtures.ts";
+} from "../../../__tests__/utilities.ts";
 import { assertDefined } from "../../../utilities.ts";
 
 describe("answerExpression", () => {

@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import type { CheckboxListProperties } from "@aidbox-forms/theme";
-import { optionStatusClass } from "./option-status.ts";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function CheckboxList({
   options,
@@ -33,7 +33,7 @@ export function CheckboxList({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
     >
-      {hasOptions ? (
+      {hasOptions && (
         <OptionsList>
           {displayOptions.map((option, index) => {
             const optionId = `${id}-option-${index}`;
@@ -78,12 +78,8 @@ export function CheckboxList({
             );
           })}
         </OptionsList>
-      ) : undefined}
-      {isLoading ? (
-        <div className={optionStatusClass} role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
+      )}
+      {isLoading && <LoadingSpinner showLabel />}
       {Boolean(customOptionForm) && <div>{customOptionForm}</div>}
     </Stack>
   );

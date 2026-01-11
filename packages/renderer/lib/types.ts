@@ -494,95 +494,31 @@ export interface GroupRendererDefinition {
   renderer: ComponentType<GroupRendererProperties>;
 }
 
-export type GridColumnState = {
-  token: string;
-  label: string;
-};
-
-export type GridCellState = {
-  token: string;
-  question?: IQuestionNode | undefined;
-};
-
-export type GridRowState = {
-  token: string;
-  label: string;
-  cells: Array<GridCellState>;
-};
-
-export interface IGridStore {
-  readonly columns: Array<GridColumnState>;
-  readonly rows: Array<GridRowState>;
-  readonly emptyMessage: string | undefined;
+export interface IGroupRow {
+  group: IGroupNode;
+  questions: Array<IQuestionNode | undefined>;
 }
 
-export type OptionAxisItem = {
-  token: OptionToken;
-  type: AnswerType;
-  value: DataTypeToType<AnswerTypeToDataType<AnswerType>> | undefined;
-};
+export interface IGrid {
+  readonly columns: Array<IQuestionNode>;
+  readonly rows: Array<IGroupRow>;
+}
+
+export type OptionAxisItem = Omit<AnswerOption<AnswerType>, "disabled">;
 
 export type TableCellState = {
   selected: boolean;
   disabled: boolean;
 };
 
-export type QuestionAxisSelection = {
-  selectedTokens: Set<OptionToken>;
-  selectedToken: OptionToken;
-};
-
-export type QuestionAxisItem = {
-  token: string;
-  question: IQuestionNode;
-  ariaLabelledBy: string;
-  ariaDescribedBy?: string | undefined;
-  hasDetails: boolean;
-};
-
-export type QuestionAxisEntry = {
-  question: IQuestionNode;
-  optionMap: Map<OptionToken, AnswerOption<AnswerType>>;
-};
-
-export type TableAxisModel = {
-  optionAxis: OptionAxisItem[];
-  questionAxis: QuestionAxisEntry[];
-};
-
-export interface ITableStore {
+export interface ITable {
   readonly questions: Array<IQuestionNode>;
   readonly optionAxis: Array<OptionAxisItem>;
-  readonly questionAxis: Array<QuestionAxisItem>;
-  readonly detailQuestions: Array<IQuestionNode>;
-  getQuestionSelection(questionToken: string): QuestionAxisSelection;
   getCellState(
-    questionToken: string,
+    question: IQuestionNode,
     optionToken: OptionToken,
   ): TableCellState | undefined;
-  toggleCell(questionToken: string, optionToken: OptionToken): void;
-}
-
-export type GridTableColumnState = {
-  token: string;
-  label: string;
-};
-
-export type GridTableCellState = {
-  token: string;
-  question?: IQuestionNode | undefined;
-};
-
-export type GridTableRowState = {
-  token: string;
-  label: string | undefined;
-  node: IGroupNode;
-  cells: Array<GridTableCellState>;
-};
-
-export interface IGridTableStore {
-  readonly columns: Array<GridTableColumnState>;
-  readonly rows: Array<GridTableRowState>;
+  toggleCell(question: IQuestionNode, optionToken: OptionToken): void;
 }
 
 export interface IGroupNode extends IActualNode {
@@ -590,8 +526,8 @@ export interface IGroupNode extends IActualNode {
   readonly visibleNodes: Array<IPresentableNode>;
   readonly control: GroupItemControl | undefined;
   readonly renderer: ComponentType<GroupRendererProperties> | undefined;
-  readonly gridStore: IGridStore;
-  readonly tableStore: ITableStore;
+  readonly grid: IGrid;
+  readonly table: ITable;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -606,7 +542,7 @@ export interface IGroupList extends IPresentableNode {
   readonly maxOccurs: number;
   readonly control: GroupItemControl | undefined;
   readonly renderer: ComponentType<GroupRendererProperties> | undefined;
-  readonly gridTableStore: IGridTableStore;
+  readonly grid: IGrid;
   addNode(): void;
   removeNode(node: IGroupNode): void;
 }

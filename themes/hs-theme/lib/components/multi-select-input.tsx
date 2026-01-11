@@ -2,7 +2,7 @@ import { styled } from "@linaria/react";
 import type { MultiSelectInputProperties } from "@aidbox-forms/theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
-import { optionStatusClass } from "./option-status.ts";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 function isInteractiveTarget(target: EventTarget | undefined): boolean {
   if (!(target instanceof Element)) return false;
@@ -268,15 +268,20 @@ export function MultiSelectInput({
               onClick={openOptions}
               onKeyDown={handleNavigationKeyDown}
             >
-              {selectedOptions.length === 0 ? (
+              {selectedOptions.length === 0 && (
                 <PlaceholderText>
                   {placeholder ?? "Select an option"}
                 </PlaceholderText>
-              ) : undefined}
+              )}
             </SelectTrigger>
           )}
         </SelectWrapper>
-        {isOpenWithCustom ? (
+        {isLoading && (
+          <SelectActions>
+            <LoadingSpinner />
+          </SelectActions>
+        )}
+        {isOpenWithCustom && (
           <DropdownPanel
             id={listboxId}
             role="listbox"
@@ -317,7 +322,7 @@ export function MultiSelectInput({
                     {option.label}
                   </OptionButton>
                 ))}
-                {specifyOtherOption ? (
+                {specifyOtherOption && (
                   <StickyOption
                     key={specifyOtherOption.token}
                     id={`${listboxId}-option-${stickyIndex}`}
@@ -351,17 +356,12 @@ export function MultiSelectInput({
                   >
                     {specifyOtherOption.label}
                   </StickyOption>
-                ) : undefined}
+                )}
               </>
             )}
           </DropdownPanel>
-        ) : undefined}
+        )}
       </SelectField>
-      {isLoading ? (
-        <div className={optionStatusClass} role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
     </Stack>
   );
 }
@@ -429,6 +429,12 @@ const SelectTrigger = styled.div`
   &[aria-disabled="true"] {
     cursor: not-allowed;
   }
+`;
+
+const SelectActions = styled.div`
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
 `;
 
 const PlaceholderText = styled.span`

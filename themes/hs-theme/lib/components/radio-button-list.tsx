@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import type { RadioButtonListProperties } from "@aidbox-forms/theme";
-import { optionStatusClass } from "./option-status.ts";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function RadioButtonList({
   options,
@@ -22,7 +22,7 @@ export function RadioButtonList({
 
   return (
     <Stack>
-      {hasOptions ? (
+      {hasOptions && (
         <RadioGroupContainer
           role="radiogroup"
           aria-labelledby={ariaLabelledBy}
@@ -45,15 +45,9 @@ export function RadioButtonList({
             </RadioOption>
           ))}
         </RadioGroupContainer>
-      ) : undefined}
-      {isLoading ? (
-        <div className={optionStatusClass} role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
-      {customOptionForm ? (
-        <CustomFormSlot>{customOptionForm}</CustomFormSlot>
-      ) : undefined}
+      )}
+      {isLoading && <LoadingSpinner showLabel />}
+      {customOptionForm && <CustomFormSlot>{customOptionForm}</CustomFormSlot>}
     </Stack>
   );
 }

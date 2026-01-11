@@ -2,7 +2,7 @@ import { styled } from "@linaria/react";
 import type { SelectInputProperties } from "@aidbox-forms/theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
-import { optionStatusClass } from "./option-status.ts";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 import { inputClass } from "./tokens.ts";
 
 export function SelectInput({
@@ -215,7 +215,9 @@ export function SelectInput({
               ref={inputReference}
               id={id}
               className={inputClass}
-              data-has-clear={selectedOption ? "true" : undefined}
+              data-has-actions={
+                selectedOption || isLoading ? "true" : undefined
+              }
               value={query}
               onChange={(event) => {
                 updateQuery(event.target.value);
@@ -257,7 +259,9 @@ export function SelectInput({
             <DisplayField
               id={id}
               className={inputClass}
-              data-has-clear={selectedOption ? "true" : undefined}
+              data-has-actions={
+                selectedOption || isLoading ? "true" : undefined
+              }
               role="combobox"
               aria-labelledby={ariaLabelledBy}
               aria-describedby={ariaDescribedBy}
@@ -281,18 +285,23 @@ export function SelectInput({
               {displayContent}
             </DisplayField>
           )}
-          {selectedOption ? (
-            <ClearButton
-              type="button"
-              onClick={handleClear}
-              disabled={disabled || isLoading}
-              onMouseDown={(event) => event.preventDefault()}
-              aria-label="Clear"
-            >
-              {"\u00D7"}
-            </ClearButton>
-          ) : undefined}
-          {isOpenWithCustom ? (
+          {(selectedOption || isLoading) && (
+            <SelectActions>
+              {selectedOption && (
+                <ClearButton
+                  type="button"
+                  onClick={handleClear}
+                  disabled={disabled || isLoading}
+                  onMouseDown={(event) => event.preventDefault()}
+                  aria-label="Clear"
+                >
+                  {"\u00D7"}
+                </ClearButton>
+              )}
+              {isLoading && <LoadingSpinner />}
+            </SelectActions>
+          )}
+          {isOpenWithCustom && (
             <OptionsList
               id={listboxId}
               role="listbox"
@@ -333,7 +342,7 @@ export function SelectInput({
                       {entry.label}
                     </OptionButton>
                   ))}
-                  {specifyOtherOption ? (
+                  {specifyOtherOption && (
                     <StickyOption
                       id={`${listboxId}-option-${stickyIndex}`}
                       type="button"
@@ -366,18 +375,13 @@ export function SelectInput({
                     >
                       {specifyOtherOption.label}
                     </StickyOption>
-                  ) : undefined}
+                  )}
                 </>
               )}
             </OptionsList>
-          ) : undefined}
+          )}
         </SelectWrapper>
       </FieldRow>
-      {isLoading ? (
-        <div className={optionStatusClass} role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
     </div>
   );
 }
@@ -394,7 +398,7 @@ const SelectWrapper = styled.div`
 `;
 
 const SelectInputField = styled.input`
-  &[data-has-clear="true"] {
+  &[data-has-actions="true"] {
     padding-right: 2rem;
   }
 
@@ -408,7 +412,7 @@ const DisplayField = styled.div`
   display: flex;
   align-items: center;
 
-  &[data-has-clear="true"] {
+  &[data-has-actions="true"] {
     padding-right: 2rem;
   }
 
@@ -475,10 +479,6 @@ const StickyOption = styled(OptionButton)`
 `;
 
 const ClearButton = styled.button`
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
   border: none;
   background: transparent;
   border-radius: 0.375rem;
@@ -491,4 +491,14 @@ const ClearButton = styled.button`
     cursor: not-allowed;
     opacity: 0.6;
   }
+`;
+
+const SelectActions = styled.div`
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 `;

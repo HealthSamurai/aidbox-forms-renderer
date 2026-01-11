@@ -52,9 +52,9 @@ export function FileInput({
           aria-describedby={ariaDescribedBy}
         >
           <div className="nhsuk-body">{displayLabel}</div>
-          {displaySizeLabel ? (
+          {displaySizeLabel && (
             <div className="nhsuk-hint">{displaySizeLabel}</div>
-          ) : undefined}
+          )}
           <Actions>
             {disabled ? undefined : (
               <button

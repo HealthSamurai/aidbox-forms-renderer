@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { Extension, Questionnaire, QuestionnaireItem } from "fhir/r5";
 import { useEffect, useMemo } from "react";
 import { styled } from "@linaria/react";
-import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
+import { Form } from "@aidbox-forms/renderer/component/form/form.tsx";
 import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
 import type {
   AnswerType,

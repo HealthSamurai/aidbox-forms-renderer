@@ -6,7 +6,7 @@ import {
   makeCalculatedExpression,
   makeEnableExpression,
   makeVariable,
-} from "../../../__tests__/test-utils/expression-fixtures.ts";
+} from "../../../__tests__/utilities.ts";
 import {
   assertQuestionNode,
   isQuestionNode,

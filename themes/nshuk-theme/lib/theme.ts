@@ -15,24 +15,22 @@ import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
-import { NodeHeader } from "./components/node-header.tsx";
+import { Label } from "./components/label.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
 import { OptionsLoading } from "./components/options-loading.tsx";
-import { NodeHelp } from "./components/node-help.tsx";
-import { NodeLegal } from "./components/node-legal.tsx";
-import { NodeFlyover } from "./components/node-flyover.tsx";
+import { Help } from "./components/help.tsx";
+import { Legal } from "./components/legal.tsx";
+import { Flyover } from "./components/flyover.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import {
   AnswerRemoveButton,
   AnswerScaffold,
 } from "./components/answer-scaffold.tsx";
 import { Form } from "./components/form.tsx";
-import { FormErrors } from "./components/form-errors.tsx";
-import { NodeList } from "./components/node-list.tsx";
-import { EmptyState } from "./components/empty-state.tsx";
+import { Stack } from "./components/stack.tsx";
 import { GroupList } from "./components/group-list.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
-import { GridTable } from "./components/grid-table.tsx";
+import { Table } from "./components/table.tsx";
 import { InputGroup } from "./components/input-group.tsx";
 import { FileInput } from "./components/file-input.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
@@ -63,22 +61,20 @@ export const theme: Theme = {
   MultiSelectInput,
   CustomOptionForm,
   Errors,
-  NodeHeader,
+  Label,
   QuestionScaffold,
   OptionsLoading,
-  NodeHelp,
-  NodeLegal,
-  NodeFlyover,
+  Help,
+  Legal,
+  Flyover,
   AnswerList,
   AnswerRemoveButton,
   AnswerScaffold,
   Form,
-  FormErrors,
-  NodeList,
-  EmptyState,
+  Stack,
   GroupList,
   GroupScaffold,
-  GridTable,
+  Table,
   InputGroup,
   FileInput,
   TabContainer,

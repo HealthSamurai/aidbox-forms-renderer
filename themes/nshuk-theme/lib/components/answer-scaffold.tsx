@@ -15,7 +15,7 @@ export function AnswerScaffold({
   return (
     <Container>
       {control}
-      {onRemove ? (
+      {onRemove && (
         <Toolbar>
           <AnswerRemoveButton
             onClick={onRemove}
@@ -23,7 +23,7 @@ export function AnswerScaffold({
             text="Remove"
           />
         </Toolbar>
-      ) : undefined}
+      )}
       <Indented>
         {children}
         {errors}

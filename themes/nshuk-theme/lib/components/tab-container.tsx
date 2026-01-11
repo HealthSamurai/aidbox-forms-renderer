@@ -8,13 +8,12 @@ export function TabContainer({
   value,
   onChange,
   errors,
-  empty,
   linkId,
 }: TabContainerProperties) {
   if (items.length === 0) {
     return (
       <div className="nhsuk-form-group">
-        <div className="nhsuk-hint">{empty ?? "No tab content available."}</div>
+        <div className="nhsuk-hint">"No tab content available.</div>
       </div>
     );
   }

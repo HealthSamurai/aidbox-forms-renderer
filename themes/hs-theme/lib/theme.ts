@@ -14,24 +14,22 @@ export { CheckboxList } from "./components/checkbox-list.tsx";
 export { MultiSelectInput } from "./components/multi-select-input.tsx";
 export { CustomOptionForm } from "./components/custom-option-form.tsx";
 export { Errors } from "./components/errors.tsx";
-export { NodeHeader } from "./components/node-header.tsx";
+export { Label } from "./components/label.tsx";
 export { QuestionScaffold } from "./components/question-scaffold.tsx";
 export { OptionsLoading } from "./components/options-loading.tsx";
-export { NodeHelp } from "./components/node-help.tsx";
-export { NodeLegal } from "./components/node-legal.tsx";
-export { NodeFlyover } from "./components/node-flyover.tsx";
+export { Help } from "./components/help.tsx";
+export { Legal } from "./components/legal.tsx";
+export { Flyover } from "./components/flyover.tsx";
 export { AnswerList } from "./components/answer-list.tsx";
 export {
   AnswerRemoveButton,
   AnswerScaffold,
 } from "./components/answer-scaffold.tsx";
 export { Form } from "./components/form.tsx";
-export { FormErrors } from "./components/form-errors.tsx";
-export { NodeList } from "./components/node-list.tsx";
-export { EmptyState } from "./components/empty-state.tsx";
+export { Stack } from "./components/stack.tsx";
 export { GroupList } from "./components/group-list.tsx";
 export { GroupScaffold } from "./components/group-scaffold.tsx";
-export { GridTable } from "./components/grid-table.tsx";
+export { Table } from "./components/table.tsx";
 export { InputGroup } from "./components/input-group.tsx";
 export { FileInput } from "./components/file-input.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
@@ -54,16 +52,14 @@ import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
-import { NodeHeader } from "./components/node-header.tsx";
+import { Label } from "./components/label.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
 import { OptionsLoading } from "./components/options-loading.tsx";
-import { NodeHelp } from "./components/node-help.tsx";
-import { NodeLegal } from "./components/node-legal.tsx";
-import { NodeFlyover } from "./components/node-flyover.tsx";
+import { Help } from "./components/help.tsx";
+import { Legal } from "./components/legal.tsx";
+import { Flyover } from "./components/flyover.tsx";
 import { Form } from "./components/form.tsx";
-import { FormErrors } from "./components/form-errors.tsx";
-import { NodeList } from "./components/node-list.tsx";
-import { EmptyState } from "./components/empty-state.tsx";
+import { Stack } from "./components/stack.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import {
@@ -72,7 +68,7 @@ import {
 } from "./components/answer-scaffold.tsx";
 import { GroupList } from "./components/group-list.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
-import { GridTable } from "./components/grid-table.tsx";
+import { Table } from "./components/table.tsx";
 import { InputGroup } from "./components/input-group.tsx";
 import { FileInput } from "./components/file-input.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
@@ -96,22 +92,20 @@ export const theme: Theme = {
   MultiSelectInput,
   CustomOptionForm,
   Errors,
-  NodeHeader,
+  Label,
   QuestionScaffold,
   OptionsLoading,
-  NodeHelp,
-  NodeLegal,
-  NodeFlyover,
+  Help,
+  Legal,
+  Flyover,
   Form,
-  FormErrors,
-  NodeList,
-  EmptyState,
+  Stack,
   AnswerList,
   AnswerRemoveButton,
   AnswerScaffold,
   GroupList,
   GroupScaffold,
-  GridTable,
+  Table,
   InputGroup,
   FileInput,
   DisplayRenderer,

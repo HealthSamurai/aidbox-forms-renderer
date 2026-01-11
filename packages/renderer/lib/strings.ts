@@ -24,12 +24,6 @@ export const strings = {
     removeSection: "Remove section",
     noNodesYet: "No nodes yet.",
   },
-  grid: {
-    emptyNoRowGroups: "No row groups configured for this grid.",
-    emptyAllHidden: "All rows are currently hidden.",
-    emptyNoQuestions: "Grid rows have no questions to render.",
-    rowLabelFallback: "Row",
-  },
   gridTable: {
     headerActions: "Actions",
   },

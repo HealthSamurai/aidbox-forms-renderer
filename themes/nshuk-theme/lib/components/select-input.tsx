@@ -2,6 +2,7 @@ import type { SelectInputProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
+import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function SelectInput({
   options,
@@ -213,7 +214,9 @@ export function SelectInput({
               ref={inputReference}
               id={id}
               className="nhsuk-input"
-              data-has-clear={selectedOption ? "true" : undefined}
+              data-has-actions={
+                selectedOption || isLoading ? "true" : undefined
+              }
               value={query}
               onChange={(event) => {
                 updateQuery(event.target.value);
@@ -265,7 +268,9 @@ export function SelectInput({
               aria-disabled={disabled || isLoading ? true : undefined}
               tabIndex={disabled || isLoading ? -1 : 0}
               data-disabled={disabled || isLoading ? "true" : undefined}
-              data-has-clear={selectedOption ? "true" : undefined}
+              data-has-actions={
+                selectedOption || isLoading ? "true" : undefined
+              }
               onClick={() => {
                 if (!disabled && !isLoading && !isOpen) {
                   updateQuery("");
@@ -278,19 +283,24 @@ export function SelectInput({
               {displayContent}
             </SelectDisplay>
           )}
-          {selectedOption ? (
-            <ClearButton
-              type="button"
-              onClick={handleClear}
-              disabled={disabled || isLoading}
-              data-disabled={disabled || isLoading ? "true" : undefined}
-              onMouseDown={(event) => event.preventDefault()}
-              aria-label="Clear"
-            >
-              {"\u00D7"}
-            </ClearButton>
-          ) : undefined}
-          {isOpenWithCustom ? (
+          {(selectedOption || isLoading) && (
+            <InputActions>
+              {selectedOption && (
+                <ClearButton
+                  type="button"
+                  onClick={handleClear}
+                  disabled={disabled || isLoading}
+                  data-disabled={disabled || isLoading ? "true" : undefined}
+                  onMouseDown={(event) => event.preventDefault()}
+                  aria-label="Clear"
+                >
+                  {"\u00D7"}
+                </ClearButton>
+              )}
+              {isLoading && <LoadingSpinner />}
+            </InputActions>
+          )}
+          {isOpenWithCustom && (
             <Listbox
               id={listboxId}
               role="listbox"
@@ -331,7 +341,7 @@ export function SelectInput({
                       {entry.label}
                     </OptionButton>
                   ))}
-                  {specifyOtherOption ? (
+                  {specifyOtherOption && (
                     <OptionButton
                       id={`${listboxId}-option-${stickyIndex}`}
                       type="button"
@@ -365,18 +375,13 @@ export function SelectInput({
                     >
                       {specifyOtherOption.label}
                     </OptionButton>
-                  ) : undefined}
+                  )}
                 </>
               )}
             </Listbox>
-          ) : undefined}
+          )}
         </InputWrap>
       </InputRow>
-      {isLoading ? (
-        <div className="nhsuk-hint" role="status" aria-live="polite">
-          Loading options…
-        </div>
-      ) : undefined}
     </div>
   );
 }
@@ -403,7 +408,7 @@ const SelectInputField = styled.input`
     opacity: 0.65;
   }
 
-  &[data-has-clear="true"] {
+  &[data-has-actions="true"] {
     padding-right: 2rem;
   }
 `;
@@ -417,16 +422,12 @@ const SelectDisplay = styled.div`
     cursor: not-allowed;
   }
 
-  &[data-has-clear="true"] {
+  &[data-has-actions="true"] {
     padding-right: 2rem;
   }
 `;
 
 const ClearButton = styled.button`
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
   border: none;
   background: transparent;
   padding: 0.25rem;
@@ -437,6 +438,16 @@ const ClearButton = styled.button`
     opacity: 0.6;
     cursor: not-allowed;
   }
+`;
+
+const InputActions = styled.div`
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 `;
 
 const Listbox = styled.div`

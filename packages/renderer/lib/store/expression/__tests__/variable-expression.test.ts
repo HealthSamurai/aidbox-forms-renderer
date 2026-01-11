@@ -5,7 +5,7 @@ import { FormStore } from "../../form/form-store.ts";
 import {
   makeCalculatedExpression,
   makeVariable,
-} from "../../../__tests__/test-utils/expression-fixtures.ts";
+} from "../../../__tests__/utilities.ts";
 import { assertGroupListStore } from "../../group/group-list-store.ts";
 import { assertGroupNode } from "../../group/group-store.ts";
 import { assertQuestionNode } from "../../question/question-store.ts";

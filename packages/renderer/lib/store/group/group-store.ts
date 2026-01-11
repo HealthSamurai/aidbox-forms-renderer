@@ -10,6 +10,8 @@ import {
   GROUP_ITEM_CONTROLS,
   type GroupItemControl,
   GroupRendererProperties,
+  IGrid,
+  ITable,
 } from "../../types.ts";
 import { QuestionnaireItem, QuestionnaireResponseItem } from "fhir/r5";
 
@@ -83,12 +85,16 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
   }
 
   @computed({ keepAlive: true })
-  get gridStore(): GridStore {
-    return new GridStore(this);
+  get grid(): IGrid {
+    return new GridStore(() =>
+      this.nodes
+        .filter((node) => isGroupNode(node))
+        .filter((group) => !group.hidden),
+    );
   }
 
   @computed({ keepAlive: true })
-  get tableStore(): TableStore {
+  get table(): ITable {
     return new TableStore(this);
   }
 
