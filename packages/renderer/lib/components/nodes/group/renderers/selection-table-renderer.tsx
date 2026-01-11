@@ -3,7 +3,7 @@ import type { GroupRendererProperties } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
-import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { isGroupListStore } from "../../../../store/group/group-list-store.ts";
 import { SelectionTableRenderer as SelectionTableControl } from "../controls/selection-table-renderer.tsx";
 
 export const SelectionTableRenderer = observer(function SelectionTableRenderer({

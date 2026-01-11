@@ -14,7 +14,7 @@ import {
 } from "../../../../utilities.ts";
 import {
   AnswerType,
-  IAnswerInstance,
+  IAnswer,
   ValueControlProperties,
 } from "../../../../types.ts";
 
@@ -27,7 +27,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
   answer,
   control,
 }: {
-  answer: IAnswerInstance<T>;
+  answer: IAnswer<T>;
   control: AnswerRenderCallback<T>;
 }) {
   const { AnswerScaffold: ThemedAnswerScaffold } = useTheme();
@@ -48,7 +48,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
             getNodeErrorId(answer.question),
             getAnswerErrorId(answer),
           )}
-          answer={answer as IAnswerInstance<T>}
+          answer={answer as IAnswer<T>}
         />
       }
       onRemove={answer.question.repeats ? handleRemove : undefined}

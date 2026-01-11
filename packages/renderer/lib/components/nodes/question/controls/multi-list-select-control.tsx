@@ -11,22 +11,20 @@ import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
 import {
+  buildId,
   concatIds,
   getAnswerErrorId,
   getNodeErrorId,
   getNodeHelpId,
   getNodeLabelId,
-  buildId,
 } from "../../../../utilities.ts";
 
 export const MultiListSelectControl = observer(function MultiListSelectControl<
   T extends AnswerType,
 >({ node }: { node: IQuestionNode<T> }) {
   const { CheckboxList, CustomOptionForm } = useTheme();
-  const store = node.answerOption;
-  const customControlType =
-    node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
-  const CustomControl = getValueControl(customControlType);
+  const store = node.answerOption.select;
+  const CustomControl = getValueControl(store.customType);
   const selectedOptions = useMemo(() => {
     return store.selectedOptions.map((selection) => ({
       token: selection.token,

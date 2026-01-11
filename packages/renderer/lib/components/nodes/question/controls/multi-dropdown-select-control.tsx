@@ -11,12 +11,12 @@ import { getValueControl } from "../fhir/index.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { strings } from "../../../../strings.ts";
 import {
+  buildId,
   concatIds,
   getAnswerErrorId,
   getNodeErrorId,
   getNodeHelpId,
   getNodeLabelId,
-  buildId,
 } from "../../../../utilities.ts";
 
 export const MultiDropdownSelectControl = observer(
@@ -26,10 +26,8 @@ export const MultiDropdownSelectControl = observer(
     node: IQuestionNode<T>;
   }) {
     const { MultiSelectInput, CustomOptionForm } = useTheme();
-    const store = node.answerOption;
-    const customControlType =
-      node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
-    const CustomControl = getValueControl(customControlType);
+    const store = node.answerOption.select;
+    const CustomControl = getValueControl(store.customType);
 
     const selectedOptions = useMemo(() => {
       return store.selectedOptions.map((selection) => ({

@@ -3,7 +3,7 @@ import type { GroupRendererProperties } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
-import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { isGroupListStore } from "../../../../store/group/group-list-store.ts";
 import { TabContainerRenderer as TabContainerControl } from "../controls/tab-container-renderer.tsx";
 
 export const TabContainerRenderer = observer(function TabContainerRenderer({

@@ -3,8 +3,8 @@ import { render } from "@testing-library/react";
 import type { QuestionnaireItem } from "fhir/r5";
 
 import { NodeHelp } from "../node-help.tsx";
-import { FormStore } from "../../../stores/form/form-store.ts";
-import { isQuestionNode } from "../../../stores/nodes/questions/question-store.ts";
+import { FormStore } from "../../../store/form/form-store.ts";
+import { isQuestionNode } from "../../../store/question/question-store.ts";
 
 function makeQuestionnaireItem(helpText?: string): QuestionnaireItem {
   return {

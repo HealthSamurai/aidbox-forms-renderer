@@ -29,7 +29,7 @@ import { HeaderRenderer } from "./components/nodes/group/renderers/header-render
 import { PageRenderer } from "./components/nodes/group/renderers/page-renderer.tsx";
 import { SelectionTableRenderer } from "./components/nodes/group/renderers/selection-table-renderer.tsx";
 import { TabContainerRenderer } from "./components/nodes/group/renderers/tab-container-renderer.tsx";
-import { isGroupListStore } from "./stores/nodes/groups/group-list-store.ts";
+import { isGroupListStore } from "./store/group/group-list-store.ts";
 
 export const questions: QuestionRendererDefinition[] = [
   {

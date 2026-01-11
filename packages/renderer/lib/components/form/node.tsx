@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { DisplayRenderer } from "../nodes/display/display-renderer.tsx";
 import { IPresentableNode } from "../../types.ts";
-import { isDisplayNode } from "../../stores/nodes/display/display-store.ts";
-import { isGroupListStore } from "../../stores/nodes/groups/group-list-store.ts";
-import { isGroupNode } from "../../stores/nodes/groups/group-store.ts";
-import { isQuestionNode } from "../../stores/nodes/questions/question-store.ts";
+import { isDisplayNode } from "../../store/display/display-store.ts";
+import { isGroupListStore } from "../../store/group/group-list-store.ts";
+import { isGroupNode } from "../../store/group/group-store.ts";
+import { isQuestionNode } from "../../store/question/question-store.ts";
 
 export const Node = observer(function Node({
   node,

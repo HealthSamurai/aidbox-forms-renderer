@@ -8,8 +8,8 @@ import {
 } from "@testing-library/react";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../../../../../../stores/form/form-store.ts";
-import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
+import { FormStore } from "../../../../../../store/form/form-store.ts";
+import { isQuestionNode } from "../../../../../../store/question/question-store.ts";
 import { ReferenceRenderer } from "../reference-renderer.tsx";
 import type { IQuestionNode } from "../../../../../../types.ts";
 import { strings } from "../../../../../../strings.ts";

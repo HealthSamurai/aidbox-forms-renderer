@@ -13,8 +13,8 @@ import type {
   QuestionnaireResponse,
 } from "fhir/r5";
 
-import { FormStore } from "../../../../../stores/form/form-store.ts";
-import { isQuestionNode } from "../../../../../stores/nodes/questions/question-store.ts";
+import { FormStore } from "../../../../../store/form/form-store.ts";
+import { isQuestionNode } from "../../../../../store/question/question-store.ts";
 import type { AnswerType, IQuestionNode } from "../../../../../types.ts";
 import { EXT, buildId } from "../../../../../utilities.ts";
 import { strings } from "../../../../../strings.ts";

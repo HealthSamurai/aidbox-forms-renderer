@@ -4,7 +4,7 @@ import {
   DataType,
   DataTypeToSuffix,
   DataTypeToType,
-  IAnswerInstance,
+  IAnswer,
   IGroupNode,
   IPresentableNode,
   IQuestionNode,
@@ -78,7 +78,7 @@ export function getNodeErrorId(node: IPresentableNode): string | undefined {
   return node.hasErrors ? buildId(node.token, "errors") : undefined;
 }
 
-export function getAnswerErrorId(answer: IAnswerInstance): string | undefined {
+export function getAnswerErrorId(answer: IAnswer): string | undefined {
   return answer.issues.length > 0 ? buildId(answer.token, "errors") : undefined;
 }
 
@@ -569,7 +569,7 @@ export function getIssueMessage(
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-export function answerHasOwnValue(answer: IAnswerInstance): boolean {
+export function answerHasOwnValue(answer: IAnswer): boolean {
   const value = answer.value;
   if (value == undefined) {
     return false;
@@ -587,7 +587,7 @@ export function answerHasOwnValue(answer: IAnswerInstance): boolean {
 }
 
 export function answerHasContent<T extends AnswerType>(
-  answer: IAnswerInstance<T>,
+  answer: IAnswer<T>,
 ): boolean {
   if (answer.nodes.some((child) => child.responseItems.length > 0)) {
     return true;
@@ -605,7 +605,9 @@ export type PolyCarrierFor<Base extends string, T extends DataType> = {
   [K in PolyKeyFor<Base, T>]?: unknown;
 };
 
-export const ANSWER_TYPE_TO_DATA_TYPE: Record<AnswerType, DataType> = {
+export const ANSWER_TYPE_TO_DATA_TYPE: {
+  [K in AnswerType]: AnswerTypeToDataType<K>;
+} = {
   boolean: "boolean",
   decimal: "decimal",
   integer: "integer",

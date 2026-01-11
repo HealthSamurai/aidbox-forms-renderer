@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { styled } from "@linaria/react";
 
 import { Form } from "@aidbox-forms/renderer/components/form/form.tsx";
-import { FormStore } from "@aidbox-forms/renderer/stores/form/form-store.ts";
+import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,

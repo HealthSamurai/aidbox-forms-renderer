@@ -1,10 +1,10 @@
-import type { IAnswerInstance } from "../../../../../types.ts";
+import type { IAnswer } from "../../../../../types.ts";
 import { useTheme } from "../../../../../ui/theme.tsx";
 import { strings } from "../../../../../strings.ts";
 import { buildId } from "../../../../../utilities.ts";
 
 export type QuantityInputProperties = {
-  answer: IAnswerInstance<"quantity">;
+  answer: IAnswer<"quantity">;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;

@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import {
   AnswerType,
-  ValueControlProperties,
   OptionItem,
+  ValueControlProperties,
 } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/index.ts";
@@ -20,14 +20,13 @@ export const SingleDropdownSelectControl = observer(
   }: ValueControlProperties<T>) {
     const { SelectInput, CustomOptionForm } = useTheme();
     const node = answer.question;
-    const store = node.answerOption;
-    const customControlType =
-      node.answerOption.constraint === "optionsOrString" ? "string" : node.type;
+    const store = node.answerOption.select;
+
     const isCustomActive =
       store.customOptionFormState?.answer.token === answer.token;
     const selection = store.getSelectedOption(answer);
 
-    const Control = getValueControl(customControlType);
+    const Control = getValueControl(store.customType);
 
     const customOptionForm =
       isCustomActive && store.customOptionFormState ? (

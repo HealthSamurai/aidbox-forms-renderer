@@ -10,8 +10,8 @@ import {
 import userEvent from "@testing-library/user-event";
 import type { Questionnaire, QuestionnaireResponse } from "fhir/r5";
 
-import { FormStore } from "../../../../../../stores/form/form-store.ts";
-import { isQuestionNode } from "../../../../../../stores/nodes/questions/question-store.ts";
+import { FormStore } from "../../../../../../store/form/form-store.ts";
+import { isQuestionNode } from "../../../../../../store/question/question-store.ts";
 import { QuantityRenderer } from "../quantity-renderer.tsx";
 import { EXT } from "../../../../../../utilities.ts";
 import type { IQuestionNode } from "../../../../../../types.ts";

@@ -3,7 +3,7 @@ import type { GroupRendererProperties } from "../../../../types.ts";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../../strings.ts";
-import { isGroupListStore } from "../../../../stores/nodes/groups/group-list-store.ts";
+import { isGroupListStore } from "../../../../store/group/group-list-store.ts";
 import { FooterRenderer as FooterControl } from "../controls/footer-renderer.tsx";
 
 export const FooterRenderer = observer(function FooterRenderer({

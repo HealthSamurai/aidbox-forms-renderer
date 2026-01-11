@@ -41,9 +41,9 @@ import {
   TriggerDefinition,
   UsageContext,
 } from "fhir/r5";
-import type { GroupRendererRegistry } from "./stores/registries/group-renderer-registry.ts";
+import type { GroupRendererRegistry } from "./store/group/group-renderer-registry.ts";
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
-import { QuestionRendererRegistry } from "./stores/registries/question-renderer-registry.ts";
+import { QuestionRendererRegistry } from "./store/question/question-renderer-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utilities.ts";
 import type { FormPagination, OptionItem } from "@aidbox-forms/theme";
 
@@ -238,7 +238,7 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
 >;
 
 export type ValueControlProperties<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
+  answer: IAnswer<T>;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -608,7 +608,7 @@ export interface IGroupList extends IPresentableNode {
   readonly renderer: ComponentType<GroupRendererProperties> | undefined;
   readonly gridTableStore: IGridTableStore;
   addNode(): void;
-  removeNode(instance: IGroupNode): void;
+  removeNode(node: IGroupNode): void;
 }
 
 export interface ValueBounds<T extends AnswerType = AnswerType> {
@@ -616,7 +616,7 @@ export interface ValueBounds<T extends AnswerType = AnswerType> {
   readonly max: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
 }
 
-export interface IAnswerInstance<T extends AnswerType = AnswerType> {
+export interface IAnswer<T extends AnswerType = AnswerType> {
   readonly token: AnswerToken;
   readonly question: IQuestionNode<T>;
   readonly value: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
@@ -641,11 +641,9 @@ export interface IQuantityAnswer {
   handleFreeTextChange(text: string): void;
 }
 
-export interface IAnswerOptions<T extends AnswerType = AnswerType> {
+export interface IOptionSelection<T extends AnswerType = AnswerType> {
   readonly isLoading: boolean;
-  readonly error: OperationOutcomeIssue | undefined;
-  readonly inherentOptions: ReadonlyArray<AnswerOption<T>>;
-  readonly constraint: QuestionnaireItem["answerConstraint"];
+  readonly customType: AnswerType;
   readonly allowCustom: boolean;
   readonly filteredOptions: ReadonlyArray<
     AnswerOption<T> | AnswerOption<"string">
@@ -654,18 +652,23 @@ export interface IAnswerOptions<T extends AnswerType = AnswerType> {
   readonly specifyOtherToken: OptionToken;
   readonly canAddSelection: boolean;
   readonly customOptionFormState: CustomOptionFormState<T> | undefined;
-  getSelectedOption(
-    answer: IAnswerInstance<T>,
-  ): SelectedAnswerOption<T> | undefined;
+  getSelectedOption(answer: IAnswer<T>): SelectedAnswerOption<T> | undefined;
   setSearchQuery(query: string): void;
   selectOption(token: OptionToken): void;
   deselectOption(token: OptionToken): void;
   selectOptionForAnswer(
-    answer: IAnswerInstance<T>,
+    answer: IAnswer<T>,
     token: OptionToken | undefined,
   ): void;
   cancelCustomOptionForm(): void;
   submitCustomOptionForm(): void;
+}
+
+export interface IAnswerOptions<T extends AnswerType = AnswerType> {
+  readonly error: OperationOutcomeIssue | undefined;
+  readonly inherentOptions: ReadonlyArray<AnswerOption<T>>;
+  readonly constraint: QuestionnaireItem["answerConstraint"];
+  readonly select: IOptionSelection<T>;
 }
 
 export type QuestionRendererProperties<T extends AnswerType = AnswerType> = {
@@ -686,25 +689,26 @@ export interface QuestionRendererDefinition<T extends AnswerType = AnswerType> {
 }
 
 export type CustomOptionFormState<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
+  answer: IAnswer<T>;
   isNew: boolean;
   canSubmit: boolean;
 };
 
 export type SelectedAnswerOption<T extends AnswerType> = {
-  answer: IAnswerInstance<T>;
+  answer: IAnswer<T>;
 } & (AnswerOption<T> | AnswerOption<"string">);
 
 export interface IQuestionNode<
   T extends AnswerType = AnswerType,
 > extends IActualNode {
   readonly type: T;
+  readonly dataType: AnswerTypeToDataType<T>;
   readonly control: QuestionItemControl | undefined;
   readonly repeats: boolean;
   readonly isRepeatingWithoutChildren: boolean;
   readonly answerOption: IAnswerOptions<T>;
   readonly keyboardType: HTMLAttributes<Element>["inputMode"] | undefined;
-  readonly answers: Array<IAnswerInstance<T>>;
+  readonly answers: Array<IAnswer<T>>;
   readonly renderer: QuestionRendererComponent<T> | undefined;
   readonly minLength: number | undefined;
   readonly maxLength: number | undefined;
@@ -717,8 +721,8 @@ export interface IQuestionNode<
 
   addAnswer(
     initial?: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
-  ): IAnswerInstance | undefined;
-  removeAnswer(answer: IAnswerInstance<T>): void;
+  ): IAnswer | undefined;
+  removeAnswer(answer: IAnswer<T>): void;
   markUserOverridden(): void;
 }
 

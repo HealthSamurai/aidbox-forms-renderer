@@ -15,8 +15,8 @@
 - repeated group node (`GroupListStore`) is rendered as list of instances exposed through its `nodes` collection plus an add button
 - each repeating group instance (`GroupStore`) renders a block with header, remove button, and its child nodes while extending the scope registry for nested `linkId`s
 - repeated question node is rendered as a block with label, list of answers with remove button, and add button
-- non-repeating question node keeps exactly one `AnswerInstance`, hides add/remove controls, and still renders a label with a single input control
-- answers are rendered as blocks with input control and optional child nodes, represented by `AnswerInstance`, which keeps a scoped registry for nested items
+- non-repeating question node keeps exactly one `AnswerStore`, hides add/remove controls, and still renders a label with a single input control
+- answers are rendered as blocks with input control and optional child nodes, represented by `AnswerStore`, which keeps a scoped registry for nested items
 - input control type depends on question node's template type
 - string/text question node is rendered as text input control
 - integer question node is rendered as number input control

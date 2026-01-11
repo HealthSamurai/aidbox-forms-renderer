@@ -1,12 +1,12 @@
 import { observer } from "mobx-react-lite";
-import type { IAnswerInstance } from "../../../../types.ts";
+import type { IAnswer } from "../../../../types.ts";
 import { getAnswerErrorId, getIssueMessage } from "../../../../utilities.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export const AnswerErrors = observer(function AnswerErrors({
   answer,
 }: {
-  answer: IAnswerInstance;
+  answer: IAnswer;
 }) {
   const { Errors: ThemedErrors } = useTheme();
   const id = getAnswerErrorId(answer);

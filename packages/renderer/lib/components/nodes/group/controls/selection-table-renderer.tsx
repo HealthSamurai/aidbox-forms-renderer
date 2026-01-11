@@ -42,7 +42,7 @@ export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   const renderQuestionHeader = (entry: QuestionAxisItem) => (
     <>
       <NodeHeader node={entry.question} as="text" />
-      {entry.question.answerOption.isLoading ? (
+      {entry.question.answerOption.select.isLoading ? (
         <OptionsLoading isLoading />
       ) : undefined}
       {entry.question.hasErrors && <NodeErrors node={entry.question} />}

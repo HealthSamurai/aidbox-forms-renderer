@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Questionnaire } from "fhir/r5";
 
-import { FormStore } from "../stores/form/form-store.ts";
+import { FormStore } from "../store/form/form-store.ts";
 
 const ITEM_CONTROL_EXTENSION =
   "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl";
