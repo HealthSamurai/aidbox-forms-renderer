@@ -1,0 +1,33 @@
+@import "antd/dist/reset.css";
+
+.ab-antd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.ab-antd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ab-antd-table th,
+.ab-antd-table td {
+  border: 1px solid #f0f0f0;
+  padding: 0.5rem;
+  vertical-align: top;
+}
+
+.ab-antd-table th {
+  text-align: left;
+  background: #fafafa;
+}
+
+.ab-antd-table-row-header {
+  min-width: 160px;
+}

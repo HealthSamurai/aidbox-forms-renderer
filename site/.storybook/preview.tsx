@@ -2,12 +2,21 @@ import type { Preview } from "@storybook/react-vite";
 import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
 import { useEffect } from "react";
 import "./preview.css";
+import { theme as antdTheme } from "@aidbox-forms/antd-theme";
 import { theme as hsTheme } from "@aidbox-forms/hs-theme";
 import { theme as nshukTheme } from "@aidbox-forms/nshuk-theme";
+import antdThemeCssUrl from "../../themes/antd-theme/lib/style.css?url";
 import hsThemeCssUrl from "../../themes/hs-theme/lib/style.css?url";
 import nshukThemeCssUrl from "../../themes/nshuk-theme/lib/style.css?url";
 
 export const themes = {
+  antd: {
+    title: "Ant Design",
+    packageName: "@aidbox-forms/antd-theme",
+    themePath: "themes/antd-theme/lib/theme.ts",
+    css: antdThemeCssUrl,
+    instance: antdTheme,
+  },
   hs: {
     title: "Health Samurai",
     packageName: "@aidbox-forms/hs-theme",

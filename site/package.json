@@ -12,6 +12,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@aidbox-forms/antd-theme": "workspace:*",
     "@aidbox-forms/hs-theme": "workspace:*",
     "@aidbox-forms/nshuk-theme": "workspace:*",
     "@aidbox-forms/renderer": "workspace:*",
