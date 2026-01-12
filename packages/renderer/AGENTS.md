@@ -1,3 +1,27 @@
+# @aidbox-forms/renderer — Agent Notes
+
+This file applies to `packages/renderer/**` and supplements the root `AGENTS.md`.
+
+## Commands (run from repo root)
+
+- Dev playground: `pnpm --filter @aidbox-forms/renderer dev`
+- Build: `pnpm --filter @aidbox-forms/renderer build`
+- Lint: `pnpm --filter @aidbox-forms/renderer lint`
+- Typecheck: `pnpm --filter @aidbox-forms/renderer typecheck`
+- Test: `pnpm --filter @aidbox-forms/renderer test`
+
+## Running a single test (Vitest)
+
+- Run one file: `pnpm --filter @aidbox-forms/renderer test -- lib/store/form/__tests__/validation.test.ts`
+- Run one test by name: `pnpm --filter @aidbox-forms/renderer test -- -t "filters options by search query"`
+- Run once (CI style): `pnpm --filter @aidbox-forms/renderer test -- --run`
+
+## Renderer constraints (enforced by ESLint)
+
+- Do not render raw DOM elements in JSX (`<div>`, `<input>`, etc); use theme components.
+- Do not set `className`/`style` in JSX; styling belongs in the theme layer.
+- Write exhaustive switches (`@typescript-eslint/switch-exhaustiveness-check`).
+
 ### Core concepts
 
 - rendered (realized) questionnaire response is form managed by `FormStore`, which keeps a registry of top-level nodes
