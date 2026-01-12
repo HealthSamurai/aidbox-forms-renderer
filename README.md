@@ -42,6 +42,16 @@ import { theme } from "@aidbox-forms/nshuk-theme";
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```
 
+Mantine-based themes require wrapping the renderer with a provider. `@aidbox-forms/mantine-theme` re-exports Mantine’s provider as `Provider`:
+
+```tsx
+import { Provider, theme } from "@aidbox-forms/mantine-theme";
+
+<Provider>
+  <Renderer questionnaire={questionnaire} theme={theme} />
+</Provider>;
+```
+
 Bring your own theme is supported; see the theme contract and component reference in [packages/theme/README.md](packages/theme/README.md).
 
 ## Compatibility

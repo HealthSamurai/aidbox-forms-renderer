@@ -1,6 +1,5 @@
 import { styled } from "@linaria/react";
 import type { TabContainerProperties } from "@aidbox-forms/theme";
-import classNames from "classnames";
 
 export function TabContainer({
   header,
@@ -13,7 +12,7 @@ export function TabContainer({
   if (items.length === 0) {
     return (
       <div className="nhsuk-form-group">
-        <div className="nhsuk-hint">"No tab content available.</div>
+        <div className="nhsuk-hint">No tab content available.</div>
       </div>
     );
   }
@@ -32,9 +31,11 @@ export function TabContainer({
           return (
             <li
               key={item.token}
-              className={classNames("nhsuk-tabs__list-item", {
-                "nhsuk-tabs__list-item--selected": selected,
-              })}
+              className={
+                selected
+                  ? "nhsuk-tabs__list-item nhsuk-tabs__list-item--selected"
+                  : "nhsuk-tabs__list-item"
+              }
             >
               <button
                 type="button"

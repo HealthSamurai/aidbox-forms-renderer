@@ -1,13 +1,27 @@
 import type { Preview } from "@storybook/react-vite";
 import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
-import { useEffect } from "react";
+import type { Theme } from "@aidbox-forms/theme";
+import type { ComponentType, PropsWithChildren } from "react";
+import { useEffect, useState } from "react";
 import "./preview.css";
-import { theme as antdTheme } from "@aidbox-forms/antd-theme";
 import { theme as hsTheme } from "@aidbox-forms/hs-theme";
-import { theme as nshukTheme } from "@aidbox-forms/nshuk-theme";
 import antdThemeCssUrl from "../../themes/antd-theme/lib/style.css?url";
 import hsThemeCssUrl from "../../themes/hs-theme/lib/style.css?url";
+import mantineThemeCssUrl from "../../themes/mantine-theme/lib/style.css?url";
 import nshukThemeCssUrl from "../../themes/nshuk-theme/lib/style.css?url";
+
+type LoadedTheme = {
+  theme: Theme;
+  Provider?: ComponentType<PropsWithChildren> | undefined;
+};
+
+type ThemeDefinition = {
+  title: string;
+  packageName: string;
+  themePath: string;
+  css: string;
+  load: () => Promise<LoadedTheme>;
+};
 
 export const themes = {
   antd: {
@@ -15,26 +29,59 @@ export const themes = {
     packageName: "@aidbox-forms/antd-theme",
     themePath: "themes/antd-theme/lib/theme.ts",
     css: antdThemeCssUrl,
-    instance: antdTheme,
+    load: async () => {
+      const module = await import("@aidbox-forms/antd-theme");
+      return { theme: module.theme };
+    },
   },
   hs: {
     title: "Health Samurai",
     packageName: "@aidbox-forms/hs-theme",
     themePath: "themes/hs-theme/lib/theme.ts",
     css: hsThemeCssUrl,
-    instance: hsTheme,
+    load: async () => ({ theme: hsTheme }),
+  },
+  mantine: {
+    title: "Mantine",
+    packageName: "@aidbox-forms/mantine-theme",
+    themePath: "themes/mantine-theme/lib/theme.ts",
+    css: mantineThemeCssUrl,
+    load: async () => {
+      const module = await import("@aidbox-forms/mantine-theme");
+      return { theme: module.theme, Provider: module.Provider };
+    },
   },
   nshuk: {
     title: "National Health Service",
     packageName: "@aidbox-forms/nshuk-theme",
     themePath: "themes/nshuk-theme/lib/theme.ts",
     css: nshukThemeCssUrl,
-    instance: nshukTheme,
+    load: async () => {
+      const module = await import("@aidbox-forms/nshuk-theme");
+      return { theme: module.theme };
+    },
   },
-};
+} satisfies Record<string, ThemeDefinition>;
 
 type ThemeId = keyof typeof themes;
-const defaultThemeId = "hs";
+const defaultThemeId: ThemeId = "hs";
+
+const themeCache = new Map<ThemeId, LoadedTheme>();
+
+type LoadState =
+  | { status: "idle"; value: LoadedTheme | null }
+  | { status: "loading"; value: LoadedTheme | null }
+  | { status: "loaded"; value: LoadedTheme }
+  | { status: "error"; value: LoadedTheme | null; error: unknown };
+
+async function loadTheme(themeId: ThemeId): Promise<LoadedTheme> {
+  const cached = themeCache.get(themeId);
+  if (cached) return cached;
+
+  const loaded = await themes[themeId].load();
+  themeCache.set(themeId, loaded);
+  return loaded;
+}
 
 const preview: Preview = {
   globalTypes: {
@@ -53,12 +100,11 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const selectedTheme = ((context.globals["theme"] as string | undefined) ??
-        defaultThemeId) as ThemeId;
-      const themeIds = new Set(Object.keys(themes));
-      const theme = themeIds.has(selectedTheme)
-        ? selectedTheme
-        : defaultThemeId;
+      const selectedTheme =
+        (context.globals["theme"] as string | undefined) ?? defaultThemeId;
+      const themeId = (
+        selectedTheme in themes ? selectedTheme : defaultThemeId
+      ) as ThemeId;
 
       useEffect(() => {
         const linkId = "aidbox-theme-css";
@@ -69,19 +115,69 @@ const preview: Preview = {
           link.rel = "stylesheet";
           document.head.append(link);
         }
-        link.dataset["theme"] = theme;
-        link.href = themes[theme].css;
-      }, [theme]);
+        link.dataset["theme"] = themeId;
+        link.href = themes[themeId].css;
+      }, [themeId]);
 
-      return (
-        <ThemeProvider
-          theme={
-            theme ? themes[theme].instance : themes[defaultThemeId].instance
-          }
-        >
+      const [state, setState] = useState<LoadState>(() => {
+        const cached = themeCache.get(themeId);
+        return cached
+          ? { status: "loaded", value: cached }
+          : { status: "idle", value: null };
+      });
+
+      useEffect(() => {
+        let cancelled = false;
+
+        const cached = themeCache.get(themeId);
+        if (cached) {
+          setState({ status: "loaded", value: cached });
+          return () => {
+            cancelled = true;
+          };
+        }
+
+        setState((previous) => ({ status: "loading", value: previous.value }));
+
+        loadTheme(themeId)
+          .then((loaded) => {
+            if (cancelled) return;
+            setState({ status: "loaded", value: loaded });
+          })
+          .catch((error: unknown) => {
+            if (cancelled) return;
+            setState((previous) => ({
+              status: "error",
+              value: previous.value,
+              error,
+            }));
+          });
+
+        return () => {
+          cancelled = true;
+        };
+      }, [themeId]);
+
+      if (state.status === "error") {
+        return (
+          <div style={{ padding: 16 }}>
+            Failed to load theme "{themeId}": {String(state.error)}
+          </div>
+        );
+      }
+
+      if (state.status !== "loaded") {
+        return <div style={{ padding: 16 }}>Loading theme…</div>;
+      }
+
+      const story = (
+        <ThemeProvider theme={state.value.theme}>
           <Story />
         </ThemeProvider>
       );
+
+      const Provider = state.value.Provider;
+      return Provider ? <Provider>{story}</Provider> : story;
     },
   ],
 };

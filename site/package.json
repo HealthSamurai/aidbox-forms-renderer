@@ -14,6 +14,7 @@
   "dependencies": {
     "@aidbox-forms/antd-theme": "workspace:*",
     "@aidbox-forms/hs-theme": "workspace:*",
+    "@aidbox-forms/mantine-theme": "workspace:*",
     "@aidbox-forms/nshuk-theme": "workspace:*",
     "@aidbox-forms/renderer": "workspace:*",
     "fhirpath": "^4.6.0",
