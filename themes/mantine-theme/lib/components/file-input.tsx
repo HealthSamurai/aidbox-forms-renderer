@@ -24,9 +24,9 @@ export function FileInput({
   const displaySizeLabel =
     value?.size == undefined ? "" : `${Math.round(value.size / 1024)} KB`;
 
-  const describedByProps =
+  const describedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
-  const acceptProps = accept == undefined ? {} : { accept };
+  const acceptProperties = accept == undefined ? {} : { accept };
 
   const handlePickFile = () => {
     if (isDisabled) return;
@@ -43,7 +43,7 @@ export function FileInput({
     }
   };
 
-  const textColorProps = isEmpty ? { c: "dimmed" as const } : {};
+  const textColorProperties = isEmpty ? { c: "dimmed" as const } : {};
 
   return (
     <Group wrap="nowrap" gap="xs" align="center">
@@ -54,8 +54,8 @@ export function FileInput({
         onChange={handleFileChange}
         disabled={isDisabled}
         aria-labelledby={ariaLabelledBy}
-        {...describedByProps}
-        {...acceptProps}
+        {...describedByProperties}
+        {...acceptProperties}
         style={{ display: "none" }}
       />
       <Button
@@ -64,13 +64,13 @@ export function FileInput({
         onClick={handlePickFile}
         disabled={isDisabled}
         aria-labelledby={ariaLabelledBy}
-        {...describedByProps}
+        {...describedByProperties}
       >
         {hasValue ? "Change file" : "Choose file"}
       </Button>
       <Text
         size="sm"
-        {...textColorProps}
+        {...textColorProperties}
         style={{
           flex: 1,
           minWidth: 0,
@@ -92,7 +92,7 @@ export function FileInput({
         >
           ×
         </ActionIcon>
-      ) : null}
+      ) : undefined}
     </Group>
   );
 }

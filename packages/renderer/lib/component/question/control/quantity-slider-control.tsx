@@ -34,6 +34,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
   return (
     <InputGroup layout="row" weights={[2, 1]}>
       <SliderInput
+        id={id}
         value={getNumericValue(answer.value)}
         onChange={handleValueChange}
         min={getNumericValue(min) ?? undefined}

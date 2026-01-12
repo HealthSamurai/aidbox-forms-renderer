@@ -3,7 +3,6 @@ import {
   Text,
   VisuallyHidden,
 } from "@mantine/core";
-import { useId } from "react";
 import type { SpinnerInputProperties } from "@aidbox-forms/theme";
 
 function parseNumberInput(value: number | string): number | undefined {
@@ -18,6 +17,7 @@ function parseNumberInput(value: number | string): number | undefined {
 }
 
 export function SpinnerInput({
+  id,
   value,
   onChange,
   disabled,
@@ -29,18 +29,17 @@ export function SpinnerInput({
   placeholder,
   unitLabel,
 }: SpinnerInputProperties) {
-  const generatedId = useId();
-  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const unitId = unitLabel ? `${id}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId].filter(Boolean).join(" ");
 
-  const describedByProps =
+  const describedByProperties =
     describedBy.length > 0 ? { "aria-describedby": describedBy } : {};
-  const placeholderProps = placeholder == undefined ? {} : { placeholder };
-  const stepProps = step == undefined ? {} : { step };
-  const minProps = min == undefined ? {} : { min };
-  const maxProps = max == undefined ? {} : { max };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const stepProperties = step == undefined ? {} : { step };
+  const minProperties = min == undefined ? {} : { min };
+  const maxProperties = max == undefined ? {} : { max };
 
-  const rightSectionProps = unitLabel
+  const rightSectionProperties = unitLabel
     ? {
         rightSection: (
           <Text size="sm" c="dimmed">
@@ -54,8 +53,9 @@ export function SpinnerInput({
     <>
       {unitLabel && unitId ? (
         <VisuallyHidden id={unitId}>{unitLabel}</VisuallyHidden>
-      ) : null}
+      ) : undefined}
       <MantineNumberInput
+        id={id}
         value={value ?? ""}
         onChange={(nextValue: number | string) => {
           const parsed = parseNumberInput(nextValue);
@@ -63,12 +63,12 @@ export function SpinnerInput({
         }}
         disabled={disabled === true}
         aria-labelledby={ariaLabelledBy}
-        {...describedByProps}
-        {...placeholderProps}
-        {...stepProps}
-        {...minProps}
-        {...maxProps}
-        {...rightSectionProps}
+        {...describedByProperties}
+        {...placeholderProperties}
+        {...stepProperties}
+        {...minProperties}
+        {...maxProperties}
+        {...rightSectionProperties}
       />
     </>
   );

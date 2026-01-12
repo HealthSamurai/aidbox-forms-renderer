@@ -14,19 +14,26 @@ export function TextInput({
   minLength,
   maxLength,
 }: TextInputProperties) {
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const inputModeProperties = inputMode == undefined ? {} : { inputMode };
+  const minLengthProperties = minLength == undefined ? {} : { minLength };
+  const maxLengthProperties = maxLength == undefined ? {} : { maxLength };
+
   return (
     <Input
       id={id}
       type={type}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      disabled={disabled}
-      placeholder={placeholder}
+      disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-      inputMode={inputMode}
-      minLength={minLength}
-      maxLength={maxLength}
+      {...describedByProperties}
+      {...placeholderProperties}
+      {...inputModeProperties}
+      {...minLengthProperties}
+      {...maxLengthProperties}
     />
   );
 }

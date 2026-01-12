@@ -21,7 +21,7 @@ export function GroupList({
             {addText}
           </Button>
         </Box>
-      ) : null}
+      ) : undefined}
     </Stack>
   );
 }

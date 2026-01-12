@@ -16,11 +16,11 @@ export function CustomOptionForm({
           <Button
             type="primary"
             onClick={submit.onClick}
-            disabled={submit.disabled}
+            disabled={submit.disabled === true}
           >
             {submit.label}
           </Button>
-          <Button onClick={cancel.onClick} disabled={cancel.disabled}>
+          <Button onClick={cancel.onClick} disabled={cancel.disabled === true}>
             {cancel.label}
           </Button>
         </Space>

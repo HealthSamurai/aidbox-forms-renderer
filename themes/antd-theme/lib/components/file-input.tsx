@@ -19,9 +19,10 @@ export function FileInput({
     (hasValue ? "Attachment selected" : "Choose file");
   const displaySizeLabel =
     value?.size == undefined ? "" : `${Math.round(value.size / 1024)} KB`;
+  const textProperties = hasValue ? {} : ({ type: "secondary" } as const);
 
   const handlePickFile = () => {
-    if (disabled) return;
+    if (disabled === true) return;
     fileInputReference.current?.click();
   };
 
@@ -44,14 +45,14 @@ export function FileInput({
         onChange={handleFileChange}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
-        disabled={disabled}
+        disabled={disabled === true}
         accept={accept}
         style={{ display: "none" }}
       />
-      <Button onClick={handlePickFile} disabled={disabled}>
+      <Button onClick={handlePickFile} disabled={disabled === true}>
         {hasValue ? "Replace file" : "Choose file"}
       </Button>
-      <Typography.Text type={hasValue ? undefined : "secondary"}>
+      <Typography.Text {...textProperties}>
         {displayLabel}
         {displaySizeLabel ? ` (${displaySizeLabel})` : ""}
       </Typography.Text>
@@ -60,7 +61,7 @@ export function FileInput({
           type="text"
           danger
           onClick={() => onChange?.()}
-          disabled={disabled}
+          disabled={disabled === true}
         >
           Clear
         </Button>

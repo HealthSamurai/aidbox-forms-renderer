@@ -31,6 +31,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
   return (
     <InputGroup layout="row" weights={[2, 1]}>
       <SpinnerInput
+        id={id}
         value={getNumericValue(answer.value)}
         onChange={handleValueChange}
         min={getNumericValue(min) ?? undefined}

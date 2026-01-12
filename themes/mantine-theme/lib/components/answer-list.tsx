@@ -13,12 +13,12 @@ export function AnswerList({
 
   return (
     <Stack gap="sm">
-      {items.length > 0 ? <Stack gap="sm">{items}</Stack> : null}
+      {items.length > 0 ? <Stack gap="sm">{items}</Stack> : undefined}
       {onAdd ? (
         <Button type="button" onClick={onAdd} disabled={canAdd === false}>
           {addText}
         </Button>
-      ) : null}
+      ) : undefined}
     </Stack>
   );
 }

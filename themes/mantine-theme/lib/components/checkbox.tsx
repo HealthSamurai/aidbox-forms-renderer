@@ -10,9 +10,9 @@ export function Checkbox({
   disabled,
   label,
 }: CheckboxProperties) {
-  const describedByProps =
+  const describedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
-  const labelProps = label == undefined ? {} : { label };
+  const labelProperties = label == undefined ? {} : { label };
 
   return (
     <MantineCheckbox
@@ -21,8 +21,8 @@ export function Checkbox({
       onChange={() => onChange()}
       disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      {...describedByProps}
-      {...labelProps}
+      {...describedByProperties}
+      {...labelProperties}
     />
   );
 }

@@ -31,6 +31,8 @@ export const AnswerScaffold = observer(function AnswerScaffold<
     answer.question.removeAnswer(answer);
   }, [answer]);
 
+  void answer.value;
+
   const Component = control;
 
   return (
@@ -51,7 +53,9 @@ export const AnswerScaffold = observer(function AnswerScaffold<
       canRemove={
         answer.question.repeats ? answer.question.canRemove : undefined
       }
-      errors={<AnswerErrors answer={answer} />}
+      errors={
+        answer.issues.length > 0 ? <AnswerErrors answer={answer} /> : undefined
+      }
       children={<NodeList nodes={answer.nodes} />}
     />
   );

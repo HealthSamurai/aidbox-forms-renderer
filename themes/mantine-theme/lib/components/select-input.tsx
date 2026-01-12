@@ -53,7 +53,7 @@ export function SelectInput({
   }, [combobox, customOptionForm]);
 
   const describedBy = joinIds(ariaDescribedBy);
-  const describedByProps =
+  const describedByProperties =
     describedBy == undefined ? {} : { "aria-describedby": describedBy };
   const placeholderText = placeholder ?? "Select an option";
 
@@ -104,7 +104,7 @@ export function SelectInput({
             }}
             disabled={isDisabled}
             aria-labelledby={ariaLabelledBy}
-            {...describedByProps}
+            {...describedByProperties}
             rightSection={rightSection}
             rightSectionPointerEvents={isLoading ? "none" : "auto"}
           >
@@ -132,7 +132,7 @@ export function SelectInput({
                   }}
                   placeholder="Search"
                 />
-              ) : null}
+              ) : undefined}
 
               <Combobox.Options>
                 {visibleOptions.length === 0 ? (

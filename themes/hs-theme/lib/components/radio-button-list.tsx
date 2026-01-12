@@ -21,7 +21,7 @@ export function RadioButtonList({
   const hasOptions = displayOptions.length > 0;
 
   return (
-    <Stack>
+    <Stack id={id}>
       {hasOptions && (
         <RadioGroupContainer
           role="radiogroup"

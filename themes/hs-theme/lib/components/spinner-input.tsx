@@ -1,11 +1,11 @@
 import { styled } from "@linaria/react";
-import { useId } from "react";
 import type { SpinnerInputProperties } from "@aidbox-forms/theme";
 import { Minus } from "../icons/minus.tsx";
 import { Plus } from "../icons/plus.tsx";
 import { getPrecision, roundToPrecision } from "./utilities.ts";
 
 export function SpinnerInput({
+  id,
   value,
   onChange,
   min,
@@ -17,8 +17,7 @@ export function SpinnerInput({
   placeholder,
   unitLabel,
 }: SpinnerInputProperties) {
-  const generatedId = useId();
-  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const unitId = unitLabel ? `${id}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId]
     .filter(Boolean)
     .join(" ")
@@ -52,6 +51,7 @@ export function SpinnerInput({
         <Minus size={14} />
       </SpinnerButton>
       <SpinnerField
+        id={id}
         type="number"
         value={value ?? ""}
         onChange={(event) => {

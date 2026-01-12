@@ -30,19 +30,19 @@ export function Form({
               <Title order={2} size="h3">
                 {title}
               </Title>
-            ) : null}
+            ) : undefined}
             {description ? (
               <Text c="dimmed" size="sm">
                 {description}
               </Text>
-            ) : null}
+            ) : undefined}
           </Box>
-        ) : null}
+        ) : undefined}
 
-        {errors ?? null}
-        {before ?? null}
+        {errors}
+        {before}
         {children}
-        {after ?? null}
+        {after}
 
         {pagination ? (
           <Group justify="space-between" align="center" wrap="wrap" gap="md">

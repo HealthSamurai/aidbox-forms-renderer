@@ -22,9 +22,7 @@ export class GroupListValidator implements INodeValidator {
       return [];
     }
 
-    const shouldValidate =
-      list.form.isSubmitAttempted || list.nodes.some((node) => node.isDirty);
-    if (!shouldValidate) {
+    if (!list.form.isSubmitAttempted) {
       return [];
     }
 

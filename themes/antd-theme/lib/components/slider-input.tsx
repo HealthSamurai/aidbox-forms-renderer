@@ -1,7 +1,12 @@
 import type { SliderInputProperties } from "@aidbox-forms/theme";
 import { Slider, Typography } from "antd";
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
 export function SliderInput({
+  id,
   value,
   onChange,
   disabled,
@@ -14,6 +19,18 @@ export function SliderInput({
   upperLabel,
   unitLabel,
 }: SliderInputProperties) {
+  const sliderMin = typeof min === "number" ? min : 0;
+  const sliderMax = typeof max === "number" ? max : sliderMin + 100;
+  const normalizedValue = clamp(
+    typeof value === "number" ? value : sliderMin,
+    sliderMin,
+    sliderMax,
+  );
+  const stepValue =
+    typeof step === "number" && Number.isFinite(step) && step !== 0 ? step : 1;
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+
   const labelRow =
     lowerLabel || upperLabel ? (
       <div
@@ -33,21 +50,21 @@ export function SliderInput({
   ) : undefined;
 
   return (
-    <div>
+    <div id={id}>
       {labelRow}
       <Slider
-        value={value}
+        value={normalizedValue}
         onChange={(nextValue) => {
           if (typeof nextValue === "number") {
             onChange(nextValue);
           }
         }}
-        disabled={disabled}
-        min={min}
-        max={max}
-        step={step}
+        disabled={disabled === true}
+        min={sliderMin}
+        max={sliderMax}
+        step={stepValue}
         aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
+        {...describedByProperties}
       />
       {unit}
     </div>

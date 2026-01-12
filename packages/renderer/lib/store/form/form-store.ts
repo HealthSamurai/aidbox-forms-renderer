@@ -309,8 +309,8 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
   validateAll() {
     this.submitAttempted = true;
     // TODO: surface a form-level summary when validation fails.
-    const blockingFormIssues = this.expressionRegistry.constraintsIssues.some(
-      (issue) => issue.severity === "error",
+    const blockingFormIssues = this.issues.some(
+      (issue) => issue.severity === "error" || issue.severity === "fatal",
     );
 
     const isValid =
@@ -318,7 +318,17 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       !this.nodes.some((node) => this.nodeHasErrors(node));
 
     if (isValid) {
-      this.submitAttempted = false;
+      const hasNonBlockingFormIssues = this.issues.some(
+        (issue) =>
+          issue.severity === "warning" || issue.severity === "information",
+      );
+      const hasNonBlockingNodeIssues = this.nodes.some((node) =>
+        this.nodeHasNonBlockingIssues(node),
+      );
+
+      if (!hasNonBlockingFormIssues && !hasNonBlockingNodeIssues) {
+        this.submitAttempted = false;
+      }
     }
 
     return isValid;
@@ -361,7 +371,49 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
       return true;
     }
 
+    if (isQuestionNode(node)) {
+      const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
+      const hasAnswerIssues = answers.some((answer) =>
+        answer.issues.some(
+          (issue) => issue.severity === "error" || issue.severity === "fatal",
+        ),
+      );
+
+      if (hasAnswerIssues) {
+        return true;
+      }
+    }
+
     return this.getChildNodes(node).some((child) => this.nodeHasErrors(child));
+  }
+
+  private nodeHasNonBlockingIssues(node: IPresentableNode): boolean {
+    const hasNonBlockingIssue = node.issues.some(
+      (issue) =>
+        issue.severity === "warning" || issue.severity === "information",
+    );
+
+    if (hasNonBlockingIssue) {
+      return true;
+    }
+
+    if (isQuestionNode(node)) {
+      const answers = node.repeats ? node.answers : node.answers.slice(0, 1);
+      const hasAnswerIssues = answers.some((answer) =>
+        answer.issues.some(
+          (issue) =>
+            issue.severity === "warning" || issue.severity === "information",
+        ),
+      );
+
+      if (hasAnswerIssues) {
+        return true;
+      }
+    }
+
+    return this.getChildNodes(node).some((child) =>
+      this.nodeHasNonBlockingIssues(child),
+    );
   }
 
   private getChildNodes(node: IPresentableNode): IPresentableNode[] {

@@ -29,16 +29,17 @@ export function CheckboxList({
   const specifyOtherToken = specifyOtherOption?.token;
   const isCustomActive = Boolean(customOptionForm && specifyOtherToken);
 
-  const groupDescribedByProps =
+  const groupDescribedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
 
   return (
     <Stack
+      id={id}
       gap="xs"
       aria-busy={isLoading}
       role="group"
       aria-labelledby={ariaLabelledBy}
-      {...groupDescribedByProps}
+      {...groupDescribedByProperties}
     >
       {displayOptions.length > 0 ? (
         <Stack gap={4}>
@@ -54,7 +55,7 @@ export function CheckboxList({
               ariaDescribedBy,
               selectedOption?.ariaDescribedBy,
             );
-            const describedByProps =
+            const describedByProperties =
               optionDescribedBy == undefined
                 ? {}
                 : { "aria-describedby": optionDescribedBy };
@@ -76,7 +77,7 @@ export function CheckboxList({
                     checked={checked}
                     disabled={optionDisabled}
                     aria-labelledby={`${ariaLabelledBy} ${optionId}`}
-                    {...describedByProps}
+                    {...describedByProperties}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       if (event.currentTarget.checked) {
                         onSelect(option.token);
@@ -87,15 +88,15 @@ export function CheckboxList({
                   />
                   <span id={optionId}>{option.label}</span>
                 </label>
-                {selectedOption?.errors ?? null}
+                {selectedOption?.errors}
               </Box>
             );
           })}
         </Stack>
-      ) : null}
+      ) : undefined}
 
-      {isLoading ? <Loader size="xs" /> : null}
-      {customOptionForm ? <Box>{customOptionForm}</Box> : null}
+      {isLoading ? <Loader size="xs" /> : undefined}
+      {customOptionForm ? <Box>{customOptionForm}</Box> : undefined}
     </Stack>
   );
 }

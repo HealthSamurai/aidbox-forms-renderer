@@ -6,6 +6,7 @@ import { useCallback } from "react";
 
 export const NumberSliderControl = observer(function SliderControl({
   answer,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProperties<"integer" | "decimal">) {
@@ -29,6 +30,7 @@ export const NumberSliderControl = observer(function SliderControl({
 
   return (
     <SliderInput
+      id={id}
       value={getNumericValue(answer.value)}
       onChange={onChange}
       min={getNumericValue(min) ?? undefined}

@@ -34,7 +34,7 @@ export function RadioButtonList({
             <Radio
               key={entry.token}
               value={entry.token}
-              disabled={disabled || entry.disabled}
+              disabled={disabled || entry.disabled === true}
             >
               {entry.label}
             </Radio>

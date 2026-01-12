@@ -23,9 +23,9 @@ function renderHeaderContent(content: ReactNode, meta: TableMeta) {
     <Box>
       <Group gap={6} align="center" wrap="wrap">
         {content}
-        {meta.isLoading ? <Loader size="xs" /> : null}
+        {meta.isLoading ? <Loader size="xs" /> : undefined}
       </Group>
-      {meta.errors ? <Box mt={4}>{meta.errors}</Box> : null}
+      {meta.errors ? <Box mt={4}>{meta.errors}</Box> : undefined}
     </Box>
   );
 }
@@ -47,13 +47,13 @@ export function Table({ columns, rows }: TableProperties) {
       <MantineTable withTableBorder withColumnBorders highlightOnHover>
         <thead>
           <tr>
-            {hasRowHeader ? <th aria-hidden="true" /> : null}
+            {hasRowHeader ? <th aria-hidden="true" /> : undefined}
             {columns.map((column) => (
               <th key={column.token}>
                 {renderHeaderContent(column.content, column)}
               </th>
             ))}
-            {hasRowAction ? <th aria-hidden="true" /> : null}
+            {hasRowAction ? <th aria-hidden="true" /> : undefined}
           </tr>
         </thead>
         <tbody>
@@ -63,7 +63,7 @@ export function Table({ columns, rows }: TableProperties) {
                 <th style={{ minWidth: 160 }}>
                   {renderHeaderContent(row.content, row)}
                 </th>
-              ) : null}
+              ) : undefined}
               {row.cells.map((cell) => (
                 <td key={cell.token}>{cell.content}</td>
               ))}
@@ -79,9 +79,9 @@ export function Table({ columns, rows }: TableProperties) {
                     >
                       {row.removeLabel ?? "Remove"}
                     </Button>
-                  ) : null}
+                  ) : undefined}
                 </td>
-              ) : null}
+              ) : undefined}
             </tr>
           ))}
         </tbody>

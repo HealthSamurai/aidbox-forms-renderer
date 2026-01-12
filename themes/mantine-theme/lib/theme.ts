@@ -14,6 +14,7 @@ export { CheckboxList } from "./components/checkbox-list.tsx";
 export { MultiSelectInput } from "./components/multi-select-input.tsx";
 export { CustomOptionForm } from "./components/custom-option-form.tsx";
 export { Errors } from "./components/errors.tsx";
+export { ErrorSummary } from "./components/error-summary.tsx";
 export { Label } from "./components/label.tsx";
 export { QuestionScaffold } from "./components/question-scaffold.tsx";
 export { OptionsLoading } from "./components/options-loading.tsx";
@@ -23,10 +24,7 @@ export { Flyover } from "./components/flyover.tsx";
 export { Form } from "./components/form.tsx";
 export { Stack } from "./components/stack.tsx";
 export { AnswerList } from "./components/answer-list.tsx";
-export {
-  AnswerRemoveButton,
-  AnswerScaffold,
-} from "./components/answer-scaffold.tsx";
+export { AnswerScaffold } from "./components/answer-scaffold.tsx";
 export { GroupList } from "./components/group-list.tsx";
 export { GroupScaffold } from "./components/group-scaffold.tsx";
 export { Table } from "./components/table.tsx";
@@ -54,6 +52,7 @@ import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
+import { ErrorSummary } from "./components/error-summary.tsx";
 import { Label } from "./components/label.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
 import { OptionsLoading } from "./components/options-loading.tsx";
@@ -63,10 +62,7 @@ import { Flyover } from "./components/flyover.tsx";
 import { Form } from "./components/form.tsx";
 import { Stack } from "./components/stack.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
-import {
-  AnswerRemoveButton,
-  AnswerScaffold,
-} from "./components/answer-scaffold.tsx";
+import { AnswerScaffold } from "./components/answer-scaffold.tsx";
 import { GroupList } from "./components/group-list.tsx";
 import { GroupScaffold } from "./components/group-scaffold.tsx";
 import { Table } from "./components/table.tsx";
@@ -93,6 +89,7 @@ export const theme: Theme = {
   MultiSelectInput,
   CustomOptionForm,
   Errors,
+  ErrorSummary,
   Label,
   QuestionScaffold,
   OptionsLoading,
@@ -102,7 +99,6 @@ export const theme: Theme = {
   Form,
   Stack,
   AnswerList,
-  AnswerRemoveButton,
   AnswerScaffold,
   GroupList,
   GroupScaffold,

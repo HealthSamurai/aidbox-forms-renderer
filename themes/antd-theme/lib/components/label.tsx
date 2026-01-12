@@ -14,7 +14,7 @@ export function Label({
   as = "label",
 }: LabelProperties) {
   const WrapperTag = as === "label" ? "label" : "div";
-  const labelProps = as === "label" ? { htmlFor } : undefined;
+  const labelProperties = as === "label" ? { htmlFor } : undefined;
   const isEmphasized = as !== "text";
   const isLegend = as === "legend";
 
@@ -24,7 +24,7 @@ export function Label({
   };
 
   return (
-    <WrapperTag style={{ display: "block" }} {...labelProps}>
+    <WrapperTag style={{ display: "block" }} {...labelProperties}>
       <Space align="center" size="small" wrap>
         <Typography.Text id={id} style={textStyle}>
           {prefix && (

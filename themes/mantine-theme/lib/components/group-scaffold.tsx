@@ -16,7 +16,7 @@ export function GroupScaffold({
   return (
     <Stack gap="md">
       {header}
-      {content.length > 0 ? <Stack gap="md">{content}</Stack> : null}
+      {content.length > 0 ? <Stack gap="md">{content}</Stack> : undefined}
       {errors}
       {onRemove ? (
         <Group justify="flex-end">
@@ -30,7 +30,7 @@ export function GroupScaffold({
             {removeText}
           </Button>
         </Group>
-      ) : null}
+      ) : undefined}
     </Stack>
   );
 }

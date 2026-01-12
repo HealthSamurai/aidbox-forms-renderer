@@ -13,11 +13,11 @@ export function DateInput({
   min,
   max,
 }: DateInputProperties) {
-  const describedByProps =
+  const describedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
-  const placeholderProps = placeholder == undefined ? {} : { placeholder };
-  const minProps = min == undefined ? {} : { min };
-  const maxProps = max == undefined ? {} : { max };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const minProperties = min == undefined ? {} : { min };
+  const maxProperties = max == undefined ? {} : { max };
 
   return (
     <MantineTextInput
@@ -29,10 +29,10 @@ export function DateInput({
       }
       disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      {...describedByProps}
-      {...placeholderProps}
-      {...minProps}
-      {...maxProps}
+      {...describedByProperties}
+      {...placeholderProperties}
+      {...minProperties}
+      {...maxProperties}
     />
   );
 }

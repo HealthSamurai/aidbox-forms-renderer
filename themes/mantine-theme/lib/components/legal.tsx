@@ -4,7 +4,7 @@ import type { LegalProperties } from "@aidbox-forms/theme";
 
 export function Legal({ id, children, ariaLabel }: LegalProperties) {
   const [opened, setOpened] = useState(false);
-  const ariaLabelProps =
+  const ariaLabelProperties =
     ariaLabel == undefined ? {} : { "aria-label": ariaLabel };
 
   return (
@@ -16,7 +16,7 @@ export function Legal({ id, children, ariaLabel }: LegalProperties) {
             color="orange"
             size="sm"
             aria-describedby={id}
-            {...ariaLabelProps}
+            {...ariaLabelProperties}
             onClick={() => setOpened((value) => !value)}
           >
             §

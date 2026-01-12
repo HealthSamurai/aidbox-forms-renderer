@@ -12,18 +12,24 @@ export function DateInput({
   min,
   max,
 }: DateInputProperties) {
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const minProperties = min == undefined ? {} : { min };
+  const maxProperties = max == undefined ? {} : { max };
+
   return (
     <Input
       id={id}
       type="date"
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      disabled={disabled}
-      placeholder={placeholder}
+      disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-      min={min}
-      max={max}
+      {...describedByProperties}
+      {...placeholderProperties}
+      {...minProperties}
+      {...maxProperties}
     />
   );
 }

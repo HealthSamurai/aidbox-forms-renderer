@@ -1,9 +1,10 @@
 import { styled } from "@linaria/react";
-import { useId, useRef } from "react";
+import { useRef } from "react";
 import type { SliderInputProperties } from "@aidbox-forms/theme";
 import { clamp, useIsWithinGap } from "./utilities.ts";
 
 export function SliderInput({
+  id,
   value,
   onChange,
   min,
@@ -16,7 +17,6 @@ export function SliderInput({
   upperLabel,
   unitLabel,
 }: SliderInputProperties) {
-  const generatedId = useId();
   const sliderMin = typeof min === "number" ? min : 0;
   const sliderMax = typeof max === "number" ? max : sliderMin + 100;
   const normalizedValue = clamp(
@@ -28,7 +28,7 @@ export function SliderInput({
   const valuePercent =
     sliderRange > 0 ? ((normalizedValue - sliderMin) / sliderRange) * 100 : 0;
   const clampedPercent = clamp(valuePercent, 0, 100);
-  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const unitId = unitLabel ? `${id}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId]
     .filter(Boolean)
     .join(" ")
@@ -56,7 +56,7 @@ export function SliderInput({
   return (
     <Wrapper data-disabled={disabled ? "true" : "false"}>
       <Slider
-        id={generatedId}
+        id={id}
         type="range"
         min={sliderMin}
         max={sliderMax}

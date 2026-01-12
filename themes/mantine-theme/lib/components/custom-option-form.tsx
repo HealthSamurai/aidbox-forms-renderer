@@ -10,7 +10,7 @@ export function CustomOptionForm({
   return (
     <Stack gap="xs">
       <div>{content}</div>
-      {errors ?? null}
+      {errors}
       <Group gap="xs">
         <Button
           type="button"

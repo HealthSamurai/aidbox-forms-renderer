@@ -451,6 +451,7 @@ describe("validation", () => {
       const tooLongAnswer = question.answers[0];
       assertDefined(tooLongAnswer);
       tooLongAnswer.setValueByUser("Too long");
+      expect(form.validateAll()).toBe(false);
       const longIssues = answer.issues ?? [];
       expect(longIssues).toHaveLength(1);
       expect(longIssues[0]?.diagnostics).toMatch(/maximum length/i);
@@ -489,6 +490,7 @@ describe("validation", () => {
       const ageAnswerMin = question.answers[0];
       assertDefined(ageAnswerMin);
       ageAnswerMin.setValueByUser(-1);
+      expect(form.validateAll()).toBe(false);
       const minIssues = answer.issues ?? [];
       expect(minIssues).toHaveLength(1);
       expect(minIssues[0]?.diagnostics).toMatch(/greater than or equal to/i);
@@ -542,6 +544,7 @@ describe("validation", () => {
       const birthAnswer0a = birth.answers[0];
       assertDefined(birthAnswer0a);
       birthAnswer0a.setValueByUser("1999-12-31");
+      expect(form.validateAll()).toBe(false);
       expect(birthAnswer.issues.at(0)?.diagnostics).toMatch(/not be earlier/i);
 
       const birthAnswer0b = birth.answers[0];
@@ -598,6 +601,7 @@ describe("validation", () => {
       const weightAnswer0 = question.answers[0];
       assertDefined(weightAnswer0);
       weightAnswer0.setValueByUser({ value: 5, unit: "kg" });
+      expect(form.validateAll()).toBe(false);
       expect(answer.issues.at(0)?.diagnostics).toMatch(
         /greater than or equal to/i,
       );
@@ -639,6 +643,7 @@ describe("validation", () => {
       const answer10 = question.answers[0];
       assertDefined(answer10);
       answer10.setValueByUser("Jo");
+      expect(form.validateAll()).toBe(false);
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/at least 3/i);
 
@@ -696,6 +701,7 @@ describe("validation", () => {
       const answer12 = question.answers[0];
       assertDefined(answer12);
       answer12.setValueByUser(12.345);
+      expect(form.validateAll()).toBe(false);
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/decimal place/i);
 
@@ -757,6 +763,7 @@ describe("validation", () => {
         assertDefined(answer);
         answer.setValueByUser(mgQuantity(5));
       }
+      expect(form.validateAll()).toBe(false);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to/i),
@@ -863,6 +870,7 @@ describe("validation", () => {
         assertDefined(answer);
         answer.setValueByUser(mgQuantity(8));
       }
+      expect(form.validateAll()).toBe(false);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 10/),
@@ -911,6 +919,7 @@ describe("validation", () => {
         assertDefined(answer);
         answer.setValueByUser(mlQuantity(15));
       }
+      expect(form.validateAll()).toBe(false);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 20/),
@@ -995,6 +1004,7 @@ describe("validation", () => {
       const answer18 = question.answers[0];
       assertDefined(answer18);
       answer18.setValueByUser(20);
+      expect(form.validateAll()).toBe(false);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/greater than or equal to 25/),
@@ -1076,6 +1086,7 @@ describe("validation", () => {
         contentType: "image/gif",
         size: "200",
       });
+      expect(form.validateAll()).toBe(false);
       expect(
         answer.issues.some((issue) =>
           issue.diagnostics?.match(/allowed content types/i),
@@ -1151,6 +1162,7 @@ describe("validation", () => {
       const answer25 = question.answers[0];
       assertDefined(answer25);
       answer25.setValueByUser(12.345);
+      expect(form.validateAll()).toBe(false);
       expect(answer.issues).toHaveLength(1);
       expect(answer.issues[0]?.diagnostics).toMatch(/decimal place/i);
 

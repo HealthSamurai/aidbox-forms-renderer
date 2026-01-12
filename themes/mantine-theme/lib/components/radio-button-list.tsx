@@ -24,23 +24,24 @@ export function RadioButtonList({
     : options;
   const selectedToken = selectedOption?.token;
 
-  const groupDescribedByProps =
+  const groupDescribedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
 
   return (
     <Stack
+      id={id}
       gap="xs"
       aria-busy={isLoading}
       role="radiogroup"
       aria-labelledby={ariaLabelledBy}
-      {...groupDescribedByProps}
+      {...groupDescribedByProperties}
     >
       {displayOptions.length > 0 ? (
         <Stack gap={4}>
           {displayOptions.map((option, index) => {
             const optionId = `${id}-option-${index}`;
             const optionDescribedBy = joinIds(ariaDescribedBy);
-            const describedByProps =
+            const describedByProperties =
               optionDescribedBy == undefined
                 ? {}
                 : { "aria-describedby": optionDescribedBy };
@@ -59,7 +60,7 @@ export function RadioButtonList({
                     checked={selectedToken === option.token}
                     disabled={optionDisabled}
                     aria-labelledby={`${ariaLabelledBy} ${optionId}`}
-                    {...describedByProps}
+                    {...describedByProperties}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       if (event.currentTarget.checked) {
                         onChange(option.token);
@@ -72,10 +73,10 @@ export function RadioButtonList({
             );
           })}
         </Stack>
-      ) : null}
+      ) : undefined}
 
-      {isLoading ? <Loader size="xs" /> : null}
-      {customOptionForm ? <Box>{customOptionForm}</Box> : null}
+      {isLoading ? <Loader size="xs" /> : undefined}
+      {customOptionForm ? <Box>{customOptionForm}</Box> : undefined}
     </Stack>
   );
 }

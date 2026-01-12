@@ -1,8 +1,5 @@
 import { styled } from "@linaria/react";
-import type {
-  AnswerRemoveButtonProperties,
-  AnswerScaffoldProperties,
-} from "@aidbox-forms/theme";
+import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
 import { Trash } from "../icons/trash.tsx";
 import { IconButton } from "./icon-button.tsx";
 
@@ -19,10 +16,11 @@ export function AnswerScaffold({
         <Control>{control}</Control>
         {onRemove && (
           <Toolbar>
-            <AnswerRemoveButton
+            <IconButton
+              icon={<Trash />}
               onClick={onRemove}
               disabled={canRemove === false}
-              text="Remove"
+              label="Remove"
             />
           </Toolbar>
         )}
@@ -32,21 +30,6 @@ export function AnswerScaffold({
         {errors}
       </Children>
     </Row>
-  );
-}
-
-export function AnswerRemoveButton({
-  onClick,
-  disabled,
-  text,
-}: AnswerRemoveButtonProperties) {
-  return (
-    <IconButton
-      icon={<Trash />}
-      onClick={onClick}
-      disabled={disabled}
-      label={text}
-    />
   );
 }
 

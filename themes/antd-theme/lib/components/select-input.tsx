@@ -21,11 +21,15 @@ export function SelectInput({
     : options;
   const selectedToken = selectedOption?.token;
   const allowClear = !disabled && !isLoading;
+  const searchProperties =
+    onSearch == undefined
+      ? {}
+      : { onSearch, showSearch: true, filterOption: false };
 
   const mappedOptions = entries.map((option) => ({
     label: option.label as ReactNode,
     value: option.token,
-    disabled: option.disabled,
+    disabled: option.disabled === true,
   }));
 
   return (
@@ -37,15 +41,13 @@ export function SelectInput({
         value={selectedToken}
         options={mappedOptions}
         onChange={(nextValue) => {
-          if (nextValue == null || nextValue === "") {
+          if (nextValue == undefined || nextValue === "") {
             onChange();
             return;
           }
           onChange(String(nextValue));
         }}
-        onSearch={onSearch}
-        showSearch={Boolean(onSearch)}
-        filterOption={onSearch ? false : undefined}
+        {...searchProperties}
         allowClear={allowClear}
         disabled={disabled}
         loading={isLoading}

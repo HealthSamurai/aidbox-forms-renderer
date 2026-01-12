@@ -69,10 +69,10 @@ const defaultThemeId: ThemeId = "hs";
 const themeCache = new Map<ThemeId, LoadedTheme>();
 
 type LoadState =
-  | { status: "idle"; value: LoadedTheme | null }
-  | { status: "loading"; value: LoadedTheme | null }
+  | { status: "idle"; value: LoadedTheme | undefined }
+  | { status: "loading"; value: LoadedTheme | undefined }
   | { status: "loaded"; value: LoadedTheme }
-  | { status: "error"; value: LoadedTheme | null; error: unknown };
+  | { status: "error"; value: LoadedTheme | undefined; error: unknown };
 
 async function loadTheme(themeId: ThemeId): Promise<LoadedTheme> {
   const cached = themeCache.get(themeId);
@@ -123,7 +123,7 @@ const preview: Preview = {
         const cached = themeCache.get(themeId);
         return cached
           ? { status: "loaded", value: cached }
-          : { status: "idle", value: null };
+          : { status: "idle", value: undefined };
       });
 
       useEffect(() => {

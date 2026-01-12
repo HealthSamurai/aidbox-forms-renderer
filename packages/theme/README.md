@@ -39,7 +39,6 @@
   - [MultiSelectInput](#multiselectinput)
   - [CustomOptionForm](#customoptionform)
   - [FileInput](#fileinput)
-  - [AnswerRemoveButton](#answerremovebutton)
   - [AnswerList](#answerlist)
   - [AnswerScaffold](#answerscaffold)
   - [QuestionScaffold](#questionscaffold)
@@ -119,7 +118,6 @@ flowchart TD
   QS --> AL[AnswerList or control]
   AL --> AS[AnswerScaffold]
   AS --> CTRL[Control]
-  AS --> RB[Remove action (AnswerRemoveButton)]
   AS --> CH[Children (Nodes)]
   AS --> AE[Errors]
   QS --> QE[Errors]
@@ -143,7 +141,7 @@ QuestionScaffold
   AnswerList (or a single control)
     AnswerScaffold (per answer)
       control (TextInput/Select/etc.)
-      remove action (AnswerRemoveButton when repeats)
+      remove action (when onRemove is provided)
       children (nested nodes)
       errors (Errors)
   Errors (question-level)
@@ -630,16 +628,6 @@ file (or undefined when clearing) so the renderer can update the Attachment.
 | `disabled`        | `boolean`               | Yes      | When true, disable file selection and related actions.                         |
 | `accept`          | `string`                | Yes      | Forward to the file input accept attribute to limit selectable file types.     |
 | `onChange`        | `(file?: File) => void` | Yes      | Call with the selected file, or undefined when clearing the current file.      |
-
-### AnswerRemoveButton
-
-Remove action for a single repeating answer. Usually placed next to the answer control.
-
-| Prop       | Type         | Optional | Description                                                                                      |
-| ---------- | ------------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `onClick`  | `() => void` | No       | Call when the user activates the remove action.                                                  |
-| `disabled` | `boolean`    | No       | When true, render the button disabled and prevent the remove action.                             |
-| `text`     | `string`     | No       | Use as the label text for the button (accessibility/tooltip if you render an icon-only control). |
 
 ### AnswerList
 

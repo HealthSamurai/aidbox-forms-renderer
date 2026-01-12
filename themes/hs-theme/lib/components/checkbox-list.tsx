@@ -27,6 +27,7 @@ export function CheckboxList({
 
   return (
     <Stack
+      id={id}
       data-disabled={disabled}
       aria-busy={isLoading || undefined}
       role="group"

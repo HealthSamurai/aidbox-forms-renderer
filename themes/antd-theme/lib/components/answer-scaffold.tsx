@@ -1,7 +1,4 @@
-import type {
-  AnswerRemoveButtonProperties,
-  AnswerScaffoldProperties,
-} from "@aidbox-forms/theme";
+import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
 import { Button, Space } from "antd";
 
 export function AnswerScaffold({
@@ -16,27 +13,18 @@ export function AnswerScaffold({
       <Space align="start" style={{ width: "100%" }}>
         <div style={{ flex: 1, minWidth: 0 }}>{control}</div>
         {onRemove && (
-          <AnswerRemoveButton
+          <Button
+            type="text"
+            danger
             onClick={onRemove}
             disabled={canRemove === false}
-            text="Remove"
-          />
+          >
+            Remove
+          </Button>
         )}
       </Space>
       {errors}
       {children}
     </Space>
-  );
-}
-
-export function AnswerRemoveButton({
-  onClick,
-  disabled,
-  text,
-}: AnswerRemoveButtonProperties) {
-  return (
-    <Button type="text" danger onClick={onClick} disabled={disabled}>
-      {text}
-    </Button>
   );
 }

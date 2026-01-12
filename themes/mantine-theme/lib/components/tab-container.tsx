@@ -26,7 +26,7 @@ export function TabContainer({
 
   return (
     <Stack data-linkid={linkId} gap="sm">
-      {header ? <Box style={{ fontWeight: 700 }}>{header}</Box> : null}
+      {header ? <Box style={{ fontWeight: 700 }}>{header}</Box> : undefined}
       <Tabs
         value={activeToken}
         onChange={(nextToken) => {
@@ -34,7 +34,7 @@ export function TabContainer({
           const nextIndex = items.findIndex(
             (entry) => entry.token === nextToken,
           );
-          if (nextIndex >= 0) {
+          if (nextIndex !== -1) {
             onChange(nextIndex);
           }
         }}
@@ -64,7 +64,7 @@ export function TabContainer({
           </Tabs.Panel>
         ))}
       </Tabs>
-      {errors ?? null}
+      {errors}
     </Stack>
   );
 }

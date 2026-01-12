@@ -34,6 +34,7 @@ describe("min/max value expressions", () => {
     assertDefined(answer);
 
     answer.setValueByUser(5);
+    expect(form.validateAll()).toBe(false);
     expect(
       answer.issues.some((issue) => issue.diagnostics?.includes("10")),
     ).toBe(true);
@@ -63,6 +64,7 @@ describe("min/max value expressions", () => {
     assertDefined(answer);
 
     answer.setValueByUser(20);
+    expect(form.validateAll()).toBe(false);
     expect(
       answer.issues.some((issue) => issue.diagnostics?.includes("15")),
     ).toBe(true);
@@ -132,6 +134,7 @@ describe("min/max value expressions", () => {
       system: "http://unitsofmeasure.org",
       code: "mg",
     });
+    expect(form.validateAll()).toBe(false);
     expect(
       doseAnswer.issues.some((issue) =>
         issue.diagnostics?.includes("greater than or equal to"),
@@ -208,6 +211,7 @@ describe("min/max value expressions", () => {
       system: "http://unitsofmeasure.org",
       code: "mg",
     });
+    expect(form.validateAll()).toBe(false);
     expect(
       doseAnswer.issues.some((issue) =>
         issue.diagnostics?.includes("less than or equal to"),

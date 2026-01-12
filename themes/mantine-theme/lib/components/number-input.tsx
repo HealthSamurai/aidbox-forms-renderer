@@ -33,14 +33,14 @@ export function NumberInput({
   const describedBy = [ariaDescribedBy, unitId].filter(Boolean).join(" ");
   const safeStep = typeof step === "number" ? step : undefined;
 
-  const describedByProps =
+  const describedByProperties =
     describedBy.length > 0 ? { "aria-describedby": describedBy } : {};
-  const placeholderProps = placeholder == undefined ? {} : { placeholder };
-  const stepProps = safeStep == undefined ? {} : { step: safeStep };
-  const minProps = min == undefined ? {} : { min };
-  const maxProps = max == undefined ? {} : { max };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const stepProperties = safeStep == undefined ? {} : { step: safeStep };
+  const minProperties = min == undefined ? {} : { min };
+  const maxProperties = max == undefined ? {} : { max };
 
-  const rightSectionProps = unitLabel
+  const rightSectionProperties = unitLabel
     ? {
         rightSection: (
           <Text size="sm" c="dimmed">
@@ -54,7 +54,7 @@ export function NumberInput({
     <>
       {unitLabel && unitId ? (
         <VisuallyHidden id={unitId}>{unitLabel}</VisuallyHidden>
-      ) : null}
+      ) : undefined}
       <MantineNumberInput
         id={id}
         value={value ?? ""}
@@ -64,13 +64,13 @@ export function NumberInput({
         }}
         disabled={disabled === true}
         aria-labelledby={ariaLabelledBy}
-        {...describedByProps}
-        {...placeholderProps}
-        {...stepProps}
-        {...minProps}
-        {...maxProps}
+        {...describedByProperties}
+        {...placeholderProperties}
+        {...stepProperties}
+        {...minProperties}
+        {...maxProperties}
         hideControls
-        {...rightSectionProps}
+        {...rightSectionProperties}
       />
     </>
   );

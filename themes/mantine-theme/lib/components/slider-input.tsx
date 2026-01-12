@@ -1,5 +1,4 @@
 import { Box, Group, Slider, Text, VisuallyHidden } from "@mantine/core";
-import { useId } from "react";
 import type { SliderInputProperties } from "@aidbox-forms/theme";
 
 function clamp(value: number, min: number, max: number) {
@@ -7,6 +6,7 @@ function clamp(value: number, min: number, max: number) {
 }
 
 export function SliderInput({
+  id,
   value,
   onChange,
   disabled,
@@ -27,19 +27,19 @@ export function SliderInput({
     sliderMax,
   );
 
-  const generatedId = useId();
-  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
+  const unitId = unitLabel ? `${id}-unit` : undefined;
   const describedBy = [ariaDescribedBy, unitId].filter(Boolean).join(" ");
 
-  const describedByProps =
+  const describedByProperties =
     describedBy.length > 0 ? { "aria-describedby": describedBy } : {};
 
   return (
     <Box>
       {unitLabel && unitId ? (
         <VisuallyHidden id={unitId}>{unitLabel}</VisuallyHidden>
-      ) : null}
+      ) : undefined}
       <Slider
+        id={id}
         value={normalizedValue}
         onChange={(nextValue: number) => onChange(nextValue)}
         min={sliderMin}
@@ -47,7 +47,7 @@ export function SliderInput({
         step={step || 1}
         disabled={disabled === true}
         aria-labelledby={ariaLabelledBy}
-        {...describedByProps}
+        {...describedByProperties}
         label={(v) => `${v}${unitLabel ? ` ${unitLabel}` : ""}`}
       />
       <Group justify="space-between" mt={4} aria-hidden="true">

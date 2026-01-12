@@ -13,7 +13,9 @@ export const Form = observer(function Form({
 }) {
   const { Form: ThemedForm } = useTheme();
   const errors =
-    store.issues.length > 0 ? <FormErrors issues={store.issues} /> : undefined;
+    store.isSubmitAttempted || store.issues.length > 0 ? (
+      <FormErrors store={store} />
+    ) : undefined;
 
   return (
     <ThemedForm

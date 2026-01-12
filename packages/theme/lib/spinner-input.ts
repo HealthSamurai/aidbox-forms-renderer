@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 export type SpinnerInputProperties = {
+  id: string;
   value: number | undefined;
   onChange: (v?: number) => void;
   disabled?: boolean | undefined;

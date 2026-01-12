@@ -20,9 +20,7 @@ export class GroupValidator implements INodeValidator {
       return [];
     }
 
-    const shouldValidate =
-      this.group.form.isSubmitAttempted || this.group.isDirty;
-    if (!shouldValidate || this.group.minOccurs === 0) {
+    if (!this.group.form.isSubmitAttempted || this.group.minOccurs === 0) {
       return [];
     }
 

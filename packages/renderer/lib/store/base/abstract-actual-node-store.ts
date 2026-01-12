@@ -254,7 +254,7 @@ export abstract class AbstractActualNodeStore
   }
 
   protected get shouldValidate() {
-    return this.form.isSubmitAttempted || this.isDirty;
+    return this.form.isSubmitAttempted;
   }
 
   private evaluateEnableWhen(condition: QuestionnaireItemEnableWhen): boolean {

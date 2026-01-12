@@ -21,11 +21,15 @@ export function MultiSelectInput({
     ? [...options, specifyOtherOption]
     : options;
   const selectedTokens = selectedOptions.map((entry) => entry.token);
+  const searchProperties =
+    onSearch == undefined
+      ? {}
+      : { onSearch, showSearch: true, filterOption: false };
 
   const mappedOptions = entries.map((option) => ({
     label: option.label as ReactNode,
     value: option.token,
-    disabled: option.disabled,
+    disabled: option.disabled === true,
   }));
 
   return (
@@ -39,9 +43,7 @@ export function MultiSelectInput({
         options={mappedOptions}
         onSelect={(token) => onSelect(String(token))}
         onDeselect={(token) => onDeselect(String(token))}
-        onSearch={onSearch}
-        showSearch={Boolean(onSearch)}
-        filterOption={onSearch ? false : undefined}
+        {...searchProperties}
         disabled={disabled}
         loading={isLoading}
         placeholder={placeholder}

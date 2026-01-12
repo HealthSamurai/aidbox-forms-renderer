@@ -12,6 +12,9 @@ export function RadioButton({
   disabled,
   label,
 }: RadioButtonProperties) {
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+
   return (
     <Radio
       id={id}
@@ -20,8 +23,8 @@ export function RadioButton({
       checked={checked}
       onChange={onChange}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-      disabled={disabled}
+      {...describedByProperties}
+      disabled={disabled === true}
     >
       {label}
     </Radio>

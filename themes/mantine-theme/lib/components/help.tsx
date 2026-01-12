@@ -2,7 +2,7 @@ import { ActionIcon, Tooltip, VisuallyHidden } from "@mantine/core";
 import type { HelpProperties } from "@aidbox-forms/theme";
 
 export function Help({ id, children, ariaLabel }: HelpProperties) {
-  const ariaLabelProps =
+  const ariaLabelProperties =
     ariaLabel == undefined ? {} : { "aria-label": ariaLabel };
 
   return (
@@ -12,7 +12,7 @@ export function Help({ id, children, ariaLabel }: HelpProperties) {
           variant="subtle"
           size="sm"
           aria-describedby={id}
-          {...ariaLabelProps}
+          {...ariaLabelProperties}
         >
           ?
         </ActionIcon>

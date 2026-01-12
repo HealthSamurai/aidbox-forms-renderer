@@ -20,9 +20,7 @@ export class QuestionValidator implements INodeValidator {
       return [];
     }
 
-    const shouldValidate =
-      this.question.form.isSubmitAttempted || this.question.isDirty;
-    if (!shouldValidate) {
+    if (!this.question.form.isSubmitAttempted) {
       return [];
     }
 

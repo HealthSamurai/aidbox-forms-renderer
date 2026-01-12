@@ -2,6 +2,7 @@ import type { SpinnerInputProperties } from "@aidbox-forms/theme";
 import { InputNumber, Typography } from "antd";
 
 export function SpinnerInput({
+  id,
   value,
   onChange,
   disabled,
@@ -14,8 +15,8 @@ export function SpinnerInput({
   unitLabel,
 }: SpinnerInputProperties) {
   const handleChange = (nextValue: number | string | null) => {
-    if (nextValue === null) {
-      onChange(undefined);
+    if (nextValue === null || nextValue === "") {
+      onChange();
       return;
     }
     if (typeof nextValue === "number") {
@@ -23,20 +24,32 @@ export function SpinnerInput({
       return;
     }
     const parsed = Number(nextValue);
-    onChange(Number.isNaN(parsed) ? undefined : parsed);
+    if (Number.isNaN(parsed)) {
+      onChange();
+      return;
+    }
+    onChange(parsed);
   };
+
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const stepProperties = step == undefined ? {} : { step };
+  const minProperties = min == undefined ? {} : { min };
+  const maxProperties = max == undefined ? {} : { max };
 
   const input = (
     <InputNumber
-      value={value}
+      id={id}
+      value={value ?? ""}
       onChange={handleChange}
-      disabled={disabled}
-      placeholder={placeholder}
-      step={step}
-      min={min}
-      max={max}
+      disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
+      {...describedByProperties}
+      {...placeholderProperties}
+      {...stepProperties}
+      {...minProperties}
+      {...maxProperties}
       style={{ width: "100%" }}
     />
   );

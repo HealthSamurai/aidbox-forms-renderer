@@ -6,6 +6,7 @@ import { useCallback } from "react";
 
 export const NumberSpinnerControl = observer(function SpinnerControl({
   answer,
+  id,
   ariaLabelledBy,
   ariaDescribedBy,
 }: ValueControlProperties<"integer" | "decimal">) {
@@ -26,6 +27,7 @@ export const NumberSpinnerControl = observer(function SpinnerControl({
 
   return (
     <SpinnerInput
+      id={id}
       value={getNumericValue(answer.value)}
       onChange={onChange}
       min={getNumericValue(min) ?? undefined}

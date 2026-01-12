@@ -148,10 +148,10 @@ describe("targetConstraint extensions", () => {
     assertDefined(optionalNoteAnswer);
     optionalNoteAnswer.setValueByUser();
 
+    expect(form.validateAll()).toBe(true);
+    expect(form.isSubmitAttempted).toBe(true);
     expect(question.issues.at(0)?.severity).toBe("warning");
     expect(question.issues.at(0)?.diagnostics).toContain("Consider adding");
-    expect(form.validateAll()).toBe(true);
-    expect(question.issues.at(0)?.severity).toBe("warning");
   });
 
   it("validates uppercase initial using custom expressions", () => {

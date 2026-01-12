@@ -8,7 +8,7 @@ export function InputGroup({
   weights,
 }: InputGroupProperties) {
   const items = Children.toArray(children);
-  const gutter = layout === "grid" ? [16, 16] : [12, 0];
+  const gutter: [number, number] = layout === "grid" ? [16, 16] : [12, 0];
 
   return (
     <Row gutter={gutter} wrap>

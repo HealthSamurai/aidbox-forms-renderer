@@ -3,7 +3,7 @@ import { Alert } from "antd";
 
 export function Errors({ id, messages }: ErrorsProperties) {
   if (messages.length === 0) {
-    return null;
+    return;
   }
 
   return (

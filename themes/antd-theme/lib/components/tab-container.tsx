@@ -20,7 +20,7 @@ export function TabContainer({
           activeKey={activeKey}
           onChange={(key) => {
             const nextIndex = items.findIndex((item) => item.token === key);
-            if (nextIndex >= 0) {
+            if (nextIndex !== -1) {
               onChange(nextIndex);
             }
           }}

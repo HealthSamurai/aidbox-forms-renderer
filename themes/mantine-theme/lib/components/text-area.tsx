@@ -14,12 +14,12 @@ export function TextArea({
   minLength,
   maxLength,
 }: TextAreaProperties) {
-  const describedByProps =
+  const describedByProperties =
     ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
-  const placeholderProps = placeholder == undefined ? {} : { placeholder };
-  const inputModeProps = inputMode == undefined ? {} : { inputMode };
-  const minLengthProps = minLength == undefined ? {} : { minLength };
-  const maxLengthProps = maxLength == undefined ? {} : { maxLength };
+  const placeholderProperties = placeholder == undefined ? {} : { placeholder };
+  const inputModeProperties = inputMode == undefined ? {} : { inputMode };
+  const minLengthProperties = minLength == undefined ? {} : { minLength };
+  const maxLengthProperties = maxLength == undefined ? {} : { maxLength };
 
   return (
     <Textarea
@@ -30,11 +30,11 @@ export function TextArea({
       }
       disabled={disabled === true}
       aria-labelledby={ariaLabelledBy}
-      {...describedByProps}
-      {...placeholderProps}
-      {...inputModeProps}
-      {...minLengthProps}
-      {...maxLengthProps}
+      {...describedByProperties}
+      {...placeholderProperties}
+      {...inputModeProperties}
+      {...minLengthProperties}
+      {...maxLengthProperties}
     />
   );
 }

@@ -10,14 +10,17 @@ export function Checkbox({
   disabled,
   label,
 }: CheckboxProperties) {
+  const describedByProperties =
+    ariaDescribedBy == undefined ? {} : { "aria-describedby": ariaDescribedBy };
+
   return (
     <AntCheckbox
       id={id}
       checked={checked}
       onChange={onChange}
       aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-      disabled={disabled}
+      {...describedByProperties}
+      disabled={disabled === true}
     >
       {label}
     </AntCheckbox>

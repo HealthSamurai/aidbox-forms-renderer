@@ -13,12 +13,13 @@ export function Label({
   as = "label",
 }: LabelProperties) {
   const wrapperTag = as === "label" ? "label" : "div";
-  const wrapperProps = wrapperTag === "label" && htmlFor ? { htmlFor } : {};
+  const wrapperProperties =
+    wrapperTag === "label" && htmlFor ? { htmlFor } : {};
   const emphasize = as !== "text";
   const legend = as === "legend";
 
   return (
-    <Box component={wrapperTag} {...wrapperProps} style={{ margin: 0 }}>
+    <Box component={wrapperTag} {...wrapperProperties} style={{ margin: 0 }}>
       <Group gap={6} wrap="nowrap" align="center">
         <Text
           id={id}
@@ -31,13 +32,13 @@ export function Label({
             <Text component="span" fw={600}>
               {prefix}
             </Text>
-          ) : null}
+          ) : undefined}
           {children}
           {required ? (
             <Text component="span" c="red" aria-hidden>
               *
             </Text>
-          ) : null}
+          ) : undefined}
         </Text>
         {help}
         {legal}

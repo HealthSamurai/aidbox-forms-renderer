@@ -34,7 +34,7 @@ export function CheckboxList({
               <AntCheckbox
                 key={entry.token}
                 checked={isChecked}
-                disabled={disabled || entry.disabled}
+                disabled={disabled || entry.disabled === true}
                 onChange={() => {
                   if (isChecked) {
                     onDeselect(entry.token);

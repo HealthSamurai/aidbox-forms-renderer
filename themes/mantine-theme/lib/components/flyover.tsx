@@ -2,7 +2,7 @@ import { ActionIcon, Tooltip, VisuallyHidden } from "@mantine/core";
 import type { FlyoverProperties } from "@aidbox-forms/theme";
 
 export function Flyover({ id, children, ariaLabel }: FlyoverProperties) {
-  const ariaLabelProps =
+  const ariaLabelProperties =
     ariaLabel == undefined ? {} : { "aria-label": ariaLabel };
 
   return (
@@ -12,7 +12,7 @@ export function Flyover({ id, children, ariaLabel }: FlyoverProperties) {
           variant="subtle"
           size="sm"
           aria-describedby={id}
-          {...ariaLabelProps}
+          {...ariaLabelProperties}
         >
           i
         </ActionIcon>

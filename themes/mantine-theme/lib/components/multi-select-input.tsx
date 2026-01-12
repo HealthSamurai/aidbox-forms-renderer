@@ -62,7 +62,7 @@ export function MultiSelectInput({
   }, [combobox, customOptionForm]);
 
   const describedBy = joinIds(ariaDescribedBy);
-  const describedByProps =
+  const describedByProperties =
     describedBy == undefined ? {} : { "aria-describedby": describedBy };
   const placeholderText = placeholder ?? "Select an option";
 
@@ -75,7 +75,7 @@ export function MultiSelectInput({
               ariaDescribedBy,
               option.ariaDescribedBy,
             );
-            const rowDescribedByProps =
+            const rowDescribedByProperties =
               rowDescribedBy == undefined
                 ? {}
                 : { "aria-describedby": rowDescribedBy };
@@ -93,17 +93,17 @@ export function MultiSelectInput({
                     onClick={() => onDeselect(option.token)}
                     disabled={isRowDisabled}
                     aria-label="Remove"
-                    {...rowDescribedByProps}
+                    {...rowDescribedByProperties}
                   >
                     Remove
                   </Button>
                 </Group>
-                {option.errors ?? null}
+                {option.errors}
               </Box>
             );
           })}
         </Stack>
-      ) : null}
+      ) : undefined}
 
       <Combobox
         store={combobox}
@@ -130,7 +130,7 @@ export function MultiSelectInput({
             }}
             disabled={isDisabled}
             aria-labelledby={ariaLabelledBy}
-            {...describedByProps}
+            {...describedByProperties}
             rightSection={
               isLoading ? <Loader size="xs" /> : <Text c="dimmed">▾</Text>
             }
@@ -156,7 +156,7 @@ export function MultiSelectInput({
                   }}
                   placeholder="Search"
                 />
-              ) : null}
+              ) : undefined}
 
               <Combobox.Options>
                 {visibleOptions.length === 0 ? (

@@ -1,3 +1,5 @@
+import { observer } from "mobx-react-lite";
+
 import type { IAnswer } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { strings } from "../../../../strings.ts";
@@ -13,7 +15,7 @@ export type QuantityInputProperties = {
 };
 
 // todo: avoid direct access to answer
-export function QuantityInput({
+export const QuantityInput = observer(function QuantityInput({
   answer,
   id,
   ariaLabelledBy,
@@ -69,4 +71,4 @@ export function QuantityInput({
       )}
     </InputGroup>
   );
-}
+});
