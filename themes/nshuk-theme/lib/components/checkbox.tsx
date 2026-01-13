@@ -15,7 +15,10 @@ export function Checkbox({
       : undefined;
 
   return (
-    <div className="nhsuk-checkboxes nhsuk-checkboxes--small" role="group">
+    <div
+      className="nhsuk-checkboxes nhsuk-checkboxes--small nhsuk-u-width-full"
+      role="group"
+    >
       <div className="nhsuk-checkboxes__item">
         <input
           className="nhsuk-checkboxes__input"
@@ -27,11 +30,12 @@ export function Checkbox({
           aria-describedby={describedBy}
           onChange={onChange}
         />
-        {label && (
-          <label className="nhsuk-label nhsuk-checkboxes__label" htmlFor={id}>
-            {label}
-          </label>
-        )}
+        <label
+          className={`nhsuk-label nhsuk-checkboxes__label ${label ? "" : "nhsuk-u-padding-0"}`}
+          htmlFor={id}
+        >
+          {label}
+        </label>
       </div>
     </div>
   );

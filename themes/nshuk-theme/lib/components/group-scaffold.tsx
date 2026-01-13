@@ -1,6 +1,5 @@
 import { styled } from "@linaria/react";
 import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
-import { Children } from "react";
 
 export function GroupScaffold({
   header,
@@ -10,16 +9,10 @@ export function GroupScaffold({
   canRemove,
   removeLabel,
 }: GroupScaffoldProperties) {
-  const content = Children.toArray(children);
-  const removeText = removeLabel ?? "Remove";
-  let resolvedContent;
-  if (content.length > 0) {
-    resolvedContent = onRemove ? <div>{content}</div> : content;
-  }
   return (
-    <Container>
+    <div className="nhsuk-form-group">
       {header}
-      {resolvedContent}
+      {children}
       {errors}
       {onRemove && (
         <div className="nhsuk-button-group">
@@ -29,16 +22,10 @@ export function GroupScaffold({
             disabled={canRemove === false}
             className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
           >
-            {removeText}
+            {removeLabel ?? "Remove"}
           </button>
         </div>
       )}
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--nhsuk-spacing-3);
-`;
