@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { SelectionTableRenderer as SelectionTableControl } from "../control/selection-table-renderer.tsx";
+import { SelectionTableControl } from "../control/selection-table-control.tsx";
 
 export const SelectionTableRenderer = observer(function SelectionTableRenderer({
   node,

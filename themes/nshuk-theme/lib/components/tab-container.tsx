@@ -26,7 +26,6 @@ export function TabContainer({
       {header}
       {errors}
       <div className="nhsuk-tabs">
-        <h2 className="nhsuk-tabs__title">Contents</h2>
         <ul className="nhsuk-tabs__list">
           {items.map((item, index) => {
             const selected = index === clampedIndex;

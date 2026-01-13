@@ -5,7 +5,7 @@ import { Node } from "../../node/node.tsx";
 import { NodeHeader } from "../../node/node-header.tsx";
 import { buildId } from "../../../utilities.ts";
 
-export const GridRenderer = observer(function GridRenderer({
+export const GridControl = observer(function GridControl({
   node,
 }: {
   node: IGroupNode;

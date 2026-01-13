@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { GridRenderer as GridControl } from "../control/grid-renderer.tsx";
+import { GridControl } from "../control/grid-control.tsx";
 
 export const GridRenderer = observer(function GridRenderer({
   node,

@@ -7,7 +7,7 @@ import { NodeErrors } from "../../node/node-errors.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
 import { buildId } from "../../../utilities.ts";
 
-export const TabContainerRenderer = observer(function TabContainerRenderer({
+export const TabContainerControl = observer(function TabContainerControl({
   node,
 }: {
   node: IGroupNode;
@@ -17,7 +17,7 @@ export const TabContainerRenderer = observer(function TabContainerRenderer({
   const visibleNodes = node.visibleNodes;
   const maxIndex = Math.max(visibleNodes.length - 1, 0);
   const activeIndex = Math.min(activeTab, maxIndex);
-  const header = <NodeHeader node={node} as="text" />;
+  const header = <NodeHeader node={node} as="legend" />;
   const items = visibleNodes.map((child, index) => ({
     token: child.token,
     label: <NodeHeader node={child} as="text" />,

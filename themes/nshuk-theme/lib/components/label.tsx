@@ -12,6 +12,10 @@ export function Label({
   flyover,
   as = "label",
 }: LabelProperties) {
+  if (!children) {
+    return;
+  }
+
   const content = (
     <>
       {prefix && <Prefix>{prefix}</Prefix>}

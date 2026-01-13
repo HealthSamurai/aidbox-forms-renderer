@@ -17,7 +17,7 @@ export function Table({
   const hasRowAction = rows.some((row) => row.onRemove != undefined);
 
   return (
-    <table className="nhsuk-table nhsuk-table-responsive">
+    <table className="nhsuk-table">
       <thead className="nhsuk-table__head">
         <tr className="nhsuk-table__row">
           {hasRowHeader && (

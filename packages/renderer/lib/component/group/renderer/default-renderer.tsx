@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { DefaultRenderer as DefaultControl } from "../control/default-renderer.tsx";
+import { DefaultControl } from "../control/default-control.tsx";
 
 export const DefaultRenderer = observer(function DefaultRenderer({
   node,

@@ -22,6 +22,8 @@ import { OptionsLoading } from "./components/options-loading.tsx";
 import { Help } from "./components/help.tsx";
 import { Legal } from "./components/legal.tsx";
 import { Flyover } from "./components/flyover.tsx";
+import { Header } from "./components/header.tsx";
+import { Footer } from "./components/footer.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
 import { AnswerScaffold } from "./components/answer-scaffold.tsx";
 import { Form } from "./components/form.tsx";
@@ -67,6 +69,8 @@ export const theme: Theme = {
   Help,
   Legal,
   Flyover,
+  Header,
+  Footer,
   AnswerList,
   AnswerScaffold,
   Form,

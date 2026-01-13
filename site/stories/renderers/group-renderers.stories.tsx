@@ -1064,7 +1064,7 @@ export const PageGroupRenderer: StoryObj = {
 export const TabContainerGroupRenderer = {
   name: "Tabs",
   args: {
-    tabCount: 6,
+    tabCount: 3,
     labelStyle: "mixed",
   },
   argTypes: tabContainerArgumentTypes,

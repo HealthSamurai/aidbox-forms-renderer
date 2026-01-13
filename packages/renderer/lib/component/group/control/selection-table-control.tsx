@@ -7,7 +7,7 @@ import { ValueDisplay } from "../../question/fhir/value-display.tsx";
 import { SelectionTableCell } from "../component/selection-table-cell.tsx";
 import { buildId } from "../../../utilities.ts";
 
-export const SelectionTableRenderer = observer(function SelectionTableRenderer({
+export const SelectionTableControl = observer(function SelectionTableControl({
   node,
 }: {
   node: IGroupNode;

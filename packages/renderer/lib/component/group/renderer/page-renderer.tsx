@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { PageRenderer as PageControl } from "../control/page-renderer.tsx";
+import { PageControl } from "../control/page-control.tsx";
 
 export const PageRenderer = observer(function PageRenderer({
   node,

@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { HeaderRenderer as HeaderControl } from "../control/header-renderer.tsx";
+import { HeaderControl } from "../control/header-control.tsx";
 
 export const HeaderRenderer = observer(function HeaderRenderer({
   node,

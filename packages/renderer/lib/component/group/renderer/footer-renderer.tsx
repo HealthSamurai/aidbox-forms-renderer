@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { FooterRenderer as FooterControl } from "../control/footer-renderer.tsx";
+import { FooterControl } from "../control/footer-control.tsx";
 
 export const FooterRenderer = observer(function FooterRenderer({
   node,

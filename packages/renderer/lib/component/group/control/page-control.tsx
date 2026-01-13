@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import type { IGroupNode } from "../../../types.ts";
 import { NodeList } from "../../node/node-list.tsx";
 
-export const PageRenderer = observer(function PageRenderer({
+export const PageControl = observer(function PageControl({
   node,
 }: {
   node: IGroupNode;

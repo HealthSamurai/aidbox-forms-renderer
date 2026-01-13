@@ -6,7 +6,7 @@ import { useTheme } from "../../../ui/theme.tsx";
 import { strings } from "../../../strings.ts";
 import { buildId } from "../../../utilities.ts";
 
-export const GridTableRenderer = observer(function GridTableRenderer({
+export const GridTableControl = observer(function GridTableControl({
   list,
 }: {
   list: IGroupList;

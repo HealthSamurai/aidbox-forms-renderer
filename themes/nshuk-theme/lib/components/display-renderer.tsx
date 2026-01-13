@@ -5,7 +5,7 @@ export function DisplayRenderer({
   children,
 }: DisplayRendererProperties) {
   return (
-    <div className="nhsuk-form-group" data-linkid={linkId}>
+    <div className="nhsuk-body" data-linkid={linkId}>
       {children}
     </div>
   );

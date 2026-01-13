@@ -31,11 +31,12 @@ export function RadioButton({
           aria-describedby={describedBy}
           onChange={onChange}
         />
-        {label && (
-          <label className="nhsuk-label nhsuk-radios__label" htmlFor={id}>
-            {label}
-          </label>
-        )}
+        <label
+          className={`nhsuk-label nhsuk-radios__label ${label ? "" : "nhsuk-u-padding-0"}`}
+          htmlFor={id}
+        >
+          {label}
+        </label>
       </div>
     </div>
   );

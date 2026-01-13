@@ -4,7 +4,7 @@ import { GroupScaffold } from "../group-scaffold.tsx";
 import { GroupList } from "../group-list.tsx";
 import { strings } from "../../../strings.ts";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { TabContainerRenderer as TabContainerControl } from "../control/tab-container-renderer.tsx";
+import { TabContainerControl } from "../control/tab-container-control.tsx";
 
 export const TabContainerRenderer = observer(function TabContainerRenderer({
   node,

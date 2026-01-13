@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import type { GroupRendererProperties } from "../../../types.ts";
 import { GroupList } from "../group-list.tsx";
 import { isGroupListStore } from "../../../store/group/group-list-store.ts";
-import { GridTableRenderer as GridTableControl } from "../control/grid-table-renderer.tsx";
+import { GridTableControl } from "../control/grid-table-control.tsx";
 
 export const GridTableRenderer = observer(function GridTableRenderer({
   node,

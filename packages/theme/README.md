@@ -44,6 +44,8 @@
   - [QuestionScaffold](#questionscaffold)
   - [GroupList](#grouplist)
   - [GroupScaffold](#groupscaffold)
+  - [Header](#header)
+  - [Footer](#footer)
   - [DisplayRenderer](#displayrenderer)
   - [Stack](#stack)
   - [Form](#form)
@@ -691,6 +693,26 @@ Layout shell for a group instance (repeating or not). It can also render an opti
 | `onRemove`    | `() => void` | Yes      | When provided, render a remove action for this instance. |
 | `canRemove`   | `boolean`    | Yes      | When false, render the remove action disabled.           |
 | `removeLabel` | `string`     | Yes      | Use as the remove label for icon-only controls.          |
+
+### Header
+
+Layout wrapper for group nodes rendered with `control="header"`. Use it to style and place header content such as
+summary blocks or callouts above a group body.
+
+| Prop       | Type        | Optional | Description                                                                                  |
+| ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
+| `linkId`   | `string`    | No       | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
+| `children` | `ReactNode` | No       | Render the header content provided by the renderer.                                          |
+
+### Footer
+
+Layout wrapper for group nodes rendered with `control="footer"`. Use it to style and place footer content such as
+summaries or actions below a group body.
+
+| Prop       | Type        | Optional | Description                                                                                  |
+| ---------- | ----------- | -------- | -------------------------------------------------------------------------------------------- |
+| `linkId`   | `string`    | No       | Use for debugging; typically render as a `data-linkId` attribute and feel free to ignore it. |
+| `children` | `ReactNode` | No       | Render the footer content provided by the renderer.                                          |
 
 ### DisplayRenderer
 

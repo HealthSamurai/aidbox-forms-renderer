@@ -21,6 +21,8 @@ export { OptionsLoading } from "./components/options-loading.tsx";
 export { Help } from "./components/help.tsx";
 export { Legal } from "./components/legal.tsx";
 export { Flyover } from "./components/flyover.tsx";
+export { Header } from "./components/header.tsx";
+export { Footer } from "./components/footer.tsx";
 export { AnswerList } from "./components/answer-list.tsx";
 export { AnswerScaffold } from "./components/answer-scaffold.tsx";
 export { Form } from "./components/form.tsx";
@@ -57,6 +59,8 @@ import { OptionsLoading } from "./components/options-loading.tsx";
 import { Help } from "./components/help.tsx";
 import { Legal } from "./components/legal.tsx";
 import { Flyover } from "./components/flyover.tsx";
+import { Header } from "./components/header.tsx";
+import { Footer } from "./components/footer.tsx";
 import { Form } from "./components/form.tsx";
 import { Stack } from "./components/stack.tsx";
 import { DisplayRenderer } from "./components/display-renderer.tsx";
@@ -95,6 +99,8 @@ export const theme: Theme = {
   Help,
   Legal,
   Flyover,
+  Header,
+  Footer,
   Form,
   Stack,
   AnswerList,
