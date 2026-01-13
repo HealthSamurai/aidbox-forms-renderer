@@ -58,7 +58,7 @@ export const themes = {
     css: nshukThemeCssUrl,
     load: async () => {
       const module = await import("@aidbox-forms/nshuk-theme");
-      return { theme: module.theme };
+      return { theme: module.theme, Provider: module.Provider };
     },
   },
 } satisfies Record<string, ThemeDefinition>;

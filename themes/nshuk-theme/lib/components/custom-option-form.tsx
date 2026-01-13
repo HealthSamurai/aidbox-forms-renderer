@@ -8,15 +8,16 @@ export function CustomOptionForm({
   cancel,
 }: CustomOptionFormProperties) {
   return (
-    <Stack>
-      <div>{content}</div>
-      {errors ?? undefined}
-      <Actions>
+    <Root>
+      {content}
+      {errors}
+
+      <div className="nhsuk-button-group nhsuk-button-group--small nhsuk-u-margin-right-0">
         <button
           type="button"
           onClick={cancel.onClick}
           disabled={cancel.disabled}
-          className="nhsuk-button nhsuk-button--secondary"
+          className="nhsuk-button nhsuk-button--small nhsuk-button--secondary"
         >
           {cancel.label}
         </button>
@@ -24,23 +25,17 @@ export function CustomOptionForm({
           type="button"
           onClick={submit.onClick}
           disabled={submit.disabled}
-          className="nhsuk-button nhsuk-button--secondary"
+          className="nhsuk-button nhsuk-button--small nhsuk-button--secondary"
         >
           {submit.label}
         </button>
-      </Actions>
-    </Stack>
+      </div>
+    </Root>
   );
 }
 
-const Stack = styled.div`
+const Root = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--nhsuk-spacing-3);
 `;

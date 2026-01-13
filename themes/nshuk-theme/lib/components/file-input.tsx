@@ -1,6 +1,8 @@
-import { styled } from "@linaria/react";
 import type { FileInputProperties } from "@aidbox-forms/theme";
-import { type ChangeEvent, useRef } from "react";
+import { styled } from "@linaria/react";
+import { type ChangeEvent, type KeyboardEvent, useRef } from "react";
+
+import { hasErrorId } from "../utils/aria.ts";
 
 export function FileInput({
   id,
@@ -11,10 +13,19 @@ export function FileInput({
   value,
   onChange,
 }: FileInputProperties) {
-  const displayLabel = value?.title ?? value?.url ?? "Attachment selected";
   const hasValue = value != undefined;
+  const displayLabel =
+    value?.title ?? value?.url ?? (hasValue ? "Attachment selected" : "");
   const displaySizeLabel =
     value?.size == undefined ? "" : `${Math.round(value.size / 1024)} KB`;
+  const summaryValue = hasValue
+    ? `${displayLabel}${displaySizeLabel ? ` (${displaySizeLabel})` : ""}`
+    : "";
+
+  const inputClassName = hasErrorId(ariaDescribedBy)
+    ? "nhsuk-input nhsuk-input--error"
+    : "nhsuk-input";
+
   const fileInputReference = useRef<HTMLInputElement | null>(null);
 
   const handlePickFile = () => {
@@ -32,8 +43,28 @@ export function FileInput({
     }
   };
 
+  const handleSummaryKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (disabled) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handlePickFile();
+    }
+  };
+
   return (
-    <Container>
+    <div className="nhsuk-input-wrapper nhsuk-u-width-full">
+      <SummaryInput
+        className={inputClassName}
+        type="text"
+        value={summaryValue}
+        placeholder="No file chosen"
+        readOnly
+        disabled={disabled}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
+        onClick={handlePickFile}
+        onKeyDown={handleSummaryKeyDown}
+      />
       <HiddenInput
         ref={fileInputReference}
         id={id}
@@ -45,68 +76,40 @@ export function FileInput({
         onChange={handleFileChange}
         accept={accept}
       />
-      {hasValue ? (
-        <Details
-          role="group"
-          aria-labelledby={ariaLabelledBy}
-          aria-describedby={ariaDescribedBy}
-        >
-          <div className="nhsuk-body">{displayLabel}</div>
-          {displaySizeLabel && (
-            <div className="nhsuk-hint">{displaySizeLabel}</div>
-          )}
-          <Actions>
-            {disabled ? undefined : (
-              <button
-                className="nhsuk-button nhsuk-button--secondary"
-                type="button"
-                onClick={handlePickFile}
-              >
-                Change file
-              </button>
-            )}
-            <button
-              className="nhsuk-button nhsuk-button--secondary"
-              type="button"
-              onClick={() => onChange?.()}
-              disabled={disabled}
-            >
-              Clear attachment
-            </button>
-          </Actions>
-        </Details>
-      ) : (
+      <button
+        className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
+        type="button"
+        onClick={handlePickFile}
+        disabled={disabled}
+      >
+        {hasValue ? "Change file" : "Choose file"}
+      </button>
+      {hasValue && (
         <button
-          className="nhsuk-button nhsuk-button--secondary"
+          className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
           type="button"
-          onClick={handlePickFile}
+          onClick={() => onChange?.()}
           disabled={disabled}
+          aria-label="Clear attachment"
         >
-          Choose file
+          Clear
         </button>
       )}
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
 
 const HiddenInput = styled.input`
   display: none;
 `;
 
-const Details = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+const SummaryInput = styled.input`
+  flex: 1;
+  min-width: calc(var(--nhsuk-spacing-9) * 3);
+  width: 100%;
+  cursor: pointer;
 
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  &:disabled {
+    cursor: not-allowed;
+  }
 `;

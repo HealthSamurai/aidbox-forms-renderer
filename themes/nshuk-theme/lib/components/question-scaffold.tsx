@@ -1,4 +1,3 @@
-import { styled } from "@linaria/react";
 import type { QuestionScaffoldProperties } from "@aidbox-forms/theme";
 
 export function QuestionScaffold({
@@ -7,17 +6,15 @@ export function QuestionScaffold({
   children,
   errors,
 }: QuestionScaffoldProperties) {
+  const className = errors
+    ? "nhsuk-form-group nhsuk-form-group--error"
+    : "nhsuk-form-group";
+
   return (
-    <Container data-linkid={linkId}>
+    <div className={className} data-linkid={linkId}>
       {header}
-      {children}
       {errors}
-    </Container>
+      {children}
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;

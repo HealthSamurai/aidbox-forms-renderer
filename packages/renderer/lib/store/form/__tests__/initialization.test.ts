@@ -98,7 +98,7 @@ describe("initialization", () => {
       const form = createStore();
       const introStore = form.scope.lookupNode("intro");
       assertDisplayNode(introStore);
-      expect(introStore.token).toBe("_/_intro");
+      expect(introStore.token).toBe("__intro");
     });
   });
 
@@ -243,7 +243,7 @@ describe("initialization", () => {
       const singleGroupStore = getGroupStore();
       assertGroupNode(singleGroupStore);
       const groupQuestion = singleGroupStore.nodes.at(0);
-      expect(groupQuestion?.token).toBe("_/_single-group_/_group-question");
+      expect(groupQuestion?.token).toBe("__single-group__group-question");
       expect(groupQuestion && isQuestionNode(groupQuestion)).toBe(true);
       assertQuestionNode(groupQuestion);
       expect(groupQuestion.answers).toHaveLength(1);
@@ -255,7 +255,7 @@ describe("initialization", () => {
       assertGroupNode(singleGroupStore);
       const groupNote = singleGroupStore.nodes.at(1);
       expect(groupNote && isDisplayNode(groupNote)).toBe(true);
-      expect(groupNote?.token).toBe("_/_single-group_/_group-note");
+      expect(groupNote?.token).toBe("__single-group__group-note");
     });
 
     describe("when response omits the group", () => {
@@ -463,7 +463,7 @@ describe("initialization", () => {
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
       childPaths.forEach((path) => {
-        expect(path).toMatch(/^_\/_repeating-group_\/_\d+_\/_repeat-question$/);
+        expect(path).toMatch(/^__repeating-group__\d+__repeat-question$/);
       });
       expect(new Set(childPaths).size).toBe(childPaths.length);
     });
@@ -940,7 +940,7 @@ describe("initialization", () => {
         assertQuestionNode(scopedFirst);
         assertQuestionNode(scopedSecond);
         expect(scopedFirst.token).toMatch(
-          /^_\/_repeating-question_\/_\d+_\/_follow-up$/,
+          /^__repeating-question__\d+__follow-up$/,
         );
         expect(scopedFirst.token).not.toBe(scopedSecond.token);
         expect(scopedFirst.answers.at(0)?.value).toBe("alice@example.org");
@@ -1110,9 +1110,7 @@ describe("initialization", () => {
       const parentQuestionStore = getParentStore();
       assertQuestionNode(parentQuestionStore);
       const childStore = parentQuestionStore.answers.at(0)?.nodes?.at(0);
-      expect(childStore?.token).toBe(
-        "_/_parent-question_/_0_/_child-follow-up",
-      );
+      expect(childStore?.token).toBe("__parent-question__0__child-follow-up");
     });
 
     it("hydrates nested child answers", () => {
@@ -1236,7 +1234,7 @@ describe("initialization", () => {
         assertGroupNode(group);
         const grandchild = group.nodes.at(0);
         expect(grandchild?.token).toBe(
-          "_/_parent-question_/_0_/_child-group_/_grandchild-question",
+          "__parent-question__0__child-group__grandchild-question",
         );
       });
 

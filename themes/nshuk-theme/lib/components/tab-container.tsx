@@ -1,4 +1,3 @@
-import { styled } from "@linaria/react";
 import type { TabContainerProperties } from "@aidbox-forms/theme";
 
 export function TabContainer({
@@ -23,67 +22,53 @@ export function TabContainer({
   );
 
   return (
-    <TabsShell className="nhsuk-tabs" data-linkid={linkId}>
-      {Boolean(header) && <h2 className="nhsuk-tabs__title">{header}</h2>}
-      <ul className="nhsuk-tabs__list" role="tablist">
+    <div data-linkid={linkId}>
+      {header}
+      {errors}
+      <div className="nhsuk-tabs">
+        <h2 className="nhsuk-tabs__title">Contents</h2>
+        <ul className="nhsuk-tabs__list">
+          {items.map((item, index) => {
+            const selected = index === clampedIndex;
+            const listItemClassName = selected
+              ? "nhsuk-tabs__list-item nhsuk-tabs__list-item--selected"
+              : "nhsuk-tabs__list-item";
+
+            return (
+              <li key={item.token} className={listItemClassName}>
+                <a
+                  id={item.buttonId}
+                  className="nhsuk-tabs__tab"
+                  href={`#${item.panelId}`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    onChange(index);
+                  }}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
         {items.map((item, index) => {
           const selected = index === clampedIndex;
+          const panelClassName = selected
+            ? "nhsuk-tabs__panel"
+            : "nhsuk-tabs__panel nhsuk-tabs__panel--hidden";
+
           return (
-            <li
+            <div
               key={item.token}
-              className={
-                selected
-                  ? "nhsuk-tabs__list-item nhsuk-tabs__list-item--selected"
-                  : "nhsuk-tabs__list-item"
-              }
+              className={panelClassName}
+              id={item.panelId}
+              aria-labelledby={item.buttonId}
             >
-              <button
-                type="button"
-                className="nhsuk-tabs__tab"
-                role="tab"
-                id={item.buttonId}
-                aria-selected={selected}
-                aria-controls={item.panelId}
-                onClick={() => onChange(index)}
-              >
-                {item.label}
-              </button>
-            </li>
+              {item.content}
+            </div>
           );
         })}
-      </ul>
-      {items.map((item, index) => {
-        const selected = index === clampedIndex;
-        return (
-          <TabPanel
-            key={item.token}
-            className="nhsuk-tabs__panel"
-            role="tabpanel"
-            id={item.panelId}
-            aria-labelledby={item.buttonId}
-            hidden={!selected}
-          >
-            {item.content}
-          </TabPanel>
-        );
-      })}
-      {errors}
-    </TabsShell>
+      </div>
+    </div>
   );
 }
-
-const TabsShell = styled.div`
-  border: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-`;
-
-const TabPanel = styled.div`
-  border: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-`;

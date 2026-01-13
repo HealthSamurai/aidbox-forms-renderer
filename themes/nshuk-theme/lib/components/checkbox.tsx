@@ -9,9 +9,14 @@ export function Checkbox({
   disabled,
   label,
 }: CheckboxProperties) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <div className="nhsuk-checkboxes">
-      <label className="nhsuk-checkboxes__item">
+    <div className="nhsuk-checkboxes nhsuk-checkboxes--small" role="group">
+      <div className="nhsuk-checkboxes__item">
         <input
           className="nhsuk-checkboxes__input"
           type="checkbox"
@@ -19,13 +24,15 @@ export function Checkbox({
           checked={checked}
           disabled={disabled}
           aria-labelledby={ariaLabelledBy}
-          aria-describedby={ariaDescribedBy}
+          aria-describedby={describedBy}
           onChange={onChange}
         />
         {label && (
-          <span className="nhsuk-label nhsuk-checkboxes__label">{label}</span>
+          <label className="nhsuk-label nhsuk-checkboxes__label" htmlFor={id}>
+            {label}
+          </label>
         )}
-      </label>
+      </div>
     </div>
   );
 }

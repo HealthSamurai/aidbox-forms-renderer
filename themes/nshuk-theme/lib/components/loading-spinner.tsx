@@ -12,34 +12,41 @@ export function LoadingSpinner({
   size = "sm",
 }: LoadingSpinnerProperties) {
   return (
-    <SpinnerWrapper role="status" aria-live="polite">
-      <SpinnerIcon aria-hidden="true" data-size={size} />
+    <Wrapper role="status" aria-live="polite">
+      <Icon aria-hidden="true" data-size={size} />
       {showLabel ? (
-        <SpinnerText>{label}</SpinnerText>
+        <Text>{label}</Text>
       ) : (
-        <VisuallyHidden>{label}</VisuallyHidden>
+        <span className="nhsuk-u-visually-hidden">{label}</span>
       )}
-    </SpinnerWrapper>
+    </Wrapper>
   );
 }
 
-const SpinnerWrapper = styled.span`
+const Wrapper = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-border-width-form-element));
 `;
 
-const SpinnerIcon = styled.span`
-  width: 0.75rem;
-  height: 0.75rem;
+const Icon = styled.span`
+  width: calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
+  height: calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
   border-radius: 999px;
-  border: 2px solid #d8dde0;
-  border-top-color: #005eb8;
-  animation: spin 0.7s linear infinite;
+  border: var(--nhsuk-border-width-form-element) solid
+    var(--nhsuk-border-colour);
+  border-top-color: var(--nhsuk-brand-colour);
+  animation: spin var(--nhsuk-spinner-duration) linear infinite;
 
   &[data-size="md"] {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: calc(
+      var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2) +
+        var(--nhsuk-border-width-form-element)
+    );
+    height: calc(
+      var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2) +
+        var(--nhsuk-border-width-form-element)
+    );
   }
 
   @keyframes spin {
@@ -49,18 +56,7 @@ const SpinnerIcon = styled.span`
   }
 `;
 
-const SpinnerText = styled.span`
-  font-size: 0.875rem;
-  color: #4c6272;
-`;
-
-const VisuallyHidden = styled.span`
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
+const Text = styled.span`
+  font-size: var(--nhsuk-font-size-s);
+  color: var(--nhsuk-secondary-text-colour);
 `;

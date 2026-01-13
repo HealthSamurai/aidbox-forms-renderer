@@ -1,5 +1,5 @@
-import { styled } from "@linaria/react";
 import type { NumberInputProperties } from "@aidbox-forms/theme";
+import { hasErrorId } from "../utils/aria.ts";
 
 export function NumberInput({
   id,
@@ -16,40 +16,18 @@ export function NumberInput({
 }: NumberInputProperties) {
   const described = [ariaDescribedBy].filter(Boolean).join(" ").trim();
   const describedBy = described.length > 0 ? described : undefined;
+  const className = hasErrorId(describedBy)
+    ? "nhsuk-input nhsuk-input--error"
+    : "nhsuk-input";
 
-  return (
-    <div className="nhsuk-form-group">
-      {unitLabel ? (
-        <UnitWrapper>
-          <input
-            id={id}
-            className="nhsuk-input"
-            type="number"
-            value={value ?? ""}
-            onChange={(event) => {
-              const raw = event.target.value;
-              onChange(raw === "" ? undefined : Number(raw));
-            }}
-            disabled={disabled}
-            placeholder={placeholder}
-            step={step}
-            min={min}
-            max={max}
-            aria-labelledby={ariaLabelledBy}
-            aria-describedby={
-              [describedBy, unitLabel ? `${id}-unit` : undefined]
-                .filter(Boolean)
-                .join(" ") || undefined
-            }
-          />
-          <UnitLabel id={id ? `${id}-unit` : undefined} aria-hidden="true">
-            {unitLabel}
-          </UnitLabel>
-        </UnitWrapper>
-      ) : (
+  if (unitLabel) {
+    const unitId = id ? `${id}-unit` : undefined;
+
+    return (
+      <div className="nhsuk-input-wrapper nhsuk-u-width-full">
         <input
           id={id}
-          className="nhsuk-input"
+          className={className}
           type="number"
           value={value ?? ""}
           onChange={(event) => {
@@ -62,19 +40,34 @@ export function NumberInput({
           min={min}
           max={max}
           aria-labelledby={ariaLabelledBy}
-          aria-describedby={describedBy}
+          aria-describedby={
+            [describedBy, unitId].filter(Boolean).join(" ") || undefined
+          }
         />
-      )}
-    </div>
+        <span className="nhsuk-input__suffix" id={unitId}>
+          {unitLabel}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <input
+      id={id}
+      className={className}
+      type="number"
+      value={value ?? ""}
+      onChange={(event) => {
+        const raw = event.target.value;
+        onChange(raw === "" ? undefined : Number(raw));
+      }}
+      disabled={disabled}
+      placeholder={placeholder}
+      step={step}
+      min={min}
+      max={max}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={describedBy}
+    />
   );
 }
-
-const UnitWrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-`;
-
-const UnitLabel = styled.span`
-  padding: 0.55rem 0.75rem;
-`;

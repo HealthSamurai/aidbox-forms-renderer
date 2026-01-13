@@ -41,7 +41,7 @@ export function SelectInput({
   const displayContent = selectedOption ? (
     selectedOption.label
   ) : (
-    <PlaceholderText>{placeholder ?? "Select an option"}</PlaceholderText>
+    <Placeholder>{placeholder ?? "Select an option"}</Placeholder>
   );
 
   const listboxId = `${id}-listbox`;
@@ -202,218 +202,203 @@ export function SelectInput({
   };
 
   return (
-    <div
+    <Root
       aria-busy={isLoading || undefined}
       ref={containerReference}
       onBlur={handleBlur}
     >
-      <InputRow>
-        <InputWrap>
-          {showSearchInput ? (
-            <SelectInputField
-              ref={inputReference}
-              id={id}
-              className="nhsuk-input"
-              data-has-actions={
-                selectedOption || isLoading ? "true" : undefined
-              }
-              value={query}
-              onChange={(event) => {
-                updateQuery(event.target.value);
-                setIsDirty(true);
-                setIsOpen(true);
-              }}
-              onFocus={() => {
-                if (!disabled && !isLoading) {
-                  updateQuery("");
-                  setIsDirty(false);
-                  setIsOpen(true);
-                }
-              }}
-              onClick={() => {
-                if (!disabled && !isLoading && !isOpen) {
-                  updateQuery("");
-                  setIsDirty(false);
-                  setIsOpen(true);
-                }
-              }}
-              onKeyDown={handleNavigationKeyDown}
+      {showSearchInput ? (
+        <Input
+          ref={inputReference}
+          id={id}
+          className="nhsuk-input"
+          data-has-actions={selectedOption || isLoading ? "true" : undefined}
+          value={query}
+          onChange={(event) => {
+            updateQuery(event.target.value);
+            setIsDirty(true);
+            setIsOpen(true);
+          }}
+          onFocus={() => {
+            if (!disabled && !isLoading) {
+              updateQuery("");
+              setIsDirty(false);
+              setIsOpen(true);
+            }
+          }}
+          onClick={() => {
+            if (!disabled && !isLoading && !isOpen) {
+              updateQuery("");
+              setIsDirty(false);
+              setIsOpen(true);
+            }
+          }}
+          onKeyDown={handleNavigationKeyDown}
+          disabled={disabled || isLoading}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={isOpenWithCustom}
+          aria-controls={listboxId}
+          aria-activedescendant={
+            isOpenWithCustom && activeDescendantId
+              ? activeDescendantId
+              : undefined
+          }
+          placeholder={placeholder ?? "Select an option"}
+          autoComplete="off"
+        />
+      ) : (
+        <Display
+          id={id}
+          className="nhsuk-input"
+          role="combobox"
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
+          aria-expanded={isOpenWithCustom}
+          aria-controls={listboxId}
+          aria-placeholder={
+            selectedOption ? undefined : (placeholder ?? "Select an option")
+          }
+          aria-disabled={disabled || isLoading ? true : undefined}
+          tabIndex={disabled || isLoading ? -1 : 0}
+          data-disabled={disabled || isLoading ? "true" : undefined}
+          data-has-actions={selectedOption || isLoading ? "true" : undefined}
+          onClick={() => {
+            if (!disabled && !isLoading && !isOpen) {
+              updateQuery("");
+              setIsDirty(false);
+              setIsOpen(true);
+            }
+          }}
+          onKeyDown={handleNavigationKeyDown}
+        >
+          {displayContent}
+        </Display>
+      )}
+      {(selectedOption || isLoading) && (
+        <Actions>
+          {selectedOption && (
+            <ClearButton
+              type="button"
+              onClick={handleClear}
               disabled={disabled || isLoading}
-              aria-labelledby={ariaLabelledBy}
-              aria-describedby={ariaDescribedBy}
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded={isOpenWithCustom}
-              aria-controls={listboxId}
-              aria-activedescendant={
-                isOpenWithCustom && activeDescendantId
-                  ? activeDescendantId
-                  : undefined
-              }
-              placeholder={placeholder ?? "Select an option"}
-              autoComplete="off"
-            />
-          ) : (
-            <SelectDisplay
-              id={id}
-              className="nhsuk-input"
-              role="combobox"
-              aria-labelledby={ariaLabelledBy}
-              aria-describedby={ariaDescribedBy}
-              aria-expanded={isOpenWithCustom}
-              aria-controls={listboxId}
-              aria-placeholder={
-                selectedOption ? undefined : (placeholder ?? "Select an option")
-              }
-              aria-disabled={disabled || isLoading ? true : undefined}
-              tabIndex={disabled || isLoading ? -1 : 0}
               data-disabled={disabled || isLoading ? "true" : undefined}
-              data-has-actions={
-                selectedOption || isLoading ? "true" : undefined
-              }
-              onClick={() => {
-                if (!disabled && !isLoading && !isOpen) {
-                  updateQuery("");
-                  setIsDirty(false);
-                  setIsOpen(true);
-                }
-              }}
-              onKeyDown={handleNavigationKeyDown}
+              onMouseDown={(event) => event.preventDefault()}
+              aria-label="Clear"
             >
-              {displayContent}
-            </SelectDisplay>
+              {"\u00D7"}
+            </ClearButton>
           )}
-          {(selectedOption || isLoading) && (
-            <InputActions>
-              {selectedOption && (
-                <ClearButton
+          {isLoading && <LoadingSpinner />}
+        </Actions>
+      )}
+      {isOpenWithCustom && (
+        <Listbox
+          id={listboxId}
+          role="listbox"
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
+        >
+          {customOptionForm ? (
+            <CustomSlot role="presentation">{customOptionForm}</CustomSlot>
+          ) : (
+            <>
+              {options.map((entry, index) => (
+                <Option
+                  key={entry.token}
+                  id={`${listboxId}-option-${index}`}
                   type="button"
-                  onClick={handleClear}
-                  disabled={disabled || isLoading}
-                  data-disabled={disabled || isLoading ? "true" : undefined}
-                  onMouseDown={(event) => event.preventDefault()}
-                  aria-label="Clear"
+                  role="option"
+                  aria-selected={entry.token === selectedToken}
+                  aria-disabled={entry.disabled || undefined}
+                  disabled={entry.disabled}
+                  data-active={entry.token === resolvedActiveToken}
+                  ref={(node) => {
+                    if (node) {
+                      optionReferences.current.set(entry.token, node);
+                    } else {
+                      optionReferences.current.delete(entry.token);
+                    }
+                  }}
+                  onFocus={() => setActiveToken(entry.token)}
+                  onKeyDown={handleNavigationKeyDown}
+                  onClick={() => {
+                    if (!entry.disabled) {
+                      handleSelect(entry.token);
+                    }
+                  }}
                 >
-                  {"\u00D7"}
-                </ClearButton>
+                  {entry.label}
+                </Option>
+              ))}
+              {specifyOtherOption && (
+                <Option
+                  id={`${listboxId}-option-${stickyIndex}`}
+                  type="button"
+                  role="option"
+                  aria-selected={specifyOtherOption.token === selectedToken}
+                  aria-disabled={specifyOtherOption.disabled || undefined}
+                  disabled={Boolean(specifyOtherOption.disabled)}
+                  data-active={specifyOtherOption.token === resolvedActiveToken}
+                  data-sticky="true"
+                  ref={(node) => {
+                    if (node) {
+                      optionReferences.current.set(
+                        specifyOtherOption.token,
+                        node,
+                      );
+                    } else {
+                      optionReferences.current.delete(specifyOtherOption.token);
+                    }
+                  }}
+                  onFocus={() => setActiveToken(specifyOtherOption.token)}
+                  onKeyDown={handleNavigationKeyDown}
+                  onClick={() => {
+                    if (!specifyOtherOption.disabled) {
+                      handleSelect(specifyOtherOption.token);
+                    }
+                  }}
+                >
+                  {specifyOtherOption.label}
+                </Option>
               )}
-              {isLoading && <LoadingSpinner />}
-            </InputActions>
+            </>
           )}
-          {isOpenWithCustom && (
-            <Listbox
-              id={listboxId}
-              role="listbox"
-              aria-labelledby={ariaLabelledBy}
-              aria-describedby={ariaDescribedBy}
-            >
-              {customOptionForm ? (
-                <CustomOptionSlot role="presentation">
-                  {customOptionForm}
-                </CustomOptionSlot>
-              ) : (
-                <>
-                  {options.map((entry, index) => (
-                    <OptionButton
-                      key={entry.token}
-                      id={`${listboxId}-option-${index}`}
-                      type="button"
-                      role="option"
-                      aria-selected={entry.token === selectedToken}
-                      aria-disabled={entry.disabled || undefined}
-                      disabled={entry.disabled}
-                      data-active={entry.token === resolvedActiveToken}
-                      ref={(node) => {
-                        if (node) {
-                          optionReferences.current.set(entry.token, node);
-                        } else {
-                          optionReferences.current.delete(entry.token);
-                        }
-                      }}
-                      onFocus={() => setActiveToken(entry.token)}
-                      onKeyDown={handleNavigationKeyDown}
-                      onClick={() => {
-                        if (!entry.disabled) {
-                          handleSelect(entry.token);
-                        }
-                      }}
-                    >
-                      {entry.label}
-                    </OptionButton>
-                  ))}
-                  {specifyOtherOption && (
-                    <OptionButton
-                      id={`${listboxId}-option-${stickyIndex}`}
-                      type="button"
-                      role="option"
-                      aria-selected={specifyOtherOption.token === selectedToken}
-                      aria-disabled={specifyOtherOption.disabled || undefined}
-                      disabled={Boolean(specifyOtherOption.disabled)}
-                      data-active={
-                        specifyOtherOption.token === resolvedActiveToken
-                      }
-                      data-sticky="true"
-                      ref={(node) => {
-                        if (node) {
-                          optionReferences.current.set(
-                            specifyOtherOption.token,
-                            node,
-                          );
-                        } else {
-                          optionReferences.current.delete(
-                            specifyOtherOption.token,
-                          );
-                        }
-                      }}
-                      onFocus={() => setActiveToken(specifyOtherOption.token)}
-                      onKeyDown={handleNavigationKeyDown}
-                      onClick={() => {
-                        if (!specifyOtherOption.disabled) {
-                          handleSelect(specifyOtherOption.token);
-                        }
-                      }}
-                    >
-                      {specifyOtherOption.label}
-                    </OptionButton>
-                  )}
-                </>
-              )}
-            </Listbox>
-          )}
-        </InputWrap>
-      </InputRow>
-    </div>
+        </Listbox>
+      )}
+    </Root>
   );
 }
 
-const InputRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const InputWrap = styled.div`
+const Root = styled.div`
   position: relative;
   flex: 1;
   min-width: 0;
+  width: 100%;
 `;
 
-const PlaceholderText = styled.span`
-  color: #4a5568;
-  opacity: 0.65;
+const Placeholder = styled.span`
+  color: var(--nhsuk-secondary-text-colour);
+  opacity: var(--nhsuk-opacity-solid);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
-const SelectInputField = styled.input`
-  &&::placeholder {
-    color: #4a5568;
-    opacity: 0.65;
-  }
-
+const Input = styled.input`
   &[data-has-actions="true"] {
-    padding-right: 2rem;
+    padding-right: var(--nhsuk-spacing-5);
+  }
+
+  &::placeholder {
+    opacity: var(--nhsuk-opacity-solid);
+    color: var(--nhsuk-secondary-text-colour);
   }
 `;
 
-const SelectDisplay = styled.div`
+const Display = styled.div`
   display: flex;
   align-items: center;
   cursor: text;
@@ -423,57 +408,55 @@ const SelectDisplay = styled.div`
   }
 
   &[data-has-actions="true"] {
-    padding-right: 2rem;
+    padding-right: var(--nhsuk-spacing-5);
   }
 `;
 
 const ClearButton = styled.button`
   border: none;
   background: transparent;
-  padding: 0.25rem;
+  padding: var(--nhsuk-spacing-1);
   cursor: pointer;
-  color: #4a5568;
+  color: var(--nhsuk-secondary-text-colour);
 
   &[data-disabled="true"] {
-    opacity: 0.6;
+    opacity: var(--nhsuk-opacity-disabled);
     cursor: not-allowed;
   }
 `;
 
-const InputActions = styled.div`
+const Actions = styled.div`
   position: absolute;
-  right: 0.5rem;
+  right: var(--nhsuk-spacing-2);
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--nhsuk-spacing-1);
 `;
 
 const Listbox = styled.div`
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: calc(100% + var(--nhsuk-spacing-2));
   left: 0;
   right: 0;
-  max-height: 16rem;
+  max-height: calc(var(--nhsuk-spacing-9) * 4);
   overflow: auto;
-  border: 1px solid #d8dde0;
-  border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
-  z-index: 10;
-  padding: 0.25rem 0;
+  border: var(--nhsuk-border-table-cell-width) solid var(--nhsuk-border-colour);
+  background: var(--nhsuk-input-background-colour);
+  z-index: var(--nhsuk-z-index-dropdown);
 `;
 
-const CustomOptionSlot = styled.div`
-  padding: 0.75rem;
+const CustomSlot = styled.div`
+  padding: var(--nhsuk-spacing-3);
 `;
 
-const OptionButton = styled.button`
+const Option = styled.button`
   display: block;
   width: 100%;
   text-align: left;
-  padding: 0.5rem 0.75rem;
+  padding: var(--nhsuk-spacing-2)
+    calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
   border: none;
   background: transparent;
   cursor: pointer;
@@ -481,22 +464,23 @@ const OptionButton = styled.button`
   color: inherit;
 
   &[data-active="true"] {
-    background: #e8edee;
+    background: var(--nhsuk-secondary-button-hover-colour);
   }
 
   &[data-sticky="true"] {
     position: sticky;
     bottom: 0;
-    border-top: 1px solid #d8dde0;
-    background: #fff;
+    border-top: var(--nhsuk-border-table-cell-width) solid
+      var(--nhsuk-border-colour);
+    background: var(--nhsuk-input-background-colour);
   }
 
   &[data-sticky="true"][data-active="true"] {
-    background: #e8edee;
+    background: var(--nhsuk-secondary-button-hover-colour);
   }
 
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: var(--nhsuk-opacity-disabled);
   }
 `;

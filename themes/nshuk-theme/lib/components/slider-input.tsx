@@ -1,7 +1,8 @@
-import { useId } from "react";
 import type { SliderInputProperties } from "@aidbox-forms/theme";
+import { hasErrorId } from "../utils/aria.ts";
 
 export function SliderInput({
+  id,
   value,
   onChange,
   disabled,
@@ -14,18 +15,20 @@ export function SliderInput({
   upperLabel,
   unitLabel,
 }: SliderInputProperties) {
-  const generatedId = useId();
-  const unitId = unitLabel ? `${generatedId}-unit` : undefined;
-  const hintId =
-    lowerLabel || upperLabel ? `${generatedId}-range-hint` : undefined;
+  const unitId = unitLabel ? `${id}-unit` : undefined;
+  const hintId = lowerLabel || upperLabel ? `${id}-range-hint` : undefined;
   const describedBy =
     [ariaDescribedBy, unitId, hintId].filter(Boolean).join(" ").trim() ||
     undefined;
+  const className = hasErrorId(describedBy)
+    ? "nhsuk-input nhsuk-input--error"
+    : "nhsuk-input";
 
   return (
     <div className="nhsuk-form-group">
       <input
-        className="nhsuk-input"
+        id={id}
+        className={className}
         type="range"
         value={value ?? 0}
         onChange={(event) => {

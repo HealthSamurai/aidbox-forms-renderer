@@ -1,7 +1,6 @@
 import type { TableProperties } from "@aidbox-forms/theme";
 import type { ReactElement, ReactNode } from "react";
 import { styled } from "@linaria/react";
-import { IconButton } from "./icon-button.tsx";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function Table({
@@ -58,12 +57,14 @@ export function Table({
             {hasRowAction && (
               <td className="nhsuk-table__cell">
                 {row.onRemove && (
-                  <IconButton
-                    icon="−"
+                  <button
+                    type="button"
                     onClick={row.onRemove}
                     disabled={row.canRemove === false}
-                    label={row.removeLabel ?? "Remove"}
-                  />
+                    className="nhsuk-button nhsuk-button--secondary nhsuk-button--small nhsuk-u-margin-bottom-0"
+                  >
+                    {row.removeLabel ?? "Remove"}
+                  </button>
                 )}
               </td>
             )}
@@ -98,7 +99,7 @@ function renderHeaderContent(content: ReactNode, meta: TableMeta) {
 const HeaderContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--nhsuk-spacing-1);
   align-items: flex-start;
 `;
 
@@ -106,5 +107,5 @@ const HeaderRow = styled.div`
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem;
+  gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-border-width-form-element));
 `;

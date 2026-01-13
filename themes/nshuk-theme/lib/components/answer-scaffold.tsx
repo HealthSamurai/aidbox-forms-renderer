@@ -1,9 +1,5 @@
+import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
 import { styled } from "@linaria/react";
-import type {
-  AnswerRemoveButtonProperties,
-  AnswerScaffoldProperties,
-} from "@aidbox-forms/theme";
-import { IconButton } from "./icon-button.tsx";
 
 export function AnswerScaffold({
   control,
@@ -13,51 +9,28 @@ export function AnswerScaffold({
   children,
 }: AnswerScaffoldProperties) {
   return (
-    <Container>
+    <Row>
+      {errors}
       {control}
+      {children}
       {onRemove && (
-        <Toolbar>
-          <AnswerRemoveButton
+        <div className="nhsuk-button-group">
+          <button
+            type="button"
             onClick={onRemove}
             disabled={canRemove === false}
-            text="Remove"
-          />
-        </Toolbar>
+            className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
+          >
+            Remove
+          </button>
+        </div>
       )}
-      <Indented>
-        {children}
-        {errors}
-      </Indented>
-    </Container>
+    </Row>
   );
 }
 
-export function AnswerRemoveButton({
-  onClick,
-  disabled,
-  text,
-}: AnswerRemoveButtonProperties) {
-  return (
-    <IconButton icon="−" onClick={onClick} disabled={disabled} label={text} />
-  );
-}
-
-const Container = styled.div`
+const Row = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const Indented = styled.div`
-  padding-left: 0.5rem;
-
-  &:empty {
-    display: none;
-  }
+  flex-direction: row;
+  gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
 `;

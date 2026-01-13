@@ -1,5 +1,5 @@
 import type { LabelProperties } from "@aidbox-forms/theme";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export function Label({
   prefix,
@@ -12,48 +12,56 @@ export function Label({
   flyover,
   as = "label",
 }: LabelProperties) {
+  const content = (
+    <>
+      {prefix && <Prefix>{prefix}</Prefix>}
+      {children}
+      {required && <span aria-hidden="true"> *</span>}
+    </>
+  );
+
   if (as === "legend") {
     return (
-      <div className="nhsuk-label nhsuk-label--xl">
-        <div id={id}>
-          {prefix && <Prefix>{prefix}</Prefix>}
-          {children}
-          {required && <span aria-hidden="true"> *</span>}
+      <>
+        <div
+          className="nhsuk-fieldset__legend nhsuk-fieldset__legend--m"
+          id={id}
+        >
+          <span className="nhsuk-fieldset__heading">{content}</span>
         </div>
         {help}
         {legal}
         {flyover}
-      </div>
+      </>
     );
   }
 
-  const labelFor = as === "label" ? htmlFor : undefined;
-
-  return (
-    <div className="nhsuk-form-group">
-      <div className="nhsuk-label-wrapper">
-        {as === "label" ? (
-          <label
-            className="nhsuk-label nhsuk-label--m"
-            id={id}
-            htmlFor={labelFor}
-          >
-            {prefix && <Prefix>{prefix}</Prefix>}
-            {children}
-            {required && <span aria-hidden="true"> *</span>}
-          </label>
-        ) : (
-          <div className="nhsuk-label nhsuk-label--m" id={id}>
-            {prefix && <Prefix>{prefix}</Prefix>}
-            {children}
-            {required && <span aria-hidden="true"> *</span>}
-          </div>
-        )}
+  if (as === "label") {
+    return (
+      <>
+        <label
+          className="nhsuk-fieldset__legend nhsuk-fieldset__legend--s"
+          id={id}
+          htmlFor={htmlFor}
+        >
+          <span className="nhsuk-fieldset__heading">{content}</span>
+        </label>
         {help}
         {legal}
         {flyover}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="nhsuk-label" id={id}>
+        {content}
       </div>
-    </div>
+      {help}
+      {legal}
+      {flyover}
+    </>
   );
 }
 

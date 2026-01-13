@@ -46,7 +46,6 @@ export class TableStore implements ITable {
     return optionAxisItems;
   }
 
-  @computed
   getCellState(
     question: IQuestionNode,
     optionToken: OptionToken,

@@ -1,6 +1,6 @@
-import { styled } from "@linaria/react";
 import type { GroupListProperties } from "@aidbox-forms/theme";
-import { IconButton } from "./icon-button.tsx";
+import { Children } from "react";
+import { interpose } from "../utilities.ts";
 
 export function GroupList({
   linkId,
@@ -12,31 +12,24 @@ export function GroupList({
 }: GroupListProperties) {
   const addText = addLabel ?? "Add";
   return (
-    <Container data-linkid={linkId}>
+    <div data-linkid={linkId}>
       {header}
-      {children}
+      {interpose(
+        Children.toArray(children),
+        <hr className="nhsuk-section-break--m nhsuk-section-break--visible" />,
+      )}
       {onAdd && (
-        <Toolbar>
-          <IconButton
-            icon="＋"
+        <div className="nhsuk-button-group nhsuk-u-margin-top-4">
+          <button
+            type="button"
             onClick={onAdd}
             disabled={canAdd === false}
-            label={addText}
-          />
-        </Toolbar>
+            className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
+          >
+            {addText}
+          </button>
+        </div>
       )}
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;

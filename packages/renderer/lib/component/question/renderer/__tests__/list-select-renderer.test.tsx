@@ -422,7 +422,9 @@ describe("list-select-renderer", () => {
           name: "Favorite color",
         }) as HTMLInputElement;
         fireEvent.change(customInput, { target: { value: "Green" } });
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
 
         expect(screen.getByRole("radio", { name: "Green" })).toBeChecked();
 
@@ -579,7 +581,9 @@ describe("list-select-renderer", () => {
           name: "Favorite color",
         }) as HTMLInputElement;
         fireEvent.change(customInput, { target: { value: "Magenta" } });
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
 
         expect(
           screen.queryByRole("textbox", { name: "Favorite color" }),
@@ -692,7 +696,9 @@ describe("list-select-renderer", () => {
         expect(getStringAnswers(question).toSorted()).toEqual(["Cats", "Dust"]);
         assertOptionsEnabled();
 
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("textbox", { name: "Allergy" })).toBeNull();
         expect(screen.getByRole("checkbox", { name: /cats/i })).toBeChecked();
@@ -1113,7 +1119,9 @@ describe("list-select-renderer", () => {
         ).toEqual([1, 5]);
         assertOptionsEnabled();
 
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
         expect(
@@ -1187,7 +1195,9 @@ describe("list-select-renderer", () => {
         fireEvent.change(screen.getByRole("spinbutton", { name: /dose/i }), {
           target: { value: "5" },
         });
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
         expect(specifyOther).not.toBeChecked();
         expect(screen.queryByRole("spinbutton", { name: /dose/i })).toBeNull();
         assertOptionsEnabled();
@@ -1242,7 +1252,9 @@ describe("list-select-renderer", () => {
         fireEvent.change(customInput, {
           target: { value: "5" },
         });
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
 
         expect(screen.queryByRole("spinbutton", { name: "Dose" })).toBeNull();
         const customValue = screen.getByRole("radio", {
@@ -1665,7 +1677,9 @@ describe("list-select-renderer", () => {
         expect(option).not.toBeChecked();
         assertOptionsEnabled();
 
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
         expect(specifyOther).not.toBeChecked();
         expect(option).not.toBeChecked();
         expect(
@@ -1678,7 +1692,9 @@ describe("list-select-renderer", () => {
           name: "Call sign",
         }) as HTMLInputElement;
         fireEvent.change(customInput, { target: { value: "Zulu" } });
-        fireEvent.click(screen.getByRole("button", { name: "Add" }));
+        fireEvent.click(
+          screen.getByRole("button", { name: strings.dialog.add }),
+        );
         expect(specifyOther).not.toBeChecked();
         expect(option).not.toBeChecked();
         expect(screen.getByRole("checkbox", { name: /zulu/i })).toBeChecked();

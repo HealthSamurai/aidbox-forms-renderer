@@ -15,6 +15,7 @@ import { CheckboxList } from "./components/checkbox-list.tsx";
 import { MultiSelectInput } from "./components/multi-select-input.tsx";
 import { CustomOptionForm } from "./components/custom-option-form.tsx";
 import { Errors } from "./components/errors.tsx";
+import { ErrorSummary } from "./components/error-summary.tsx";
 import { Label } from "./components/label.tsx";
 import { QuestionScaffold } from "./components/question-scaffold.tsx";
 import { OptionsLoading } from "./components/options-loading.tsx";
@@ -22,10 +23,7 @@ import { Help } from "./components/help.tsx";
 import { Legal } from "./components/legal.tsx";
 import { Flyover } from "./components/flyover.tsx";
 import { AnswerList } from "./components/answer-list.tsx";
-import {
-  AnswerRemoveButton,
-  AnswerScaffold,
-} from "./components/answer-scaffold.tsx";
+import { AnswerScaffold } from "./components/answer-scaffold.tsx";
 import { Form } from "./components/form.tsx";
 import { Stack } from "./components/stack.tsx";
 import { GroupList } from "./components/group-list.tsx";
@@ -43,6 +41,7 @@ export { NumberInput } from "./components/number-input.tsx";
 export { TabContainer } from "./components/tab-container.tsx";
 export { DisplayRenderer } from "./components/display-renderer.tsx";
 export { Link } from "./components/link.tsx";
+export { Provider } from "./provider.tsx";
 
 export const theme: Theme = {
   TextInput,
@@ -61,6 +60,7 @@ export const theme: Theme = {
   MultiSelectInput,
   CustomOptionForm,
   Errors,
+  ErrorSummary,
   Label,
   QuestionScaffold,
   OptionsLoading,
@@ -68,7 +68,6 @@ export const theme: Theme = {
   Legal,
   Flyover,
   AnswerList,
-  AnswerRemoveButton,
   AnswerScaffold,
   Form,
   Stack,

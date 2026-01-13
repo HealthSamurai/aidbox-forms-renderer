@@ -1,7 +1,6 @@
 import { styled } from "@linaria/react";
 import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
 import { Children } from "react";
-import { IconButton } from "./icon-button.tsx";
 
 export function GroupScaffold({
   header,
@@ -23,14 +22,16 @@ export function GroupScaffold({
       {resolvedContent}
       {errors}
       {onRemove && (
-        <Toolbar>
-          <IconButton
-            icon="−"
+        <div className="nhsuk-button-group">
+          <button
+            type="button"
             onClick={onRemove}
             disabled={canRemove === false}
-            label={removeText}
-          />
-        </Toolbar>
+            className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
+          >
+            {removeText}
+          </button>
+        </div>
       )}
     </Container>
   );
@@ -39,11 +40,5 @@ export function GroupScaffold({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--nhsuk-spacing-3);
 `;

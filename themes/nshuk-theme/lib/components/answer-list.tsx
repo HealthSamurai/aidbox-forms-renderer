@@ -1,7 +1,5 @@
 import { styled } from "@linaria/react";
-import { Children } from "react";
 import type { AnswerListProperties } from "@aidbox-forms/theme";
-import { IconButton } from "./icon-button.tsx";
 
 export function AnswerList({
   children,
@@ -9,20 +7,21 @@ export function AnswerList({
   canAdd,
   addLabel,
 }: AnswerListProperties) {
-  const items = Children.toArray(children);
   const addText = addLabel ?? "Add";
   return (
     <Container>
-      {items.length > 0 && <List>{items}</List>}
+      {children}
       {onAdd && (
-        <Toolbar>
-          <IconButton
-            icon="＋"
+        <div className="nhsuk-button-group">
+          <button
+            type="button"
             onClick={onAdd}
             disabled={canAdd === false}
-            label={addText}
-          />
-        </Toolbar>
+            className="nhsuk-button nhsuk-button--secondary nhsuk-button--small"
+          >
+            {addText}
+          </button>
+        </div>
       )}
     </Container>
   );
@@ -31,17 +30,5 @@ export function AnswerList({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--nhsuk-spacing-2);
 `;

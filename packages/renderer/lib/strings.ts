@@ -11,7 +11,7 @@ export const strings = {
   },
   dialog: {
     cancel: "Cancel",
-    add: "Add",
+    add: "Apply",
   },
   errors: {
     unknown: "Unknown error",
@@ -20,8 +20,8 @@ export const strings = {
     sizeLabelKb: "{sizeKb} KB",
   },
   group: {
-    addSection: "Add section",
-    removeSection: "Remove section",
+    addSection: "Add another",
+    removeSection: "Remove",
     noNodesYet: "No nodes yet.",
   },
   gridTable: {

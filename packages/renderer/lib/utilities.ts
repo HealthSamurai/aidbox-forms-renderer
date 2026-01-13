@@ -55,7 +55,7 @@ export function buildId(
   return [base, ...parts]
     .filter((value): value is string | number => value != undefined)
     .map(String)
-    .join("_/_");
+    .join("__");
 }
 
 export function getNodeLabelId(node: IPresentableNode): string {

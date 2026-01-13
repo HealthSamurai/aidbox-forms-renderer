@@ -7,7 +7,7 @@ import {
   tokenify,
 } from "../../../utilities.ts";
 
-const LEGACY_UNIT_PREFIX = "_/_legacy_unit_/_";
+const LEGACY_UNIT_PREFIX = "__legacy_unit__";
 
 export class QuantityAnswer implements IQuantityAnswer {
   private readonly answer: IAnswer<"quantity">;

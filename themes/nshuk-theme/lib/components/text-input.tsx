@@ -1,4 +1,5 @@
 import type { TextInputProperties } from "@aidbox-forms/theme";
+import { hasErrorId } from "../utils/aria.ts";
 
 export function TextInput({
   id,
@@ -17,11 +18,14 @@ export function TextInput({
     ariaDescribedBy && ariaDescribedBy.trim().length > 0
       ? ariaDescribedBy
       : undefined;
+  const className = hasErrorId(describedBy)
+    ? "nhsuk-input nhsuk-input--error"
+    : "nhsuk-input";
 
   return (
     <input
       id={id}
-      className="nhsuk-input"
+      className={className}
       type={type}
       value={value}
       onChange={(event) => onChange(event.target.value)}

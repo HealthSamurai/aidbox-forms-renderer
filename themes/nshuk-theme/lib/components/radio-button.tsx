@@ -11,9 +11,14 @@ export function RadioButton({
   disabled,
   label,
 }: RadioButtonProperties) {
+  const describedBy =
+    ariaDescribedBy && ariaDescribedBy.trim().length > 0
+      ? ariaDescribedBy
+      : undefined;
+
   return (
-    <div className="nhsuk-radios">
-      <label className="nhsuk-radios__item">
+    <div className="nhsuk-radios nhsuk-radios--small" role="group">
+      <div className="nhsuk-radios__item">
         <input
           className="nhsuk-radios__input"
           type="radio"
@@ -23,13 +28,15 @@ export function RadioButton({
           checked={checked}
           disabled={disabled}
           aria-labelledby={ariaLabelledBy}
-          aria-describedby={ariaDescribedBy}
+          aria-describedby={describedBy}
           onChange={onChange}
         />
         {label && (
-          <span className="nhsuk-label nhsuk-radios__label">{label}</span>
+          <label className="nhsuk-label nhsuk-radios__label" htmlFor={id}>
+            {label}
+          </label>
         )}
-      </label>
+      </div>
     </div>
   );
 }

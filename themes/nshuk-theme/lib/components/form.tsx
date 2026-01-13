@@ -35,45 +35,120 @@ export function Form({
   );
   const header =
     title || description ? (
-      <header>
-        {Boolean(title) && <h1 className="nhsuk-heading-l">{title}</h1>}
-        {Boolean(description) && <p className="nhsuk-body">{description}</p>}
+      <header className="nhsuk-u-margin-bottom-4">
+        {Boolean(title) && (
+          <h1 className="nhsuk-heading-l nhsuk-u-margin-bottom-1">{title}</h1>
+        )}
+        {Boolean(description) && (
+          <span className="nhsuk-caption-l">{description}</span>
+        )}
       </header>
     ) : undefined;
 
   if (pagination) {
+    const paginationItems = getPaginationItems(
+      pagination.current,
+      pagination.total,
+    );
+
+    const goToPage = (page: number) => {
+      if (page === pagination.current) {
+        return;
+      }
+
+      const steps = Math.abs(page - pagination.current);
+      const move =
+        page < pagination.current ? pagination.onPrev : pagination.onNext;
+
+      for (let index = 0; index < steps; index += 1) {
+        move();
+      }
+    };
+
     return (
-      <FormElement onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         {header && <TitleSlot>{header}</TitleSlot>}
         {Boolean(errors) && <Slot>{errors}</Slot>}
         {Boolean(before) && <Slot>{before}</Slot>}
         {children}
-        <Controls>
-          <Nav className="nhsuk-button-group">
-            <button
-              className="nhsuk-button nhsuk-button--secondary"
-              type="button"
-              onClick={pagination.onPrev}
-              disabled={pagination.disabledPrev}
+        <nav
+          className="nhsuk-pagination nhsuk-pagination--numbered"
+          role="navigation"
+          aria-label="Pagination"
+        >
+          {pagination.disabledPrev ? undefined : (
+            <a
+              href="#"
+              className="nhsuk-pagination__previous"
+              rel="prev"
+              onClick={(event) => {
+                event.preventDefault();
+                pagination.onPrev();
+              }}
             >
-              Previous
-            </button>
-            <span className="nhsuk-hint">
-              {pagination.current} / {pagination.total}
-            </span>
-            <button
-              className="nhsuk-button nhsuk-button--secondary"
-              type="button"
-              onClick={pagination.onNext}
-              disabled={pagination.disabledNext}
+              <ArrowLeftIcon />
+              <span className="nhsuk-pagination__title">
+                Previous<span className="nhsuk-u-visually-hidden"> page</span>
+              </span>
+            </a>
+          )}
+
+          <ul className="nhsuk-pagination__list">
+            {paginationItems.map((item, index) => {
+              if (item.type === "ellipsis") {
+                return (
+                  <li
+                    key={`ellipsis-${index}`}
+                    className="nhsuk-pagination__item nhsuk-pagination__item--ellipsis"
+                  >
+                    {"\u22EF"}
+                  </li>
+                );
+              }
+
+              const itemClassName = item.current
+                ? "nhsuk-pagination__item nhsuk-pagination__item--current"
+                : "nhsuk-pagination__item";
+
+              return (
+                <li key={item.page} className={itemClassName}>
+                  <a
+                    className="nhsuk-pagination__link"
+                    href="#"
+                    aria-label={`Page ${item.page}`}
+                    aria-current={item.current ? "page" : undefined}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      goToPage(item.page);
+                    }}
+                  >
+                    {item.page}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+
+          {pagination.disabledNext ? undefined : (
+            <a
+              href="#"
+              className="nhsuk-pagination__next"
+              rel="next"
+              onClick={(event) => {
+                event.preventDefault();
+                pagination.onNext();
+              }}
             >
-              Next
-            </button>
-          </Nav>
-          <Actions>{actions}</Actions>
-        </Controls>
+              <span className="nhsuk-pagination__title">
+                Next<span className="nhsuk-u-visually-hidden"> page</span>
+              </span>
+              <ArrowRightIcon />
+            </a>
+          )}
+        </nav>
+        <div className="nhsuk-button-group">{actions}</div>
         {Boolean(after) && <Slot>{after}</Slot>}
-      </FormElement>
+      </form>
     );
   }
 
@@ -86,6 +161,67 @@ export function Form({
       {after}
       <div className="nhsuk-button-group">{actions}</div>
     </form>
+  );
+}
+
+type PaginationItem =
+  | { type: "page"; page: number; current: boolean }
+  | { type: "ellipsis" };
+
+function getPaginationItems(current: number, total: number): PaginationItem[] {
+  const pageSet = new Set<number>([1, total]);
+
+  for (const offset of [-2, -1, 0, 1, 2]) {
+    const page = current + offset;
+    if (page >= 1 && page <= total) {
+      pageSet.add(page);
+    }
+  }
+
+  const pages = [...pageSet].toSorted((a, b) => a - b);
+  const items: PaginationItem[] = [];
+
+  pages.forEach((page, index) => {
+    const previousPage = pages[index - 1];
+    if (previousPage != undefined && page - previousPage > 1) {
+      items.push({ type: "ellipsis" });
+    }
+
+    items.push({ type: "page", page, current: page === current });
+  });
+
+  return items;
+}
+
+function ArrowLeftIcon() {
+  return (
+    <svg
+      className="nhsuk-icon nhsuk-icon--arrow-left"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path d="M10.7 6.3c.4.4.4 1 0 1.4L7.4 11H19a1 1 0 0 1 0 2H7.4l3.3 3.3c.4.4.4 1 0 1.4a1 1 0 0 1-1.4 0l-5-5A1 1 0 0 1 4 12c0-.3.1-.5.3-.7l5-5a1 1 0 0 1 1.4 0Z" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg
+      className="nhsuk-icon nhsuk-icon--arrow-right"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path d="m14.7 6.3 5 5c.2.2.3.4.3.7 0 .3-.1.5-.3.7l-5 5a1 1 0 0 1-1.4-1.4l3.3-3.3H5a1 1 0 0 1 0-2h11.6l-3.3-3.3a1 1 0 1 1 1.4-1.4Z" />
+    </svg>
   );
 }
 
@@ -118,44 +254,18 @@ function ActionButton({
   );
 }
 
-const FormElement = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
 const TitleSlot = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
 `;
 
 const Slot = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--nhsuk-spacing-3);
 
   &:empty {
     display: none;
   }
-`;
-
-const Nav = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
 `;

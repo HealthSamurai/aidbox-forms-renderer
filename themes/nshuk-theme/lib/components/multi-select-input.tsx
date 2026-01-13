@@ -4,11 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
-function isInteractiveTarget(target: EventTarget | undefined): boolean {
+function isInteractiveTarget(
+  target: EventTarget | undefined,
+  currentTarget: Element,
+): boolean {
   if (!(target instanceof Element)) return false;
-  return Boolean(
-    target.closest("input,textarea,select,button,a,[contenteditable]"),
+  const interactive = target.closest(
+    "input,textarea,select,button,a,[contenteditable]",
   );
+  return Boolean(interactive) && interactive !== currentTarget;
 }
 
 export function MultiSelectInput({
@@ -179,275 +183,250 @@ export function MultiSelectInput({
   };
 
   return (
-    <div className="nhsuk-form-group" aria-busy={isLoading || undefined}>
-      <SelectField
-        ref={containerReference}
-        onBlur={handleBlur}
-        data-disabled={disabled ? "true" : undefined}
-      >
-        {selectedOptions.map((chip) => {
-          const isChipDisabled = disabled || Boolean(chip.disabled);
-          return (
-            <ChipColumn key={chip.token}>
-              <Chip
-                role="button"
-                tabIndex={isChipDisabled ? undefined : 0}
-                aria-label="Remove"
-                aria-disabled={isChipDisabled ? true : undefined}
-                data-clickable="true"
-                data-disabled={isChipDisabled ? "true" : undefined}
-                onClick={(event) => {
-                  if (isChipDisabled) return;
-                  if (isInteractiveTarget(event.target)) return;
-                  onDeselect(chip.token);
-                }}
-                onKeyDown={(event) => {
-                  if (isChipDisabled) return;
-                  if (event.currentTarget !== event.target) return;
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onDeselect(chip.token);
-                  }
-                }}
-              >
-                {chip.label}
-              </Chip>
-              {chip.errors}
-            </ChipColumn>
-          );
-        })}
-        <SelectWrapper>
-          {isSearchable ? (
-            <SelectInputField
-              id={id}
-              className="nhsuk-input"
-              value={query}
-              onChange={(event) => {
-                updateQuery(event.target.value);
-                openOptions();
+    <Root
+      className="nhsuk-input"
+      ref={containerReference}
+      onBlur={handleBlur}
+      data-disabled={disabled ? "true" : undefined}
+      aria-busy={isLoading || undefined}
+    >
+      {selectedOptions.map((chip) => {
+        const isChipDisabled = disabled || isLoading || Boolean(chip.disabled);
+
+        return (
+          <ChipColumn key={chip.token}>
+            <Chip
+              type="button"
+              className="nhsuk-tag"
+              disabled={isChipDisabled}
+              onClick={(event) => {
+                if (isChipDisabled) return;
+                if (isInteractiveTarget(event.target, event.currentTarget)) {
+                  return;
+                }
+                onDeselect(chip.token);
               }}
-              onFocus={() => {
-                openOptions();
-              }}
-              onClick={() => {
-                openOptions();
-              }}
-              onKeyDown={handleNavigationKeyDown}
-              disabled={disabled || isLoading}
-              aria-labelledby={ariaLabelledBy}
-              aria-describedby={ariaDescribedBy}
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded={isOpenWithCustom}
-              aria-controls={listboxId}
-              aria-activedescendant={
-                isOpenWithCustom && activeDescendantId
-                  ? activeDescendantId
-                  : undefined
-              }
-              placeholder={placeholder ?? "Select an option"}
-              autoComplete="off"
-            />
-          ) : (
-            <SelectTrigger
-              id={id}
-              role="combobox"
-              aria-labelledby={ariaLabelledBy}
-              aria-describedby={ariaDescribedBy}
-              aria-busy={isLoading || undefined}
-              aria-expanded={isOpenWithCustom}
-              aria-controls={listboxId}
-              aria-activedescendant={
-                isOpenWithCustom && activeDescendantId
-                  ? activeDescendantId
-                  : undefined
-              }
-              aria-disabled={disabled || isLoading ? true : undefined}
-              tabIndex={disabled || isLoading ? -1 : 0}
-              onFocus={openOptions}
-              onClick={openOptions}
-              onKeyDown={handleNavigationKeyDown}
             >
-              {selectedOptions.length === 0 && (
-                <PlaceholderText>
-                  {placeholder ?? "Select an option"}
-                </PlaceholderText>
-              )}
-            </SelectTrigger>
-          )}
-        </SelectWrapper>
-        {isLoading && (
-          <SelectActions>
-            <LoadingSpinner />
-          </SelectActions>
-        )}
-        {isOpenWithCustom && (
-          <DropdownPanel
-            id={listboxId}
-            role="listbox"
+              <span className="nhsuk-u-visually-hidden">Remove </span>
+              {chip.label}
+              <Icon aria-hidden="true">×</Icon>
+            </Chip>
+            {chip.errors}
+          </ChipColumn>
+        );
+      })}
+      <Field>
+        {isSearchable ? (
+          <Input
+            id={id}
+            value={query}
+            onChange={(event) => {
+              updateQuery(event.target.value);
+              openOptions();
+            }}
+            onFocus={() => {
+              openOptions();
+            }}
+            onClick={() => {
+              openOptions();
+            }}
+            onKeyDown={handleNavigationKeyDown}
+            disabled={disabled || isLoading}
             aria-labelledby={ariaLabelledBy}
             aria-describedby={ariaDescribedBy}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={isOpenWithCustom}
+            aria-controls={listboxId}
+            aria-activedescendant={
+              isOpenWithCustom && activeDescendantId
+                ? activeDescendantId
+                : undefined
+            }
+            placeholder={placeholder ?? "Select an option"}
+            autoComplete="off"
+          />
+        ) : (
+          <Trigger
+            id={id}
+            role="combobox"
+            aria-labelledby={ariaLabelledBy}
+            aria-describedby={ariaDescribedBy}
+            aria-busy={isLoading || undefined}
+            aria-expanded={isOpenWithCustom}
+            aria-controls={listboxId}
+            aria-activedescendant={
+              isOpenWithCustom && activeDescendantId
+                ? activeDescendantId
+                : undefined
+            }
+            aria-disabled={disabled || isLoading ? true : undefined}
+            tabIndex={disabled || isLoading ? -1 : 0}
+            onFocus={openOptions}
+            onClick={openOptions}
+            onKeyDown={handleNavigationKeyDown}
           >
-            {customOptionForm ? (
-              <CustomOptionContent role="presentation">
-                {customOptionForm}
-              </CustomOptionContent>
-            ) : (
-              <>
-                {displayOptions.map((option, index) => (
-                  <OptionButton
-                    key={option.token}
-                    id={`${listboxId}-option-${index}`}
-                    type="button"
-                    role="option"
-                    aria-selected={selectedTokens.has(option.token)}
-                    aria-disabled={option.disabled || undefined}
-                    disabled={Boolean(option.disabled)}
-                    data-active={option.token === resolvedActiveToken}
-                    ref={(node) => {
-                      if (node) {
-                        optionReferences.current.set(option.token, node);
-                      } else {
-                        optionReferences.current.delete(option.token);
-                      }
-                    }}
-                    onFocus={() => setActiveToken(option.token)}
-                    onKeyDown={handleNavigationKeyDown}
-                    onClick={() => {
-                      if (!option.disabled) {
-                        handleSelect(option.token);
-                      }
-                    }}
-                  >
-                    {option.label}
-                  </OptionButton>
-                ))}
-                {specifyOtherOption && (
-                  <StickyOption
-                    key={specifyOtherOption.token}
-                    id={`${listboxId}-option-${stickyIndex}`}
-                    type="button"
-                    role="option"
-                    aria-selected={selectedTokens.has(specifyOtherOption.token)}
-                    aria-disabled={specifyOtherOption.disabled || undefined}
-                    disabled={Boolean(specifyOtherOption.disabled)}
-                    data-active={
-                      specifyOtherOption.token === resolvedActiveToken
-                    }
-                    ref={(node) => {
-                      if (node) {
-                        optionReferences.current.set(
-                          specifyOtherOption.token,
-                          node,
-                        );
-                      } else {
-                        optionReferences.current.delete(
-                          specifyOtherOption.token,
-                        );
-                      }
-                    }}
-                    onFocus={() => setActiveToken(specifyOtherOption.token)}
-                    onKeyDown={handleNavigationKeyDown}
-                    onClick={() => {
-                      if (!specifyOtherOption.disabled) {
-                        handleSelect(specifyOtherOption.token);
-                      }
-                    }}
-                  >
-                    {specifyOtherOption.label}
-                  </StickyOption>
-                )}
-              </>
+            {selectedOptions.length === 0 && (
+              <Placeholder>{placeholder ?? "Select an option"}</Placeholder>
             )}
-          </DropdownPanel>
+          </Trigger>
         )}
-      </SelectField>
-    </div>
+      </Field>
+      {isLoading && (
+        <Actions>
+          <LoadingSpinner />
+        </Actions>
+      )}
+      {isOpenWithCustom && (
+        <Listbox
+          id={listboxId}
+          role="listbox"
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={ariaDescribedBy}
+        >
+          {customOptionForm ? (
+            <CustomSlot role="presentation">{customOptionForm}</CustomSlot>
+          ) : (
+            <>
+              {displayOptions.map((option, index) => (
+                <Option
+                  key={option.token}
+                  id={`${listboxId}-option-${index}`}
+                  type="button"
+                  role="option"
+                  aria-selected={selectedTokens.has(option.token)}
+                  aria-disabled={option.disabled || undefined}
+                  disabled={Boolean(option.disabled)}
+                  data-active={option.token === resolvedActiveToken}
+                  ref={(node) => {
+                    if (node) {
+                      optionReferences.current.set(option.token, node);
+                    } else {
+                      optionReferences.current.delete(option.token);
+                    }
+                  }}
+                  onFocus={() => setActiveToken(option.token)}
+                  onKeyDown={handleNavigationKeyDown}
+                  onClick={() => {
+                    if (!option.disabled) {
+                      handleSelect(option.token);
+                    }
+                  }}
+                >
+                  {option.label}
+                </Option>
+              ))}
+              {specifyOtherOption && (
+                <StickyOption
+                  key={specifyOtherOption.token}
+                  id={`${listboxId}-option-${stickyIndex}`}
+                  type="button"
+                  role="option"
+                  aria-selected={selectedTokens.has(specifyOtherOption.token)}
+                  aria-disabled={specifyOtherOption.disabled || undefined}
+                  disabled={Boolean(specifyOtherOption.disabled)}
+                  data-active={specifyOtherOption.token === resolvedActiveToken}
+                  ref={(node) => {
+                    if (node) {
+                      optionReferences.current.set(
+                        specifyOtherOption.token,
+                        node,
+                      );
+                    } else {
+                      optionReferences.current.delete(specifyOtherOption.token);
+                    }
+                  }}
+                  onFocus={() => setActiveToken(specifyOtherOption.token)}
+                  onKeyDown={handleNavigationKeyDown}
+                  onClick={() => {
+                    if (!specifyOtherOption.disabled) {
+                      handleSelect(specifyOtherOption.token);
+                    }
+                  }}
+                >
+                  {specifyOtherOption.label}
+                </StickyOption>
+              )}
+            </>
+          )}
+        </Listbox>
+      )}
+    </Root>
   );
 }
 
-const SelectField = styled.div`
-  border: 1px solid #d8dde0;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
+const Root = styled.div`
+  height: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-border-width-form-element));
   align-items: center;
-  background: transparent;
   position: relative;
 
-  &[data-disabled="true"] {
-    background: #f0f4f5;
+  &:focus-within {
+    border: var(--nhsuk-border-width-form-element) solid
+      var(--nhsuk-focus-text-colour);
+    outline: var(--nhsuk-focus-width) solid var(--nhsuk-focus-colour);
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 var(--nhsuk-border-width-form-element)
+      var(--nhsuk-focus-text-colour);
   }
 
-  &:focus-within {
-    border-color: #005eb8;
-    box-shadow: 0 0 0 2px rgba(0, 94, 184, 0.35);
+  &[data-disabled="true"] {
+    opacity: var(--nhsuk-opacity-disabled);
+    color: inherit;
+    background-color: transparent;
+    cursor: not-allowed;
   }
 `;
 
 const ChipColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: var(--nhsuk-border-width-form-element);
 `;
 
-const Chip = styled.div`
-  border: 1px solid #d8dde0;
-  border-radius: 9999px;
-  padding: 0.125rem 0.5rem;
+const Chip = styled.button`
+  border: none;
+  cursor: pointer;
+  font: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  position: relative;
-  background: #fff;
+  gap: var(--nhsuk-spacing-1);
 
-  &[data-clickable="true"] {
-    cursor: pointer;
-  }
-
-  &[data-clickable="true"]:hover {
-    background: #f0f4f5;
-  }
-
-  &[data-clickable="true"][data-disabled="true"] {
+  &:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  &[data-clickable="true"][data-disabled="true"]:hover {
-    background: #fff;
+    opacity: var(--nhsuk-opacity-disabled);
   }
 `;
 
-const SelectWrapper = styled.div`
+const Icon = styled.span`
+  font-weight: 700;
+`;
+
+const Field = styled.div`
   position: relative;
-  flex: 1 1 10rem;
-  min-width: 8rem;
+  flex: 1 1 calc(var(--nhsuk-spacing-9) * 2 + var(--nhsuk-spacing-5));
+  min-width: calc(var(--nhsuk-spacing-9) * 2);
 `;
 
-const SelectInputField = styled.input`
-  && {
-    border: none;
-    padding: 0.25rem 0.25rem;
-    width: 100%;
-    background: transparent;
-    outline: none;
-  }
+const Input = styled.input`
+  border: none;
+  width: 100%;
+  outline: none;
 
   &::placeholder {
-    color: #4a5568;
-    opacity: 0.65;
+    opacity: var(--nhsuk-opacity-solid);
+    color: var(--nhsuk-secondary-text-colour);
   }
 `;
 
-const SelectTrigger = styled.div`
+const Trigger = styled.div`
   width: 100%;
-  min-height: 1.5rem;
+  min-height: var(--nhsuk-base-line-height);
   display: flex;
   align-items: center;
-  padding: 0.25rem 0.25rem;
+  padding: var(--nhsuk-spacing-1);
   outline: none;
   cursor: text;
 
@@ -456,37 +435,35 @@ const SelectTrigger = styled.div`
   }
 `;
 
-const SelectActions = styled.div`
+const Actions = styled.div`
   display: inline-flex;
   align-items: center;
   margin-left: auto;
 `;
 
-const PlaceholderText = styled.span`
-  color: #4a5568;
-  opacity: 0.65;
+const Placeholder = styled.span`
+  color: var(--nhsuk-secondary-text-colour);
+  opacity: var(--nhsuk-opacity-solid);
 `;
 
-const DropdownPanel = styled.div`
+const Listbox = styled.div`
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: calc(100% + var(--nhsuk-spacing-2));
   left: 0;
   right: 0;
-  max-height: 16rem;
+  max-height: calc(var(--nhsuk-spacing-9) * 4);
   overflow: auto;
-  border: 1px solid #d8dde0;
-  border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
-  z-index: 10;
-  padding: 0.25rem 0;
+  border: var(--nhsuk-border-table-cell-width) solid var(--nhsuk-border-colour);
+  background: var(--nhsuk-input-background-colour);
+  z-index: var(--nhsuk-z-index-dropdown);
 `;
 
-const OptionButton = styled.button`
+const Option = styled.button`
   display: block;
   width: 100%;
   text-align: left;
-  padding: 0.5rem 0.75rem;
+  padding: var(--nhsuk-spacing-2)
+    calc(var(--nhsuk-spacing-1) + var(--nhsuk-spacing-2));
   border: none;
   background: transparent;
   cursor: pointer;
@@ -494,29 +471,28 @@ const OptionButton = styled.button`
   color: inherit;
 
   &[data-active="true"] {
-    background: #e8edee;
+    background: var(--nhsuk-secondary-button-hover-colour);
   }
 
   &:hover:not(:disabled) {
-    background: #e8edee;
+    background: var(--nhsuk-secondary-button-hover-colour);
   }
 
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: var(--nhsuk-opacity-disabled);
   }
 `;
 
-const StickyOption = styled(OptionButton)`
+const StickyOption = styled(Option)`
   position: sticky;
   bottom: 0;
-  background: #fff;
-  border-top: 1px solid #d8dde0;
-  z-index: 1;
+  background: var(--nhsuk-input-background-colour);
+  border-top: var(--nhsuk-border-table-cell-width) solid
+    var(--nhsuk-border-colour);
+  z-index: var(--nhsuk-z-index-sticky);
 `;
 
-const CustomOptionContent = styled.div`
-  padding: 0.5rem 0.75rem;
-  border-top: 1px solid #d8dde0;
-  background: #fff;
+const CustomSlot = styled.div`
+  padding: var(--nhsuk-spacing-3);
 `;
