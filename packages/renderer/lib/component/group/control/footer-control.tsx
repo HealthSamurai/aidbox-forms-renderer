@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import type { IGroupNode } from "../../../types.ts";
 import { NodeList } from "../../node/node-list.tsx";
-import { useTheme } from "@aidbox-forms/renderer/ui/theme.tsx";
+import { useTheme } from "../../../ui/theme.tsx";
 
 export const FooterControl = observer(function FooterControl({
   node,

@@ -12,6 +12,7 @@ export default defineConfig({
         "../../themes/hs-theme/lib",
       ),
     },
+    dedupe: ["react", "react-dom"],
   },
   test: {
     environment: "jsdom",

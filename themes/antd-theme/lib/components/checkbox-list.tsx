@@ -27,7 +27,7 @@ export function CheckboxList({
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
       >
-        <Space direction="vertical" size="small">
+        <Space orientation="vertical" size="small">
           {entries.map((entry) => {
             const isChecked = selectedTokens.has(entry.token);
             return (

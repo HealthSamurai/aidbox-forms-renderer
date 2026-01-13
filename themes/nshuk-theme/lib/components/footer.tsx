@@ -1,4 +1,3 @@
-import { styled } from "@linaria/react";
 import type { FooterProperties } from "@aidbox-forms/theme";
 
 export function Footer({ linkId, children }: FooterProperties) {

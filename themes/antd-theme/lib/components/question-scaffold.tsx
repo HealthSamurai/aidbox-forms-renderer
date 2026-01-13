@@ -9,7 +9,7 @@ export function QuestionScaffold({
 }: QuestionScaffoldProperties) {
   return (
     <div data-linkid={linkId}>
-      <Space direction="vertical" size="small" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="small" style={{ width: "100%" }}>
         {header}
         {children}
         {errors}

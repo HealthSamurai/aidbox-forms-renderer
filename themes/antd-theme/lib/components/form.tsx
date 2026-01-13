@@ -20,7 +20,7 @@ export function Form({
 
   const header =
     title || description ? (
-      <Space direction="vertical" size="small">
+      <Space orientation="vertical" size="small">
         {title && (
           <Typography.Title level={3} style={{ margin: 0 }}>
             {title}
@@ -48,7 +48,7 @@ export function Form({
   if (pagination) {
     return (
       <form onSubmit={handleSubmit}>
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Space orientation="vertical" size="large" style={{ width: "100%" }}>
           {header}
           {errors}
           {before}
@@ -87,7 +87,7 @@ export function Form({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {header}
         {errors}
         {before}

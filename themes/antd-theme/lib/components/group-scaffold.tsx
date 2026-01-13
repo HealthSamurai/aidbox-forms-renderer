@@ -10,7 +10,7 @@ export function GroupScaffold({
   removeLabel,
 }: GroupScaffoldProperties) {
   return (
-    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+    <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
       {header}
       {children}
       {errors}

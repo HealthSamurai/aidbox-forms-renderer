@@ -9,8 +9,12 @@ export function AnswerScaffold({
   children,
 }: AnswerScaffoldProperties) {
   return (
-    <Space direction="vertical" size="small" style={{ width: "100%" }}>
-      <Space align="start" style={{ width: "100%" }}>
+    <Space orientation="vertical" size="small" style={{ width: "100%" }}>
+      <Space
+        align="start"
+        className="ab-antd-space-stretch"
+        style={{ width: "100%" }}
+      >
         <div style={{ flex: 1, minWidth: 0 }}>{control}</div>
         {onRemove && (
           <Button

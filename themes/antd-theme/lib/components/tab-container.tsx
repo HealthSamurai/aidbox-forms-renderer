@@ -13,7 +13,7 @@ export function TabContainer({
 
   return (
     <div data-linkid={linkId}>
-      <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
         {header}
         {errors}
         <Tabs

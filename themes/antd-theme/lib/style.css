@@ -31,3 +31,8 @@
 .ab-antd-table-row-header {
   min-width: 160px;
 }
+
+.ab-antd-space-stretch > .ant-space-item:first-child {
+  flex: 1 1 0%;
+  min-width: 0;
+}

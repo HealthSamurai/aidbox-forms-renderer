@@ -3,7 +3,7 @@ import { Space } from "antd";
 
 export function Stack({ children }: StackProperties) {
   return (
-    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+    <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
       {children}
     </Space>
   );

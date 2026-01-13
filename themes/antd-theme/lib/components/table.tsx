@@ -69,7 +69,7 @@ function renderHeaderContent(content: ReactNode, meta: TableMeta) {
   }
 
   return (
-    <Space direction="vertical" size="small">
+    <Space orientation="vertical" size="small">
       <Space align="center" size="small">
         {content}
         {meta.isLoading && <LoadingSpinner />}

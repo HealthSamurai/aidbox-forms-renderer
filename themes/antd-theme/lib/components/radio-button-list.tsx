@@ -29,7 +29,7 @@ export function RadioButtonList({
         aria-describedby={ariaDescribedBy}
         disabled={disabled}
       >
-        <Space direction="vertical" size="small">
+        <Space orientation="vertical" size="small">
           {entries.map((entry) => (
             <Radio
               key={entry.token}
