@@ -169,7 +169,7 @@ export default meta;
 
 function makeStory(config: CoreRendererConfig): StoryObj {
   return {
-    name: config.name,
+    name: config.name.replace(/Renderer$/, ""),
     render: (_, context) => {
       const item = config.buildItem();
       return (
@@ -182,14 +182,14 @@ function makeStory(config: CoreRendererConfig): StoryObj {
   };
 }
 
-export const StringRenderer = makeStory(coreRenderers.string);
-export const IntegerRenderer = makeStory(coreRenderers.integer);
-export const DecimalRenderer = makeStory(coreRenderers.decimal);
-export const BooleanRenderer = makeStory(coreRenderers.boolean);
-export const DateRenderer = makeStory(coreRenderers.date);
-export const DateTimeRenderer = makeStory(coreRenderers.dateTime);
-export const TimeRenderer = makeStory(coreRenderers.time);
-export const QuantityRenderer = makeStory(coreRenderers.quantity);
-export const CodingRenderer = makeStory(coreRenderers.coding);
-export const ReferenceRenderer = makeStory(coreRenderers.reference);
-export const AttachmentRenderer = makeStory(coreRenderers.attachment);
+export const String = makeStory(coreRenderers.string);
+export const Integer = makeStory(coreRenderers.integer);
+export const Decimal = makeStory(coreRenderers.decimal);
+export const Boolean = makeStory(coreRenderers.boolean);
+export const Date = makeStory(coreRenderers.date);
+export const DateTime = makeStory(coreRenderers.dateTime);
+export const Time = makeStory(coreRenderers.time);
+export const Quantity = makeStory(coreRenderers.quantity);
+export const Coding = makeStory(coreRenderers.coding);
+export const Reference = makeStory(coreRenderers.reference);
+export const Attachment = makeStory(coreRenderers.attachment);

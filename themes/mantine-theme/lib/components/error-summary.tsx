@@ -1,5 +1,5 @@
 import type { ErrorSummaryProperties } from "@aidbox-forms/theme";
-import { Alert, Box, List, Text } from "@mantine/core";
+import { Alert, Anchor, Box, List, Text } from "@mantine/core";
 import { useEffect, useRef } from "react";
 
 export function ErrorSummary({
@@ -31,7 +31,7 @@ export function ErrorSummary({
             return (
               <List.Item key={key}>
                 {item.href ? (
-                  <a href={item.href}>{item.message}</a>
+                  <Anchor href={item.href}>{item.message}</Anchor>
                 ) : (
                   item.message
                 )}

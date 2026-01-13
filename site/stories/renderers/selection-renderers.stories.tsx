@@ -659,7 +659,7 @@ const meta: Meta<DropdownArguments & Partial<ListSelectArguments>> = {
 export default meta;
 
 export const DropdownRenderer: StoryObj<DropdownArguments> = {
-  name: "Dropdown renderer",
+  name: "Dropdown Select",
   render: (arguments_, context) => {
     const item = buildSelectionItem(arguments_, "drop-down");
     return (
@@ -669,7 +669,7 @@ export const DropdownRenderer: StoryObj<DropdownArguments> = {
 };
 
 export const ListSelectRenderer: StoryObj<ListSelectArguments> = {
-  name: "List-select renderer",
+  name: "List Select",
   args: {
     includeOptions: true,
   },

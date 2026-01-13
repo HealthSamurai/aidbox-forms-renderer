@@ -1,11 +1,5 @@
-import { Box, Loader, Stack } from "@mantine/core";
-import type { ChangeEvent } from "react";
+import { Box, Loader, Radio, Stack } from "@mantine/core";
 import type { RadioButtonListProperties } from "@aidbox-forms/theme";
-
-function joinIds(...parts: Array<string | undefined>) {
-  const value = parts.filter(Boolean).join(" ").trim();
-  return value.length > 0 ? value : undefined;
-}
 
 export function RadioButtonList({
   options,
@@ -38,38 +32,21 @@ export function RadioButtonList({
     >
       {displayOptions.length > 0 ? (
         <Stack gap={4}>
-          {displayOptions.map((option, index) => {
-            const optionId = `${id}-option-${index}`;
-            const optionDescribedBy = joinIds(ariaDescribedBy);
-            const describedByProperties =
-              optionDescribedBy == undefined
-                ? {}
-                : { "aria-describedby": optionDescribedBy };
-
+          {displayOptions.map((option) => {
             const optionDisabled =
               disabled === true || isLoading || option.disabled === true;
 
             return (
-              <Box key={option.token}>
-                <label
-                  style={{ display: "flex", gap: 8, alignItems: "center" }}
-                >
-                  <input
-                    type="radio"
-                    name={id}
-                    checked={selectedToken === option.token}
-                    disabled={optionDisabled}
-                    aria-labelledby={`${ariaLabelledBy} ${optionId}`}
-                    {...describedByProperties}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      if (event.currentTarget.checked) {
-                        onChange(option.token);
-                      }
-                    }}
-                  />
-                  <span id={optionId}>{option.label}</span>
-                </label>
-              </Box>
+              <Radio
+                key={option.token}
+                name={id}
+                value={option.token}
+                checked={selectedToken === option.token}
+                disabled={optionDisabled}
+                onChange={() => onChange(option.token)}
+                label={option.label}
+                {...groupDescribedByProperties}
+              />
             );
           })}
         </Stack>

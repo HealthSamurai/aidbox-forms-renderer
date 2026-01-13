@@ -45,30 +45,32 @@ export function Table({ columns, rows }: TableProperties) {
   return (
     <Box style={{ overflowX: "auto" }}>
       <MantineTable withTableBorder withColumnBorders highlightOnHover>
-        <thead>
-          <tr>
-            {hasRowHeader ? <th aria-hidden="true" /> : undefined}
+        <MantineTable.Thead>
+          <MantineTable.Tr>
+            {hasRowHeader ? <MantineTable.Th aria-hidden="true" /> : undefined}
             {columns.map((column) => (
-              <th key={column.token}>
+              <MantineTable.Th key={column.token} scope="col">
                 {renderHeaderContent(column.content, column)}
-              </th>
+              </MantineTable.Th>
             ))}
-            {hasRowAction ? <th aria-hidden="true" /> : undefined}
-          </tr>
-        </thead>
-        <tbody>
+            {hasRowAction ? <MantineTable.Th aria-hidden="true" /> : undefined}
+          </MantineTable.Tr>
+        </MantineTable.Thead>
+        <MantineTable.Tbody>
           {rows.map((row) => (
-            <tr key={row.token}>
+            <MantineTable.Tr key={row.token}>
               {hasRowHeader ? (
-                <th style={{ minWidth: 160 }}>
+                <MantineTable.Th scope="row" style={{ minWidth: 160 }}>
                   {renderHeaderContent(row.content, row)}
-                </th>
+                </MantineTable.Th>
               ) : undefined}
               {row.cells.map((cell) => (
-                <td key={cell.token}>{cell.content}</td>
+                <MantineTable.Td key={cell.token}>
+                  {cell.content}
+                </MantineTable.Td>
               ))}
               {hasRowAction ? (
-                <td>
+                <MantineTable.Td>
                   {row.onRemove ? (
                     <Button
                       type="button"
@@ -80,11 +82,11 @@ export function Table({ columns, rows }: TableProperties) {
                       {row.removeLabel ?? "Remove"}
                     </Button>
                   ) : undefined}
-                </td>
+                </MantineTable.Td>
               ) : undefined}
-            </tr>
+            </MantineTable.Tr>
           ))}
-        </tbody>
+        </MantineTable.Tbody>
       </MantineTable>
     </Box>
   );

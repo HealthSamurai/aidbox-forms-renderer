@@ -1,5 +1,4 @@
-import { Box, Loader, Stack } from "@mantine/core";
-import type { ChangeEvent } from "react";
+import { Box, Checkbox, Loader, Stack } from "@mantine/core";
 import type { CheckboxListProperties } from "@aidbox-forms/theme";
 
 function joinIds(...parts: Array<string | undefined>) {
@@ -43,8 +42,7 @@ export function CheckboxList({
     >
       {displayOptions.length > 0 ? (
         <Stack gap={4}>
-          {displayOptions.map((option, index) => {
-            const optionId = `${id}-option-${index}`;
+          {displayOptions.map((option) => {
             const selectedOption = selectedByToken.get(option.token);
             const isSpecifyOtherOption = option.token === specifyOtherToken;
             const checked = isSpecifyOtherOption
@@ -68,26 +66,20 @@ export function CheckboxList({
 
             return (
               <Box key={option.token}>
-                <label
-                  style={{ display: "flex", gap: 8, alignItems: "center" }}
-                >
-                  <input
-                    type="checkbox"
-                    name={id}
-                    checked={checked}
-                    disabled={optionDisabled}
-                    aria-labelledby={`${ariaLabelledBy} ${optionId}`}
-                    {...describedByProperties}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      if (event.currentTarget.checked) {
-                        onSelect(option.token);
-                      } else {
-                        onDeselect(option.token);
-                      }
-                    }}
-                  />
-                  <span id={optionId}>{option.label}</span>
-                </label>
+                <Checkbox
+                  name={id}
+                  checked={checked}
+                  disabled={optionDisabled}
+                  label={option.label}
+                  {...describedByProperties}
+                  onChange={() => {
+                    if (checked) {
+                      onDeselect(option.token);
+                    } else {
+                      onSelect(option.token);
+                    }
+                  }}
+                />
                 {selectedOption?.errors}
               </Box>
             );
