@@ -58,7 +58,7 @@ export function SliderInput({
     <Wrapper data-disabled={disabled ? "true" : "false"}>
       <Slider
         id={id}
-        className={[className, "ab-nhsuk-slider"].filter(Boolean).join(" ")}
+        className={className}
         type="range"
         min={sliderMin}
         max={sliderMax}
@@ -118,7 +118,143 @@ const Wrapper = styled.div`
 const Slider = styled.input`
   width: 100%;
   display: block;
-  padding: var(--nhsuk-spacing-2) 0;
+  --nhsuk-slider-track-size: var(--nhsuk-spacing-2);
+  --nhsuk-slider-thumb-size: calc(
+    var(--nhsuk-spacing-4) + var(--nhsuk-spacing-1)
+  );
+  --nhsuk-slider-thumb-dash-width: var(--nhsuk-border-width-form-element);
+  --nhsuk-slider-thumb-dash-gap: calc(
+    var(--nhsuk-border-width-form-element) + 1px
+  );
+  --nhsuk-slider-thumb-dash-offset: calc(
+    var(--nhsuk-slider-thumb-dash-gap) / 2
+  );
+  --nhsuk-slider-thumb-dash-edge: calc(
+    var(--nhsuk-slider-thumb-dash-offset) + var(--nhsuk-slider-thumb-dash-width)
+  );
+  --nhsuk-slider-thumb-dash-inset: var(--nhsuk-spacing-1);
+
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  padding-top: calc(var(--nhsuk-spacing-2) + 2px);
+  padding-bottom: calc(var(--nhsuk-spacing-2) - 2px);
+
+  &::-webkit-slider-runnable-track {
+    background: var(--nhsuk-border-colour);
+    border-radius: 0;
+    height: var(--nhsuk-slider-track-size);
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+    background-image: linear-gradient(
+      90deg,
+      transparent calc(50% - var(--nhsuk-slider-thumb-dash-edge)),
+      currentColor calc(50% - var(--nhsuk-slider-thumb-dash-edge)),
+      currentColor calc(50% - var(--nhsuk-slider-thumb-dash-offset)),
+      transparent calc(50% - var(--nhsuk-slider-thumb-dash-offset)),
+      transparent calc(50% + var(--nhsuk-slider-thumb-dash-offset)),
+      currentColor calc(50% + var(--nhsuk-slider-thumb-dash-offset)),
+      currentColor calc(50% + var(--nhsuk-slider-thumb-dash-edge)),
+      transparent calc(50% + var(--nhsuk-slider-thumb-dash-edge))
+    );
+    background-repeat: no-repeat;
+    background-size: 100%
+      calc(100% - (var(--nhsuk-slider-thumb-dash-inset) * 2));
+    background-position: center;
+    border: 2px solid var(--nhsuk-secondary-button-border-colour);
+    border-radius: 2px;
+    box-shadow: 0 4px 0 var(--nhsuk-secondary-button-shadow-colour);
+    color: var(--nhsuk-secondary-button-border-colour);
+    height: calc(var(--nhsuk-slider-thumb-size) - 2px);
+    margin-top: calc(
+      (var(--nhsuk-slider-thumb-size) - var(--nhsuk-slider-track-size)) / -2 -
+        2px
+    );
+    width: var(--nhsuk-slider-thumb-size);
+  }
+
+  &::-moz-range-track {
+    background: var(--nhsuk-border-colour);
+    border-radius: 0;
+    height: var(--nhsuk-slider-track-size);
+  }
+
+  &::-moz-range-thumb {
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+    background-image: linear-gradient(
+      90deg,
+      transparent calc(50% - var(--nhsuk-slider-thumb-dash-edge)),
+      currentColor calc(50% - var(--nhsuk-slider-thumb-dash-edge)),
+      currentColor calc(50% - var(--nhsuk-slider-thumb-dash-offset)),
+      transparent calc(50% - var(--nhsuk-slider-thumb-dash-offset)),
+      transparent calc(50% + var(--nhsuk-slider-thumb-dash-offset)),
+      currentColor calc(50% + var(--nhsuk-slider-thumb-dash-offset)),
+      currentColor calc(50% + var(--nhsuk-slider-thumb-dash-edge)),
+      transparent calc(50% + var(--nhsuk-slider-thumb-dash-edge))
+    );
+    background-repeat: no-repeat;
+    background-size: 100%
+      calc(100% - (var(--nhsuk-slider-thumb-dash-inset) * 2));
+    background-position: center;
+    border: 2px solid var(--nhsuk-secondary-button-border-colour);
+    border-radius: 2px;
+    box-shadow: 0 4px 0 var(--nhsuk-secondary-button-shadow-colour);
+    color: var(--nhsuk-secondary-button-border-colour);
+    height: calc(var(--nhsuk-slider-thumb-size) - 2px);
+    width: var(--nhsuk-slider-thumb-size);
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+  }
+
+  &:hover::-moz-range-thumb {
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible::-webkit-slider-thumb,
+  &:focus::-webkit-slider-thumb {
+    background-color: var(--nhsuk-focus-colour);
+    border: none;
+    box-shadow: 0 4px 0 var(--nhsuk-black-colour);
+    color: var(--nhsuk-black-colour);
+  }
+
+  &:focus-visible::-moz-range-thumb,
+  &:focus::-moz-range-thumb {
+    background-color: var(--nhsuk-focus-colour);
+    border: none;
+    box-shadow: 0 4px 0 var(--nhsuk-black-colour);
+    color: var(--nhsuk-black-colour);
+  }
+
+  &:active::-webkit-slider-thumb,
+  &:active:focus::-webkit-slider-thumb,
+  &:active:focus-visible::-webkit-slider-thumb {
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+    border: 2px solid var(--nhsuk-secondary-button-border-colour);
+    box-shadow: 0 2px 0 var(--nhsuk-secondary-button-shadow-colour);
+    color: var(--nhsuk-secondary-button-border-colour);
+    transform: translateY(2px);
+  }
+
+  &:active::-moz-range-thumb,
+  &:active:focus::-moz-range-thumb,
+  &:active:focus-visible::-moz-range-thumb {
+    background-color: var(--nhsuk-secondary-button-hover-colour);
+    border: 2px solid var(--nhsuk-secondary-button-border-colour);
+    box-shadow: 0 2px 0 var(--nhsuk-secondary-button-shadow-colour);
+    color: var(--nhsuk-secondary-button-border-colour);
+    transform: translateY(2px);
+  }
 `;
 
 const Labels = styled.div`
