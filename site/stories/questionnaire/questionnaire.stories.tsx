@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { Questionnaire } from "fhir/r5";
-import { useCallback, useEffect, useMemo } from "react";
-import { styled } from "@linaria/react";
-
-import { Form } from "@aidbox-forms/renderer/component/form/form.tsx";
-import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
-import {
-  useQuestionnaireBroadcaster,
-  useQuestionnaireResponseBroadcaster,
-} from "../story-channel-hooks.ts";
+import { Renderer } from "../renderer.tsx";
 import answerConstraint from "./samples/answer-constraint-examples.json" with { type: "json" };
 import answerExpression from "./samples/answer-expression.json" with { type: "json" };
 import answerOptions from "./samples/answer-options.json" with { type: "json" };
@@ -37,32 +29,6 @@ type PlaygroundArguments = {
   questionnaire: Questionnaire;
 };
 
-function Renderer({
-  questionnaire,
-  storyId,
-}: PlaygroundArguments & { storyId: string }) {
-  const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
-
-  const handleSubmit = useCallback(() => {
-    store.validateAll();
-  }, [store]);
-
-  useQuestionnaireResponseBroadcaster(store, storyId);
-  useQuestionnaireBroadcaster(questionnaire, storyId);
-
-  useEffect(() => () => store.dispose(), [store]);
-
-  return (
-    <StoryFrame>
-      <Form store={store} onSubmit={handleSubmit} />
-    </StoryFrame>
-  );
-}
-
-const StoryFrame = styled.div`
-  padding: 16px;
-`;
-
 const meta = {
   title: "Questionnaires",
   parameters: {
@@ -86,7 +52,13 @@ function makeStory(
     name: label,
     args: { questionnaire },
     render: (arguments_, context) => {
-      return <Renderer {...arguments_} storyId={context.id} />;
+      return (
+        <Renderer
+          questionnaire={arguments_.questionnaire}
+          storyId={context.id}
+          mode="form"
+        />
+      );
     },
   };
 }

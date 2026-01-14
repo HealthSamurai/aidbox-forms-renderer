@@ -176,6 +176,7 @@ function makeStory(config: CoreRendererConfig): StoryObj {
         <Renderer
           questionnaire={buildQuestionnaire(item)}
           storyId={context.id}
+          mode="node"
         />
       );
     },

@@ -253,7 +253,13 @@ function makeStory<T extends AnswerType>(
       });
       const questionnaire = buildQuestionnaire(item);
 
-      return <Renderer questionnaire={questionnaire} storyId={context.id} />;
+      return (
+        <Renderer
+          questionnaire={questionnaire}
+          storyId={context.id}
+          mode="node"
+        />
+      );
     },
   };
 }

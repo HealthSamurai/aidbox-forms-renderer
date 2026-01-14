@@ -32,6 +32,7 @@ export function MultiSelectInput({
 }: MultiSelectInputProperties) {
   const containerReference = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
+  const inputReference = useRef<HTMLInputElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeToken, setActiveToken] = useState<string | undefined>();
   const optionReferences = useRef(
@@ -91,6 +92,10 @@ export function MultiSelectInput({
     setActiveToken(undefined);
     setIsOpen(false);
   };
+  const focusInput = () => {
+    inputReference.current?.focus();
+  };
+
   const openOptions = () => {
     if (disabled || isLoading) return;
     setIsOpen(true);
@@ -187,6 +192,13 @@ export function MultiSelectInput({
       className="nhsuk-input"
       ref={containerReference}
       onBlur={handleBlur}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          event.preventDefault();
+          focusInput();
+          openOptions();
+        }
+      }}
       data-disabled={disabled ? "true" : undefined}
       aria-busy={isLoading || undefined}
     >
@@ -209,7 +221,7 @@ export function MultiSelectInput({
             >
               <span className="nhsuk-u-visually-hidden">Remove </span>
               {chip.label}
-              <Icon aria-hidden="true">×</Icon>
+              <Icon aria-hidden="true" />
             </Chip>
             {chip.errors}
           </ChipColumn>
@@ -218,6 +230,7 @@ export function MultiSelectInput({
       <Field>
         {isSearchable ? (
           <Input
+            ref={inputReference}
             id={id}
             value={query}
             onChange={(event) => {
@@ -263,7 +276,11 @@ export function MultiSelectInput({
             aria-disabled={disabled || isLoading ? true : undefined}
             tabIndex={disabled || isLoading ? -1 : 0}
             onFocus={openOptions}
-            onClick={openOptions}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              focusInput();
+              openOptions();
+            }}
             onKeyDown={handleNavigationKeyDown}
           >
             {selectedOptions.length === 0 && (
@@ -277,6 +294,7 @@ export function MultiSelectInput({
           <LoadingSpinner />
         </Actions>
       )}
+      <Chevron aria-hidden="true" />
       {isOpenWithCustom && (
         <Listbox
           id={listboxId}
@@ -362,6 +380,7 @@ const Root = styled.div`
   gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-border-width-form-element));
   align-items: center;
   position: relative;
+  padding-right: var(--nhsuk-spacing-5);
 
   &:focus-within {
     border: var(--nhsuk-border-width-form-element) solid
@@ -401,7 +420,31 @@ const Chip = styled.button`
 `;
 
 const Icon = styled.span`
-  font-weight: 700;
+  width: 10px;
+  height: 10px;
+  position: relative;
+  display: inline-block;
+  color: currentColor;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: var(--nhsuk-border-width-form-element);
+    background: currentColor;
+    transform-origin: center;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 `;
 
 const Field = styled.div`
@@ -495,4 +538,22 @@ const StickyOption = styled(Option)`
 
 const CustomSlot = styled.div`
   padding: var(--nhsuk-spacing-3);
+`;
+
+const Chevron = styled.span`
+  position: absolute;
+  right: calc(var(--nhsuk-spacing-2) + var(--nhsuk-spacing-1));
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  color: var(--nhsuk-secondary-text-colour);
+  pointer-events: none;
+
+  [data-disabled="true"] & {
+    opacity: var(--nhsuk-opacity-disabled);
+  }
 `;

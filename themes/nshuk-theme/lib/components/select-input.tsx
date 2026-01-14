@@ -32,6 +32,7 @@ export function SelectInput({
   const isSearchable = Boolean(onSearch);
   const showSearchInput = isSearchable && isOpenWithCustom;
   const selectedToken = selectedOption?.token ?? "";
+  const showChevron = !selectedOption;
 
   const updateQuery = (nextQuery: string) => {
     setQuery(nextQuery);
@@ -206,13 +207,14 @@ export function SelectInput({
       aria-busy={isLoading || undefined}
       ref={containerReference}
       onBlur={handleBlur}
+      data-has-spinner={isLoading ? "true" : undefined}
+      data-disabled={disabled || isLoading ? "true" : undefined}
     >
       {showSearchInput ? (
         <Input
           ref={inputReference}
           id={id}
           className="nhsuk-input"
-          data-has-actions={selectedOption || isLoading ? "true" : undefined}
           value={query}
           onChange={(event) => {
             updateQuery(event.target.value);
@@ -264,7 +266,6 @@ export function SelectInput({
           aria-disabled={disabled || isLoading ? true : undefined}
           tabIndex={disabled || isLoading ? -1 : 0}
           data-disabled={disabled || isLoading ? "true" : undefined}
-          data-has-actions={selectedOption || isLoading ? "true" : undefined}
           onClick={() => {
             if (!disabled && !isLoading && !isOpen) {
               updateQuery("");
@@ -277,23 +278,25 @@ export function SelectInput({
           {displayContent}
         </Display>
       )}
-      {(selectedOption || isLoading) && (
-        <Actions>
-          {selectedOption && (
-            <ClearButton
-              type="button"
-              onClick={handleClear}
-              disabled={disabled || isLoading}
-              data-disabled={disabled || isLoading ? "true" : undefined}
-              onMouseDown={(event) => event.preventDefault()}
-              aria-label="Clear"
-            >
-              {"\u00D7"}
-            </ClearButton>
-          )}
-          {isLoading && <LoadingSpinner />}
-        </Actions>
-      )}
+      <RightRail>
+        {isLoading && (
+          <Spinner aria-hidden="true">
+            <LoadingSpinner />
+          </Spinner>
+        )}
+        {selectedOption ? (
+          <ClearButton
+            type="button"
+            onClick={handleClear}
+            disabled={disabled || isLoading}
+            data-disabled={disabled || isLoading ? "true" : undefined}
+            onMouseDown={(event) => event.preventDefault()}
+            aria-label="Clear"
+          />
+        ) : (
+          showChevron && <Chevron aria-hidden="true" />
+        )}
+      </RightRail>
       {isOpenWithCustom && (
         <Listbox
           id={listboxId}
@@ -377,6 +380,11 @@ const Root = styled.div`
   flex: 1;
   min-width: 100px;
   width: 100%;
+  --nhsuk-select-right-padding: var(--nhsuk-spacing-5);
+
+  &[data-has-spinner="true"] {
+    --nhsuk-select-right-padding: var(--nhsuk-spacing-7);
+  }
 `;
 
 const Placeholder = styled.span`
@@ -388,9 +396,7 @@ const Placeholder = styled.span`
 `;
 
 const Input = styled.input`
-  &[data-has-actions="true"] {
-    padding-right: var(--nhsuk-spacing-5);
-  }
+  padding-right: var(--nhsuk-select-right-padding);
 
   &::placeholder {
     opacity: var(--nhsuk-opacity-solid);
@@ -402,22 +408,43 @@ const Display = styled.div`
   display: flex;
   align-items: center;
   cursor: text;
+  padding-right: var(--nhsuk-select-right-padding);
 
   &[data-disabled="true"] {
     cursor: not-allowed;
   }
-
-  &[data-has-actions="true"] {
-    padding-right: var(--nhsuk-spacing-5);
-  }
 `;
 
 const ClearButton = styled.button`
+  width: 10px;
+  height: 10px;
   border: none;
   background: transparent;
-  padding: var(--nhsuk-spacing-1);
+  padding: 0;
+  position: relative;
   cursor: pointer;
   color: var(--nhsuk-secondary-text-colour);
+  pointer-events: auto;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: var(--nhsuk-border-width-form-element);
+    background: currentColor;
+    transform-origin: center;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 
   &[data-disabled="true"] {
     opacity: var(--nhsuk-opacity-disabled);
@@ -425,14 +452,19 @@ const ClearButton = styled.button`
   }
 `;
 
-const Actions = styled.div`
+const RightRail = styled.div`
   position: absolute;
-  right: var(--nhsuk-spacing-2);
+  right: calc(var(--nhsuk-spacing-2) + var(--nhsuk-spacing-1));
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   gap: var(--nhsuk-spacing-1);
+  pointer-events: none;
+`;
+
+const Spinner = styled.span`
+  pointer-events: none;
 `;
 
 const Listbox = styled.div`
@@ -481,6 +513,31 @@ const Option = styled.button`
 
   &:disabled {
     cursor: not-allowed;
+    opacity: var(--nhsuk-opacity-disabled);
+  }
+`;
+
+const Chevron = styled.span`
+  width: 10px;
+  height: 10px;
+  position: relative;
+  color: var(--nhsuk-secondary-text-colour);
+  pointer-events: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -35%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid currentColor;
+  }
+
+  [data-disabled="true"] & {
     opacity: var(--nhsuk-opacity-disabled);
   }
 `;

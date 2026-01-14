@@ -663,7 +663,11 @@ export const DropdownRenderer: StoryObj<DropdownArguments> = {
   render: (arguments_, context) => {
     const item = buildSelectionItem(arguments_, "drop-down");
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };
@@ -684,7 +688,11 @@ export const ListSelectRenderer: StoryObj<ListSelectArguments> = {
   render: (arguments_, context) => {
     const item = buildListSelectItem(arguments_);
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };

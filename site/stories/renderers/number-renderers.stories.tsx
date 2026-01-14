@@ -304,7 +304,11 @@ export const NumberSliderRenderer: StoryObj<NumberSliderArguments> = {
   render: (arguments_, context) => {
     const item = buildNumberSliderItem(arguments_);
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };
@@ -324,7 +328,11 @@ export const NumberSpinnerRenderer: StoryObj<NumberSpinnerArguments> = {
   render: (arguments_, context) => {
     const item = buildNumberSpinnerItem(arguments_);
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };

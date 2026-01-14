@@ -1,9 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { Extension, Questionnaire, QuestionnaireItem } from "fhir/r5";
-import { useEffect, useMemo } from "react";
-import { styled } from "@linaria/react";
-import { Form } from "@aidbox-forms/renderer/component/form/form.tsx";
-import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
+import type { Extension, QuestionnaireItem } from "fhir/r5";
 import type {
   AnswerType,
   AnswerTypeToDataType,
@@ -19,10 +15,6 @@ import {
   makeInitialValues,
 } from "../helpers.tsx";
 import { Renderer } from "../renderer.tsx";
-import {
-  useQuestionnaireBroadcaster,
-  useQuestionnaireResponseBroadcaster,
-} from "../story-channel-hooks.ts";
 
 type GroupItemConfig = {
   linkId: string;
@@ -634,35 +626,14 @@ export default meta;
 function makeStory(item: QuestionnaireItem): StoryObj {
   return {
     render: (_arguments, context) => (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     ),
   };
 }
-
-function FormStory({
-  questionnaire,
-  storyId,
-}: {
-  questionnaire: Questionnaire;
-  storyId: string;
-}) {
-  const store = useMemo(() => new FormStore(questionnaire), [questionnaire]);
-
-  useEffect(() => () => store.dispose(), [store]);
-
-  useQuestionnaireResponseBroadcaster(store, storyId);
-  useQuestionnaireBroadcaster(questionnaire, storyId);
-
-  return (
-    <FormStoryFrame>
-      <Form store={store} onSubmit={() => store.validateAll()} />
-    </FormStoryFrame>
-  );
-}
-
-const FormStoryFrame = styled.div`
-  width: 100%;
-`;
 
 type TableGroupArguments = {
   orientation: "vertical" | "horizontal";
@@ -879,7 +850,11 @@ export const TableGroupRenderer = {
       item: tableQuestions,
     });
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 } satisfies StoryObj<TableGroupArguments>;
@@ -926,7 +901,11 @@ export const GridGroupRenderer = {
       item: rows,
     });
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 } satisfies StoryObj<GridGroupArguments>;
@@ -967,7 +946,7 @@ export const GridTableGroupRenderer = {
 export const HeaderGroupRenderer: StoryObj = {
   name: "Header",
   render: (_arguments, context) => (
-    <FormStory
+    <Renderer
       questionnaire={{
         resourceType: "Questionnaire",
         status: "active",
@@ -998,6 +977,7 @@ export const HeaderGroupRenderer: StoryObj = {
         ],
       }}
       storyId={context.id}
+      mode="form"
     />
   ),
 };
@@ -1005,7 +985,7 @@ export const HeaderGroupRenderer: StoryObj = {
 export const FooterGroupRenderer: StoryObj = {
   name: "Footer",
   render: (_arguments, context) => (
-    <FormStory
+    <Renderer
       questionnaire={{
         resourceType: "Questionnaire",
         status: "active",
@@ -1030,6 +1010,7 @@ export const FooterGroupRenderer: StoryObj = {
         ],
       }}
       storyId={context.id}
+      mode="form"
     />
   ),
 };
@@ -1037,7 +1018,7 @@ export const FooterGroupRenderer: StoryObj = {
 export const PageGroupRenderer: StoryObj = {
   name: "Page",
   render: (_arguments, context) => (
-    <FormStory
+    <Renderer
       questionnaire={{
         resourceType: "Questionnaire",
         status: "active",
@@ -1057,6 +1038,7 @@ export const PageGroupRenderer: StoryObj = {
         ],
       }}
       storyId={context.id}
+      mode="form"
     />
   ),
 };
@@ -1077,7 +1059,11 @@ export const TabContainerGroupRenderer = {
     });
 
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 } satisfies StoryObj<TabContainerGroupArguments>;

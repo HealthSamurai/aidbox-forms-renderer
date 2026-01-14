@@ -283,7 +283,11 @@ export const QuantitySliderRenderer: StoryObj<QuantitySliderArguments> = {
   render: (arguments_, context) => {
     const item = buildQuantitySliderItem(arguments_);
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };
@@ -294,7 +298,11 @@ export const QuantitySpinnerRenderer: StoryObj<QuantitySpinnerArguments> = {
   render: (arguments_, context) => {
     const item = buildQuantitySpinnerItem(arguments_);
     return (
-      <Renderer questionnaire={buildQuestionnaire(item)} storyId={context.id} />
+      <Renderer
+        questionnaire={buildQuestionnaire(item)}
+        storyId={context.id}
+        mode="node"
+      />
     );
   },
 };
