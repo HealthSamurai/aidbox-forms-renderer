@@ -1,0 +1,79 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "answer-options-choice",
+  "status": "active",
+  "title": "Answer Options (Simple)",
+  "description": "Minimal questionnaire showcasing answerOption with itemControl.",
+  "item": [
+    {
+      "linkId": "contact-method",
+      "type": "string",
+      "text": "Preferred contact method",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        { "valueString": "Email" },
+        { "valueString": "Phone" },
+        { "valueString": "SMS" }
+      ]
+    },
+    {
+      "linkId": "favorite-fruit",
+      "type": "string",
+      "text": "Favorite fruit",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "drop-down"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        { "valueString": "Apple" },
+        { "valueString": "Banana" },
+        { "valueString": "Pear" }
+      ]
+    },
+    {
+      "linkId": "hobbies",
+      "type": "string",
+      "text": "Select your hobbies",
+      "repeats": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "check-box"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        { "valueString": "Reading" },
+        { "valueString": "Music" },
+        { "valueString": "Sports" }
+      ]
+    }
+  ]
+}

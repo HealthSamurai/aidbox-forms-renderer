@@ -2,6 +2,7 @@ packages:
   - packages/*
   - themes/*
   - site
+  - cli
 
 patchedDependencies:
   "@lhncbc/ucum-lhc@7.1.3": patches/@lhncbc__ucum-lhc@7.1.3.patch
