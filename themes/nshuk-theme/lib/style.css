@@ -7,3 +7,91 @@
 .nhsuk-table__cell > .nhsuk-form-group {
   margin-bottom: 0;
 }
+
+.ab-nhsuk-slider {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+}
+
+.ab-nhsuk-slider::-webkit-slider-runnable-track {
+  background: var(--nhsuk-border-colour);
+  border-radius: 0;
+  height: 0.5rem;
+}
+
+.ab-nhsuk-slider::-webkit-slider-thumb {
+  appearance: none;
+  background: var(--nhsuk-secondary-button-hover-colour);
+  border: 2px solid var(--nhsuk-secondary-button-border-colour);
+  border-radius: 0;
+  height: 1.25rem;
+  margin-top: -0.375rem;
+  width: 1.25rem;
+}
+
+.ab-nhsuk-slider::-moz-range-track {
+  background: var(--nhsuk-border-colour);
+  border-radius: 0;
+  height: 0.5rem;
+}
+
+.ab-nhsuk-slider::-moz-range-thumb {
+  background: var(--nhsuk-secondary-button-hover-colour);
+  border: 2px solid var(--nhsuk-secondary-button-border-colour);
+  border-radius: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.ab-nhsuk-slider:hover::-webkit-slider-thumb {
+  background: var(--nhsuk-secondary-button-hover-colour);
+}
+
+.ab-nhsuk-slider:hover::-moz-range-thumb {
+  background: var(--nhsuk-secondary-button-hover-colour);
+}
+
+.ab-nhsuk-slider:focus {
+  outline: none;
+}
+
+.ab-nhsuk-slider:focus-visible::-webkit-slider-thumb,
+.ab-nhsuk-slider:focus::-webkit-slider-thumb {
+  background: var(--nhsuk-focus-colour);
+  border: none;
+  box-shadow: none;
+}
+
+.ab-nhsuk-slider:focus-visible::-moz-range-thumb,
+.ab-nhsuk-slider:focus::-moz-range-thumb {
+  background: var(--nhsuk-focus-colour);
+  border: none;
+  box-shadow: none;
+}
+
+@media (max-width: 19.99em) {
+  .nhsuk-input-wrapper > .ab-nhsuk-input-like {
+    max-width: 100%;
+  }
+}
+.nhsuk-input-wrapper > .ab-nhsuk-input-like {
+  margin-top: var(--nhsuk-spacing-2);
+}
+.nhsuk-input-wrapper > .ab-nhsuk-input-like:first-child,
+.nhsuk-input-wrapper > .ab-nhsuk-input-like:only-child {
+  margin-top: 0;
+}
+
+@media (min-width: 20em) {
+  .nhsuk-input-wrapper > .ab-nhsuk-input-like {
+    margin-top: 0;
+    margin-left: var(--nhsuk-spacing-2);
+  }
+  .nhsuk-input-wrapper > .ab-nhsuk-input-like:first-child,
+  .nhsuk-input-wrapper > .ab-nhsuk-input-like:only-child {
+    margin-left: 0;
+  }
+}

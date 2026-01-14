@@ -203,6 +203,7 @@ export function SelectInput({
 
   return (
     <Root
+      className="ab-nhsuk-input-like"
       aria-busy={isLoading || undefined}
       ref={containerReference}
       onBlur={handleBlur}
@@ -375,7 +376,7 @@ export function SelectInput({
 const Root = styled.div`
   position: relative;
   flex: 1;
-  min-width: 0;
+  min-width: 100px;
   width: 100%;
 `;
 

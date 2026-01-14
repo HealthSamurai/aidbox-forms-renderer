@@ -887,7 +887,7 @@ export const TableGroupRenderer = {
 export const GridGroupRenderer = {
   name: "Grid",
   args: {
-    questionTypes: ["string", "integer", "boolean", "date", "coding"],
+    questionTypes: ["string", "boolean", "time", "attachment"],
     questionOverlap: "overlap",
     readOnly: false,
   },

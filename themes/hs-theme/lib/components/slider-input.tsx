@@ -43,12 +43,14 @@ export function SliderInput({
     valueReference,
     lowerReference,
     8,
+    [value],
   );
   const isUpperClose = useIsWithinGap(
     labelsReference,
     valueReference,
     upperReference,
     8,
+    [value],
   );
 
   const unit = Boolean(unitLabel) && <Unit id={unitId}>{unitLabel}</Unit>;

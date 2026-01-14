@@ -24,7 +24,7 @@ export function NumberInput({
     const unitId = id ? `${id}-unit` : undefined;
 
     return (
-      <div className="nhsuk-input-wrapper nhsuk-u-width-full">
+      <div className="nhsuk-input-wrapper nhsuk-u-width-full ab-nhsuk-input-like">
         <input
           id={id}
           className={className}

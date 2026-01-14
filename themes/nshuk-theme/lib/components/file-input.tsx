@@ -52,7 +52,7 @@ export function FileInput({
   };
 
   return (
-    <div className="nhsuk-input-wrapper nhsuk-u-width-full">
+    <div className="nhsuk-input-wrapper nhsuk-u-width-full ab-nhsuk-input-like">
       <SummaryInput
         className={inputClassName}
         type="text"
