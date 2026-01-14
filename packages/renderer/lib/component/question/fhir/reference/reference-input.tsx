@@ -33,7 +33,7 @@ export function ReferenceInput({
   };
 
   return (
-    <InputGroup layout="grid">
+    <InputGroup spans={[6, 6]}>
       <TextInput
         id={id}
         ariaLabelledBy={ariaLabelledBy}

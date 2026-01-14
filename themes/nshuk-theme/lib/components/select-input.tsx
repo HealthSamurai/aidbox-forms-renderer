@@ -203,7 +203,6 @@ export function SelectInput({
 
   return (
     <Root
-      className="ab-nhsuk-input-like"
       aria-busy={isLoading || undefined}
       ref={containerReference}
       onBlur={handleBlur}

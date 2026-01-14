@@ -1,4 +1,3 @@
-import { styled } from "@linaria/react";
 import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
 
 export function GroupScaffold({

@@ -32,7 +32,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
   };
 
   return (
-    <InputGroup layout="row" weights={[2, 1]}>
+    <InputGroup spans={[8, 4]}>
       <SliderInput
         id={id}
         value={getNumericValue(answer.value)}

@@ -33,7 +33,7 @@ export const QuantityInput = observer(function QuantityInput({
   };
 
   return (
-    <InputGroup layout="row" weights={[2, 1]}>
+    <InputGroup spans={[8, 4]}>
       <NumberInput
         id={id}
         ariaLabelledBy={ariaLabelledBy}

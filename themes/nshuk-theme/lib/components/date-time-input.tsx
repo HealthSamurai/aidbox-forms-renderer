@@ -271,7 +271,7 @@ export function DateTimeInput({
           <input
             ref={timeReference}
             id={`${id}-time`}
-            className={`${timeInputClassName} nhsuk-date-input__input nhsuk-input--width-5`}
+            className={`${timeInputClassName} nhsuk-date-input__input nhsuk-input--width-6`}
             type="time"
             name={`${id}[time]`}
             defaultValue={initialParts.time}

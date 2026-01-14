@@ -339,13 +339,13 @@ fieldset/legend markup.
 ### InputGroup
 
 Layout wrapper for multi-part inputs such as quantity and coding. Arrange the children as a single logical field using
-the chosen layout and weights.
+a 12-column span system. Provide a span value per child; themes do not infer or default them. Keep the total at 12 to
+avoid gaps or wrapping.
 
-| Prop       | Type              | Optional | Description                                                                                                  |
-| ---------- | ----------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `children` | `ReactNode`       | No       | Render each child input in order as a single grouped control.                                                |
-| `layout`   | `"grid" \| "row"` | No       | Choose the overall arrangement: grid-style flow or a horizontal row.                                         |
-| `weights`  | `number[]`        | Yes      | Use as relative size hints (for example, flex-grow ratios) per child in row layout. Ignore for grid layouts. |
+| Prop       | Type        | Optional | Description                                                                                                   |
+| ---------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `children` | `ReactNode` | No       | Render each child input in order as a single grouped control.                                                 |
+| `spans`    | `number[]`  | No       | Column spans in a 12-column system (for example, `[8, 4]` for a 2/3 + 1/3 split). Provide one span per child. |
 
 ### TextInput
 

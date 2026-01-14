@@ -55,10 +55,7 @@ export function SliderInput({
   const unit = unitLabel ? <Unit>{unitLabel}</Unit> : undefined;
 
   return (
-    <Wrapper
-      className="ab-nhsuk-input-like"
-      data-disabled={disabled ? "true" : "false"}
-    >
+    <Wrapper data-disabled={disabled ? "true" : "false"}>
       <Slider
         id={id}
         className={[className, "ab-nhsuk-slider"].filter(Boolean).join(" ")}

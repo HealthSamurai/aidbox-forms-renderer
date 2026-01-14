@@ -17,8 +17,8 @@ export function TimeInput({
       ? ariaDescribedBy
       : undefined;
   const className = hasErrorId(describedBy)
-    ? "nhsuk-input nhsuk-input--error"
-    : "nhsuk-input";
+    ? "nhsuk-input nhsuk-input--width-6 nhsuk-input--error"
+    : "nhsuk-input nhsuk-input--width-6";
 
   return (
     <input

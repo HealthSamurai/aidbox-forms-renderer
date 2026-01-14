@@ -19,7 +19,7 @@ export function SpinnerInput({
     [ariaDescribedBy, unitId].filter(Boolean).join(" ").trim() || undefined;
 
   return (
-    <div className="nhsuk-input-wrapper nhsuk-u-width-full ab-nhsuk-input-like">
+    <div className="nhsuk-input-wrapper nhsuk-u-width-full">
       <input
         id={id}
         className={

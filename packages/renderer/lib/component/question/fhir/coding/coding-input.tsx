@@ -31,7 +31,7 @@ export function CodingInput({
   };
 
   return (
-    <InputGroup layout="grid">
+    <InputGroup spans={[4, 4, 4]}>
       <TextInput
         id={id}
         ariaLabelledBy={ariaLabelledBy}
