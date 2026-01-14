@@ -36,5 +36,5 @@ export function Renderer({
 }
 
 const FormContainer = styled.div`
-  max-width: 760px;
+  width: 100%;
 `;

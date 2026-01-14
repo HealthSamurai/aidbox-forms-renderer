@@ -13,25 +13,6 @@ export function clamp(value: number, min: number, max: number) {
   return value;
 }
 
-export function getPrecision(value: number) {
-  if (!Number.isFinite(value)) return 0;
-  const stringValue = value.toString();
-  const scientificIndex = stringValue.indexOf("e-");
-  if (scientificIndex !== -1) {
-    const exponent = Number(stringValue.slice(scientificIndex + 2));
-    return Number.isFinite(exponent) ? exponent : 0;
-  }
-  const decimalIndex = stringValue.indexOf(".");
-  return decimalIndex === -1 ? 0 : stringValue.length - decimalIndex - 1;
-}
-
-export function roundToPrecision(value: number, precision: number) {
-  if (!Number.isFinite(value)) return value;
-  if (precision <= 0) return Math.round(value);
-  const factor = 10 ** precision;
-  return Math.round(value * factor) / factor;
-}
-
 export function useIsWithinGap(
   containerReference: RefObject<HTMLElement | null>,
   primaryReference: RefObject<HTMLElement | null>,
@@ -94,6 +75,7 @@ export function useIsWithinGap(
     minGap,
     primaryReference,
     secondaryReference,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ...dependencies,
   ]);
 

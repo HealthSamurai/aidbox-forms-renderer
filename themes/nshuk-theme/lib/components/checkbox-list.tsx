@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { CheckboxListProperties } from "@aidbox-forms/theme";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
@@ -57,13 +58,13 @@ export function CheckboxList({
             }
           }}
         />
-        <label
+        <Label
           className="nhsuk-label nhsuk-checkboxes__label"
           htmlFor={optionId}
           id={optionLabelId}
         >
           {option.label}
-        </label>
+        </Label>
         {selectedOption?.errors ?? undefined}
       </div>
     );
@@ -94,3 +95,13 @@ export function CheckboxList({
     </div>
   );
 }
+
+const Label = styled.label`
+  padding-right: 0;
+
+  & > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+`;

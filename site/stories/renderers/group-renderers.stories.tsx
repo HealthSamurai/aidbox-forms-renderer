@@ -661,7 +661,7 @@ function FormStory({
 }
 
 const FormStoryFrame = styled.div`
-  max-width: 760px;
+  width: 100%;
 `;
 
 type TableGroupArguments = {

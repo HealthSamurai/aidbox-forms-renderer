@@ -1,3 +1,4 @@
+import { styled } from "@linaria/react";
 import type { RadioButtonListProperties } from "@aidbox-forms/theme";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
@@ -31,9 +32,9 @@ export function RadioButtonList({
           onChange={(event) => onChange(event.target.value)}
           aria-describedby={ariaDescribedBy}
         />
-        <label className="nhsuk-label nhsuk-radios__label" htmlFor={optionId}>
+        <Label className="nhsuk-label nhsuk-radios__label" htmlFor={optionId}>
           {entry.label}
-        </label>
+        </Label>
       </div>
     );
   };
@@ -63,3 +64,13 @@ export function RadioButtonList({
     </div>
   );
 }
+
+const Label = styled.label`
+  padding-right: 0;
+
+  & > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+`;

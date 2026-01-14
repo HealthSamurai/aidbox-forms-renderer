@@ -17,61 +17,67 @@ export function Table({
   const hasRowAction = rows.some((row) => row.onRemove != undefined);
 
   return (
-    <table className="nhsuk-table">
-      <thead className="nhsuk-table__head">
-        <tr className="nhsuk-table__row">
-          {hasRowHeader && (
-            <th
-              scope="col"
-              className="nhsuk-table__header"
-              aria-hidden="true"
-            />
-          )}
-          {columns.map((column) => (
-            <th key={column.token} scope="col" className="nhsuk-table__header">
-              {renderHeaderContent(column.content, column)}
-            </th>
-          ))}
-          {hasRowAction && (
-            <th
-              scope="col"
-              className="nhsuk-table__header"
-              aria-hidden="true"
-            />
-          )}
-        </tr>
-      </thead>
-      <tbody className="nhsuk-table__body">
-        {rows.map((row) => (
-          <tr key={row.token} className="nhsuk-table__row">
+    <Container>
+      <table className="nhsuk-table">
+        <thead className="nhsuk-table__head">
+          <tr className="nhsuk-table__row">
             {hasRowHeader && (
-              <th scope="row" className="nhsuk-table__header">
-                {renderHeaderContent(row.content, row)}
-              </th>
+              <th
+                scope="col"
+                className="nhsuk-table__header"
+                aria-hidden="true"
+              />
             )}
-            {row.cells.map((cell) => (
-              <td key={cell.token} className="nhsuk-table__cell">
-                {cell.content}
-              </td>
+            {columns.map((column) => (
+              <th
+                key={column.token}
+                scope="col"
+                className="nhsuk-table__header"
+              >
+                {renderHeaderContent(column.content, column)}
+              </th>
             ))}
             {hasRowAction && (
-              <td className="nhsuk-table__cell">
-                {row.onRemove && (
-                  <button
-                    type="button"
-                    onClick={row.onRemove}
-                    disabled={row.canRemove === false}
-                    className="nhsuk-button nhsuk-button--secondary nhsuk-button--small nhsuk-u-margin-bottom-0"
-                  >
-                    {row.removeLabel ?? "Remove"}
-                  </button>
-                )}
-              </td>
+              <th
+                scope="col"
+                className="nhsuk-table__header"
+                aria-hidden="true"
+              />
             )}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="nhsuk-table__body">
+          {rows.map((row) => (
+            <tr key={row.token} className="nhsuk-table__row">
+              {hasRowHeader && (
+                <th scope="row" className="nhsuk-table__header">
+                  {renderHeaderContent(row.content, row)}
+                </th>
+              )}
+              {row.cells.map((cell) => (
+                <td key={cell.token} className="nhsuk-table__cell">
+                  {cell.content}
+                </td>
+              ))}
+              {hasRowAction && (
+                <td className="nhsuk-table__cell">
+                  {row.onRemove && (
+                    <button
+                      type="button"
+                      onClick={row.onRemove}
+                      disabled={row.canRemove === false}
+                      className="nhsuk-button nhsuk-button--secondary nhsuk-button--small nhsuk-u-margin-bottom-0"
+                    >
+                      {row.removeLabel ?? "Remove"}
+                    </button>
+                  )}
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Container>
   );
 }
 
@@ -108,4 +114,10 @@ const HeaderRow = styled.div`
   flex-wrap: wrap;
   align-items: center;
   gap: calc(var(--nhsuk-spacing-1) + var(--nhsuk-border-width-form-element));
+`;
+
+const Container = styled.div`
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 `;
