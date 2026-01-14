@@ -24,6 +24,7 @@
       "@aidbox-forms/mantine-theme": ["themes/mantine-theme/lib"],
       "@aidbox-forms/hs-theme": ["themes/hs-theme/lib"],
       "@aidbox-forms/nshuk-theme": ["themes/nshuk-theme/lib"],
+      "@aidbox-forms/opentui-theme": ["themes/opentui-theme/lib"],
       "@aidbox-forms/renderer": ["packages/renderer/lib"],
       "@aidbox-forms/renderer/*": ["packages/renderer/lib/*"]
     },

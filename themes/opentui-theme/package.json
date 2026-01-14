@@ -1,0 +1,52 @@
+{
+  "name": "@aidbox-forms/opentui-theme",
+  "version": "0.0.3-pre-alpha",
+  "description": "OpenTUI theme for Aidbox Forms Renderer (terminal UI)",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "style": "./dist/index.css"
+    },
+    "./style.css": {
+      "import": "./dist/index.css"
+    }
+  },
+  "style": "./dist/index.css",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b ./tsconfig.lib.json && vite build",
+    "dev": "echo \"@aidbox-forms/opentui-theme: no dev server defined\"",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json",
+    "test": "echo \"@aidbox-forms/opentui-theme: no tests defined\""
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.22",
+    "@types/react": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "react": "^19.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.12",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "dependencies": {
+    "@aidbox-forms/theme": "workspace:*",
+    "@opentui/core": "^0.1.72",
+    "@opentui/react": "^0.1.72"
+  }
+}

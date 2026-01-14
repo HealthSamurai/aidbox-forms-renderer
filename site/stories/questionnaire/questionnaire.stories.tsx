@@ -12,6 +12,7 @@ import {
 import answerConstraint from "./samples/answer-constraint-examples.json" with { type: "json" };
 import answerExpression from "./samples/answer-expression.json" with { type: "json" };
 import answerOptions from "./samples/answer-options.json" with { type: "json" };
+import answerOptionsChoice from "./samples/answer-options-choice.json" with { type: "json" };
 import answerValueSet from "./samples/answer-valueset.json" with { type: "json" };
 import booleanGating from "./samples/boolean-gating.json" with { type: "json" };
 import expressionCalculated from "./samples/expression-calculated.json" with { type: "json" };
@@ -158,6 +159,10 @@ export const ExpressionDynamicQuantity = makeStory(
 export const AnswerOptions = makeStory(
   "Answer options",
   answerOptions as Questionnaire,
+);
+export const AnswerOptionsChoice = makeStory(
+  "Simple answer options",
+  answerOptionsChoice as Questionnaire,
 );
 export const AnswerExpressions = makeStory(
   "Answer expressions",
