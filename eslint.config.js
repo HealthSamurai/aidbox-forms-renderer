@@ -36,6 +36,19 @@ export default tseslint.config(
     },
   },
   {
+    files: ["site/src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "unicorn/prevent-abbreviations": "off",
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    files: ["site/src/app/router.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
     files: ["packages/renderer/lib/**/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {

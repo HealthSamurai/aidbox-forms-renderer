@@ -1,6 +1,6 @@
 # @aidbox-forms/nshuk-theme
 
-[NHS-styled](https://service-manual.nhs.uk/design-system) theme for Aidbox Forms Renderer.
+[NHS Design](https://service-manual.nhs.uk/design-system) theme for Aidbox Forms Renderer.
 
 ## Install
 

@@ -1,6 +1,6 @@
 # @aidbox-forms/mantine-theme
 
-Mantine UI theme for Aidbox Forms Renderer.
+Mantine theme for Aidbox Forms Renderer.
 
 ## Install
 

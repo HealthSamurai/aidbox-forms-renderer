@@ -1,7 +1,7 @@
 {
   "name": "@aidbox-forms/mantine-theme",
   "version": "0.0.3-pre-alpha",
-  "description": "Mantine UI theme for Aidbox Forms Renderer",
+  "description": "Mantine theme for Aidbox Forms Renderer",
   "private": false,
   "type": "module",
   "license": "MIT",

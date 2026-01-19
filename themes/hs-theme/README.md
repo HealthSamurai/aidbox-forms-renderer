@@ -1,6 +1,6 @@
 # @aidbox-forms/hs-theme
 
-Health Samurai–styled theme for Aidbox Forms Renderer.
+Health Samurai-styled theme for Aidbox Forms Renderer.
 
 ## Install
 
