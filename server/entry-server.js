@@ -239,6 +239,15 @@ const Button = React.forwardRef(
   }
 );
 Button.displayName = "Button";
+const withBase = (value) => {
+  if (!value.startsWith("/")) {
+    return value;
+  }
+  return `${"/aidbox-forms-renderer/"}${value.slice(1)}`;
+};
+const stripBase = (pathname) => {
+  return pathname.startsWith("/aidbox-forms-renderer/") ? `/${pathname.slice("/aidbox-forms-renderer/".length)}` : pathname;
+};
 function SiteHeader({
   links,
   extraNav,
@@ -254,24 +263,24 @@ function SiteHeader({
   ];
   return /* @__PURE__ */ jsxs("header", { className: "bg-background/80 sticky top-0 z-40 backdrop-blur-lg", children: [
     /* @__PURE__ */ jsxs("div", { className: "container flex h-14 items-center justify-between gap-2 px-4 md:px-8", children: [
-      /* @__PURE__ */ jsx("div", { className: "hidden flex-1 md:flex", children: /* @__PURE__ */ jsxs("a", { className: "flex", href: "/", children: [
+      /* @__PURE__ */ jsx("div", { className: "hidden flex-1 md:flex", children: /* @__PURE__ */ jsxs("a", { className: "flex", href: withBase("/"), children: [
         /* @__PURE__ */ jsx(
           "img",
           {
             className: "h-7 w-7 brightness-0 invert",
-            src: "/android-chrome-192x192.png",
+            src: withBase("/android-chrome-192x192.png"),
             alt: "Aidbox logo"
           }
         ),
         /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Aidbox Forms Renderer" })
       ] }) }),
       mobileNav,
-      /* @__PURE__ */ jsxs("a", { className: "flex md:hidden", href: "/", children: [
+      /* @__PURE__ */ jsxs("a", { className: "flex md:hidden", href: withBase("/"), children: [
         /* @__PURE__ */ jsx(
           "img",
           {
             className: "h-7 w-7 brightness-0 invert",
-            src: "/android-chrome-192x192.png",
+            src: withBase("/android-chrome-192x192.png"),
             alt: "Aidbox logo"
           }
         ),
@@ -287,7 +296,7 @@ function SiteHeader({
               "a",
               {
                 className: "text-muted-foreground transition-colors hover:text-foreground",
-                href: link.href,
+                href: withBase(link.href),
                 children: link.label
               },
               link.href
@@ -1601,7 +1610,7 @@ function Breadcrumbs({ route, pages }) {
       /* @__PURE__ */ jsx("li", { className: "inline-flex items-center gap-1.5", children: item.href ? /* @__PURE__ */ jsx(
         "a",
         {
-          href: item.href,
+          href: withBase(item.href),
           className: cn(
             "hover:text-foreground transition-colors",
             index2 === lastIndex && "text-foreground"
@@ -8900,12 +8909,12 @@ function PageFooter({ route, pages }) {
       ) })
     ] }),
     previous || next ? /* @__PURE__ */ jsxs("div", { className: "border-t pt-6 lg:flex lg:flex-row", children: [
-      previous ? /* @__PURE__ */ jsx("a", { href: previous.href, className: "basis-1/3", children: /* @__PURE__ */ jsx("div", { className: "hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-row gap-3", children: [
+      previous ? /* @__PURE__ */ jsx("a", { href: withBase(previous.href), className: "basis-1/3", children: /* @__PURE__ */ jsx("div", { className: "hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-row gap-3", children: [
         /* @__PURE__ */ jsx("div", { className: "flex size-6 min-w-6", children: /* @__PURE__ */ jsx(ArrowLeft, { className: "mx-auto size-5 self-center" }) }),
         /* @__PURE__ */ jsx("span", { className: "w-full space-y-2 self-center text-left", children: /* @__PURE__ */ jsx("div", { className: "text-lg font-semibold", children: previous.label }) })
       ] }) }) }) : void 0,
       /* @__PURE__ */ jsx("span", { className: "flex-1" }),
-      next ? /* @__PURE__ */ jsx("a", { href: next.href, className: "basis-1/3", children: /* @__PURE__ */ jsx("div", { className: "hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-row gap-3", children: [
+      next ? /* @__PURE__ */ jsx("a", { href: withBase(next.href), className: "basis-1/3", children: /* @__PURE__ */ jsx("div", { className: "hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-row gap-3", children: [
         /* @__PURE__ */ jsx("span", { className: "w-full space-y-2 self-center text-right", children: /* @__PURE__ */ jsx("div", { className: "text-lg font-semibold", children: next.label }) }),
         /* @__PURE__ */ jsx("div", { className: "ml-auto flex size-6 min-w-6", children: /* @__PURE__ */ jsx(ArrowRight, { className: "mx-auto size-5 self-center" }) })
       ] }) }) }) : void 0
@@ -9343,7 +9352,7 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => /* @__PURE
 ));
 CardFooter.displayName = "CardFooter";
 function ExploreCards({ cards }) {
-  return /* @__PURE__ */ jsx("section", { className: "grid gap-4 sm:grid-cols-2", children: cards.map((card) => /* @__PURE__ */ jsx("a", { href: card.href, className: "group", children: /* @__PURE__ */ jsx(Card, { className: "hover:bg-muted/50 shadow-none transition-all", children: /* @__PURE__ */ jsxs(CardHeader, { className: "space-y-2", children: [
+  return /* @__PURE__ */ jsx("section", { className: "grid gap-4 sm:grid-cols-2", children: cards.map((card) => /* @__PURE__ */ jsx("a", { href: withBase(card.href), className: "group", children: /* @__PURE__ */ jsx(Card, { className: "hover:bg-muted/50 shadow-none transition-all", children: /* @__PURE__ */ jsxs(CardHeader, { className: "space-y-2", children: [
     /* @__PURE__ */ jsx("p", { className: "text-muted-foreground text-xs font-medium", children: card.eyebrow }),
     /* @__PURE__ */ jsx(CardTitle, { className: "text-lg", children: card.title }),
     card.description ? /* @__PURE__ */ jsx(CardDescription, { children: card.description }) : void 0
@@ -9625,7 +9634,7 @@ function Search({
           items.map((item) => /* @__PURE__ */ jsx(
             "a",
             {
-              href: item.href,
+              href: withBase(item.href),
               onClick: () => setOpen(false),
               className: "hover:bg-muted flex w-full select-none items-center gap-3 rounded-md px-2 py-2",
               children: /* @__PURE__ */ jsxs("div", { children: [
@@ -9697,7 +9706,7 @@ function Sidebar({
       return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs(
         "a",
         {
-          href,
+          href: withBase(href),
           onClick: onNavigate,
           className: cn(
             "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",
@@ -9722,7 +9731,7 @@ function Sidebar({
           return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs(
             "a",
             {
-              href: item.href,
+              href: withBase(item.href),
               onClick: onNavigate,
               className: cn(
                 "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",
@@ -9774,7 +9783,7 @@ function Sidebar({
           return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs(
             "a",
             {
-              href: item.href,
+              href: withBase(item.href),
               onClick: onNavigate,
               className: cn(
                 "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",
@@ -9812,12 +9821,12 @@ function Layout({
       mobileNav: /* @__PURE__ */ jsxs(Sheet, { open: menuOpen, onOpenChange: setMenuOpen, children: [
         /* @__PURE__ */ jsx(SheetTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "icon", className: "md:hidden", children: /* @__PURE__ */ jsx(Menu, { className: "size-[18px]" }) }) }),
         /* @__PURE__ */ jsxs(SheetContent, { side: "left", className: "pr-0", children: [
-          /* @__PURE__ */ jsx("div", { className: "px-4 pb-4", children: /* @__PURE__ */ jsxs("a", { className: "flex", href: "/", children: [
+          /* @__PURE__ */ jsx("div", { className: "px-4 pb-4", children: /* @__PURE__ */ jsxs("a", { className: "flex", href: withBase("/"), children: [
             /* @__PURE__ */ jsx(
               "img",
               {
                 className: "h-7 w-7 brightness-0 invert",
-                src: "/android-chrome-192x192.png",
+                src: withBase("/android-chrome-192x192.png"),
                 alt: "Aidbox logo"
               }
             ),
@@ -9874,7 +9883,9 @@ const getRoutes = () => [
   ...routes.keys()
 ];
 const resolveRoute = async (url) => {
-  const pathname = normalizeRoute(new URL(url, "http://localhost").pathname);
+  const pathname = normalizeRoute(
+    stripBase(new URL(url, "http://localhost").pathname)
+  );
   if (pathname.startsWith("/docs/")) {
     if (pathname === "/docs/") {
       return {
