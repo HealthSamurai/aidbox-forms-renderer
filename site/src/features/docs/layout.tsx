@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import Shell from "@/components/shell.tsx";
+import { withBase } from "@/lib/base-url.ts";
 
 import Search from "@/components/search.tsx";
 import Sidebar from "@/components/sidebar.tsx";
@@ -47,10 +48,10 @@ export default function Layout({
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <div className="px-4 pb-4">
-              <a className="flex" href="/">
+              <a className="flex" href={withBase("/")}>
                 <img
                   className="h-7 w-7 brightness-0 invert"
-                  src="/android-chrome-192x192.png"
+                  src={withBase("/android-chrome-192x192.png")}
                   alt="Aidbox logo"
                 />
                 <span className="ml-3 self-center font-bold">

@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 
 import { Button } from "@/components/ui/button.tsx";
 import type { FlattenedSidebarEntry } from "@/components/sidebar.tsx";
+import { withBase } from "@/lib/base-url.ts";
 
 const normalizeQuery = (value: string) => value.trim().toLowerCase();
 
@@ -127,7 +128,7 @@ export default function Search({
                   {items.map((item) => (
                     <a
                       key={item.href}
-                      href={item.href}
+                      href={withBase(item.href)}
                       onClick={() => setOpen(false)}
                       className="hover:bg-muted flex w-full select-none items-center gap-3 rounded-md px-2 py-2"
                     >

@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { ChevronRight } from "lucide-react";
 
 import type { FlattenedSidebarEntry } from "@/components/sidebar.tsx";
+import { withBase } from "@/lib/base-url.ts";
 import { cn } from "@/lib/utilities.ts";
 
 type Properties = {
@@ -39,7 +40,7 @@ export default function Breadcrumbs({ route, pages }: Properties) {
               <li className="inline-flex items-center gap-1.5">
                 {item.href ? (
                   <a
-                    href={item.href}
+                    href={withBase(item.href)}
                     className={cn(
                       "hover:text-foreground transition-colors",
                       index === lastIndex && "text-foreground",

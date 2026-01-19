@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, ArrowUp, SquarePen } from "lucide-react";
 
 import type { FlattenedSidebarEntry } from "@/components/sidebar.tsx";
 import { routes } from "@/features/docs/manifest.ts";
+import { withBase } from "@/lib/base-url.ts";
 
 type Properties = {
   route: string;
@@ -60,7 +61,7 @@ export default function PageFooter({ route, pages }: Properties) {
       {previous || next ? (
         <div className="border-t pt-6 lg:flex lg:flex-row">
           {previous ? (
-            <a href={previous.href} className="basis-1/3">
+            <a href={withBase(previous.href)} className="basis-1/3">
               <div className="hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all">
                 <div className="flex flex-row gap-3">
                   <div className="flex size-6 min-w-6">
@@ -77,7 +78,7 @@ export default function PageFooter({ route, pages }: Properties) {
           ) : undefined}
           <span className="flex-1" />
           {next ? (
-            <a href={next.href} className="basis-1/3">
+            <a href={withBase(next.href)} className="basis-1/3">
               <div className="hover:bg-muted/50 mb-4 space-y-2 rounded-lg border p-4 transition-all">
                 <div className="flex flex-row gap-3">
                   <span className="w-full space-y-2 self-center text-right">

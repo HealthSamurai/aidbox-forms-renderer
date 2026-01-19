@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { withBase } from "@/lib/base-url.ts";
 import { cn } from "@/lib/utilities.ts";
 
 export type SidebarPage = {
@@ -132,7 +133,7 @@ export default function Sidebar({
           return (
             <li key={section.label}>
               <a
-                href={href}
+                href={withBase(href)}
                 onClick={onNavigate}
                 className={cn(
                   "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",
@@ -159,7 +160,7 @@ export default function Sidebar({
               return (
                 <li key={item.href}>
                   <a
-                    href={item.href}
+                    href={withBase(item.href)}
                     onClick={onNavigate}
                     className={cn(
                       "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",
@@ -217,7 +218,7 @@ export default function Sidebar({
                       return (
                         <li key={item.href}>
                           <a
-                            href={item.href}
+                            href={withBase(item.href)}
                             onClick={onNavigate}
                             className={cn(
                               "text-foreground/80 hover:bg-muted hover:text-primary flex h-8 items-center gap-2 rounded-md p-2 text-sm",

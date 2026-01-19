@@ -7,6 +7,7 @@ import DocumentationIndex from "../features/docs/index.tsx";
 import Layout from "../features/docs/layout.tsx";
 import Shell from "../components/shell.tsx";
 import { flattenedSidebar, routes } from "../features/docs/manifest.ts";
+import { stripBase } from "../lib/base-url.ts";
 
 type RouteResult = {
   element: ReactElement;
@@ -43,7 +44,9 @@ export const getRoutes = () => [
 ];
 
 export const resolveRoute = async (url: string): Promise<RouteResult> => {
-  const pathname = normalizeRoute(new URL(url, "http://localhost").pathname);
+  const pathname = normalizeRoute(
+    stripBase(new URL(url, "http://localhost").pathname),
+  );
 
   if (pathname.startsWith("/docs/")) {
     if (pathname === "/docs/") {

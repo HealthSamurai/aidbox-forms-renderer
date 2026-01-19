@@ -29,6 +29,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build site
+        env:
+          VITE_BASE_URL: /aidbox-forms-renderer/
         run: pnpm --filter @aidbox-forms/site build
 
       - name: Add GitHub ribbon to built files

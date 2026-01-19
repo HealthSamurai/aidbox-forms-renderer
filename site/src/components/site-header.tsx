@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Github } from "lucide-react";
 
 import { Button } from "./ui/button.tsx";
+import { withBase } from "@/lib/base-url.ts";
 
 type NavLink = {
   href: string;
@@ -35,10 +36,10 @@ export default function SiteHeader({
     <header className="bg-background/80 sticky top-0 z-40 backdrop-blur-lg">
       <div className="container flex h-14 items-center justify-between gap-2 px-4 md:px-8">
         <div className="hidden flex-1 md:flex">
-          <a className="flex" href="/">
+          <a className="flex" href={withBase("/")}>
             <img
               className="h-7 w-7 brightness-0 invert"
-              src="/android-chrome-192x192.png"
+              src={withBase("/android-chrome-192x192.png")}
               alt="Aidbox logo"
             />
             <span className="ml-3 self-center font-bold">
@@ -47,10 +48,10 @@ export default function SiteHeader({
           </a>
         </div>
         {mobileNav}
-        <a className="flex md:hidden" href="/">
+        <a className="flex md:hidden" href={withBase("/")}>
           <img
             className="h-7 w-7 brightness-0 invert"
-            src="/android-chrome-192x192.png"
+            src={withBase("/android-chrome-192x192.png")}
             alt="Aidbox logo"
           />
           <span className="ml-3 self-center font-bold">
@@ -65,7 +66,7 @@ export default function SiteHeader({
             <a
               key={link.href}
               className="text-muted-foreground transition-colors hover:text-foreground"
-              href={link.href}
+              href={withBase(link.href)}
             >
               {link.label}
             </a>
