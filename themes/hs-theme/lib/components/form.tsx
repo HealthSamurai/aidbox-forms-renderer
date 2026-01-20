@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import type { FormProperties } from "@aidbox-forms/theme";
+import type { FormProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 
 export function Form({

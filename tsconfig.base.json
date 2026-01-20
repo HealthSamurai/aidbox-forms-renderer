@@ -19,13 +19,13 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@aidbox-forms/theme": ["packages/theme/lib"],
-      "@aidbox-forms/antd-theme": ["themes/antd-theme/lib"],
-      "@aidbox-forms/mantine-theme": ["themes/mantine-theme/lib"],
-      "@aidbox-forms/hs-theme": ["themes/hs-theme/lib"],
-      "@aidbox-forms/nshuk-theme": ["themes/nshuk-theme/lib"],
-      "@aidbox-forms/renderer": ["packages/renderer/lib"],
-      "@aidbox-forms/renderer/*": ["packages/renderer/lib/*"]
+      "@formbox/theme": ["packages/theme/lib"],
+      "@formbox/antd-theme": ["themes/antd-theme/lib"],
+      "@formbox/mantine-theme": ["themes/mantine-theme/lib"],
+      "@formbox/hs-theme": ["themes/hs-theme/lib"],
+      "@formbox/nshuk-theme": ["themes/nshuk-theme/lib"],
+      "@formbox/renderer": ["packages/renderer/lib"],
+      "@formbox/renderer/*": ["packages/renderer/lib/*"]
     },
     "strict": true,
     "noUnusedLocals": true,

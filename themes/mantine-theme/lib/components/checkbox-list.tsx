@@ -1,5 +1,5 @@
 import { Box, Checkbox, Loader, Stack } from "@mantine/core";
-import type { CheckboxListProperties } from "@aidbox-forms/theme";
+import type { CheckboxListProperties } from "@formbox/theme";
 
 function joinIds(...parts: Array<string | undefined>) {
   const value = parts.filter(Boolean).join(" ").trim();

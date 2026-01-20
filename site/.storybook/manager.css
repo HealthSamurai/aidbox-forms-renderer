@@ -18,8 +18,8 @@
   border-radius: 6px;
 }
 
-div[role="tabpanel"][id*="tabpanel-aidbox/questionnaire"],
-div[role="tabpanel"][id*="tabpanel-aidbox/questionnaire-response"] {
+div[role="tabpanel"][id*="tabpanel-formbox/questionnaire"],
+div[role="tabpanel"][id*="tabpanel-formbox/questionnaire-response"] {
   overflow: auto;
 }
 

@@ -1,4 +1,4 @@
-import type { RadioButtonProperties } from "@aidbox-forms/theme";
+import type { RadioButtonProperties } from "@formbox/theme";
 import { Radio } from "antd";
 
 export function RadioButton({

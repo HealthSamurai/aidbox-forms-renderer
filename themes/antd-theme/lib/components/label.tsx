@@ -1,4 +1,4 @@
-import type { LabelProperties } from "@aidbox-forms/theme";
+import type { LabelProperties } from "@formbox/theme";
 import { Space, Typography } from "antd";
 import type { CSSProperties } from "react";
 

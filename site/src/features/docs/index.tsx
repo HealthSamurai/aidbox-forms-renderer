@@ -34,7 +34,7 @@ export default function Index() {
       <div className="mx-auto w-full min-w-0">
         <div className="mb-8">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-            Aidbox Forms Renderer docs
+            Formbox Renderer docs
           </h1>
           <p className="text-muted-foreground pt-1 text-lg">
             Read the package docs and guides. Each package keeps its own

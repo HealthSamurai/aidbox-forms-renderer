@@ -1,5 +1,5 @@
 import { Box, Button, Stack } from "@mantine/core";
-import type { GroupListProperties } from "@aidbox-forms/theme";
+import type { GroupListProperties } from "@formbox/theme";
 
 export function GroupList({
   linkId,

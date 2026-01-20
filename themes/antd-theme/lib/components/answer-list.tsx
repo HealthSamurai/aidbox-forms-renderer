@@ -1,4 +1,4 @@
-import type { AnswerListProperties } from "@aidbox-forms/theme";
+import type { AnswerListProperties } from "@formbox/theme";
 import { Button, Space } from "antd";
 
 export function AnswerList({

@@ -1,4 +1,4 @@
-import type { LegalProperties } from "@aidbox-forms/theme";
+import type { LegalProperties } from "@formbox/theme";
 import { Button, Tooltip } from "antd";
 
 export function Legal({ id, children, ariaLabel }: LegalProperties) {

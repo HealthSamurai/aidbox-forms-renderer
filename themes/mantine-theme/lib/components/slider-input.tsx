@@ -1,5 +1,5 @@
 import { Box, Group, Slider, Text, VisuallyHidden } from "@mantine/core";
-import type { SliderInputProperties } from "@aidbox-forms/theme";
+import type { SliderInputProperties } from "@formbox/theme";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);

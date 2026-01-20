@@ -1,4 +1,4 @@
-import type { LegalProperties } from "@aidbox-forms/theme";
+import type { LegalProperties } from "@formbox/theme";
 
 export function Legal({ id, children, ariaLabel }: LegalProperties) {
   return (

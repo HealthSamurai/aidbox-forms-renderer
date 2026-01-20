@@ -53,14 +53,14 @@ export const resolveRoute = async (url: string): Promise<RouteResult> => {
       return {
         element: (
           <Layout
-            title="Aidbox Docs"
+            title="Formbox Docs"
             activeRoute={pathname}
             pages={flattenedSidebar}
           >
             <DocumentationIndex />
           </Layout>
         ),
-        title: "Aidbox Docs",
+        title: "Formbox Docs",
       };
     }
 
@@ -75,7 +75,7 @@ export const resolveRoute = async (url: string): Promise<RouteResult> => {
             <Themes />
           </Layout>
         ),
-        title: "Themes - Aidbox Docs",
+        title: "Themes - Formbox Docs",
       };
     }
 
@@ -107,7 +107,7 @@ export const resolveRoute = async (url: string): Promise<RouteResult> => {
           </DocumentPage>
         </Layout>
       ),
-      title: `${entry.title} - Aidbox Docs`,
+      title: `${entry.title} - Formbox Docs`,
     };
   }
 
@@ -120,6 +120,6 @@ export const resolveRoute = async (url: string): Promise<RouteResult> => {
 
   return {
     element: <Landing />,
-    title: "Aidbox Forms Renderer",
+    title: "Formbox Renderer",
   };
 };

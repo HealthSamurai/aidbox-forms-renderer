@@ -1,4 +1,4 @@
-import type { NumberInputProperties } from "@aidbox-forms/theme";
+import type { NumberInputProperties } from "@formbox/theme";
 import { hasErrorId } from "../utils/aria.ts";
 
 export function NumberInput({

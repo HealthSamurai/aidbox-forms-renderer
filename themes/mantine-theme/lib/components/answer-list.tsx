@@ -1,6 +1,6 @@
 import { Button, Stack } from "@mantine/core";
 import { Children } from "react";
-import type { AnswerListProperties } from "@aidbox-forms/theme";
+import type { AnswerListProperties } from "@formbox/theme";
 
 export function AnswerList({
   children,

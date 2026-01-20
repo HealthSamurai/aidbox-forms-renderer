@@ -1,5 +1,5 @@
 import { Box, Loader, Radio, Stack } from "@mantine/core";
-import type { RadioButtonListProperties } from "@aidbox-forms/theme";
+import type { RadioButtonListProperties } from "@formbox/theme";
 
 export function RadioButtonList({
   options,

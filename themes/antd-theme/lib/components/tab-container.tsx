@@ -1,4 +1,4 @@
-import type { TabContainerProperties } from "@aidbox-forms/theme";
+import type { TabContainerProperties } from "@formbox/theme";
 import { Space, Tabs } from "antd";
 
 export function TabContainer({

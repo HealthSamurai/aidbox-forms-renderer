@@ -1,4 +1,4 @@
-import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
+import type { AnswerScaffoldProperties } from "@formbox/theme";
 import { Button, Space } from "antd";
 
 export function AnswerScaffold({

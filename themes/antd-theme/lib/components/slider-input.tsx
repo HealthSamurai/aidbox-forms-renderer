@@ -1,4 +1,4 @@
-import type { SliderInputProperties } from "@aidbox-forms/theme";
+import type { SliderInputProperties } from "@formbox/theme";
 import { Slider, Typography } from "antd";
 
 function clamp(value: number, min: number, max: number) {

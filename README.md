@@ -1,4 +1,4 @@
-# Aidbox Forms Renderer
+# Formbox Renderer
 
 Minimal React renderer for HL7® FHIR® Questionnaires
 
@@ -7,8 +7,8 @@ import {
   Renderer,
   type Questionnaire,
   type QuestionnaireResponse,
-} from "@aidbox-forms/renderer";
-import { theme, HSThemeVariables } from "@aidbox-forms/hs-theme";
+} from "@formbox/renderer";
+import { theme, HSThemeVariables } from "@formbox/hs-theme";
 import { useState } from "react";
 
 const questionnaire: Questionnaire = {
@@ -34,18 +34,18 @@ export function IntakeForm() {
 }
 ```
 
-To swap to the NHS look and feel, import from `@aidbox-forms/nshuk-theme`:
+To swap to the NHS look and feel, import from `@formbox/nshuk-theme`:
 
 ```tsx
-import { theme } from "@aidbox-forms/nshuk-theme";
+import { theme } from "@formbox/nshuk-theme";
 
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```
 
-Mantine-based themes require wrapping the renderer with a provider. `@aidbox-forms/mantine-theme` re-exports Mantine’s provider as `Provider`:
+Mantine-based themes require wrapping the renderer with a provider. `@formbox/mantine-theme` re-exports Mantine’s provider as `Provider`:
 
 ```tsx
-import { Provider, theme } from "@aidbox-forms/mantine-theme";
+import { Provider, theme } from "@formbox/mantine-theme";
 
 <Provider>
   <Renderer questionnaire={questionnaire} theme={theme} />
@@ -64,9 +64,9 @@ Useful scripts: `npm run dev` (playground), `npm run build` (type-check + bundle
 Packages live under `packages/` and the workspace uses pnpm:
 
 - Install deps: `pnpm install`
-- Dev: `pnpm --filter @aidbox-forms/renderer dev`
-- Build: `pnpm --filter @aidbox-forms/renderer build`
-- Lint: `pnpm --filter @aidbox-forms/renderer lint`
-- Typecheck: `pnpm --filter @aidbox-forms/renderer typecheck`
+- Dev: `pnpm --filter @formbox/renderer dev`
+- Build: `pnpm --filter @formbox/renderer build`
+- Lint: `pnpm --filter @formbox/renderer lint`
+- Typecheck: `pnpm --filter @formbox/renderer typecheck`
 
 See [COVERAGE.md](COVERAGE.md) for the detailed SDC feature checklist.

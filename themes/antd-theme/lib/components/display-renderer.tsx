@@ -1,4 +1,4 @@
-import type { DisplayRendererProperties } from "@aidbox-forms/theme";
+import type { DisplayRendererProperties } from "@formbox/theme";
 import { Typography } from "antd";
 
 export function DisplayRenderer({

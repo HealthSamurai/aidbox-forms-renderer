@@ -1,4 +1,4 @@
-import type { ErrorSummaryProperties } from "@aidbox-forms/theme";
+import type { ErrorSummaryProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 import { useEffect, useRef } from "react";
 

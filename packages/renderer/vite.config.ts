@@ -17,7 +17,7 @@ export default defineConfig({
       pathsToAliases: false,
       compilerOptions: {
         paths: {
-          "@aidbox-forms/theme": ["packages/theme/lib"],
+          "@formbox/theme": ["packages/theme/lib"],
         },
       },
     }),

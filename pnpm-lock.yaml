@@ -59,7 +59,7 @@ importers:
 
   packages/renderer:
     dependencies:
-      '@aidbox-forms/nshuk-theme':
+      '@formbox/nshuk-theme':
         specifier: workspace:*
         version: link:../../themes/nshuk-theme
       classnames:
@@ -84,10 +84,10 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1(mobx@6.15.0)
     devDependencies:
-      '@aidbox-forms/hs-theme':
+      '@formbox/hs-theme':
         specifier: workspace:*
         version: link:../../themes/hs-theme
-      '@aidbox-forms/theme':
+      '@formbox/theme':
         specifier: workspace:*
         version: link:../theme
       '@lhncbc/ucum-lhc':
@@ -165,19 +165,19 @@ importers:
 
   site:
     dependencies:
-      '@aidbox-forms/antd-theme':
+      '@formbox/antd-theme':
         specifier: workspace:*
         version: link:../themes/antd-theme
-      '@aidbox-forms/hs-theme':
+      '@formbox/hs-theme':
         specifier: workspace:*
         version: link:../themes/hs-theme
-      '@aidbox-forms/mantine-theme':
+      '@formbox/mantine-theme':
         specifier: workspace:*
         version: link:../themes/mantine-theme
-      '@aidbox-forms/nshuk-theme':
+      '@formbox/nshuk-theme':
         specifier: workspace:*
         version: link:../themes/nshuk-theme
-      '@aidbox-forms/renderer':
+      '@formbox/renderer':
         specifier: workspace:*
         version: link:../packages/renderer
       '@fontsource/geist-mono':
@@ -328,7 +328,7 @@ importers:
 
   themes/antd-theme:
     dependencies:
-      '@aidbox-forms/theme':
+      '@formbox/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       antd:
@@ -371,7 +371,7 @@ importers:
 
   themes/hs-theme:
     dependencies:
-      '@aidbox-forms/theme':
+      '@formbox/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       classnames:
@@ -417,7 +417,7 @@ importers:
 
   themes/mantine-theme:
     dependencies:
-      '@aidbox-forms/theme':
+      '@formbox/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       '@mantine/core':
@@ -454,7 +454,7 @@ importers:
 
   themes/nshuk-theme:
     dependencies:
-      '@aidbox-forms/theme':
+      '@formbox/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       classnames:

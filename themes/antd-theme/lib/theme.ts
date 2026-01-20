@@ -73,7 +73,7 @@ import { InputGroup } from "./components/input-group.tsx";
 import { FileInput } from "./components/file-input.tsx";
 import { TabContainer } from "./components/tab-container.tsx";
 import { Link } from "./components/link.tsx";
-import type { Theme } from "@aidbox-forms/theme";
+import type { Theme } from "@formbox/theme";
 
 export const theme: Theme = {
   TextInput,

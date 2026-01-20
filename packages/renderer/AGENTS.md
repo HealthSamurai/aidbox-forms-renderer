@@ -1,20 +1,20 @@
-# @aidbox-forms/renderer — Agent Notes
+# @formbox/renderer — Agent Notes
 
 This file applies to `packages/renderer/**` and supplements the root `AGENTS.md`.
 
 ## Commands (run from repo root)
 
-- Dev playground: `pnpm --filter @aidbox-forms/renderer dev`
-- Build: `pnpm --filter @aidbox-forms/renderer build`
-- Lint: `pnpm --filter @aidbox-forms/renderer lint`
-- Typecheck: `pnpm --filter @aidbox-forms/renderer typecheck`
-- Test: `pnpm --filter @aidbox-forms/renderer test`
+- Dev playground: `pnpm --filter @formbox/renderer dev`
+- Build: `pnpm --filter @formbox/renderer build`
+- Lint: `pnpm --filter @formbox/renderer lint`
+- Typecheck: `pnpm --filter @formbox/renderer typecheck`
+- Test: `pnpm --filter @formbox/renderer test`
 
 ## Running a single test (Vitest)
 
-- Run one file: `pnpm --filter @aidbox-forms/renderer test -- lib/store/form/__tests__/validation.test.ts`
-- Run one test by name: `pnpm --filter @aidbox-forms/renderer test -- -t "filters options by search query"`
-- Run once (CI style): `pnpm --filter @aidbox-forms/renderer test -- --run`
+- Run one file: `pnpm --filter @formbox/renderer test -- lib/store/form/__tests__/validation.test.ts`
+- Run one test by name: `pnpm --filter @formbox/renderer test -- -t "filters options by search query"`
+- Run once (CI style): `pnpm --filter @formbox/renderer test -- --run`
 
 ## Renderer constraints (enforced by ESLint)
 

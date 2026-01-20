@@ -40,11 +40,9 @@ export default function SiteHeader({
             <img
               className="h-7 w-7 brightness-0 invert"
               src={withBase("/android-chrome-192x192.png")}
-              alt="Aidbox logo"
+              alt="Formbox logo"
             />
-            <span className="ml-3 self-center font-bold">
-              Aidbox Forms Renderer
-            </span>
+            <span className="ml-3 self-center font-bold">Formbox Renderer</span>
           </a>
         </div>
         {mobileNav}
@@ -52,11 +50,9 @@ export default function SiteHeader({
           <img
             className="h-7 w-7 brightness-0 invert"
             src={withBase("/android-chrome-192x192.png")}
-            alt="Aidbox logo"
+            alt="Formbox logo"
           />
-          <span className="ml-3 self-center font-bold">
-            Aidbox Forms Renderer
-          </span>
+          <span className="ml-3 self-center font-bold">Formbox Renderer</span>
         </a>
         <nav
           className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold lg:flex"
@@ -79,7 +75,7 @@ export default function SiteHeader({
             <div className="flex">
               <Button asChild variant="ghost" size="icon">
                 <a
-                  href="https://github.com/HealthSamurai/aidbox-forms-renderer"
+                  href="https://github.com/HealthSamurai/formbox-renderer"
                   target="_blank"
                   rel="noreferrer"
                 >

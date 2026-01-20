@@ -1,4 +1,4 @@
-import type { LabelProperties } from "@aidbox-forms/theme";
+import type { LabelProperties } from "@formbox/theme";
 import type { ReactNode } from "react";
 
 export function Label({

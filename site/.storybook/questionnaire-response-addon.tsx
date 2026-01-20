@@ -26,11 +26,11 @@ export function QuestionnaireResponsePanel() {
       }
     };
 
-    channel.on("aidbox/questionnaire-response/update", handleUpdate);
-    channel.emit("aidbox/questionnaire-response/request", { storyId });
+    channel.on("formbox/questionnaire-response/update", handleUpdate);
+    channel.emit("formbox/questionnaire-response/request", { storyId });
 
     return () => {
-      channel.off("aidbox/questionnaire-response/update", handleUpdate);
+      channel.off("formbox/questionnaire-response/update", handleUpdate);
     };
   }, [storyId]);
 
@@ -53,14 +53,14 @@ export function QuestionnaireResponsePanel() {
   );
 }
 
-addons.register("aidbox/questionnaire-response", () => {
-  addons.add(`aidbox/questionnaire-response/panel`, {
+addons.register("formbox/questionnaire-response", () => {
+  addons.add(`formbox/questionnaire-response/panel`, {
     title: "Questionnaire Response",
     type: types.PANEL,
     render: ({ active }) =>
       active ? (
         <QuestionnaireResponsePanel
-          key={`aidbox/questionnaire-response/panel`}
+          key={`formbox/questionnaire-response/panel`}
         />
       ) : undefined,
   });

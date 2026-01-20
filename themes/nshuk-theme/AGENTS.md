@@ -1,4 +1,4 @@
-# @aidbox-forms/nshuk-theme — Agent Notes
+# @formbox/nshuk-theme — Agent Notes
 
 This file applies to `themes/nshuk-theme/**` and supplements the root `AGENTS.md`.
 

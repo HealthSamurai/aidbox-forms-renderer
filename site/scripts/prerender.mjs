@@ -52,7 +52,7 @@ const escapeHtml = (value) =>
 for (const route of routes) {
   const normalizedRoute = normalizeRoute(route);
   const { appHtml, title } = await render(normalizedRoute);
-  const resolvedTitle = title && title.trim() ? title : "Aidbox Forms Renderer";
+  const resolvedTitle = title && title.trim() ? title : "Formbox Renderer";
   const withAppHtml = template.includes("<!--app-html-->")
     ? template.replace("<!--app-html-->", appHtml)
     : template.replace(

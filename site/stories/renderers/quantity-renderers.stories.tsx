@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
   AnswerTypeToDataType,
   DataTypeToType,
-} from "@aidbox-forms/renderer/types.ts";
+} from "@formbox/renderer/types.ts";
 import type { Coding, Extension, QuestionnaireItem } from "fhir/r5";
 import {
   buildQuestionItem,
@@ -10,7 +10,7 @@ import {
   makeInitialValues,
 } from "../helpers.tsx";
 import { Renderer } from "../renderer.tsx";
-import { EXT } from "@aidbox-forms/renderer/utilities.ts";
+import { EXT } from "@formbox/renderer/utilities.ts";
 
 type UnitMode = "freeText" | "singleOption" | "multipleOptions";
 

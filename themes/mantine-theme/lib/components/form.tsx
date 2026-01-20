@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { Box, Button, Group, Stack, Text, Title } from "@mantine/core";
-import type { FormProperties } from "@aidbox-forms/theme";
+import type { FormProperties } from "@formbox/theme";
 
 export function Form({
   onSubmit,

@@ -1,4 +1,4 @@
-import type { GroupListProperties } from "@aidbox-forms/theme";
+import type { GroupListProperties } from "@formbox/theme";
 import { Children } from "react";
 import { interpose } from "../utilities.ts";
 

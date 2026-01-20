@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { HelpProperties } from "@aidbox-forms/theme";
+import type { HelpProperties } from "@formbox/theme";
 
 export function Help({ id, children, ariaLabel }: HelpProperties) {
   return (

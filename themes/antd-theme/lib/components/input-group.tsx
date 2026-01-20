@@ -1,4 +1,4 @@
-import type { InputGroupProperties } from "@aidbox-forms/theme";
+import type { InputGroupProperties } from "@formbox/theme";
 import { Col, Row, theme } from "antd";
 import { Children } from "react";
 

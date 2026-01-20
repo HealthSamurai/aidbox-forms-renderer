@@ -26,7 +26,7 @@ export default function Landing() {
           </span>
           <a
             className="text-foreground/80 underline-offset-4 transition hover:text-foreground hover:underline"
-            href="https://github.com/HealthSamurai/aidbox-forms-renderer/releases"
+            href="https://github.com/HealthSamurai/formbox-renderer/releases"
             target="_blank"
             rel="noreferrer"
           >
@@ -84,7 +84,7 @@ export default function Landing() {
                   className="block font-display text-4xl leading-tight text-foreground sm:text-5xl lg:text-6xl"
                 />
                 <p className="text-lg text-muted-foreground animate-fade-up motion-reduce:animate-none [animation-delay:240ms]">
-                  Aidbox Forms Renderer is a typed React renderer for FHIR R5
+                  Formbox Renderer is a typed React renderer for FHIR R5
                   Questionnaires. Build clinical forms once, then ship them with
                   pluggable themes, predictable state, and Storybook-ready
                   previews.
@@ -105,7 +105,7 @@ export default function Landing() {
                   </Magnet>
                   <a
                     className="inline-flex items-center rounded-full border border-border/70 bg-muted/60 px-6 py-3 text-sm font-semibold text-foreground transition hover:border-foreground/40"
-                    href="https://github.com/HealthSamurai/aidbox-forms-renderer"
+                    href="https://github.com/HealthSamurai/formbox-renderer"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -154,16 +154,16 @@ export default function Landing() {
                 </h2>
                 <CodeBlock
                   language="bash"
-                  code="pnpm add @aidbox-forms/renderer @aidbox-forms/hs-theme"
+                  code="pnpm add @formbox/renderer @formbox/hs-theme"
                   className="mt-4"
                 />
                 <CodeBlock
                   className="mt-4"
                   language="tsx"
                   code={`
-                    import "@aidbox-forms/hs-theme/style.css";
-                    import { Renderer } from "@aidbox-forms/renderer";
-                    import { theme } from "@aidbox-forms/hs-theme";
+                    import "@formbox/hs-theme/style.css";
+                    import { Renderer } from "@formbox/renderer";
+                    import { theme } from "@formbox/hs-theme";
 
                     <Renderer questionnaire={questionnaire} theme={theme} />
                   `}
@@ -359,12 +359,12 @@ export default function Landing() {
                       <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 0 1-7-7L7 11" />
                     </svg>
                     <h3 className="font-display text-lg text-foreground">
-                      Aidbox Forms Builder ready
+                      Formbox Builder ready
                     </h3>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Integrated with Aidbox Forms Builder for end-to-end
-                    questionnaire authoring and renderer delivery.
+                    Integrated with Formbox Builder for end-to-end questionnaire
+                    authoring and renderer delivery.
                   </p>
                 </article>
                 <article className="rounded-2xl border border-border/60 bg-card/70 p-6 shadow-lg shadow-black/30 transition hover:border-ring/60 md:col-span-6 lg:col-span-6">
@@ -444,8 +444,8 @@ export default function Landing() {
                     className="mt-4"
                     language="ts"
                     code={`
-                      import type { Theme } from "@aidbox-forms/theme";
-                      import { theme as baseTheme } from "@aidbox-forms/hs-theme";
+                      import type { Theme } from "@formbox/theme";
+                      import { theme as baseTheme } from "@formbox/hs-theme";
                       
                       const theme: Theme = {
                         ...baseTheme,
@@ -460,7 +460,7 @@ export default function Landing() {
                   </h3>
                   <CodeBlock
                     language="bash"
-                    code="pnpm add @aidbox-forms/theme"
+                    code="pnpm add @formbox/theme"
                     className="mt-4"
                   />
                   <p className="mt-4 text-sm text-muted-foreground">
@@ -493,7 +493,7 @@ export default function Landing() {
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Clinical-ready layout density, contrast, and spacing tuned
-                    for Aidbox workflows, built on{" "}
+                    for Formbox workflows, built on{" "}
                     <a
                       className="text-foreground/80 transition hover:text-foreground"
                       href="https://www.health-samurai.io/"
@@ -723,7 +723,7 @@ export default function Landing() {
                       <CodeBlock
                         className="mt-3"
                         language="bash"
-                        code="pnpm add @aidbox-forms/renderer @aidbox-forms/hs-theme"
+                        code="pnpm add @formbox/renderer @formbox/hs-theme"
                       />
                     </div>
                   </div>
@@ -741,7 +741,7 @@ export default function Landing() {
                       <CodeBlock
                         className="mt-3"
                         language="ts"
-                        code='import "@aidbox-forms/hs-theme/style.css";'
+                        code='import "@formbox/hs-theme/style.css";'
                       />
                     </div>
                   </div>
@@ -759,7 +759,7 @@ export default function Landing() {
                       <CodeBlock
                         className="mt-3"
                         language="ts"
-                        code='import { theme } from "@aidbox-forms/hs-theme";'
+                        code='import { theme } from "@formbox/hs-theme";'
                       />
                     </div>
                   </div>
@@ -798,9 +798,9 @@ export default function Landing() {
                     className="mt-4"
                     language="tsx"
                     code={`
-                      import "@aidbox-forms/hs-theme/style.css";
-                      import { Renderer } from "@aidbox-forms/renderer";
-                      import { theme } from "@aidbox-forms/hs-theme";
+                      import "@formbox/hs-theme/style.css";
+                      import { Renderer } from "@formbox/renderer";
+                      import { theme } from "@formbox/hs-theme";
 
                       <Renderer questionnaire={questionnaire} theme={theme} />
                     `}
@@ -838,7 +838,7 @@ export default function Landing() {
                   Open-source ready
                 </h2>
                 <p className="mt-3 text-base text-muted-foreground">
-                  Built by the Aidbox team and open to the community. File
+                  Built by the Formbox team and open to the community. File
                   issues, propose improvements, or ship a new theme.
                 </p>
               </div>
@@ -926,11 +926,11 @@ export default function Landing() {
         <footer className="border-t border-border/70 px-4 py-12 sm:px-6 lg:px-8">
           <div className="container text-sm text-muted-foreground">
             <p>
-              Aidbox Forms Renderer is an MIT-licensed project by Health
-              Samurai. View the source on{" "}
+              Formbox Renderer is an MIT-licensed project by Health Samurai.
+              View the source on{" "}
               <a
                 className="text-foreground transition hover:text-primary"
-                href="https://github.com/HealthSamurai/aidbox-forms-renderer"
+                href="https://github.com/HealthSamurai/formbox-renderer"
               >
                 GitHub
               </a>{" "}

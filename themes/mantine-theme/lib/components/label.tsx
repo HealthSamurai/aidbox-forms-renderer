@@ -1,5 +1,5 @@
 import { Box, Group, Text } from "@mantine/core";
-import type { LabelProperties } from "@aidbox-forms/theme";
+import type { LabelProperties } from "@formbox/theme";
 
 export function Label({
   prefix,

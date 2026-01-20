@@ -1,4 +1,4 @@
-import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
+import type { GroupScaffoldProperties } from "@formbox/theme";
 
 export function GroupScaffold({
   header,

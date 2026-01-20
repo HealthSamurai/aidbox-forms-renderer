@@ -5,7 +5,7 @@ import { NodeFlyover } from "./node-flyover.tsx";
 import { NodeLegal } from "./node-legal.tsx";
 import { useTheme } from "../../ui/theme.tsx";
 import { buildId, getNodeLabelId } from "../../utilities.ts";
-import type { LabelAs } from "@aidbox-forms/theme";
+import type { LabelAs } from "@formbox/theme";
 import { isQuestionNode } from "../../store/question/question-store.ts";
 
 function hasOptions(node: {

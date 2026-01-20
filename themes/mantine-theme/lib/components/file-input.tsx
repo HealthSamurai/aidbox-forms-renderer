@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Group, Text } from "@mantine/core";
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
-import type { FileInputProperties } from "@aidbox-forms/theme";
+import type { FileInputProperties } from "@formbox/theme";
 
 export function FileInput({
   value,

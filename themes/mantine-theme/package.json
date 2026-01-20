@@ -1,13 +1,13 @@
 {
-  "name": "@aidbox-forms/mantine-theme",
+  "name": "@formbox/mantine-theme",
   "version": "0.0.3-pre-alpha",
-  "description": "Mantine theme for Aidbox Forms Renderer",
+  "description": "Mantine theme for Formbox Renderer",
   "private": false,
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+    "url": "https://github.com/HealthSamurai/formbox-renderer"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -27,10 +27,10 @@
   ],
   "scripts": {
     "build": "tsc -b ./tsconfig.lib.json && vite build",
-    "dev": "echo \"@aidbox-forms/mantine-theme: no dev server defined\"",
+    "dev": "echo \"@formbox/mantine-theme: no dev server defined\"",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.lib.json",
-    "test": "echo \"@aidbox-forms/mantine-theme: no tests defined\""
+    "test": "echo \"@formbox/mantine-theme: no tests defined\""
   },
   "peerDependencies": {
     "react": ">=18",
@@ -47,7 +47,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@aidbox-forms/theme": "workspace:*",
+    "@formbox/theme": "workspace:*",
     "@mantine/core": "^8.3.12",
     "@mantine/hooks": "^8.3.12"
   }

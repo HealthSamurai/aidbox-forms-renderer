@@ -1,4 +1,4 @@
-# aidbox-forms-renderer — Agent Notes
+# formbox-renderer — Agent Notes
 
 This repo is a pnpm workspace containing a React + TypeScript renderer for HL7® FHIR® R5 Questionnaires and several UI themes.
 
@@ -41,26 +41,26 @@ Notes:
 
 Use `pnpm --filter <pkg> <script>` or `pnpm -C <dir> <script>`.
 
-Renderer (`@aidbox-forms/renderer`):
+Renderer (`@formbox/renderer`):
 
-- `pnpm --filter @aidbox-forms/renderer dev`
-- `pnpm --filter @aidbox-forms/renderer build`
-- `pnpm --filter @aidbox-forms/renderer lint`
-- `pnpm --filter @aidbox-forms/renderer typecheck`
-- `pnpm --filter @aidbox-forms/renderer test`
-- `pnpm --filter @aidbox-forms/renderer format`
+- `pnpm --filter @formbox/renderer dev`
+- `pnpm --filter @formbox/renderer build`
+- `pnpm --filter @formbox/renderer lint`
+- `pnpm --filter @formbox/renderer typecheck`
+- `pnpm --filter @formbox/renderer test`
+- `pnpm --filter @formbox/renderer format`
 
-Storybook site (`@aidbox-forms/site`):
+Storybook site (`@formbox/site`):
 
-- `pnpm --filter @aidbox-forms/site dev`
-- `pnpm --filter @aidbox-forms/site build`
+- `pnpm --filter @formbox/site dev`
+- `pnpm --filter @formbox/site build`
 
 Themes/examples (build-only):
 
-- `pnpm --filter @aidbox-forms/hs-theme build`
-- `pnpm --filter @aidbox-forms/nshuk-theme build`
-- `pnpm --filter @aidbox-forms/antd-theme build`
-- `pnpm --filter @aidbox-forms/mantine-theme build`
+- `pnpm --filter @formbox/hs-theme build`
+- `pnpm --filter @formbox/nshuk-theme build`
+- `pnpm --filter @formbox/antd-theme build`
+- `pnpm --filter @formbox/mantine-theme build`
 
 ## Running a single test (Vitest)
 
@@ -68,9 +68,9 @@ Tests live under `packages/renderer/lib/**/__tests__/*`.
 
 From repo root (recommended):
 
-- Run one file: `pnpm --filter @aidbox-forms/renderer test -- lib/store/form/__tests__/validation.test.ts`
-- Run one test by name: `pnpm --filter @aidbox-forms/renderer test -- -t "filters options by search query"`
-- Run once (CI style): `pnpm --filter @aidbox-forms/renderer test -- --run`
+- Run one file: `pnpm --filter @formbox/renderer test -- lib/store/form/__tests__/validation.test.ts`
+- Run one test by name: `pnpm --filter @formbox/renderer test -- -t "filters options by search query"`
+- Run once (CI style): `pnpm --filter @formbox/renderer test -- --run`
 
 From the package directory (alternative):
 
@@ -78,8 +78,8 @@ From the package directory (alternative):
 
 ## Linting / formatting (single file)
 
-- Lint one file: `pnpm --filter @aidbox-forms/renderer lint -- lib/store/form/form-store.ts`
-- Format one file: `pnpm --filter @aidbox-forms/renderer format -- lib/store/form/form-store.ts`
+- Lint one file: `pnpm --filter @formbox/renderer lint -- lib/store/form/form-store.ts`
+- Format one file: `pnpm --filter @formbox/renderer format -- lib/store/form/form-store.ts`
 
 ## Code style (enforced by Prettier + ESLint)
 

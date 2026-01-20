@@ -6,7 +6,7 @@ import {
   Table as MantineTable,
   Text,
 } from "@mantine/core";
-import type { TableProperties } from "@aidbox-forms/theme";
+import type { TableProperties } from "@formbox/theme";
 import type { ReactNode } from "react";
 
 type TableMeta = {

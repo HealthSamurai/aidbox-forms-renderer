@@ -1,5 +1,5 @@
 import { css } from "@linaria/core";
-import type { TextAreaProperties } from "@aidbox-forms/theme";
+import type { TextAreaProperties } from "@formbox/theme";
 
 const textAreaClass = css`
   width: 100%;

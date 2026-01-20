@@ -1,5 +1,5 @@
 import { Radio } from "@mantine/core";
-import type { RadioButtonProperties } from "@aidbox-forms/theme";
+import type { RadioButtonProperties } from "@formbox/theme";
 
 export function RadioButton({
   id,

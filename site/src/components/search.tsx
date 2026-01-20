@@ -102,7 +102,7 @@ export default function Search({
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(90vw,680px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-0 shadow-lg">
           <Dialog.Title className="sr-only">Search documentation</Dialog.Title>
           <Dialog.Description className="sr-only">
-            Search the Aidbox Forms Renderer docs
+            Search the Formbox Renderer docs
           </Dialog.Description>
           <div className="flex items-center gap-2 border-b px-3 py-3 text-sm">
             <SearchIcon className="text-muted-foreground size-[18px]" />

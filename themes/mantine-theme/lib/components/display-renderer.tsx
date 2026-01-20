@@ -1,5 +1,5 @@
 import { Box } from "@mantine/core";
-import type { DisplayRendererProperties } from "@aidbox-forms/theme";
+import type { DisplayRendererProperties } from "@formbox/theme";
 
 export function DisplayRenderer({
   linkId,

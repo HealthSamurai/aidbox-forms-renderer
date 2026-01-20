@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { theme } from "@aidbox-forms/hs-theme";
-import type { Theme } from "@aidbox-forms/theme";
+import { theme } from "@formbox/hs-theme";
+import type { Theme } from "@formbox/theme";
 import { createContext, type PropsWithChildren, useContext } from "react";
 
 const ThemeContext = createContext<Theme>(theme);

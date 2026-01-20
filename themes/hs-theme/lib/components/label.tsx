@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { LabelProperties } from "@aidbox-forms/theme";
+import type { LabelProperties } from "@formbox/theme";
 
 export function Label({
   prefix,

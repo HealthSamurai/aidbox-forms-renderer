@@ -7,7 +7,7 @@ icon: book-open
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/theme
+pnpm add @formbox/theme
 ```
 
 ## Quick start
@@ -15,9 +15,9 @@ pnpm add @aidbox-forms/theme
 Create a theme by implementing the Theme contract. You can start from a base theme and override only what you need.
 
 ```tsx
-import type { Theme } from "@aidbox-forms/theme";
-import Renderer from "@aidbox-forms/renderer";
-import { theme as baseTheme } from "@aidbox-forms/hs-theme";
+import type { Theme } from "@formbox/theme";
+import Renderer from "@formbox/renderer";
+import { theme as baseTheme } from "@formbox/hs-theme";
 
 const theme: Theme = {
   ...baseTheme,

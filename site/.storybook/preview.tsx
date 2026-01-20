@@ -1,10 +1,10 @@
 import type { Preview } from "@storybook/react-vite";
-import { ThemeProvider } from "@aidbox-forms/renderer/ui/theme.tsx";
-import type { Theme } from "@aidbox-forms/theme";
+import { ThemeProvider } from "@formbox/renderer/ui/theme.tsx";
+import type { Theme } from "@formbox/theme";
 import type { ComponentType, PropsWithChildren } from "react";
 import { useEffect, useState } from "react";
 import "./preview.css";
-import { theme as hsTheme } from "@aidbox-forms/hs-theme";
+import { theme as hsTheme } from "@formbox/hs-theme";
 import antdThemeCssUrl from "../../themes/antd-theme/lib/style.css?url";
 import hsThemeCssUrl from "../../themes/hs-theme/lib/style.css?url";
 import mantineThemeCssUrl from "../../themes/mantine-theme/lib/style.css?url";
@@ -26,38 +26,38 @@ type ThemeDefinition = {
 export const themes = {
   antd: {
     title: "Ant Design",
-    packageName: "@aidbox-forms/antd-theme",
+    packageName: "@formbox/antd-theme",
     themePath: "themes/antd-theme/lib/theme.ts",
     css: antdThemeCssUrl,
     load: async () => {
-      const module = await import("@aidbox-forms/antd-theme");
+      const module = await import("@formbox/antd-theme");
       return { theme: module.theme };
     },
   },
   hs: {
     title: "Health Samurai",
-    packageName: "@aidbox-forms/hs-theme",
+    packageName: "@formbox/hs-theme",
     themePath: "themes/hs-theme/lib/theme.ts",
     css: hsThemeCssUrl,
     load: async () => ({ theme: hsTheme }),
   },
   mantine: {
     title: "Mantine",
-    packageName: "@aidbox-forms/mantine-theme",
+    packageName: "@formbox/mantine-theme",
     themePath: "themes/mantine-theme/lib/theme.ts",
     css: mantineThemeCssUrl,
     load: async () => {
-      const module = await import("@aidbox-forms/mantine-theme");
+      const module = await import("@formbox/mantine-theme");
       return { theme: module.theme, Provider: module.Provider };
     },
   },
   nshuk: {
     title: "National Health Service",
-    packageName: "@aidbox-forms/nshuk-theme",
+    packageName: "@formbox/nshuk-theme",
     themePath: "themes/nshuk-theme/lib/theme.ts",
     css: nshukThemeCssUrl,
     load: async () => {
-      const module = await import("@aidbox-forms/nshuk-theme");
+      const module = await import("@formbox/nshuk-theme");
       return { theme: module.theme, Provider: module.Provider };
     },
   },
@@ -107,7 +107,7 @@ const preview: Preview = {
       ) as ThemeId;
 
       useEffect(() => {
-        const linkId = "aidbox-theme-css";
+        const linkId = "formbox-theme-css";
         let link = document.querySelector<HTMLLinkElement>(`#${linkId}`);
         if (!link) {
           link = document.createElement("link");

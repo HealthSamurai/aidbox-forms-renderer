@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { CheckboxProperties } from "@aidbox-forms/theme";
+import type { CheckboxProperties } from "@formbox/theme";
 
 export function Checkbox({
   id,

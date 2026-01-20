@@ -1,4 +1,4 @@
-import type { RadioButtonListProperties } from "@aidbox-forms/theme";
+import type { RadioButtonListProperties } from "@formbox/theme";
 import { Radio, Space } from "antd";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 

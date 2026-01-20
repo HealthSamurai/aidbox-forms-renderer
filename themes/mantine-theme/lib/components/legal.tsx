@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Popover, Text, VisuallyHidden } from "@mantine/core";
 import { useState } from "react";
-import type { LegalProperties } from "@aidbox-forms/theme";
+import type { LegalProperties } from "@formbox/theme";
 
 export function Legal({ id, children, ariaLabel }: LegalProperties) {
   const [opened, setOpened] = useState(false);

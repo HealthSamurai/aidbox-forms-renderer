@@ -1,4 +1,4 @@
-import type { MultiSelectInputProperties } from "@aidbox-forms/theme";
+import type { MultiSelectInputProperties } from "@formbox/theme";
 import { Select } from "antd";
 import type { ReactNode } from "react";
 

@@ -1,6 +1,6 @@
 {
-  "name": "Aidbox Forms Renderer",
-  "short_name": "Aidbox Forms",
+  "name": "Formbox Renderer",
+  "short_name": "Formbox",
   "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",

@@ -1,17 +1,17 @@
-# @aidbox-forms/mantine-theme
+# @formbox/mantine-theme
 
-Mantine theme for Aidbox Forms Renderer.
+Mantine theme for Formbox Renderer.
 
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/mantine-theme
+pnpm add @formbox/mantine-theme
 ```
 
 Include the compiled CSS:
 
 ```ts
-import "@aidbox-forms/mantine-theme/style.css";
+import "@formbox/mantine-theme/style.css";
 ```
 
 ## Usage
@@ -20,8 +20,8 @@ Mantine components require `MantineProvider` in the React tree.
 This package re-exports it as `Provider` so you can pass any Mantine provider props.
 
 ```tsx
-import Renderer from "@aidbox-forms/renderer";
-import { Provider, theme } from "@aidbox-forms/mantine-theme";
+import Renderer from "@formbox/renderer";
+import { Provider, theme } from "@formbox/mantine-theme";
 
 <Provider>
   <Renderer questionnaire={questionnaire} theme={theme} />

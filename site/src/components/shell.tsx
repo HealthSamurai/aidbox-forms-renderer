@@ -22,10 +22,10 @@ export default function Shell({
   useEffect(() => {
     if (!globalThis.document) return;
     const resolvedTitle = title
-      ? title.includes("Aidbox Docs")
+      ? title.includes("Formbox Docs")
         ? title
-        : `${title} - Aidbox Docs`
-      : "Aidbox Docs";
+        : `${title} - Formbox Docs`
+      : "Formbox Docs";
     document.title = resolvedTitle;
   }, [title]);
 
@@ -48,7 +48,7 @@ export default function Shell({
           <div className="flex flex-wrap justify-center gap-2 md:justify-end">
             <Button asChild variant="ghost" size="icon" className="flex gap-2">
               <a
-                href="https://github.com/HealthSamurai/aidbox-forms-renderer"
+                href="https://github.com/HealthSamurai/formbox-renderer"
                 target="_blank"
                 rel="noreferrer"
               >

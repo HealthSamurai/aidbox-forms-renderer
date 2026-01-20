@@ -1,4 +1,4 @@
-import type { ErrorSummaryProperties } from "@aidbox-forms/theme";
+import type { ErrorSummaryProperties } from "@formbox/theme";
 import { Alert, Anchor, Box, List, Text } from "@mantine/core";
 import { useEffect, useRef } from "react";
 

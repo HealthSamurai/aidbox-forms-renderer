@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
+import type { AnswerScaffoldProperties } from "@formbox/theme";
 import { Trash } from "../icons/trash.tsx";
 import { IconButton } from "./icon-button.tsx";
 

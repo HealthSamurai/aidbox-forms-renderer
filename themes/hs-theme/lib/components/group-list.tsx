@@ -1,4 +1,4 @@
-import type { GroupListProperties } from "@aidbox-forms/theme";
+import type { GroupListProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 import { Plus } from "../icons/plus.tsx";
 import { IconButton } from "./icon-button.tsx";

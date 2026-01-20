@@ -6,11 +6,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@aidbox-forms/theme": path.resolve(__dirname, "../theme/lib"),
-      "@aidbox-forms/hs-theme": path.resolve(
-        __dirname,
-        "../../themes/hs-theme/lib",
-      ),
+      "@formbox/theme": path.resolve(__dirname, "../theme/lib"),
+      "@formbox/hs-theme": path.resolve(__dirname, "../../themes/hs-theme/lib"),
     },
     dedupe: ["react", "react-dom"],
   },

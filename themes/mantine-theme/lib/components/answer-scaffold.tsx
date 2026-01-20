@@ -1,5 +1,5 @@
 import { Box, Button, Group, Stack } from "@mantine/core";
-import type { AnswerScaffoldProperties } from "@aidbox-forms/theme";
+import type { AnswerScaffoldProperties } from "@formbox/theme";
 
 export function AnswerScaffold({
   control,

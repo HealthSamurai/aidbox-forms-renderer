@@ -1,6 +1,6 @@
-# @aidbox-forms/site
+# @formbox/site
 
-Landing site and Storybook for Aidbox Forms Renderer. The landing page lives at `/` and Storybook is served from `/storybook`.
+Landing site and Storybook for Formbox Renderer. The landing page lives at `/` and Storybook is served from `/storybook`.
 
 ## Commands
 

@@ -37,7 +37,7 @@ export { TabContainer } from "./components/tab-container.tsx";
 export { Link } from "./components/link.tsx";
 export { MantineProvider as Provider } from "@mantine/core";
 
-import type { Theme } from "@aidbox-forms/theme";
+import type { Theme } from "@formbox/theme";
 import { TextInput } from "./components/text-input.tsx";
 import { TextArea } from "./components/text-area.tsx";
 import { NumberInput } from "./components/number-input.tsx";

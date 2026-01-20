@@ -1,4 +1,4 @@
-import type { TextInputProperties } from "@aidbox-forms/theme";
+import type { TextInputProperties } from "@formbox/theme";
 import { Input } from "antd";
 
 export function TextInput({

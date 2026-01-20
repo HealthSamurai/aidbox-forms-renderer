@@ -1,4 +1,4 @@
-import type { FlyoverProperties } from "@aidbox-forms/theme";
+import type { FlyoverProperties } from "@formbox/theme";
 import { Button, Tooltip } from "antd";
 
 export function Flyover({ id, children, ariaLabel }: FlyoverProperties) {

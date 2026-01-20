@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { DisplayRendererProperties } from "@aidbox-forms/theme";
+import type { DisplayRendererProperties } from "@formbox/theme";
 
 export function DisplayRenderer({
   linkId,
