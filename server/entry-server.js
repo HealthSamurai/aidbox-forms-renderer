@@ -243,10 +243,10 @@ const withBase = (value) => {
   if (!value.startsWith("/")) {
     return value;
   }
-  return `${"/aidbox-forms-renderer/"}${value.slice(1)}`;
+  return `${"/formbox-renderer/"}${value.slice(1)}`;
 };
 const stripBase = (pathname) => {
-  return pathname.startsWith("/aidbox-forms-renderer/") ? `/${pathname.slice("/aidbox-forms-renderer/".length)}` : pathname;
+  return pathname.startsWith("/formbox-renderer/") ? `/${pathname.slice("/formbox-renderer/".length)}` : pathname;
 };
 function SiteHeader({
   links,
@@ -269,10 +269,10 @@ function SiteHeader({
           {
             className: "h-7 w-7 brightness-0 invert",
             src: withBase("/android-chrome-192x192.png"),
-            alt: "Aidbox logo"
+            alt: "Formbox logo"
           }
         ),
-        /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Aidbox Forms Renderer" })
+        /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Formbox Renderer" })
       ] }) }),
       mobileNav,
       /* @__PURE__ */ jsxs("a", { className: "flex md:hidden", href: withBase("/"), children: [
@@ -281,10 +281,10 @@ function SiteHeader({
           {
             className: "h-7 w-7 brightness-0 invert",
             src: withBase("/android-chrome-192x192.png"),
-            alt: "Aidbox logo"
+            alt: "Formbox logo"
           }
         ),
-        /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Aidbox Forms Renderer" })
+        /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Formbox Renderer" })
       ] }),
       /* @__PURE__ */ jsxs(
         "nav",
@@ -310,7 +310,7 @@ function SiteHeader({
         showGithubIcon ? /* @__PURE__ */ jsx("div", { className: "flex", children: /* @__PURE__ */ jsx(Button, { asChild: true, variant: "ghost", size: "icon", children: /* @__PURE__ */ jsx(
           "a",
           {
-            href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+            href: "https://github.com/HealthSamurai/formbox-renderer",
             target: "_blank",
             rel: "noreferrer",
             children: /* @__PURE__ */ jsx(Github, { className: "size-[18px]" })
@@ -738,7 +738,7 @@ function Landing() {
         "a",
         {
           className: "text-foreground/80 underline-offset-4 transition hover:text-foreground hover:underline",
-          href: "https://github.com/HealthSamurai/aidbox-forms-renderer/releases",
+          href: "https://github.com/HealthSamurai/formbox-renderer/releases",
           target: "_blank",
           rel: "noreferrer",
           children: "Release notes"
@@ -799,7 +799,7 @@ function Landing() {
                   className: "block font-display text-4xl leading-tight text-foreground sm:text-5xl lg:text-6xl"
                 }
               ),
-              /* @__PURE__ */ jsx("p", { className: "text-lg text-muted-foreground animate-fade-up motion-reduce:animate-none [animation-delay:240ms]", children: "Aidbox Forms Renderer is a typed React renderer for FHIR R5 Questionnaires. Build clinical forms once, then ship them with pluggable themes, predictable state, and Storybook-ready previews." }),
+              /* @__PURE__ */ jsx("p", { className: "text-lg text-muted-foreground animate-fade-up motion-reduce:animate-none [animation-delay:240ms]", children: "Formbox Renderer is a typed React renderer for FHIR R5 Questionnaires. Build clinical forms once, then ship them with pluggable themes, predictable state, and Storybook-ready previews." }),
               /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap gap-4 animate-fade-up motion-reduce:animate-none [animation-delay:360ms]", children: [
                 /* @__PURE__ */ jsx(
                   Magnet,
@@ -822,7 +822,7 @@ function Landing() {
                   "a",
                   {
                     className: "inline-flex items-center rounded-full border border-border/70 bg-muted/60 px-6 py-3 text-sm font-semibold text-foreground transition hover:border-foreground/40",
-                    href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+                    href: "https://github.com/HealthSamurai/formbox-renderer",
                     target: "_blank",
                     rel: "noreferrer",
                     children: "View on GitHub"
@@ -862,14 +862,14 @@ function Landing() {
                 CodeBlock,
                 {
                   className: "mt-4",
-                  html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @aidbox-forms/renderer</span><span style="color:#9ECBFF"> @aidbox-forms/hs-theme</span></span></code></pre>'
+                  html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @formbox/renderer</span><span style="color:#9ECBFF"> @formbox/hs-theme</span></span></code></pre>'
                 }
               ),
               /* @__PURE__ */ jsx(
                 CodeBlock,
                 {
                   className: "mt-4",
-                  html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { Renderer } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/renderer"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#79B8FF">Renderer</span><span style="color:#B392F0"> questionnaire</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{questionnaire} </span><span style="color:#B392F0">theme</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{theme} /></span></span></code></pre>'
+                  html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@formbox/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { Renderer } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/renderer"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#79B8FF">Renderer</span><span style="color:#B392F0"> questionnaire</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{questionnaire} </span><span style="color:#B392F0">theme</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{theme} /></span></span></code></pre>'
                 }
               ),
               /* @__PURE__ */ jsxs("div", { className: "mt-5 space-y-3 text-sm text-muted-foreground", children: [
@@ -1052,9 +1052,9 @@ function Landing() {
                         ]
                       }
                     ),
-                    /* @__PURE__ */ jsx("h3", { className: "font-display text-lg text-foreground", children: "Aidbox Forms Builder ready" })
+                    /* @__PURE__ */ jsx("h3", { className: "font-display text-lg text-foreground", children: "Formbox Builder ready" })
                   ] }),
-                  /* @__PURE__ */ jsx("p", { className: "mt-3 text-sm text-muted-foreground", children: "Integrated with Aidbox Forms Builder for end-to-end questionnaire authoring and renderer delivery." })
+                  /* @__PURE__ */ jsx("p", { className: "mt-3 text-sm text-muted-foreground", children: "Integrated with Formbox Builder for end-to-end questionnaire authoring and renderer delivery." })
                 ] }),
                 /* @__PURE__ */ jsxs("article", { className: "rounded-2xl border border-border/60 bg-card/70 p-6 shadow-lg shadow-black/30 transition hover:border-ring/60 md:col-span-6 lg:col-span-6", children: [
                   /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
@@ -1118,7 +1118,7 @@ function Landing() {
                     CodeBlock,
                     {
                       className: "mt-4",
-                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { Theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> baseTheme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> theme</span><span style="color:#F97583">:</span><span style="color:#B392F0"> Theme</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>\n<span class="line"><span style="color:#F97583">  ...</span><span style="color:#E1E4E8">baseTheme,</span></span>\n<span class="line"><span style="color:#E1E4E8">  Label: MyLabel,</span></span>\n<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>'
+                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#F97583"> type</span><span style="color:#E1E4E8"> { Theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> baseTheme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> theme</span><span style="color:#F97583">:</span><span style="color:#B392F0"> Theme</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>\n<span class="line"><span style="color:#F97583">  ...</span><span style="color:#E1E4E8">baseTheme,</span></span>\n<span class="line"><span style="color:#E1E4E8">  Label: MyLabel,</span></span>\n<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>'
                     }
                   )
                 ] }),
@@ -1128,7 +1128,7 @@ function Landing() {
                     CodeBlock,
                     {
                       className: "mt-4",
-                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @aidbox-forms/theme</span></span></code></pre>'
+                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @formbox/theme</span></span></code></pre>'
                     }
                   ),
                   /* @__PURE__ */ jsx("p", { className: "mt-4 text-sm text-muted-foreground", children: "The Theme type requires every component, so you always know what to render." })
@@ -1151,7 +1151,7 @@ function Landing() {
                 /* @__PURE__ */ jsxs("article", { className: "rounded-2xl border border-border/60 bg-card/70 p-6", children: [
                   /* @__PURE__ */ jsx("h3", { className: "font-display text-lg text-foreground", children: "Health Samurai" }),
                   /* @__PURE__ */ jsxs("p", { className: "mt-2 text-sm text-muted-foreground", children: [
-                    "Clinical-ready layout density, contrast, and spacing tuned for Aidbox workflows, built on",
+                    "Clinical-ready layout density, contrast, and spacing tuned for Formbox workflows, built on",
                     " ",
                     /* @__PURE__ */ jsx(
                       "a",
@@ -1390,7 +1390,7 @@ function Landing() {
                           CodeBlock,
                           {
                             className: "mt-3",
-                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @aidbox-forms/renderer</span><span style="color:#9ECBFF"> @aidbox-forms/hs-theme</span></span></code></pre>'
+                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @formbox/renderer</span><span style="color:#9ECBFF"> @formbox/hs-theme</span></span></code></pre>'
                           }
                         )
                       ] })
@@ -1404,7 +1404,7 @@ function Landing() {
                           CodeBlock,
                           {
                             className: "mt-3",
-                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span></code></pre>'
+                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@formbox/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span></code></pre>'
                           }
                         )
                       ] })
@@ -1418,7 +1418,7 @@ function Landing() {
                           CodeBlock,
                           {
                             className: "mt-3",
-                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme"</span><span style="color:#E1E4E8">;</span></span></code></pre>'
+                            html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/hs-theme"</span><span style="color:#E1E4E8">;</span></span></code></pre>'
                           }
                         )
                       ] })
@@ -1448,7 +1448,7 @@ function Landing() {
                       CodeBlock,
                       {
                         className: "mt-4",
-                        html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { Renderer } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/renderer"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@aidbox-forms/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#79B8FF">Renderer</span><span style="color:#B392F0"> questionnaire</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{questionnaire} </span><span style="color:#B392F0">theme</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{theme} /></span></span></code></pre>'
+                        html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#9ECBFF"> "@formbox/hs-theme/style.css"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { Renderer } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/renderer"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { theme } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@formbox/hs-theme"</span><span style="color:#E1E4E8">;</span></span>\n<span class="line"></span>\n<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#79B8FF">Renderer</span><span style="color:#B392F0"> questionnaire</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{questionnaire} </span><span style="color:#B392F0">theme</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{theme} /></span></span></code></pre>'
                       }
                     ),
                     /* @__PURE__ */ jsxs("div", { className: "mt-6 grid gap-3 sm:grid-cols-2", children: [
@@ -1484,7 +1484,7 @@ function Landing() {
             children: /* @__PURE__ */ jsxs("div", { className: "container", children: [
               /* @__PURE__ */ jsxs("div", { className: "max-w-2xl", children: [
                 /* @__PURE__ */ jsx("h2", { className: "font-display text-3xl text-foreground", children: "Open-source ready" }),
-                /* @__PURE__ */ jsx("p", { className: "mt-3 text-base text-muted-foreground", children: "Built by the Aidbox team and open to the community. File issues, propose improvements, or ship a new theme." })
+                /* @__PURE__ */ jsx("p", { className: "mt-3 text-base text-muted-foreground", children: "Built by the Formbox team and open to the community. File issues, propose improvements, or ship a new theme." })
               ] }),
               /* @__PURE__ */ jsxs("div", { className: "mt-10 grid gap-5 md:grid-cols-3", children: [
                 /* @__PURE__ */ jsxs("article", { className: "rounded-2xl border border-border/60 bg-card/70 p-6", children: [
@@ -1563,13 +1563,13 @@ function Landing() {
         )
       ] }),
       /* @__PURE__ */ jsx("footer", { className: "border-t border-border/70 px-4 py-12 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsx("div", { className: "container text-sm text-muted-foreground", children: /* @__PURE__ */ jsxs("p", { children: [
-        "Aidbox Forms Renderer is an MIT-licensed project by Health Samurai. View the source on",
+        "Formbox Renderer is an MIT-licensed project by Health Samurai. View the source on",
         " ",
         /* @__PURE__ */ jsx(
           "a",
           {
             className: "text-foreground transition hover:text-primary",
-            href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+            href: "https://github.com/HealthSamurai/formbox-renderer",
             children: "GitHub"
           }
         ),
@@ -1903,7 +1903,7 @@ function _createMdxContent$7(props) {
   };
   return jsxs(Fragment$1, {
     children: [jsx(_components.p, {
-      children: "Aidbox Forms Renderer is a React renderer for FHIR R5 Questionnaires."
+      children: "Formbox Renderer is a React renderer for FHIR R5 Questionnaires."
     }), "\n", jsx(_components.h2, {
       children: "Install"
     }), "\n", jsx(Fragment$1, {
@@ -1931,7 +1931,7 @@ function _createMdxContent$7(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/renderer"
+              children: " @formbox/renderer"
             })]
           })
         })
@@ -1968,7 +1968,7 @@ function _createMdxContent$7(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -2292,7 +2292,7 @@ function _createMdxContent$5(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/theme"
+              children: " @formbox/theme"
             })]
           })
         })
@@ -2336,7 +2336,7 @@ function _createMdxContent$5(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/theme"'
+              children: ' "@formbox/theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -2364,7 +2364,7 @@ function _createMdxContent$5(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -2402,7 +2402,7 @@ function _createMdxContent$5(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/hs-theme"'
+              children: ' "@formbox/hs-theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -7839,7 +7839,7 @@ function _createMdxContent$3(props) {
   };
   return jsxs(Fragment$1, {
     children: [jsx(_components.p, {
-      children: "Ant Design theme for Aidbox Forms Renderer."
+      children: "Ant Design theme for Formbox Renderer."
     }), "\n", jsx(_components.h2, {
       children: "Install"
     }), "\n", jsx(Fragment$1, {
@@ -7867,7 +7867,7 @@ function _createMdxContent$3(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/antd-theme"
+              children: " @formbox/antd-theme"
             })]
           })
         })
@@ -7894,7 +7894,7 @@ function _createMdxContent$3(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/antd-theme/style.css"'
+              children: ' "@formbox/antd-theme/style.css"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -7936,7 +7936,7 @@ function _createMdxContent$3(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -7964,7 +7964,7 @@ function _createMdxContent$3(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/antd-theme"'
+              children: ' "@formbox/antd-theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8055,7 +8055,7 @@ function _createMdxContent$2(props) {
   };
   return jsxs(Fragment$1, {
     children: [jsx(_components.p, {
-      children: "Health Samurai-styled theme for Aidbox Forms Renderer."
+      children: "Health Samurai-styled theme for Formbox Renderer."
     }), "\n", jsx(_components.h2, {
       children: "Install"
     }), "\n", jsx(Fragment$1, {
@@ -8083,7 +8083,7 @@ function _createMdxContent$2(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/hs-theme"
+              children: " @formbox/hs-theme"
             })]
           })
         })
@@ -8110,7 +8110,7 @@ function _createMdxContent$2(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/hs-theme/style.css"'
+              children: ' "@formbox/hs-theme/style.css"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8152,7 +8152,7 @@ function _createMdxContent$2(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8180,7 +8180,7 @@ function _createMdxContent$2(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/hs-theme"'
+              children: ' "@formbox/hs-theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8271,7 +8271,7 @@ function _createMdxContent$1(props) {
   };
   return jsxs(Fragment$1, {
     children: [jsx(_components.p, {
-      children: "Mantine theme for Aidbox Forms Renderer."
+      children: "Mantine theme for Formbox Renderer."
     }), "\n", jsx(_components.h2, {
       children: "Install"
     }), "\n", jsx(Fragment$1, {
@@ -8299,7 +8299,7 @@ function _createMdxContent$1(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/mantine-theme"
+              children: " @formbox/mantine-theme"
             })]
           })
         })
@@ -8326,7 +8326,7 @@ function _createMdxContent$1(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/mantine-theme/style.css"'
+              children: ' "@formbox/mantine-theme/style.css"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8374,7 +8374,7 @@ function _createMdxContent$1(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8402,7 +8402,7 @@ function _createMdxContent$1(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/mantine-theme"'
+              children: ' "@formbox/mantine-theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8533,7 +8533,7 @@ function _createMdxContent(props) {
       children: [jsx(_components.a, {
         href: "https://service-manual.nhs.uk/design-system",
         children: "NHS Design"
-      }), " theme for Aidbox Forms Renderer."]
+      }), " theme for Formbox Renderer."]
     }), "\n", jsx(_components.h2, {
       children: "Install"
     }), "\n", jsx(Fragment$1, {
@@ -8561,7 +8561,7 @@ function _createMdxContent(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: " @aidbox-forms/nshuk-theme"
+              children: " @formbox/nshuk-theme"
             })]
           })
         })
@@ -8588,7 +8588,7 @@ function _createMdxContent(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/nshuk-theme/style.css"'
+              children: ' "@formbox/nshuk-theme/style.css"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8630,7 +8630,7 @@ function _createMdxContent(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/renderer"'
+              children: ' "@formbox/renderer"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8658,7 +8658,7 @@ function _createMdxContent(props) {
               style: {
                 color: "#9ECBFF"
               },
-              children: ' "@aidbox-forms/nshuk-theme"'
+              children: ' "@formbox/nshuk-theme"'
             }), jsx(_components.span, {
               style: {
                 color: "#E1E4E8"
@@ -8879,7 +8879,7 @@ function PageFooter({ route, pages }) {
   const previous = activeIndex > 0 ? pages[activeIndex - 1] : void 0;
   const next = activeIndex >= 0 && activeIndex < pages.length - 1 ? pages[activeIndex + 1] : void 0;
   const entry = routes.get(route);
-  const editUrl = entry?.sourcePath ? `https://github.com/HealthSamurai/aidbox-forms-renderer/edit/master/${entry.sourcePath}` : void 0;
+  const editUrl = entry?.sourcePath ? `https://github.com/HealthSamurai/formbox-renderer/edit/master/${entry.sourcePath}` : void 0;
   return /* @__PURE__ */ jsxs("div", { className: "mt-16", children: [
     /* @__PURE__ */ jsxs("div", { className: "mb-6 flex w-full items-center justify-between", children: [
       /* @__PURE__ */ jsx("div", { className: "w-fit", children: editUrl ? /* @__PURE__ */ jsx(
@@ -8954,19 +8954,19 @@ ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;
 const tocLinks = [
   {
     label: "Star on GitHub",
-    href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+    href: "https://github.com/HealthSamurai/formbox-renderer",
     icon: Star
   },
   {
     label: "Create Issues",
-    href: "https://github.com/HealthSamurai/aidbox-forms-renderer/issues",
+    href: "https://github.com/HealthSamurai/formbox-renderer/issues",
     icon: CircleDot
   }
 ];
 const tocIconLinks = [
   // {
   //   label: "GitHub",
-  //   href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+  //   href: "https://github.com/HealthSamurai/formbox-renderer",
   //   icon: Github,
   // },
 ];
@@ -9418,7 +9418,7 @@ function Index() {
   ];
   return /* @__PURE__ */ jsx("main", { id: "content", className: "relative py-6", children: /* @__PURE__ */ jsxs("div", { className: "mx-auto w-full min-w-0", children: [
     /* @__PURE__ */ jsxs("div", { className: "mb-8", children: [
-      /* @__PURE__ */ jsx("h1", { className: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl", children: "Aidbox Forms Renderer docs" }),
+      /* @__PURE__ */ jsx("h1", { className: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl", children: "Formbox Renderer docs" }),
       /* @__PURE__ */ jsx("p", { className: "text-muted-foreground pt-1 text-lg", children: "Read the package docs and guides. Each package keeps its own reference material alongside the code." })
     ] }),
     /* @__PURE__ */ jsx(ExploreCards, { cards })
@@ -9515,7 +9515,7 @@ function Shell({
 }) {
   useEffect(() => {
     if (!globalThis.document) return;
-    const resolvedTitle = title ? title.includes("Aidbox Docs") ? title : `${title} - Aidbox Docs` : "Aidbox Docs";
+    const resolvedTitle = title ? title.includes("Formbox Docs") ? title : `${title} - Formbox Docs` : "Formbox Docs";
     document.title = resolvedTitle;
   }, [title]);
   return /* @__PURE__ */ jsxs("div", { className: "min-h-screen bg-background text-foreground", children: [
@@ -9535,7 +9535,7 @@ function Shell({
       /* @__PURE__ */ jsx("div", { className: "flex flex-wrap justify-center gap-2 md:justify-end", children: /* @__PURE__ */ jsx(Button, { asChild: true, variant: "ghost", size: "icon", className: "flex gap-2", children: /* @__PURE__ */ jsx(
         "a",
         {
-          href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+          href: "https://github.com/HealthSamurai/formbox-renderer",
           target: "_blank",
           rel: "noreferrer",
           children: /* @__PURE__ */ jsx(Github, { className: "size-5" })
@@ -9615,7 +9615,7 @@ function Search({
       /* @__PURE__ */ jsx(SheetPrimitive.Overlay, { className: "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80" }),
       /* @__PURE__ */ jsxs(SheetPrimitive.Content, { className: "fixed left-1/2 top-1/2 z-50 w-[min(90vw,680px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-0 shadow-lg", children: [
         /* @__PURE__ */ jsx(SheetPrimitive.Title, { className: "sr-only", children: "Search documentation" }),
-        /* @__PURE__ */ jsx(SheetPrimitive.Description, { className: "sr-only", children: "Search the Aidbox Forms Renderer docs" }),
+        /* @__PURE__ */ jsx(SheetPrimitive.Description, { className: "sr-only", children: "Search the Formbox Renderer docs" }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 border-b px-3 py-3 text-sm", children: [
           /* @__PURE__ */ jsx(Search$1, { className: "text-muted-foreground size-[18px]" }),
           /* @__PURE__ */ jsx(
@@ -9827,10 +9827,10 @@ function Layout({
               {
                 className: "h-7 w-7 brightness-0 invert",
                 src: withBase("/android-chrome-192x192.png"),
-                alt: "Aidbox logo"
+                alt: "Formbox logo"
               }
             ),
-            /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Aidbox Forms Renderer" })
+            /* @__PURE__ */ jsx("span", { className: "ml-3 self-center font-bold", children: "Formbox Renderer" })
           ] }) }),
           /* @__PURE__ */ jsx("div", { className: "relative h-full overflow-hidden py-6 pr-6 text-sm", children: /* @__PURE__ */ jsx(
             Sidebar,
@@ -9892,13 +9892,13 @@ const resolveRoute = async (url) => {
         element: /* @__PURE__ */ jsx(
           Layout,
           {
-            title: "Aidbox Docs",
+            title: "Formbox Docs",
             activeRoute: pathname,
             pages: flattenedSidebar,
             children: /* @__PURE__ */ jsx(Index, {})
           }
         ),
-        title: "Aidbox Docs"
+        title: "Formbox Docs"
       };
     }
     if (pathname === "/docs/themes/") {
@@ -9912,7 +9912,7 @@ const resolveRoute = async (url) => {
             children: /* @__PURE__ */ jsx(Themes, {})
           }
         ),
-        title: "Themes - Aidbox Docs"
+        title: "Themes - Formbox Docs"
       };
     }
     const entry = routes.get(pathname);
@@ -9943,7 +9943,7 @@ const resolveRoute = async (url) => {
           )
         }
       ),
-      title: `${entry.title} - Aidbox Docs`
+      title: `${entry.title} - Formbox Docs`
     };
   }
   if (pathname !== "/") {
@@ -9954,7 +9954,7 @@ const resolveRoute = async (url) => {
   }
   return {
     element: /* @__PURE__ */ jsx(Landing, {}),
-    title: "Aidbox Forms Renderer"
+    title: "Formbox Renderer"
   };
 };
 async function render(url) {
