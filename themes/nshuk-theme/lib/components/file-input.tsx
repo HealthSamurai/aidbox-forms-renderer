@@ -1,4 +1,4 @@
-import type { FileInputProperties } from "@aidbox-forms/theme";
+import type { FileInputProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 import { type ChangeEvent, type KeyboardEvent, useRef } from "react";
 

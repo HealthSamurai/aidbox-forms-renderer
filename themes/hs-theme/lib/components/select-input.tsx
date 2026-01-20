@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { SelectInputProperties } from "@aidbox-forms/theme";
+import type { SelectInputProperties } from "@formbox/theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
 import { LoadingSpinner } from "./loading-spinner.tsx";

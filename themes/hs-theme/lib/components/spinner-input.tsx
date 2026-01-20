@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { SpinnerInputProperties } from "@aidbox-forms/theme";
+import type { SpinnerInputProperties } from "@formbox/theme";
 import { Minus } from "../icons/minus.tsx";
 import { Plus } from "../icons/plus.tsx";
 import { getPrecision, roundToPrecision } from "./utilities.ts";

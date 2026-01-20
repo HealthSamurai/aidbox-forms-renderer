@@ -1,4 +1,4 @@
-import type { QuestionScaffoldProperties } from "@aidbox-forms/theme";
+import type { QuestionScaffoldProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 
 export function QuestionScaffold({

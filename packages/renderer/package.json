@@ -1,14 +1,14 @@
 {
-  "name": "@aidbox-forms/renderer",
+  "name": "@formbox/renderer",
   "version": "0.0.3-pre-alpha",
-  "description": "Aidbox Forms Renderer for FHIR R5 Questionnaires",
+  "description": "Formbox Renderer for FHIR R5 Questionnaires",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+    "url": "https://github.com/HealthSamurai/formbox-renderer"
   },
-  "homepage": "https://healthsamurai.github.io/aidbox-forms-renderer/",
+  "homepage": "https://healthsamurai.github.io/formbox-renderer/",
   "files": [
     "dist"
   ],
@@ -31,8 +31,8 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@aidbox-forms/theme": "workspace:*",
-    "@aidbox-forms/hs-theme": "workspace:*",
+    "@formbox/theme": "workspace:*",
+    "@formbox/hs-theme": "workspace:*",
     "@lhncbc/ucum-lhc": "7.1.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -52,8 +52,8 @@
     "vitest": "^4.0.17"
   },
   "peerDependencies": {
-    "@aidbox-forms/hs-theme": "workspace:*",
-    "@aidbox-forms/nshuk-theme": "workspace:*",
+    "@formbox/hs-theme": "workspace:*",
+    "@formbox/nshuk-theme": "workspace:*",
     "@lhncbc/ucum-lhc": "^7.1.3",
     "classnames": "^2.5.1",
     "fhirpath": "^4.6.0",
@@ -64,7 +64,7 @@
     "react-dom": ">=18"
   },
   "peerDependenciesMeta": {
-    "@aidbox-forms/nshuk-theme": {
+    "@formbox/nshuk-theme": {
       "optional": true
     }
   },

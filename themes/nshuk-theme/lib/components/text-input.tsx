@@ -1,4 +1,4 @@
-import type { TextInputProperties } from "@aidbox-forms/theme";
+import type { TextInputProperties } from "@formbox/theme";
 import { hasErrorId } from "../utils/aria.ts";
 
 export function TextInput({

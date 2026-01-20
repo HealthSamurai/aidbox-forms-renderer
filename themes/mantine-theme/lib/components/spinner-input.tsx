@@ -3,7 +3,7 @@ import {
   Text,
   VisuallyHidden,
 } from "@mantine/core";
-import type { SpinnerInputProperties } from "@aidbox-forms/theme";
+import type { SpinnerInputProperties } from "@formbox/theme";
 
 function parseNumberInput(value: number | string): number | undefined {
   if (typeof value === "number") {

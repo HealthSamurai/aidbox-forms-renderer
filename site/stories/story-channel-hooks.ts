@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { addons } from "storybook/preview-api";
 import { autorun } from "mobx";
 import type { Questionnaire } from "fhir/r5";
-import type { IForm } from "@aidbox-forms/renderer/types.ts";
+import type { IForm } from "@formbox/renderer/types.ts";
 
 export function useQuestionnaireResponseBroadcaster(
   form: IForm,
@@ -14,17 +14,17 @@ export function useQuestionnaireResponseBroadcaster(
 
     const handleRequest = ({ storyId: requestId }: { storyId?: string }) => {
       if (requestId === storyId) {
-        channel.emit(`aidbox/questionnaire-response/update`, {
+        channel.emit(`formbox/questionnaire-response/update`, {
           storyId: storyId,
           response: form.response,
         });
       }
     };
 
-    channel.on("aidbox/questionnaire-response/request", handleRequest);
+    channel.on("formbox/questionnaire-response/request", handleRequest);
 
     const dispose = autorun(() => {
-      channel.emit(`aidbox/questionnaire-response/update`, {
+      channel.emit(`formbox/questionnaire-response/update`, {
         storyId: storyId,
         response: form.response,
       });
@@ -32,7 +32,7 @@ export function useQuestionnaireResponseBroadcaster(
 
     return () => {
       dispose();
-      channel.off(`aidbox/questionnaire-response/request`, handleRequest);
+      channel.off(`formbox/questionnaire-response/request`, handleRequest);
     };
   }, [form, storyId]);
 }
@@ -45,17 +45,20 @@ export function useQuestionnaireBroadcaster(
     if (!storyId) return;
     const channel = addons.getChannel();
 
-    channel.emit(`aidbox/questionnaire/update`, { storyId, questionnaire });
+    channel.emit(`formbox/questionnaire/update`, { storyId, questionnaire });
 
     const handleRequest = ({ storyId: requestId }: { storyId?: string }) => {
       if (requestId === storyId) {
-        channel.emit(`aidbox/questionnaire/update`, { storyId, questionnaire });
+        channel.emit(`formbox/questionnaire/update`, {
+          storyId,
+          questionnaire,
+        });
       }
     };
 
-    channel.on(`aidbox/questionnaire/request`, handleRequest);
+    channel.on(`formbox/questionnaire/request`, handleRequest);
     return () => {
-      channel.off(`aidbox/questionnaire/request`, handleRequest);
+      channel.off(`formbox/questionnaire/request`, handleRequest);
     };
   }, [questionnaire, storyId]);
 }

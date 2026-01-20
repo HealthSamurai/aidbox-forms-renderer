@@ -3,7 +3,7 @@ import { FormStore } from "./store/form/form-store.ts";
 import { Form } from "./component/form/form.tsx";
 import { useCallback, useEffect, useMemo } from "react";
 import { autorun } from "mobx";
-import type { Theme } from "@aidbox-forms/theme";
+import type { Theme } from "@formbox/theme";
 import { ThemeProvider } from "./ui/theme.tsx";
 
 type RendererProperties = {

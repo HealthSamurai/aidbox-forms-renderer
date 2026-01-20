@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import type { FormProperties } from "@aidbox-forms/theme";
+import type { FormProperties } from "@formbox/theme";
 import { Button, Space, Typography } from "antd";
 
 export function Form({

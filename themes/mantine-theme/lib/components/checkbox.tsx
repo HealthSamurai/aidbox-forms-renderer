@@ -1,5 +1,5 @@
 import { Checkbox as MantineCheckbox } from "@mantine/core";
-import type { CheckboxProperties } from "@aidbox-forms/theme";
+import type { CheckboxProperties } from "@formbox/theme";
 
 export function Checkbox({
   id,

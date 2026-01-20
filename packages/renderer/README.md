@@ -1,17 +1,17 @@
-# @aidbox-forms/renderer
+# @formbox/renderer
 
-Aidbox Forms Renderer is a React renderer for FHIR R5 Questionnaires.
+Formbox Renderer is a React renderer for FHIR R5 Questionnaires.
 
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/renderer
+pnpm add @formbox/renderer
 ```
 
 ## Usage
 
 ```tsx
-import Renderer from "@aidbox-forms/renderer";
+import Renderer from "@formbox/renderer";
 
 <Renderer questionnaire={questionnaire} />;
 ```

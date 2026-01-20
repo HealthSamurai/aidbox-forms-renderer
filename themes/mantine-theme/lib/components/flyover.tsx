@@ -1,5 +1,5 @@
 import { ActionIcon, Tooltip, VisuallyHidden } from "@mantine/core";
-import type { FlyoverProperties } from "@aidbox-forms/theme";
+import type { FlyoverProperties } from "@formbox/theme";
 
 export function Flyover({ id, children, ariaLabel }: FlyoverProperties) {
   const ariaLabelProperties =

@@ -4,7 +4,7 @@ import type {
   AnswerTypeToDataType,
   DataTypeToType,
   QuestionItemControl,
-} from "@aidbox-forms/renderer/types.ts";
+} from "@formbox/renderer/types.ts";
 import type { QuestionnaireItem } from "fhir/r5";
 import {
   buildQuestionItem,

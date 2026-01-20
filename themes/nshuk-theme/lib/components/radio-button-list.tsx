@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { RadioButtonListProperties } from "@aidbox-forms/theme";
+import type { RadioButtonListProperties } from "@formbox/theme";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function RadioButtonList({

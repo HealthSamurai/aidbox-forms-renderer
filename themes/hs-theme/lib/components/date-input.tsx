@@ -1,4 +1,4 @@
-import type { DateInputProperties } from "@aidbox-forms/theme";
+import type { DateInputProperties } from "@formbox/theme";
 import { inputClass } from "./tokens.ts";
 
 export function DateInput({

@@ -3,7 +3,7 @@ import type { OperationOutcomeIssue } from "fhir/r5";
 import type { IForm, IPresentableNode } from "../../types.ts";
 import { buildId, getIssueMessage } from "../../utilities.ts";
 import { useTheme } from "../../ui/theme.tsx";
-import type { ErrorSummaryItem } from "@aidbox-forms/theme";
+import type { ErrorSummaryItem } from "@formbox/theme";
 import { isGroupListStore } from "../../store/group/group-list-store.ts";
 import { isGroupNode } from "../../store/group/group-store.ts";
 import { isQuestionNode } from "../../store/question/question-store.ts";

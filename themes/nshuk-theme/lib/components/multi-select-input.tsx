@@ -1,4 +1,4 @@
-import type { MultiSelectInputProperties } from "@aidbox-forms/theme";
+import type { MultiSelectInputProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";

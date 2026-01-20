@@ -1,5 +1,5 @@
 import type { Attachment } from "fhir/r5";
-import type { Attachment as ThemeAttachment } from "@aidbox-forms/theme";
+import type { Attachment as ThemeAttachment } from "@formbox/theme";
 import { useCallback, useMemo } from "react";
 import { prepareAttachmentFromFile } from "../../../../utilities.ts";
 import { useTheme } from "../../../../ui/theme.tsx";

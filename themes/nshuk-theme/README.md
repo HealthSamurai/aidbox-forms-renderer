@@ -1,24 +1,24 @@
-# @aidbox-forms/nshuk-theme
+# @formbox/nshuk-theme
 
-[NHS Design](https://service-manual.nhs.uk/design-system) theme for Aidbox Forms Renderer.
+[NHS Design](https://service-manual.nhs.uk/design-system) theme for Formbox Renderer.
 
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/nshuk-theme
+pnpm add @formbox/nshuk-theme
 ```
 
 Include the compiled CSS:
 
 ```ts
-import "@aidbox-forms/nshuk-theme/style.css";
+import "@formbox/nshuk-theme/style.css";
 ```
 
 ## Usage
 
 ```tsx
-import Renderer from "@aidbox-forms/renderer";
-import { theme } from "@aidbox-forms/nshuk-theme";
+import Renderer from "@formbox/renderer";
+import { theme } from "@formbox/nshuk-theme";
 
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```

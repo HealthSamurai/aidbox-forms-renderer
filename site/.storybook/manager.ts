@@ -6,8 +6,8 @@ import "./manager.css";
 
 const theme = create({
   base: "light",
-  brandTitle: "Aidbox Forms Renderer",
-  brandUrl: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+  brandTitle: "Formbox Renderer",
+  brandUrl: "https://github.com/HealthSamurai/formbox-renderer",
   brandImage: "android-chrome-192x192.png",
   brandTarget: "_blank",
 });
@@ -16,8 +16,8 @@ addons.setConfig({ theme });
 
 const panelOrder = [
   "addon-controls",
-  "aidbox/questionnaire/panel",
-  "aidbox/questionnaire-response/panel",
+  "formbox/questionnaire/panel",
+  "formbox/questionnaire-response/panel",
 ];
 
 function reorderAddonPanels() {

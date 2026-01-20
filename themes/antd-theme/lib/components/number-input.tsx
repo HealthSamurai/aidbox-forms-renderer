@@ -1,4 +1,4 @@
-import type { NumberInputProperties } from "@aidbox-forms/theme";
+import type { NumberInputProperties } from "@formbox/theme";
 import { InputNumber, Typography } from "antd";
 
 export function NumberInput({

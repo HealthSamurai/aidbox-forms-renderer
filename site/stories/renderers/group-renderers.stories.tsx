@@ -6,8 +6,8 @@ import type {
   DataTypeToType,
   GroupItemControl,
   QuestionItemControl,
-} from "@aidbox-forms/renderer/types.ts";
-import { EXT, ITEM_CONTROL_SYSTEM } from "@aidbox-forms/renderer/utilities.ts";
+} from "@formbox/renderer/types.ts";
+import { EXT, ITEM_CONTROL_SYSTEM } from "@formbox/renderer/utilities.ts";
 import {
   buildQuestionItem,
   buildQuestionnaire,

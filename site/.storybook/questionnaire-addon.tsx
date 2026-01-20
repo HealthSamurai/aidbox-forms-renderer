@@ -22,11 +22,11 @@ export function QuestionnairePanel() {
       setValue(encoded);
     };
 
-    channel.on(`aidbox/questionnaire/update`, handleUpdate);
-    channel.emit(`aidbox/questionnaire/request`, { storyId });
+    channel.on(`formbox/questionnaire/update`, handleUpdate);
+    channel.emit(`formbox/questionnaire/request`, { storyId });
 
     return () => {
-      channel.off(`aidbox/questionnaire/update`, handleUpdate);
+      channel.off(`formbox/questionnaire/update`, handleUpdate);
     };
   }, [storyId]);
 
@@ -49,13 +49,13 @@ export function QuestionnairePanel() {
   );
 }
 
-addons.register("aidbox/questionnaire", () => {
-  addons.add(`aidbox/questionnaire/panel`, {
+addons.register("formbox/questionnaire", () => {
+  addons.add(`formbox/questionnaire/panel`, {
     title: "Questionnaire",
     type: types.PANEL,
     render: ({ active }) =>
       active ? (
-        <QuestionnairePanel key={`aidbox/questionnaire/panel`} />
+        <QuestionnairePanel key={`formbox/questionnaire/panel`} />
       ) : undefined,
   });
 });

@@ -1,4 +1,4 @@
-import type { TableProperties } from "@aidbox-forms/theme";
+import type { TableProperties } from "@formbox/theme";
 import type { ReactNode } from "react";
 import { Button, Empty, Space } from "antd";
 import { LoadingSpinner } from "./loading-spinner.tsx";

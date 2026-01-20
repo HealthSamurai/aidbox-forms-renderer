@@ -45,7 +45,7 @@ import type { GroupRendererRegistry } from "./store/group/group-renderer-registr
 import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import { QuestionRendererRegistry } from "./store/question/question-renderer-registry.ts";
 import { PolyCarrierFor, PolyKeyFor } from "./utilities.ts";
-import type { FormPagination, OptionItem } from "@aidbox-forms/theme";
+import type { FormPagination, OptionItem } from "@formbox/theme";
 
 export type OperationOutcomeIssueCode =
   | "business-rule" // Expression cycles / logic conflicts
@@ -724,4 +724,4 @@ export type ValueKeyFor<T extends DataType> = PolyKeyFor<"value", T>;
 
 export type ValueCarrierFor<T extends DataType> = PolyCarrierFor<"value", T>;
 
-export { type SelectedOptionItem, type OptionItem } from "@aidbox-forms/theme";
+export { type SelectedOptionItem, type OptionItem } from "@formbox/theme";

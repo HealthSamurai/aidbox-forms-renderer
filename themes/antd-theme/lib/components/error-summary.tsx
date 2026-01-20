@@ -1,4 +1,4 @@
-import type { ErrorSummaryProperties } from "@aidbox-forms/theme";
+import type { ErrorSummaryProperties } from "@formbox/theme";
 import { Alert } from "antd";
 import { useEffect, useRef } from "react";
 

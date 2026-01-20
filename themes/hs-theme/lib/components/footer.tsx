@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { FooterProperties } from "@aidbox-forms/theme";
+import type { FooterProperties } from "@formbox/theme";
 
 export function Footer({ linkId, children }: FooterProperties) {
   return <Container data-linkid={linkId}>{children}</Container>;

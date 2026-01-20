@@ -1,6 +1,6 @@
 import { Grid } from "@mantine/core";
 import { Children } from "react";
-import type { InputGroupProperties } from "@aidbox-forms/theme";
+import type { InputGroupProperties } from "@formbox/theme";
 
 export function InputGroup({ children, spans }: InputGroupProperties) {
   const items = Children.toArray(children);

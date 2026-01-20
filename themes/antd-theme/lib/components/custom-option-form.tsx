@@ -1,4 +1,4 @@
-import type { CustomOptionFormProperties } from "@aidbox-forms/theme";
+import type { CustomOptionFormProperties } from "@formbox/theme";
 import { Button, Card, Space } from "antd";
 
 export function CustomOptionForm({

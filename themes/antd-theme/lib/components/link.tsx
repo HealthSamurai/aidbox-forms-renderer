@@ -1,4 +1,4 @@
-import type { LinkProperties } from "@aidbox-forms/theme";
+import type { LinkProperties } from "@formbox/theme";
 import { Typography } from "antd";
 
 export function Link({ href, children, target, rel }: LinkProperties) {

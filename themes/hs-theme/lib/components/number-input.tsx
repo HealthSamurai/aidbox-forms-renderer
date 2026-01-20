@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { NumberInputProperties } from "@aidbox-forms/theme";
+import type { NumberInputProperties } from "@formbox/theme";
 
 export function NumberInput({
   id,

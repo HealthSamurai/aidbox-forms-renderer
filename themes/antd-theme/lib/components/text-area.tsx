@@ -1,4 +1,4 @@
-import type { TextAreaProperties } from "@aidbox-forms/theme";
+import type { TextAreaProperties } from "@formbox/theme";
 import { Input } from "antd";
 
 export function TextArea({

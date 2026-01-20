@@ -1,4 +1,4 @@
-import type { CheckboxListProperties } from "@aidbox-forms/theme";
+import type { CheckboxListProperties } from "@formbox/theme";
 import { Checkbox as AntCheckbox, Space } from "antd";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 

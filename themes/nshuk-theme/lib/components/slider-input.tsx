@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import { useRef } from "react";
-import type { SliderInputProperties } from "@aidbox-forms/theme";
+import type { SliderInputProperties } from "@formbox/theme";
 import { hasErrorId } from "../utils/aria.ts";
 import { clamp, useIsWithinGap } from "./utilities.ts";
 

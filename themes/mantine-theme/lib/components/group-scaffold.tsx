@@ -1,6 +1,6 @@
 import { Button, Group, Stack } from "@mantine/core";
 import { Children } from "react";
-import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
+import type { GroupScaffoldProperties } from "@formbox/theme";
 
 export function GroupScaffold({
   header,

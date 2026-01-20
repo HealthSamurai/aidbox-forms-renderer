@@ -1,4 +1,4 @@
-import type { FileInputProperties } from "@aidbox-forms/theme";
+import type { FileInputProperties } from "@formbox/theme";
 import { Button, Space, Typography } from "antd";
 import { useRef, type ChangeEvent } from "react";
 

@@ -1,4 +1,4 @@
-import type { ErrorsProperties } from "@aidbox-forms/theme";
+import type { ErrorsProperties } from "@formbox/theme";
 import { Alert } from "antd";
 
 export function Errors({ id, messages }: ErrorsProperties) {

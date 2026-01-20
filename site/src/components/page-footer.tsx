@@ -22,7 +22,7 @@ export default function PageFooter({ route, pages }: Properties) {
       : undefined;
   const entry = routes.get(route);
   const editUrl = entry?.sourcePath
-    ? `https://github.com/HealthSamurai/aidbox-forms-renderer/edit/master/${entry.sourcePath}`
+    ? `https://github.com/HealthSamurai/formbox-renderer/edit/master/${entry.sourcePath}`
     : undefined;
 
   return (

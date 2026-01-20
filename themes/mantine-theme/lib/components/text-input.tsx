@@ -1,6 +1,6 @@
 import { TextInput as MantineTextInput } from "@mantine/core";
 import type { ChangeEvent } from "react";
-import type { TextInputProperties } from "@aidbox-forms/theme";
+import type { TextInputProperties } from "@formbox/theme";
 
 export function TextInput({
   id,

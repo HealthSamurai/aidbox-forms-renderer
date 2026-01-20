@@ -1,24 +1,24 @@
-# @aidbox-forms/hs-theme
+# @formbox/hs-theme
 
-Health Samurai-styled theme for Aidbox Forms Renderer.
+Health Samurai-styled theme for Formbox Renderer.
 
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/hs-theme
+pnpm add @formbox/hs-theme
 ```
 
 Include the compiled CSS:
 
 ```ts
-import "@aidbox-forms/hs-theme/style.css";
+import "@formbox/hs-theme/style.css";
 ```
 
 ## Usage
 
 ```tsx
-import Renderer from "@aidbox-forms/renderer";
-import { theme } from "@aidbox-forms/hs-theme";
+import Renderer from "@formbox/renderer";
+import { theme } from "@formbox/hs-theme";
 
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```

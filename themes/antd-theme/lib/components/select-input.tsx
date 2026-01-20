@@ -1,4 +1,4 @@
-import type { SelectInputProperties } from "@aidbox-forms/theme";
+import type { SelectInputProperties } from "@formbox/theme";
 import { Select } from "antd";
 import type { ReactNode } from "react";
 

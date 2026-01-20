@@ -1,4 +1,4 @@
-import type { DateInputProperties } from "@aidbox-forms/theme";
+import type { DateInputProperties } from "@formbox/theme";
 import type { ChangeEvent, RefObject } from "react";
 import { useEffect, useRef } from "react";
 

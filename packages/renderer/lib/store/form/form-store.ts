@@ -50,7 +50,7 @@ import {
   shouldCreateStore,
 } from "../../utilities.ts";
 import { ValueSetExpander } from "../option/valueset-expander.ts";
-import type { FormPagination } from "@aidbox-forms/theme";
+import type { FormPagination } from "@formbox/theme";
 
 export class FormStore implements IForm, IExpressionEnvironmentProvider {
   private readonly initialResponse: QuestionnaireResponse | undefined;
@@ -527,13 +527,13 @@ export class FormStore implements IForm, IExpressionEnvironmentProvider {
 
     if (nestedPageLinkIds.length > 0) {
       console.warn(
-        `[Aidbox Forms] Page groups should be top-level items and must not be nested. Invalid linkIds: ${nestedPageLinkIds.join(", ")}.`,
+        `[Formbox] Page groups should be top-level items and must not be nested. Invalid linkIds: ${nestedPageLinkIds.join(", ")}.`,
       );
     }
 
     siblingViolations.forEach((violation) => {
       console.warn(
-        `[Aidbox Forms] Items that are siblings of a page group must be groups with item-control 'page', 'header', or 'footer'. Parent: ${violation.parent}. Invalid linkIds: ${violation.linkIds.join(", ")}.`,
+        `[Formbox] Items that are siblings of a page group must be groups with item-control 'page', 'header', or 'footer'. Parent: ${violation.parent}. Invalid linkIds: ${violation.linkIds.join(", ")}.`,
       );
     });
   }

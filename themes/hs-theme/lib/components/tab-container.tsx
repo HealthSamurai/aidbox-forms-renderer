@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { TabContainerProperties } from "@aidbox-forms/theme";
+import type { TabContainerProperties } from "@formbox/theme";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { clamp } from "./utilities.ts";
 

@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { RadioButtonProperties } from "@aidbox-forms/theme";
+import type { RadioButtonProperties } from "@formbox/theme";
 
 export function RadioButton({
   id,

@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { CheckboxListProperties } from "@aidbox-forms/theme";
+import type { CheckboxListProperties } from "@formbox/theme";
 import { LoadingSpinner } from "./loading-spinner.tsx";
 
 export function CheckboxList({

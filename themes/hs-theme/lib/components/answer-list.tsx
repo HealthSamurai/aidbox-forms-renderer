@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import { Children } from "react";
-import type { AnswerListProperties } from "@aidbox-forms/theme";
+import type { AnswerListProperties } from "@formbox/theme";
 import { Plus } from "../icons/plus.tsx";
 import { IconButton } from "./icon-button.tsx";
 

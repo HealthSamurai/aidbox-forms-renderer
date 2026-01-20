@@ -1,13 +1,13 @@
 {
-  "name": "@aidbox-forms/hs-theme",
+  "name": "@formbox/hs-theme",
   "version": "0.0.3-pre-alpha",
-  "description": "Health Samurai theme for Aidbox Forms Renderer",
+  "description": "Health Samurai theme for Formbox Renderer",
   "private": false,
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+    "url": "https://github.com/HealthSamurai/formbox-renderer"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -27,10 +27,10 @@
   ],
   "scripts": {
     "build": "tsc -b ./tsconfig.lib.json && vite build",
-    "dev": "echo \"@aidbox-forms/hs-theme: no dev server defined\"",
+    "dev": "echo \"@formbox/hs-theme: no dev server defined\"",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.lib.json",
-    "test": "echo \"@aidbox-forms/hs-theme: no tests defined\""
+    "test": "echo \"@formbox/hs-theme: no tests defined\""
   },
   "peerDependencies": {
     "react": ">=18",
@@ -51,7 +51,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@aidbox-forms/theme": "workspace:*",
+    "@formbox/theme": "workspace:*",
     "classnames": "^2.5.1"
   }
 }

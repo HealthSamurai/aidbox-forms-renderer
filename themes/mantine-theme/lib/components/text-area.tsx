@@ -1,6 +1,6 @@
 import { Textarea } from "@mantine/core";
 import type { ChangeEvent } from "react";
-import type { TextAreaProperties } from "@aidbox-forms/theme";
+import type { TextAreaProperties } from "@formbox/theme";
 
 export function TextArea({
   id,

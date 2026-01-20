@@ -1,7 +1,7 @@
 {
-  "name": "@aidbox-forms/site",
+  "name": "@formbox/site",
   "version": "0.0.3-pre-alpha",
-  "description": "Landing site and Storybook for Aidbox Forms Renderer",
+  "description": "Landing site and Storybook for Formbox Renderer",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,11 +15,11 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@aidbox-forms/antd-theme": "workspace:*",
-    "@aidbox-forms/hs-theme": "workspace:*",
-    "@aidbox-forms/mantine-theme": "workspace:*",
-    "@aidbox-forms/nshuk-theme": "workspace:*",
-    "@aidbox-forms/renderer": "workspace:*",
+    "@formbox/antd-theme": "workspace:*",
+    "@formbox/hs-theme": "workspace:*",
+    "@formbox/mantine-theme": "workspace:*",
+    "@formbox/nshuk-theme": "workspace:*",
+    "@formbox/renderer": "workspace:*",
     "@fontsource/geist-mono": "^5.2.7",
     "@fontsource/geist-sans": "^5.2.5",
     "@gsap/react": "^2.1.2",

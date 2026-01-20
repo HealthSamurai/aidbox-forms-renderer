@@ -1,4 +1,4 @@
-import type { StackProperties } from "@aidbox-forms/theme";
+import type { StackProperties } from "@formbox/theme";
 import { Space } from "antd";
 
 export function Stack({ children }: StackProperties) {

@@ -1,5 +1,5 @@
 import { ActionIcon, Tooltip, VisuallyHidden } from "@mantine/core";
-import type { HelpProperties } from "@aidbox-forms/theme";
+import type { HelpProperties } from "@formbox/theme";
 
 export function Help({ id, children, ariaLabel }: HelpProperties) {
   const ariaLabelProperties =

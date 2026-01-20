@@ -1,13 +1,13 @@
 {
-  "name": "@aidbox-forms/theme",
+  "name": "@formbox/theme",
   "version": "0.0.3-pre-alpha",
-  "description": "Base UI contract for Aidbox Forms Renderer themes",
+  "description": "Base UI contract for Formbox Renderer themes",
   "private": false,
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HealthSamurai/aidbox-forms-renderer"
+    "url": "https://github.com/HealthSamurai/formbox-renderer"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -23,10 +23,10 @@
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "echo \"@aidbox-forms/theme: no dev server defined\"",
+    "dev": "echo \"@formbox/theme: no dev server defined\"",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.lib.json",
-    "test": "echo \"@aidbox-forms/theme: no tests defined\""
+    "test": "echo \"@formbox/theme: no tests defined\""
   },
   "devDependencies": {
     "@types/react": "^19.2.8",

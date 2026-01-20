@@ -1,24 +1,24 @@
-# @aidbox-forms/antd-theme
+# @formbox/antd-theme
 
-Ant Design theme for Aidbox Forms Renderer.
+Ant Design theme for Formbox Renderer.
 
 ## Install
 
 ```bash
-pnpm add @aidbox-forms/antd-theme
+pnpm add @formbox/antd-theme
 ```
 
 Include the compiled CSS:
 
 ```ts
-import "@aidbox-forms/antd-theme/style.css";
+import "@formbox/antd-theme/style.css";
 ```
 
 ## Usage
 
 ```tsx
-import Renderer from "@aidbox-forms/renderer";
-import { theme } from "@aidbox-forms/antd-theme";
+import Renderer from "@formbox/renderer";
+import { theme } from "@formbox/antd-theme";
 
 <Renderer questionnaire={questionnaire} theme={theme} />;
 ```

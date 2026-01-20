@@ -1,4 +1,4 @@
-import type { SpinnerInputProperties } from "@aidbox-forms/theme";
+import type { SpinnerInputProperties } from "@formbox/theme";
 import { InputNumber, Typography } from "antd";
 
 export function SpinnerInput({

@@ -1,5 +1,5 @@
 {
-  "name": "aidbox-forms-workspace",
+  "name": "formbox-workspace",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "pnpm -r run --if-present build",
-    "dev": "pnpm --filter @aidbox-forms/renderer dev",
+    "dev": "pnpm --filter @formbox/renderer dev",
     "lint": "pnpm -r run --if-present lint",
     "typecheck": "pnpm -r run --if-present typecheck",
     "format": "pnpm -r run --if-present format",

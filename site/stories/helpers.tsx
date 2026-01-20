@@ -11,13 +11,13 @@ import type {
   DataTypeToType,
   ItemControl,
   QuestionItemControl,
-} from "@aidbox-forms/renderer/types.ts";
+} from "@formbox/renderer/types.ts";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   asAnswerFragment,
   EXT,
   ITEM_CONTROL_SYSTEM,
-} from "@aidbox-forms/renderer/utilities.ts";
+} from "@formbox/renderer/utilities.ts";
 
 export type QuestionItemConfig<T extends AnswerType> = {
   linkId: string;

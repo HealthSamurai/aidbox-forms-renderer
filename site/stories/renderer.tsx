@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from "react";
 import { styled } from "@linaria/react";
 import type { Questionnaire } from "fhir/r5";
-import type { IPresentableNode } from "@aidbox-forms/renderer/types.ts";
-import { FormStore } from "@aidbox-forms/renderer/store/form/form-store.ts";
-import { Form } from "@aidbox-forms/renderer/component/form/form.tsx";
-import { Node } from "@aidbox-forms/renderer/component/node/node.tsx";
+import type { IPresentableNode } from "@formbox/renderer/types.ts";
+import { FormStore } from "@formbox/renderer/store/form/form-store.ts";
+import { Form } from "@formbox/renderer/component/form/form.tsx";
+import { Node } from "@formbox/renderer/component/node/node.tsx";
 import {
   useQuestionnaireBroadcaster,
   useQuestionnaireResponseBroadcaster,

@@ -1,4 +1,4 @@
-import type { QuestionScaffoldProperties } from "@aidbox-forms/theme";
+import type { QuestionScaffoldProperties } from "@formbox/theme";
 
 export function QuestionScaffold({
   linkId,

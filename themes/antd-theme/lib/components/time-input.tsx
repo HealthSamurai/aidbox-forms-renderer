@@ -1,4 +1,4 @@
-import type { TimeInputProperties } from "@aidbox-forms/theme";
+import type { TimeInputProperties } from "@formbox/theme";
 import { Input } from "antd";
 
 export function TimeInput({

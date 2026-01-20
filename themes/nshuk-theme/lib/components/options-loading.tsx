@@ -1,4 +1,4 @@
-import type { OptionsLoadingProperties } from "@aidbox-forms/theme";
+import type { OptionsLoadingProperties } from "@formbox/theme";
 
 export function OptionsLoading({ isLoading }: OptionsLoadingProperties) {
   if (isLoading) {

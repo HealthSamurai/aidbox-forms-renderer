@@ -1,5 +1,5 @@
 import { Box, Stack, Tabs, Text } from "@mantine/core";
-import type { TabContainerProperties } from "@aidbox-forms/theme";
+import type { TabContainerProperties } from "@formbox/theme";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);

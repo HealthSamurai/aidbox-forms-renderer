@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { ErrorsProperties } from "@aidbox-forms/theme";
+import type { ErrorsProperties } from "@formbox/theme";
 
 export function Errors({ id, messages }: ErrorsProperties) {
   if (messages.length === 0) return;

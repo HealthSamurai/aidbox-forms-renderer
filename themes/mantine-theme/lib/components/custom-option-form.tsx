@@ -1,5 +1,5 @@
 import { Button, Group, Stack } from "@mantine/core";
-import type { CustomOptionFormProperties } from "@aidbox-forms/theme";
+import type { CustomOptionFormProperties } from "@formbox/theme";
 
 export function CustomOptionForm({
   content,

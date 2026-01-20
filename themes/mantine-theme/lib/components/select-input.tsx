@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
-import type { SelectInputProperties } from "@aidbox-forms/theme";
+import type { SelectInputProperties } from "@formbox/theme";
 
 function joinIds(...parts: Array<string | undefined>) {
   const value = parts.filter(Boolean).join(" ").trim();

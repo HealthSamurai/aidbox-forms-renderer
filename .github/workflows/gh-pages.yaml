@@ -30,8 +30,8 @@ jobs:
 
       - name: Build site
         env:
-          VITE_BASE_URL: /aidbox-forms-renderer/
-        run: pnpm --filter @aidbox-forms/site build
+          VITE_BASE_URL: /formbox-renderer/
+        run: pnpm --filter @formbox/site build
 
       - name: Add GitHub ribbon to built files
         run: |
@@ -39,7 +39,7 @@ jobs:
           sed -i 's|</head>|    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />\n  </head>|' site/dist/storybook/index.html
 
           # Add GitHub fork ribbon HTML to the body
-          sed -i 's|<body>|<body>\n    <a class="github-fork-ribbon" href="https://github.com/HealthSamurai/aidbox-forms-renderer" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>|' site/dist/storybook/index.html
+          sed -i 's|<body>|<body>\n    <a class="github-fork-ribbon" href="https://github.com/HealthSamurai/formbox-renderer" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>|' site/dist/storybook/index.html
 
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4

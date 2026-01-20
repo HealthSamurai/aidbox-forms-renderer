@@ -1,4 +1,4 @@
-import type { CheckboxProperties } from "@aidbox-forms/theme";
+import type { CheckboxProperties } from "@formbox/theme";
 import { Checkbox as AntCheckbox } from "antd";
 
 export function Checkbox({

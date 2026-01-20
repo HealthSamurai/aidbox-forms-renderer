@@ -119,7 +119,7 @@ const createHighlighter = async (languages: string[]) => {
 
 export const shiki = (): Plugin => {
   return {
-    name: "aidbox-code-blocks",
+    name: "formbox-code-blocks",
     enforce: "pre",
     async transform(source, id) {
       const cleanId = id.split("?", 1)[0];

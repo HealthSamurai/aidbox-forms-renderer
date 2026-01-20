@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { AnswerListProperties } from "@aidbox-forms/theme";
+import type { AnswerListProperties } from "@formbox/theme";
 
 export function AnswerList({
   children,

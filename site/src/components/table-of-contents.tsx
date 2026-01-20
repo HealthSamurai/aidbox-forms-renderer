@@ -28,12 +28,12 @@ type TocLink = {
 const tocLinks: TocLink[] = [
   {
     label: "Star on GitHub",
-    href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+    href: "https://github.com/HealthSamurai/formbox-renderer",
     icon: Star,
   },
   {
     label: "Create Issues",
-    href: "https://github.com/HealthSamurai/aidbox-forms-renderer/issues",
+    href: "https://github.com/HealthSamurai/formbox-renderer/issues",
     icon: CircleDot,
   },
 ];
@@ -41,7 +41,7 @@ const tocLinks: TocLink[] = [
 const tocIconLinks: TocLink[] = [
   // {
   //   label: "GitHub",
-  //   href: "https://github.com/HealthSamurai/aidbox-forms-renderer",
+  //   href: "https://github.com/HealthSamurai/formbox-renderer",
   //   icon: Github,
   // },
 ];

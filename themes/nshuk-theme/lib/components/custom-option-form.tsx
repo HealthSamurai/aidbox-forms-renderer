@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { CustomOptionFormProperties } from "@aidbox-forms/theme";
+import type { CustomOptionFormProperties } from "@formbox/theme";
 
 export function CustomOptionForm({
   content,

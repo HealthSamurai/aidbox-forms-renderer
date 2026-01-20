@@ -52,10 +52,10 @@ export default function Layout({
                 <img
                   className="h-7 w-7 brightness-0 invert"
                   src={withBase("/android-chrome-192x192.png")}
-                  alt="Aidbox logo"
+                  alt="Formbox logo"
                 />
                 <span className="ml-3 self-center font-bold">
-                  Aidbox Forms Renderer
+                  Formbox Renderer
                 </span>
               </a>
             </div>

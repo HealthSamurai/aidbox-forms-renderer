@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react";
-import type { HeaderProperties } from "@aidbox-forms/theme";
+import type { HeaderProperties } from "@formbox/theme";
 
 export function Header({ linkId, children }: HeaderProperties) {
   return <Container data-linkid={linkId}>{children}</Container>;

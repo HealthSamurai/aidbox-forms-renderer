@@ -1,4 +1,4 @@
-import type { GroupScaffoldProperties } from "@aidbox-forms/theme";
+import type { GroupScaffoldProperties } from "@formbox/theme";
 import { styled } from "@linaria/react";
 import { Children } from "react";
 import { Trash } from "../icons/trash.tsx";

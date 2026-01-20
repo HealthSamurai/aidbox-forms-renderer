@@ -1,4 +1,4 @@
-import type { DateInputProperties } from "@aidbox-forms/theme";
+import type { DateInputProperties } from "@formbox/theme";
 import { Input } from "antd";
 
 export function DateInput({
