@@ -152,6 +152,10 @@ export default function Landing() {
                 <h2 className="mt-4 font-display text-lg text-foreground">
                   Render your first Questionnaire
                 </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Theme prop is required. Start with Health Samurai or bring
+                  your own.
+                </p>
                 <CodeBlock
                   language="bash"
                   code="pnpm add @formbox/renderer @formbox/hs-theme"
@@ -456,16 +460,16 @@ export default function Landing() {
                 </div>
                 <div className="rounded-2xl border border-border/60 bg-card/70 p-6">
                   <h3 className="font-display text-base text-foreground">
-                    Install the theme contract
+                    Optional theme types
                   </h3>
                   <CodeBlock
                     language="bash"
-                    code="pnpm add @formbox/theme"
+                    code="pnpm add -D @formbox/theme"
                     className="mt-4"
                   />
                   <p className="mt-4 text-sm text-muted-foreground">
-                    The Theme type requires every component, so you always know
-                    what to render.
+                    Install the Theme contract only when you author a custom
+                    theme.
                   </p>
                 </div>
               </div>
@@ -700,7 +704,8 @@ export default function Landing() {
                 </h2>
                 <p className="mt-3 text-base text-muted-foreground">
                   Install the renderer, choose a theme, and wire it to your
-                  Questionnaire data in minutes.
+                  Questionnaire data in minutes. A Theme object is required at
+                  render time.
                 </p>
               </div>
               <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -718,7 +723,7 @@ export default function Landing() {
                         Install
                       </p>
                       <h3 className="mt-2 font-display text-base text-foreground">
-                        Install renderer + theme
+                        Install renderer + theme kit
                       </h3>
                       <CodeBlock
                         className="mt-3"

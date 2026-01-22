@@ -1,6 +1,11 @@
 # Formbox Renderer
 
-Minimal React renderer for HL7® FHIR® Questionnaires
+Minimal React renderer for HL7® FHIR® Questionnaires.
+
+Renderer does not ship with a default theme. Pass a Theme object from an
+official theme package or implement the `@formbox/theme` contract. Install
+`@formbox/theme` as a dev dependency only if you need the TypeScript types
+for a custom theme.
 
 ```tsx
 import {
@@ -8,7 +13,8 @@ import {
   type Questionnaire,
   type QuestionnaireResponse,
 } from "@formbox/renderer";
-import { theme, HSThemeVariables } from "@formbox/hs-theme";
+import { theme } from "@formbox/hs-theme";
+import "@formbox/hs-theme/style.css";
 import { useState } from "react";
 
 const questionnaire: Questionnaire = {
@@ -52,7 +58,8 @@ import { Provider, theme } from "@formbox/mantine-theme";
 </Provider>;
 ```
 
-Bring your own theme is supported; see the theme contract and component reference in [packages/theme/README.md](packages/theme/README.md).
+Bring your own theme is supported; see the theme contract and component
+reference in [packages/theme/README.md](packages/theme/README.md).
 
 ## Compatibility
 

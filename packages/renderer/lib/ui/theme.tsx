@@ -1,14 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
-import { theme } from "@formbox/hs-theme";
 import type { Theme } from "@formbox/theme";
 import { createContext, type PropsWithChildren, useContext } from "react";
+import { assertDefined } from "../utilities.ts";
 
-const ThemeContext = createContext<Theme>(theme);
+const ThemeContext = createContext<Theme | undefined>(undefined);
 
 export function ThemeProvider({
-  theme: providedTheme = theme,
+  theme: providedTheme,
   children,
-}: PropsWithChildren<{ theme?: Theme | undefined }>) {
+}: PropsWithChildren<{ theme: Theme }>) {
   return (
     <ThemeContext.Provider value={providedTheme}>
       {children}
@@ -17,5 +17,7 @@ export function ThemeProvider({
 }
 
 export function useTheme(): Theme {
-  return useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
+  assertDefined(theme, "ThemeProvider is required to render the form.");
+  return theme;
 }

@@ -216,6 +216,21 @@ export class AnswerValidator<
             }
           }
 
+          const maxDecimalPlaces = this.question.maxDecimalPlaces;
+          if (maxDecimalPlaces != undefined) {
+            const decimalPlaces = countDecimalPlaces(quantityValue.value);
+            if (decimalPlaces > maxDecimalPlaces) {
+              quantityIssues.push(
+                makeIssue(
+                  "invalid",
+                  formatString(strings.validation.answer.valueDecimalPlaces, {
+                    maxPlaces: maxDecimalPlaces,
+                  }),
+                ),
+              );
+            }
+          }
+
           issues = quantityIssues;
         }
         break;

@@ -1,0 +1,28 @@
+## Element
+
+```json
+{
+  "id": "QuestionnaireResponse.item.definition",
+  "path": "QuestionnaireResponse.item.definition",
+  "short": "ElementDefinition - details for the item",
+  "definition": "A reference to an [ElementDefinition](elementdefinition.html) that provides the details for the item.",
+  "comment": "The ElementDefinition must be in a [StructureDefinition](structuredefinition.html#), and must have a fragment identifier that identifies the specific data element by its id (Element.id). E.g. http://hl7.org/fhir/StructureDefinition/Observation#Observation.value[x].\n\nThere is no need for this element if the item pointed to by the linkId has a definition listed.",
+  "requirements": "A common pattern is to define a set of data elements, and then build multiple different questionnaires for different circumstances to gather the data. This element provides traceability to the common definition.",
+  "min": 0,
+  "max": "1",
+  "type": [
+    {
+      "code": "uri"
+    }
+  ],
+  "mustSupport": false,
+  "isModifier": false,
+  "isSummary": false,
+  "mapping": [
+    {
+      "identity": "rim",
+      "map": ".outboundRelationship[typeCode=DEFN].target[classCode=OBS, moodCode=DEFN].code"
+    }
+  ]
+}
+```

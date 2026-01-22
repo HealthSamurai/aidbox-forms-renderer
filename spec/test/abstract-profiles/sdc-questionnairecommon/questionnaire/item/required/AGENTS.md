@@ -1,0 +1,10 @@
+## Element
+
+```json
+{
+  "id": "Questionnaire.item.required",
+  "path": "Questionnaire.item.required",
+  "mustSupport": true,
+  "mapping": [{ "identity": "ihe-sdc", "map": "./cardinality/minimum!=0" }]
+}
+```

@@ -8,13 +8,6 @@ This file applies to `packages/renderer/**` and supplements the root `AGENTS.md`
 - Build: `pnpm --filter @formbox/renderer build`
 - Lint: `pnpm --filter @formbox/renderer lint`
 - Typecheck: `pnpm --filter @formbox/renderer typecheck`
-- Test: `pnpm --filter @formbox/renderer test`
-
-## Running a single test (Vitest)
-
-- Run one file: `pnpm --filter @formbox/renderer test -- lib/store/form/__tests__/validation.test.ts`
-- Run one test by name: `pnpm --filter @formbox/renderer test -- -t "filters options by search query"`
-- Run once (CI style): `pnpm --filter @formbox/renderer test -- --run`
 
 ## Renderer constraints (enforced by ESLint)
 
@@ -79,8 +72,6 @@ This file applies to `packages/renderer/**` and supplements the root `AGENTS.md`
 - do not call `makeObservable` with explicit annotations or `makeAutoObservable` in stores
 - rely on MobX decorators instead and call `makeObservable(this)` in constructor
 - prefer undefined over null to encode absence of value
-- when writing tests use describe/it functions extensively to group related checks and assertions with meaningful text
-- prefer small isolated tests with dedicated test data
 - prefer having functions over class methods if `this` is not used
 - exactOptionalPropertyTypes is enabled so when defining types prefer union with undefined over optional properties
 - avoid local const aliases that only shorten getters/properties; inline `this.foo` unless it is reused for a meaningful purpose

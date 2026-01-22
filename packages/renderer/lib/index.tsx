@@ -12,7 +12,7 @@ type RendererProperties = {
   onChange?: ((response: QuestionnaireResponse) => void) | undefined;
   onSubmit?: ((response: QuestionnaireResponse) => void) | undefined;
   terminologyServerUrl?: string | undefined;
-  theme?: Theme | undefined;
+  theme: Theme;
 };
 
 function Renderer({
