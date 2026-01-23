@@ -858,6 +858,7 @@ function Landing() {
                 /* @__PURE__ */ jsx("span", { className: "rounded-full border border-border/60 bg-muted/60 px-2 py-1 text-[0.65rem] font-semibold text-foreground", children: "FHIR R5" })
               ] }),
               /* @__PURE__ */ jsx("h2", { className: "mt-4 font-display text-lg text-foreground", children: "Render your first Questionnaire" }),
+              /* @__PURE__ */ jsx("p", { className: "mt-2 text-sm text-muted-foreground", children: "Theme prop is required. Start with Health Samurai or bring your own." }),
               /* @__PURE__ */ jsx(
                 CodeBlock,
                 {
@@ -1123,15 +1124,15 @@ function Landing() {
                   )
                 ] }),
                 /* @__PURE__ */ jsxs("div", { className: "rounded-2xl border border-border/60 bg-card/70 p-6", children: [
-                  /* @__PURE__ */ jsx("h3", { className: "font-display text-base text-foreground", children: "Install the theme contract" }),
+                  /* @__PURE__ */ jsx("h3", { className: "font-display text-base text-foreground", children: "Optional theme types" }),
                   /* @__PURE__ */ jsx(
                     CodeBlock,
                     {
                       className: "mt-4",
-                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @formbox/theme</span></span></code></pre>'
+                      html: '<pre class="shiki github-dark" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -D</span><span style="color:#9ECBFF"> @formbox/theme</span></span></code></pre>'
                     }
                   ),
-                  /* @__PURE__ */ jsx("p", { className: "mt-4 text-sm text-muted-foreground", children: "The Theme type requires every component, so you always know what to render." })
+                  /* @__PURE__ */ jsx("p", { className: "mt-4 text-sm text-muted-foreground", children: "Install the Theme contract only when you author a custom theme." })
                 ] })
               ] })
             ] })
@@ -1370,7 +1371,7 @@ function Landing() {
                 /* @__PURE__ */ jsxs("div", { className: "max-w-3xl", children: [
                   /* @__PURE__ */ jsx("span", { className: "text-xs uppercase tracking-[0.4em] text-muted-foreground", children: "Quickstart" }),
                   /* @__PURE__ */ jsx("h2", { className: "mt-3 font-display text-3xl text-foreground", children: "From install to first render in four moves" }),
-                  /* @__PURE__ */ jsx("p", { className: "mt-3 text-base text-muted-foreground", children: "Install the renderer, choose a theme, and wire it to your Questionnaire data in minutes." })
+                  /* @__PURE__ */ jsx("p", { className: "mt-3 text-base text-muted-foreground", children: "Install the renderer, choose a theme, and wire it to your Questionnaire data in minutes. A Theme object is required at render time." })
                 ] }),
                 /* @__PURE__ */ jsxs("div", { className: "mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]", children: [
                   /* @__PURE__ */ jsxs("div", { className: "relative space-y-6", children: [
@@ -1385,7 +1386,7 @@ function Landing() {
                       /* @__PURE__ */ jsx("div", { className: "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-background/70 text-[0.65rem] font-semibold text-foreground", children: "01" }),
                       /* @__PURE__ */ jsxs("div", { className: "flex-1 rounded-2xl border border-border/60 bg-card/70 p-5 shadow-lg shadow-black/20", children: [
                         /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.2em] text-muted-foreground", children: "Install" }),
-                        /* @__PURE__ */ jsx("h3", { className: "mt-2 font-display text-base text-foreground", children: "Install renderer + theme" }),
+                        /* @__PURE__ */ jsx("h3", { className: "mt-2 font-display text-base text-foreground", children: "Install renderer + theme kit" }),
                         /* @__PURE__ */ jsx(
                           CodeBlock,
                           {
@@ -1932,6 +1933,11 @@ function _createMdxContent$7(props) {
                 color: "#9ECBFF"
               },
               children: " @formbox/renderer"
+            }), jsx(_components.span, {
+              style: {
+                color: "#9ECBFF"
+              },
+              children: " @formbox/hs-theme"
             })]
           })
         })
@@ -1975,6 +1981,52 @@ function _createMdxContent$7(props) {
               },
               children: ";"
             })]
+          }), "\n", jsxs(_components.span, {
+            className: "line",
+            children: [jsx(_components.span, {
+              style: {
+                color: "#F97583"
+              },
+              children: "import"
+            }), jsx(_components.span, {
+              style: {
+                color: "#E1E4E8"
+              },
+              children: " { theme } "
+            }), jsx(_components.span, {
+              style: {
+                color: "#F97583"
+              },
+              children: "from"
+            }), jsx(_components.span, {
+              style: {
+                color: "#9ECBFF"
+              },
+              children: ' "@formbox/hs-theme"'
+            }), jsx(_components.span, {
+              style: {
+                color: "#E1E4E8"
+              },
+              children: ";"
+            })]
+          }), "\n", jsxs(_components.span, {
+            className: "line",
+            children: [jsx(_components.span, {
+              style: {
+                color: "#F97583"
+              },
+              children: "import"
+            }), jsx(_components.span, {
+              style: {
+                color: "#9ECBFF"
+              },
+              children: ' "@formbox/hs-theme/style.css"'
+            }), jsx(_components.span, {
+              style: {
+                color: "#E1E4E8"
+              },
+              children: ";"
+            })]
           }), "\n", jsx(_components.span, {
             className: "line"
           }), "\n", jsxs(_components.span, {
@@ -2003,7 +2055,22 @@ function _createMdxContent$7(props) {
               style: {
                 color: "#E1E4E8"
               },
-              children: "{questionnaire} />;"
+              children: "{questionnaire} "
+            }), jsx(_components.span, {
+              style: {
+                color: "#B392F0"
+              },
+              children: "theme"
+            }), jsx(_components.span, {
+              style: {
+                color: "#F97583"
+              },
+              children: "="
+            }), jsx(_components.span, {
+              style: {
+                color: "#E1E4E8"
+              },
+              children: "{theme} />;"
             })]
           })]
         })
