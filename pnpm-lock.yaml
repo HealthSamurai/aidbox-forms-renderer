@@ -359,9 +359,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.8)
-      '@vitejs/plugin-react':
-        specifier: ^5.1.0
-        version: 5.1.2(vite@7.3.1(@types/node@25.0.7)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))
       fhir:
         specifier: ^4.12.0
         version: 4.12.0
@@ -377,12 +374,6 @@ importers:
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
-      vite:
-        specifier: ^7.3.1
-        version: 7.3.1(@types/node@25.0.7)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)
-      vite-plugin-dts:
-        specifier: ^4.5.4
-        version: 4.5.4(@types/node@25.0.7)(rollup@4.55.1)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.7)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))
       vitest:
         specifier: ^4.0.17
         version: 4.0.17(@types/node@25.0.7)(happy-dom@20.1.0)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(yaml@2.8.2)
