@@ -7,6 +7,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "pnpm -r run --if-present build",
+    "release": "pnpm -r run --if-present build && pnpm changeset publish",
     "dev": "pnpm --filter @formbox/renderer dev",
     "lint": "pnpm -r run --if-present lint",
     "typecheck": "pnpm -r run --if-present typecheck",
