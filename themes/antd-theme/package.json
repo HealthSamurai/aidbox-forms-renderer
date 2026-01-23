@@ -1,6 +1,6 @@
 {
   "name": "@formbox/antd-theme",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Ant Design theme for Formbox Renderer",
   "private": false,
   "type": "module",

@@ -1,5 +1,11 @@
 # @formbox/renderer
 
+## 0.0.5
+
+### Patch Changes
+
+- [`aa25662`](https://github.com/HealthSamurai/formbox-renderer/commit/aa25662d6d874d491f659036b5099e2e931f6718) Thanks [@olimsaidov](https://github.com/olimsaidov)! - Patch release.
+
 ## 0.0.4
 
 ### Patch Changes
