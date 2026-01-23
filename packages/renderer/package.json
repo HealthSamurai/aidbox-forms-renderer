@@ -20,7 +20,6 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "pnpm run build",
     "dev": "vite",
     "build": "tsc -b ./tsconfig.lib.json && vite build",
     "lint": "eslint .",

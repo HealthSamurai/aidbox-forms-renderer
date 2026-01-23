@@ -1,20 +1,26 @@
-name: Publish to npm
+name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
+  contents: write
+  pull-requests: write
   id-token: write
-  contents: read
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -34,7 +40,11 @@ jobs:
       - name: Run Lint
         run: pnpm -r run lint
 
-      - name: Publish to npm
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: pnpm -r publish --filter @formbox/renderer --filter @formbox/theme --filter @formbox/hs-theme --filter @formbox/nshuk-theme --access public --no-git-checks
+        with:
+          publish: pnpm -r run build && pnpm changeset publish
