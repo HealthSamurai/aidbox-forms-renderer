@@ -13,7 +13,6 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@formbox/af-theme": "workspace:*",
     "@formbox/antd-theme": "workspace:*",
     "@formbox/hs-theme": "workspace:*",
     "@formbox/mantine-theme": "workspace:*",
