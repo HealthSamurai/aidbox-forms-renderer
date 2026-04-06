@@ -229,7 +229,9 @@ export const EXT = {
   CQF_EXPRESSION:                   "http://hl7.org/fhir/StructureDefinition/cqf-expression",
   CQF_CALCULATED_VALUE:             "http://hl7.org/fhir/StructureDefinition/cqf-calculatedValue",
   TARGET_CONSTRAINT:                "http://hl7.org/fhir/StructureDefinition/targetConstraint",
-  PREFERRED_TERMINOLOGY_SERVER:     "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-preferredTerminologyServer",
+  PREFERRED_TERMINOLOGY_SERVER:     "http://hl7.org/fhir/StructureDefinition/preferredTerminologyServer",
+  DEPRECATED_SDC_PREFERRED_TERMINOLOGY_SERVER:
+                                  "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-preferredTerminologyServer",
   TRANSLATION:                      "http://hl7.org/fhir/StructureDefinition/translation",
 } as const;
 

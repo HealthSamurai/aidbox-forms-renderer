@@ -53,6 +53,31 @@ describe("terminologyServer", () => {
       "https://terminology.example/questionnaire",
     ]);
   });
+
+  it("also accepts the deprecated SDC terminologyServer extension", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      extension: [
+        {
+          url: EXT.DEPRECATED_SDC_PREFERRED_TERMINOLOGY_SERVER,
+          valueUrl: "https://terminology.example/deprecated",
+        },
+      ],
+      item: [
+        {
+          linkId: "root-question",
+          type: "coding",
+        },
+      ],
+    };
+
+    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const node = form.scope.lookupNode("root-question");
+    expect(node?.preferredTerminologyServers).toEqual([
+      "https://terminology.example/deprecated",
+    ]);
+  });
 });
 
 describe("ValueSetExpander", () => {

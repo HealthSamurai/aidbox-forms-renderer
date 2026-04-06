@@ -296,11 +296,18 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
 
   @computed
   get preferredTerminologyServers(): readonly string[] {
-    const ownPreferences = extractExtensionsValues(
-      "url",
-      this.template,
-      EXT.PREFERRED_TERMINOLOGY_SERVER,
-    );
+    const ownPreferences = dedupe([
+      ...extractExtensionsValues(
+        "url",
+        this.template,
+        EXT.PREFERRED_TERMINOLOGY_SERVER,
+      ),
+      ...extractExtensionsValues(
+        "url",
+        this.template,
+        EXT.DEPRECATED_SDC_PREFERRED_TERMINOLOGY_SERVER,
+      ),
+    ]);
 
     const inheritedPreferences =
       this.parentStore?.preferredTerminologyServers ??

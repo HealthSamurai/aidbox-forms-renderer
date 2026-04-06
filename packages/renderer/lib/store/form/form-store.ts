@@ -56,6 +56,7 @@ import { BaseExpressionRegistry } from "../expression/registry/base-expression-r
 import {
   buildId,
   clamp,
+  dedupe,
   EXT,
   extractCustomExtensions,
   extractExtensionsValues,
@@ -301,11 +302,18 @@ export class FormStore<V extends FhirVersion = FhirVersion>
 
   @computed
   get preferredTerminologyServers(): readonly string[] {
-    return extractExtensionsValues(
-      "url",
-      this.questionnaire,
-      EXT.PREFERRED_TERMINOLOGY_SERVER,
-    );
+    return dedupe([
+      ...extractExtensionsValues(
+        "url",
+        this.questionnaire,
+        EXT.PREFERRED_TERMINOLOGY_SERVER,
+      ),
+      ...extractExtensionsValues(
+        "url",
+        this.questionnaire,
+        EXT.DEPRECATED_SDC_PREFERRED_TERMINOLOGY_SERVER,
+      ),
+    ]);
   }
 
   @computed

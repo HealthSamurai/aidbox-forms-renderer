@@ -41,6 +41,31 @@ describe("terminologyServer", () => {
     ]);
   });
 
+  it("also accepts the deprecated SDC terminologyServer extension on items", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "direct",
+          type: "coding",
+          extension: [
+            {
+              url: EXT.DEPRECATED_SDC_PREFERRED_TERMINOLOGY_SERVER,
+              valueUrl: "https://terminology.example/deprecated-direct",
+            },
+          ],
+        },
+      ],
+    };
+
+    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const node = form.scope.lookupNode("direct");
+    expect(node?.preferredTerminologyServers).toEqual([
+      "https://terminology.example/deprecated-direct",
+    ]);
+  });
+
   it("orders preferred servers by ancestry while deduplicating entries", () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",
