@@ -7,6 +7,7 @@ import {
 } from "mobx";
 import {
   ExpressionEnvironment,
+  HasNodePath,
   IActualNode,
   IExpressionEnvironmentProvider,
   IForm,
@@ -47,10 +48,11 @@ export abstract class AbstractActualNodeStore
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     scope: IScope,
     token: string,
   ) {
-    super(form, template, parentStore);
+    super(form, template, parentStore, pathParent);
 
     makeObservable(this);
 

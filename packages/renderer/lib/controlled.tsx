@@ -15,8 +15,10 @@ import type { LaunchContext, RenderMode } from "./types.ts";
 import { Form } from "./component/form/form.tsx";
 import { FormStore } from "./store/form/form-store.ts";
 import { ThemeProvider } from "./ui/theme.tsx";
+import { buildId, randomToken } from "./utilities.ts";
 
 export type RendererProperties<V extends FhirVersion> = {
+  token?: string | undefined;
   questionnaire: QuestionnaireOf<V>;
   defaultQuestionnaireResponse?: QuestionnaireResponseOf<V> | undefined;
   language?: string | undefined;
@@ -32,6 +34,7 @@ export type RendererProperties<V extends FhirVersion> = {
 };
 
 function Renderer<V extends FhirVersion>({
+  token,
   questionnaire,
   defaultQuestionnaireResponse,
   language,
@@ -45,6 +48,9 @@ function Renderer<V extends FhirVersion>({
   fhirVersion,
   theme,
 }: RendererProperties<V>) {
+  const defaultTokenReference = useRef<string | undefined>(undefined);
+  const storeToken =
+    token ?? (defaultTokenReference.current ??= buildId("form", randomToken()));
   const onChangeReference = useRef(onChange);
   // These refs are intentionally excluded from store recreation triggers.
   const stringsReference = useRef(strings);
@@ -71,6 +77,7 @@ function Renderer<V extends FhirVersion>({
       new FormStore(
         strings,
         fhirVersion,
+        storeToken,
         questionnaire,
         defaultQuestionnaireResponse,
         terminologyServerUrl,
@@ -91,6 +98,7 @@ function Renderer<V extends FhirVersion>({
       new FormStore(
         stringsReference.current,
         fhirVersion,
+        storeToken,
         questionnaire,
         responseReference.current,
         terminologyServerUrl,
@@ -102,6 +110,7 @@ function Renderer<V extends FhirVersion>({
     );
   }, [
     fhirVersion,
+    storeToken,
     questionnaire,
     terminologyServerUrl,
     theme.customExtensions,

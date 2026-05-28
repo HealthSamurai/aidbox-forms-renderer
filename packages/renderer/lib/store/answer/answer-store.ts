@@ -17,6 +17,7 @@ import type {
   QuestionnaireResponseItemAnswer,
   QuestionnaireResponseItem,
 } from "@formbox/fhir";
+import type { NodePath } from "@formbox/theme";
 import {
   ANSWER_TYPE_TO_DATA_TYPE,
   areValuesEqual,
@@ -26,6 +27,7 @@ import {
   extractExtensionValue,
   getIssueMessage,
   shouldCreateStore,
+  withLastPathIndex,
 } from "../../utilities.ts";
 import { AnswerValidator } from "./answer-validator.ts";
 import { QuantityAnswer } from "./view-model/quantity-answer.ts";
@@ -36,6 +38,9 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
 
   readonly question: IQuestionNode<T>;
   private readonly validator: AnswerValidator<T>;
+
+  @observable
+  private pathIndex = 0;
 
   @action
   setValueByUser(value?: DataTypeToType<AnswerTypeToDataType<T>>): void {
@@ -66,6 +71,7 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
 
   constructor(
     question: IQuestionNode<T>,
+    pathIndex: number,
     scope: IScope,
     token: AnswerToken,
     initial: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
@@ -75,6 +81,7 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
     makeObservable(this);
 
     this.token = token;
+    this.pathIndex = pathIndex;
     this.scope = scope.extend(question.repeats);
     this.question = question;
 
@@ -85,8 +92,8 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
           question.form.createNodeStore(
             item,
             question,
+            this,
             this.scope,
-            this.token,
             responseItems,
           ),
         ) ?? [];
@@ -98,6 +105,18 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
       this as IAnswer<T>,
       this.question as IQuestionNode<T>,
     );
+  }
+
+  @computed({ keepAlive: true })
+  get path(): NodePath {
+    return this.question.repeats
+      ? withLastPathIndex(this.question.path, this.pathIndex)
+      : this.question.path;
+  }
+
+  @action
+  setPathIndex(index: number): void {
+    this.pathIndex = index;
   }
 
   @computed.struct
@@ -198,7 +217,10 @@ export class AnswerStore<T extends AnswerType> implements IAnswer<T> {
       };
     }
 
-    const weight = this.resolvedWeight;
+    const weight =
+      kind === "expression" && this.question.expressionRegistry.answer
+        ? this.explicitWeight
+        : this.resolvedWeight;
     if (weight == undefined) {
       return;
     }

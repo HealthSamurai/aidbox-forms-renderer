@@ -1,8 +1,20 @@
-import { action, computed, observable, override } from "mobx";
 import {
+  action,
+  comparer,
+  computed,
+  observable,
+  override,
+  reaction,
+  type IReactionDisposer,
+} from "mobx";
+import {
+  ExpressionEnvironment,
   GROUP_ITEM_CONTROLS,
   GroupListRendererProperties,
   type GroupItemControl,
+  HasNodePath,
+  IExpressionEnvironmentProvider,
+  IExpressionSlot,
   IForm,
   IGroupNode,
   IGroupList,
@@ -22,19 +34,24 @@ import { GroupListValidator } from "./group-list-validator.ts";
 import {
   buildId,
   EXT,
+  extractExtensionValue,
+  extractExtensionValueElement,
   findExtension,
   getIssueMessage,
   getItemControlCode,
   makeIssue,
+  normalizeExpressionValues,
 } from "../../utilities.ts";
 import { isQuestionNode } from "../question/question-store.ts";
 import { GroupStore } from "./group-store.ts";
 import { GridStore } from "./view-model/grid-store.ts";
+import { BaseExpressionRegistry } from "../expression/registry/base-expression-registry.ts";
+import { ExpressionSlot } from "../expression/slot/expression-slot.ts";
 import type { ComponentType } from "react";
 
 export class GroupListStore
   extends AbstractPresentableNode
-  implements IGroupList
+  implements IGroupList, IExpressionEnvironmentProvider
 {
   readonly scope: IScope;
   readonly token: string;
@@ -56,26 +73,56 @@ export class GroupListStore
 
   private readonly validator: GroupListValidator;
 
+  private readonly expressionRegistry: BaseExpressionRegistry;
+  private readonly minOccursSlot: IExpressionSlot | undefined;
+  private readonly maxOccursSlot: IExpressionSlot | undefined;
+  private readonly disposers: IReactionDisposer[] = [];
+
   private lastIndex = 0;
 
   constructor(
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     scope: IScope,
     token: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ) {
-    super(form, template, parentStore);
+    super(form, template, parentStore, pathParent);
 
     this.scope = scope;
     this.token = token;
 
     this.validator = new GroupListValidator(this);
+    this.expressionRegistry = new BaseExpressionRegistry(
+      this.form.coordinator,
+      this.scope,
+      this,
+      this.template,
+    );
+    this.minOccursSlot = this.createOccurrenceSlot(
+      EXT.MIN_OCCURS,
+      "min-occurs",
+    );
+    this.maxOccursSlot = this.createOccurrenceSlot(
+      EXT.MAX_OCCURS,
+      "max-occurs",
+    );
 
     responseItems?.forEach((responseItem) => this.pushNode(responseItem));
-    this.ensureMinOccurs();
+    this.setupOccurrenceReaction();
     this.enforceControlRules();
+  }
+
+  @computed
+  get expressionEnvironment(): ExpressionEnvironment {
+    return this.scope.mergeEnvironment({
+      questionnaire: this.form.questionnaire,
+      resource: this.form.expressionResponse,
+      qitem: this.template,
+      context: this.expressionItems.at(0),
+    });
   }
 
   @computed
@@ -90,6 +137,11 @@ export class GroupListStore
 
   @computed
   get minOccurs() {
+    const expressionValue = this.getOccurrenceSlotValue(this.minOccursSlot);
+    if (expressionValue !== undefined) {
+      return expressionValue;
+    }
+
     return (
       findExtension(this.template, EXT.MIN_OCCURS)?.valueInteger ??
       (this.template.required ? 1 : 0)
@@ -98,6 +150,11 @@ export class GroupListStore
 
   @computed
   get maxOccurs() {
+    const expressionValue = this.getOccurrenceSlotValue(this.maxOccursSlot);
+    if (expressionValue !== undefined) {
+      return expressionValue;
+    }
+
     return (
       findExtension(this.template, EXT.MAX_OCCURS)?.valueInteger ??
       Number.POSITIVE_INFINITY
@@ -155,6 +212,7 @@ export class GroupListStore
       if (index !== -1) {
         const [removed] = this.nodes.splice(index, 1);
         removed?.dispose();
+        this.reindexNodePaths();
       }
     }
   }
@@ -165,6 +223,8 @@ export class GroupListStore
       this.form,
       this.template,
       this,
+      this,
+      this.nodes.length,
       this.scope.extend(true),
       buildId(this.token, this.lastIndex++),
       responseItem,
@@ -174,9 +234,65 @@ export class GroupListStore
 
   @action
   private ensureMinOccurs() {
-    while (this.nodes.length < this.minOccurs && this.canAdd) {
+    const target = Math.min(this.minOccurs, this.maxOccurs);
+    while (this.nodes.length < target && this.canAdd) {
       this.pushNode();
     }
+  }
+
+  private setupOccurrenceReaction() {
+    this.disposers.push(
+      reaction(
+        () => [this.canAdd, this.minOccurs, this.maxOccurs, this.nodes.length],
+        () => this.ensureMinOccurs(),
+        {
+          name: `${this.token}:ensure-group-list-min-occurs`,
+          equals: comparer.structural,
+          fireImmediately: true,
+        },
+      ),
+    );
+  }
+
+  private createOccurrenceSlot(
+    extensionUrl: string,
+    kind: "min-occurs" | "max-occurs",
+  ): IExpressionSlot | undefined {
+    const expression = extractExtensionValue(
+      "Expression",
+      extractExtensionValueElement("integer", this.template, extensionUrl),
+      EXT.CQF_EXPRESSION,
+    );
+
+    return expression
+      ? new ExpressionSlot(this.form.coordinator, this, kind, expression)
+      : undefined;
+  }
+
+  private getOccurrenceSlotValue(
+    slot: IExpressionSlot | undefined,
+  ): number | undefined {
+    if (!slot) {
+      return undefined;
+    }
+
+    const values = normalizeExpressionValues("integer", slot.value);
+    const candidate = values[0];
+    if (
+      candidate != undefined &&
+      Number.isFinite(candidate) &&
+      candidate >= 0
+    ) {
+      return Math.floor(candidate);
+    }
+
+    return undefined;
+  }
+
+  private reindexNodePaths(): void {
+    this.nodes.forEach((node, index) => {
+      (node as GroupStore).setPathIndex(index);
+    });
   }
 
   private enforceControlRules() {
@@ -266,19 +382,33 @@ export class GroupListStore
   }
 
   override get hasErrors(): boolean {
-    return this.nodes.some((node) => node.hasErrors);
+    return this.issues.length > 0 || this.nodes.some((node) => node.hasErrors);
   }
 
   get issues(): OperationOutcomeIssue[] {
-    return this.validator.issues.filter(
-      (issue) => getIssueMessage(issue) !== undefined,
-    );
+    const issues: Array<OperationOutcomeIssue | undefined> = [
+      ...this.expressionRegistry.registrationIssues,
+      ...this.expressionRegistry.slotsIssues,
+      this.minOccursSlot?.error,
+      this.maxOccursSlot?.error,
+    ];
+
+    if (this.form.isSubmitAttempted) {
+      issues.push(...this.validator.issues);
+    }
+
+    return issues
+      .filter((issue): issue is OperationOutcomeIssue => issue !== undefined)
+      .filter((issue) => getIssueMessage(issue) !== undefined);
   }
 
   override clearDirty(): void {}
 
   @action
   dispose(): void {
+    const disposers = this.disposers.splice(0);
+    disposers.forEach((dispose) => dispose());
+
     const nodes = [...this.nodes];
     this.nodes.clear();
     nodes.forEach((node) => node.dispose());

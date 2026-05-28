@@ -1,4 +1,5 @@
 import {
+  HasNodePath,
   IPresentableNode,
   IDisplayNode,
   IForm,
@@ -25,10 +26,11 @@ export class DisplayStore
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     scope: IScope,
     token: string,
   ) {
-    super(form, template, parentStore, scope, token);
+    super(form, template, parentStore, pathParent, scope, token);
 
     this.expressionRegistry = new NodeExpressionRegistry(
       this.form.coordinator,

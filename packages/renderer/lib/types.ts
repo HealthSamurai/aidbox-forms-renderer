@@ -52,6 +52,7 @@ import type {
   CustomExtensionDefinitions,
   FormPagination,
   Hyperlink,
+  NodePath,
   Strings,
 } from "@formbox/theme";
 import type { RendererRegistry } from "./renderer-registry.ts";
@@ -302,6 +303,7 @@ export type ValueDisplayComponent<T extends AnswerType> = ComponentType<
 
 export type ValueControlProperties<T extends AnswerType> = {
   answer: IAnswer<T>;
+  path?: NodePath | undefined;
   id: string;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
@@ -503,7 +505,11 @@ export interface IssueSource {
   readonly issues: ReadonlyArray<OperationOutcomeIssue>;
 }
 
-export interface IPresentableNode {
+export interface HasNodePath {
+  readonly path: NodePath;
+}
+
+export interface IPresentableNode extends HasNodePath {
   readonly template: QuestionnaireItem;
   readonly type: ItemType;
   readonly customExtensions: Readonly<Record<string, unknown>>;
@@ -643,7 +649,9 @@ export interface ValueBounds<T extends AnswerType = AnswerType> {
   readonly max: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
 }
 
-export interface IAnswer<T extends AnswerType = AnswerType> {
+export interface IAnswer<
+  T extends AnswerType = AnswerType,
+> extends HasNodePath {
   readonly token: AnswerToken;
   readonly question: IQuestionNode<T>;
   readonly value: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
@@ -688,6 +696,7 @@ export interface IOptionSelection<T extends AnswerType = AnswerType> {
   readonly filteredOptions: ReadonlyArray<
     AnswerOption<T> | AnswerOption<"string">
   >;
+  readonly searchQuery: string;
   readonly selectedOptions: ReadonlyArray<SelectedAnswerOption<T>>;
   readonly specifyOtherToken: OptionToken;
   readonly canAddSelection: boolean;
@@ -698,7 +707,7 @@ export interface IOptionSelection<T extends AnswerType = AnswerType> {
   deselectOption(token: OptionToken): void;
   selectOptionForAnswer(
     answer: IAnswer<T>,
-    token: OptionToken | undefined,
+    token?: OptionToken | undefined,
   ): void;
   cancelCustomOptionForm(): void;
   submitCustomOptionForm(): void;
@@ -791,11 +800,33 @@ export interface IQuestionNode<
   addAnswer(
     initial?: DataTypeToType<AnswerTypeToDataType<T>> | undefined,
   ): IAnswer | undefined;
+  setAnswersBySystem(
+    values: ReadonlyArray<DataTypeToType<AnswerTypeToDataType<T>> | undefined>,
+  ): void;
   removeAnswer(answer: IAnswer<T>): void;
   markUserOverridden(): void;
 }
 
 export type INode = IDisplayNode | IGroupList | IGroupNode | IQuestionNode;
+
+export interface NodeVisitor {
+  readonly node?:
+    | ((node: IPresentableNode, path: NodePath) => void)
+    | undefined;
+  readonly groupList?: ((node: IGroupList, path: NodePath) => void) | undefined;
+  readonly group?: ((node: IGroupNode, path: NodePath) => void) | undefined;
+  readonly question?:
+    | ((node: IQuestionNode, path: NodePath) => void)
+    | undefined;
+  readonly answer?:
+    | ((
+        question: IQuestionNode,
+        answer: IAnswer,
+        path: NodePath,
+        index: number,
+      ) => void)
+    | undefined;
+}
 
 export interface INodeValidator {
   readonly issues: Array<OperationOutcomeIssue>;
@@ -855,12 +886,14 @@ export interface IForm extends IssueSource {
   readonly isSubmitAttempted: boolean;
   readonly issues: Array<OperationOutcomeIssue>;
   validateAll(): boolean;
+  walkNodes(visitor: NodeVisitor): void;
+  findNodeByPath(path: NodePath): IPresentableNode | undefined;
 
   createNodeStore(
     item: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     parentScope: IScope,
-    parentToken: string,
     responseItems: QuestionnaireResponseItem[] | undefined,
   ): IPresentableNode;
   setLanguage(language: string | undefined): void;

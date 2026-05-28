@@ -17,7 +17,11 @@ import {
   ValueKeyFor,
 } from "./types.ts";
 import { Hashery } from "hashery";
-import type { CustomExtensionDefinitions, Strings } from "@formbox/theme";
+import type {
+  CustomExtensionDefinitions,
+  NodePath,
+  Strings,
+} from "@formbox/theme";
 import type {
   Attachment,
   Coding,
@@ -115,6 +119,15 @@ export function concatIds(
       .filter((value) => value.length > 0)
       .join(" ") || undefined
   );
+}
+
+export function withNodePathSegment(path: NodePath, linkId: string): NodePath {
+  return [...path, { linkId }];
+}
+
+export function withLastPathIndex(path: NodePath, index: number): NodePath {
+  const last = path.at(-1);
+  return last ? [...path.slice(0, -1), { ...last, index }] : path;
 }
 
 export function dedupe<T>(values: readonly T[]): T[] {
@@ -1664,10 +1677,7 @@ export function evaluateEnableWhenCondition(
     }
 
     case "=": {
-      const expected = getAnswer(
-        ANSWER_TYPE_TO_DATA_TYPE[question.type],
-        condition,
-      );
+      const expected = getEnableWhenAnswer(question, condition);
       if (expected === undefined) {
         return false;
       }
@@ -1685,10 +1695,7 @@ export function evaluateEnableWhenCondition(
     }
 
     case "!=": {
-      const expected = getAnswer(
-        ANSWER_TYPE_TO_DATA_TYPE[question.type],
-        condition,
-      );
+      const expected = getEnableWhenAnswer(question, condition);
       if (expected === undefined) {
         return false;
       }
@@ -1711,10 +1718,7 @@ export function evaluateEnableWhenCondition(
     case ">=":
     case "<":
     case "<=": {
-      const expected = getAnswer(
-        ANSWER_TYPE_TO_DATA_TYPE[question.type],
-        condition,
-      );
+      const expected = getEnableWhenAnswer(question, condition);
       if (expected === undefined) return false;
 
       return (() => {
@@ -1767,6 +1771,15 @@ export function evaluateEnableWhenCondition(
   }
 }
 
+function getEnableWhenAnswer(
+  question: IQuestionNode,
+  condition: QuestionnaireItemEnableWhen,
+): unknown {
+  return question.type === "url"
+    ? condition.answerString
+    : getAnswer(ANSWER_TYPE_TO_DATA_TYPE[question.type], condition);
+}
+
 export function valuesEqual(
   type: DataType,
   actual: unknown,
@@ -1777,6 +1790,7 @@ export function valuesEqual(
     case "integer":
     case "string":
     case "url":
+    case "uri":
     case "boolean": {
       return actual === expected;
     }
@@ -1811,7 +1825,6 @@ export function valuesEqual(
     case "oid":
     case "positiveInt":
     case "unsignedInt":
-    case "uri":
     case "uuid":
     case "Address":
     case "Age":
@@ -1871,6 +1884,7 @@ export function compareValues(
       return compareTimeValues(actual, expected);
     }
     case "string":
+    case "uri":
     case "url": {
       return compareStringValues(actual, expected);
     }
@@ -1888,7 +1902,6 @@ export function compareValues(
     case "oid":
     case "positiveInt":
     case "unsignedInt":
-    case "uri":
     case "uuid":
     case "Address":
     case "Age":

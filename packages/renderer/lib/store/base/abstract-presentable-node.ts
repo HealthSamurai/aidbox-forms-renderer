@@ -1,6 +1,12 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { IForm, INode, IPresentableNode, IScope } from "../../types.ts";
-import type { Hyperlink } from "@formbox/theme";
+import {
+  HasNodePath,
+  IForm,
+  INode,
+  IPresentableNode,
+  IScope,
+} from "../../types.ts";
+import type { Hyperlink, NodePath } from "@formbox/theme";
 import type {
   Attachment,
   OperationOutcomeIssue,
@@ -17,12 +23,14 @@ import {
   findExtension,
   findExtensions,
   getTranslated,
+  withNodePathSegment,
 } from "../../utilities.ts";
 
 export abstract class AbstractPresentableNode implements IPresentableNode {
   readonly form: IForm;
   readonly template: QuestionnaireItem;
   readonly parentStore: INode | undefined;
+  private readonly pathParent: HasNodePath | undefined;
   @observable
   private expanded: boolean | undefined = undefined;
 
@@ -30,12 +38,19 @@ export abstract class AbstractPresentableNode implements IPresentableNode {
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
   ) {
     this.form = form;
     this.template = template;
     this.parentStore = parentStore;
+    this.pathParent = pathParent;
 
     makeObservable(this);
+  }
+
+  @computed({ keepAlive: true })
+  get path(): NodePath {
+    return withNodePathSegment(this.pathParent?.path ?? [], this.linkId);
   }
 
   @computed({ keepAlive: true })

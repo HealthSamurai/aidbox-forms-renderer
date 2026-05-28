@@ -20,7 +20,6 @@ import {
   areValuesEqual,
   asOperationOutcomeIssue,
   booleanify,
-  buildId,
   EXT,
   extractExtensionValue,
   findExtension,
@@ -161,7 +160,7 @@ export class AnswerOptionStore<
     if (this.question.type === "boolean" && this.answerOptions.length === 0) {
       return [
         {
-          token: buildId(this.question.token, "true"),
+          token: tokenify("boolean", true),
           value: true,
           disabled: false,
           exclusive: false,
@@ -169,7 +168,7 @@ export class AnswerOptionStore<
           prefix: undefined,
         },
         {
-          token: buildId(this.question.token, "false"),
+          token: tokenify("boolean", false),
           value: false,
           disabled: false,
           exclusive: false,
@@ -180,7 +179,7 @@ export class AnswerOptionStore<
           ? []
           : [
               {
-                token: buildId(this.question.token, "null"),
+                token: "boolean-unanswered",
                 value: undefined,
                 disabled: false,
                 exclusive: false,

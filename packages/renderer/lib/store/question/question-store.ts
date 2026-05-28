@@ -14,6 +14,7 @@ import {
   type AnswerTypeToDataType,
   ChoiceOrientation,
   DataTypeToType,
+  HasNodePath,
   IAnswer,
   IAnswerOptions,
   IForm,
@@ -145,11 +146,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     scope: IScope,
     token: string,
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
-    super(form, template, parentStore, scope, token);
+    super(form, template, parentStore, pathParent, scope, token);
     this.signatureState = responseItem
       ? extractExtensionsValues(
           "Signature",
@@ -347,6 +349,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     const [removed] = this.answers.splice(index, 1);
     removed?.dispose();
     this.ensureBaselineAnswers();
+    this.reindexAnswerPaths();
     this.markDirty();
     this.markUserOverridden();
   }
@@ -630,11 +633,22 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   private syncRepeatingAnswers(
     values: Array<DataTypeToType<AnswerTypeToDataType<T>> | undefined>,
   ) {
-    while (this.answers.length < values.length && this.canAdd) {
+    this.setAnswersBySystem(values);
+  }
+
+  @action
+  setAnswersBySystem(
+    values: ReadonlyArray<DataTypeToType<AnswerTypeToDataType<T>> | undefined>,
+  ): void {
+    const target = Math.min(values.length, this.maxOccurs);
+    while (this.answers.length < target) {
       this.pushAnswer();
     }
 
-    while (this.answers.length > values.length && this.canRemove) {
+    while (
+      this.answers.length > target &&
+      this.answers.length > this.minOccurs
+    ) {
       const removed = this.answers.pop();
       removed?.dispose();
     }
@@ -642,8 +656,9 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     values.forEach((entry, index) => {
       const answer = this.answers[index];
       if (!answer) return;
-      answer.setValueBySystem(entry ?? undefined);
+      answer.setValueBySystem(entry);
     });
+    this.reindexAnswerPaths();
   }
 
   private answersMatch(
@@ -675,6 +690,7 @@ export class QuestionStore<T extends AnswerType = AnswerType>
   ) {
     const answer = new AnswerStore(
       this,
+      this.answers.length,
       this.scope,
       buildId(this.token, this.lastIndex++),
       initial,
@@ -683,6 +699,12 @@ export class QuestionStore<T extends AnswerType = AnswerType>
     );
     this.answers.push(answer);
     return answer;
+  }
+
+  private reindexAnswerPaths(): void {
+    this.answers.forEach((answer, index) => {
+      (answer as AnswerStore<T>).setPathIndex(index);
+    });
   }
 
   @action

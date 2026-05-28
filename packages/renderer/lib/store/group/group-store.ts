@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable, override } from "mobx";
 import {
   AnswerType,
+  HasNodePath,
   IPresentableNode,
   IForm,
   INode,
@@ -18,6 +19,7 @@ import type {
   QuestionnaireResponseItem,
   Signature,
 } from "@formbox/fhir";
+import type { NodePath } from "@formbox/theme";
 
 import { AbstractActualNodeStore } from "../base/abstract-actual-node-store.ts";
 import {
@@ -27,6 +29,7 @@ import {
   getItemControlCode,
   makeIssue,
   shouldCreateStore,
+  withLastPathIndex,
 } from "../../utilities.ts";
 import { GroupValidator } from "./group-validator.ts";
 import { NodeExpressionRegistry } from "../expression/registry/node-expression-registry.ts";
@@ -46,6 +49,9 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
   @observable.ref
   private signatureState: Signature | undefined;
+
+  @observable
+  private pathIndex = 0;
 
   @computed
   get visibleNodes(): IPresentableNode[] {
@@ -80,11 +86,14 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
     form: IForm,
     template: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
+    pathIndex: number,
     scope: IScope,
     token: string,
     responseItem: QuestionnaireResponseItem | undefined,
   ) {
-    super(form, template, parentStore, scope, token);
+    super(form, template, parentStore, pathParent, scope, token);
+    this.pathIndex = pathIndex;
     this.signatureState = responseItem
       ? extractExtensionsValues(
           "Signature",
@@ -109,8 +118,8 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
           this.form.createNodeStore(
             item,
             this,
+            this,
             this.scope,
-            this.token,
             responseItem?.item,
           ),
         ),
@@ -118,6 +127,18 @@ export class GroupStore extends AbstractActualNodeStore implements IGroupNode {
 
     this.validator = new GroupValidator(this);
     this.enforceControlRules();
+  }
+
+  @override
+  override get path(): NodePath {
+    return isGroupListStore(this.parentStore)
+      ? withLastPathIndex(this.parentStore.path, this.pathIndex)
+      : super.path;
+  }
+
+  @action
+  setPathIndex(index: number): void {
+    this.pathIndex = index;
   }
 
   @computed

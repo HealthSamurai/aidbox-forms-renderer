@@ -2,6 +2,7 @@ import {
   ExpressionEnvironment,
   GroupListRendererDefinition,
   GroupRendererDefinition,
+  HasNodePath,
   IExpressionEnvironmentProvider,
   IExpressionRegistry,
   IFhirAdapter,
@@ -14,6 +15,7 @@ import {
   IScope,
   IValueSetExpander,
   LaunchContext,
+  NodeVisitor,
   QuestionRendererDefinition,
   RenderMode,
   SnapshotKind,
@@ -68,13 +70,14 @@ import {
   getTranslated,
   getTranslationLanguages,
   makeIssue,
-  randomToken,
   shouldCreateStore,
+  withNodePathSegment,
 } from "../../utilities.ts";
 import { ValueSetExpander } from "../option/valueset-expander.ts";
 import type {
   CustomExtensionDefinitions,
   FormPagination,
+  NodePath,
   Strings,
 } from "@formbox/theme";
 import { R4Adapter } from "../../fhir/r4-adapter.ts";
@@ -95,7 +98,6 @@ export class FormStore<V extends FhirVersion = FhirVersion>
   implements IForm, IExpressionEnvironmentProvider
 {
   private readonly initialResponse: QuestionnaireResponse | undefined;
-  readonly token = buildId("form", randomToken());
   readonly questionnaire: Questionnaire;
 
   readonly nodes = observable.array<IPresentableNode>([], {
@@ -159,6 +161,7 @@ export class FormStore<V extends FhirVersion = FhirVersion>
   constructor(
     strings: Strings,
     readonly fhirVersion: V,
+    readonly token: string,
     questionnaire: QuestionnaireOf<V>,
     response?: QuestionnaireResponseOf<V>,
     terminologyServerUrl?: string,
@@ -215,8 +218,8 @@ export class FormStore<V extends FhirVersion = FhirVersion>
             this.createNodeStore(
               item,
               undefined,
+              undefined,
               this.scope,
-              this.token,
               this.initialResponse?.item,
             ),
           ),
@@ -382,15 +385,101 @@ export class FormStore<V extends FhirVersion = FhirVersion>
     return pages.length > 0 ? pages : undefined;
   }
 
+  walkNodes(visitor: NodeVisitor): void {
+    const visit = (nodes: ReadonlyArray<IPresentableNode>): void => {
+      nodes.forEach((node) => {
+        if (isGroupListStore(node)) {
+          visitor.node?.(node, node.path);
+          visitor.groupList?.(node, node.path);
+          node.nodes.forEach((group) => {
+            visitor.node?.(group, group.path);
+            visitor.group?.(group, group.path);
+            visit(group.nodes);
+          });
+          return;
+        }
+
+        if (isGroupNode(node)) {
+          visitor.node?.(node, node.path);
+          visitor.group?.(node, node.path);
+          visit(node.nodes);
+          return;
+        }
+
+        if (isQuestionNode(node)) {
+          visitor.node?.(node, node.path);
+          visitor.question?.(node, node.path);
+
+          const answers = node.repeats
+            ? node.answers
+            : node.answers.slice(0, 1);
+          answers.forEach((answer, index) => {
+            visitor.answer?.(node, answer, answer.path, index);
+            visit(answer.nodes);
+          });
+          return;
+        }
+
+        visitor.node?.(node, node.path);
+      });
+    };
+
+    visit(this.nodes);
+  }
+
+  findNodeByPath(path: NodePath): IPresentableNode | undefined {
+    let nodes: ReadonlyArray<IPresentableNode> = this.nodes;
+    let current: IPresentableNode | undefined;
+
+    for (const segment of path) {
+      current = nodes.find((node) => node.linkId === segment.linkId);
+      if (!current) {
+        return undefined;
+      }
+
+      if (isGroupListStore(current)) {
+        if (segment.index === undefined) {
+          nodes = current.nodes;
+          continue;
+        }
+
+        current = current.nodes[segment.index];
+        if (!current) {
+          return undefined;
+        }
+      }
+
+      if (isGroupNode(current)) {
+        nodes = current.nodes;
+        continue;
+      }
+
+      if (isQuestionNode(current)) {
+        nodes = current.answers[segment.index ?? 0]?.nodes ?? [];
+      }
+    }
+
+    return current;
+  }
+
   @action
   createNodeStore(
     item: QuestionnaireItem,
     parentStore: INode | undefined,
+    pathParent: HasNodePath | undefined,
     parentScope: IScope,
-    parentToken: string,
     parentResponseItems: QuestionnaireResponseItem[] | undefined,
   ): IPresentableNode {
     const itemType = this.adapter.questionnaireItem.getType(item);
+    const token = buildId(
+      this.token,
+      ...withNodePathSegment(pathParent?.path ?? [], item.linkId).flatMap(
+        (segment) =>
+          segment.index === undefined
+            ? [segment.linkId]
+            : [segment.linkId, segment.index],
+      ),
+    );
 
     switch (itemType) {
       case "display": {
@@ -398,8 +487,9 @@ export class FormStore<V extends FhirVersion = FhirVersion>
           this,
           item,
           parentStore,
+          pathParent,
           parentScope.extend(false),
-          buildId(parentToken, item.linkId),
+          token,
         );
         parentScope.registerNode(store);
         return store;
@@ -411,8 +501,9 @@ export class FormStore<V extends FhirVersion = FhirVersion>
             this,
             item,
             parentStore,
+            pathParent,
             parentScope.extend(false),
-            buildId(parentToken, item.linkId),
+            token,
             parentResponseItems?.filter(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -422,8 +513,10 @@ export class FormStore<V extends FhirVersion = FhirVersion>
             this,
             item,
             parentStore,
+            pathParent,
+            0,
             parentScope.extend(false),
-            buildId(parentToken, item.linkId),
+            token,
             parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
           );
           parentScope.registerNode(store);
@@ -449,8 +542,9 @@ export class FormStore<V extends FhirVersion = FhirVersion>
           this,
           item,
           parentStore,
+          pathParent,
           parentScope.extend(false),
-          buildId(parentToken, item.linkId),
+          token,
           parentResponseItems?.find(({ linkId }) => linkId === item.linkId),
         );
         parentScope.registerNode(store);
@@ -603,7 +697,7 @@ export class FormStore<V extends FhirVersion = FhirVersion>
 
   private getChildNodes(node: IPresentableNode): IPresentableNode[] {
     if (isGroupListStore(node)) {
-      return node.nodes.flatMap((node) => node.nodes);
+      return [...node.nodes];
     }
     if (isGroupNode(node)) {
       return node.nodes;

@@ -82,6 +82,7 @@ export * from "./link.ts";
 export * from "./language-selector.ts";
 export * from "./strings.ts";
 export * from "./custom-extension.tsx";
+export * from "./path.ts";
 
 export type Theme = {
   TextInput: TextInputComponent;

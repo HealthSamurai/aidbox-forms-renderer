@@ -41,7 +41,7 @@ export class OptionSelection<
   >({}, { deep: false, name: "AnswerOptionStore.extraOptionsByToken" });
 
   @observable
-  private searchQuery = "";
+  private query = "";
 
   constructor(question: IQuestionNode<T>, store: AnswerOptionStore<T>) {
     makeObservable(this);
@@ -68,6 +68,11 @@ export class OptionSelection<
       this.constraint === "optionsOrString" ||
       this.constraint === "optionsOrType"
     );
+  }
+
+  @computed
+  get searchQuery(): string {
+    return this.query;
   }
 
   @computed
@@ -201,7 +206,7 @@ export class OptionSelection<
 
   @action.bound
   setSearchQuery(query: string): void {
-    this.searchQuery = query.trim();
+    this.query = query.trim();
   }
 
   @action.bound
