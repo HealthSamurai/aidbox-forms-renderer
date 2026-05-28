@@ -14,6 +14,7 @@ import { renderErrors } from "../../node/errors.tsx";
 export const SingleListSelectControl = observer(
   function SingleListSelectControl<T extends AnswerType>({
     answer,
+    path,
     ariaDescribedBy,
     ariaLabelledBy,
     id,
@@ -35,6 +36,7 @@ export const SingleListSelectControl = observer(
           content={
             <Control
               answer={answer}
+              path={path}
               id={id}
               ariaLabelledBy={ariaLabelledBy}
               ariaDescribedBy={ariaDescribedBy}
@@ -95,6 +97,7 @@ export const SingleListSelectControl = observer(
         specifyOtherOption={specifyOtherOption}
         customOptionForm={customOptionForm}
         id={id}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={node.readOnly}

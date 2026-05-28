@@ -4,6 +4,7 @@ import { AttachmentInput } from "./attachment-input.tsx";
 
 export function AttachmentControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -22,6 +23,7 @@ export function AttachmentControl({
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
       accept={accept}
+      path={path}
     />
   );
 }

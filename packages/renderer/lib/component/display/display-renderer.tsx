@@ -11,7 +11,10 @@ export const DisplayRenderer = observer(function DisplayRenderer({
   const { DisplayRenderer: ThemedDisplayRenderer } = useTheme();
 
   return (
-    <ThemedDisplayRenderer linkId={node.linkId}>
+    <ThemedDisplayRenderer
+      linkId={node.linkId}
+      customExtensions={node.customExtensions}
+    >
       <NodeHeader node={node} as="text" />
     </ThemedDisplayRenderer>
   );

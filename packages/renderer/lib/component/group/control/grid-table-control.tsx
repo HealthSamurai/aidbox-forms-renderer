@@ -20,6 +20,7 @@ export const GridTableControl = observer(function GridTableControl({
 
   const rows = list.grid.rows.map((row) => ({
     token: row.group.token,
+    path: row.group.path,
     onRemove: () => list.removeNode(row.group),
     canRemove: list.canRemove,
     cells: columns.map((column, index) => {

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import type { Signature } from "@formbox/fhir";
+import type { NodePath } from "@formbox/theme";
 import {
   prepareDataUrlFromSignature,
   prepareSignatureFromDataUrl,
@@ -10,6 +11,7 @@ export type SignatureInputProperties = {
   value: Signature | undefined;
   onChange: (value: Signature | undefined) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy?: string | undefined;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -19,6 +21,7 @@ export function SignatureInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -36,6 +39,7 @@ export function SignatureInput({
   return (
     <ThemedSignatureInput
       id={id}
+      path={path}
       value={dataUrl}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}

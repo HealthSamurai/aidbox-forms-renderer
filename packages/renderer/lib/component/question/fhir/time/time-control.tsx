@@ -3,6 +3,7 @@ import { TimeInput } from "./time-input.tsx";
 
 export function TimeControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -20,6 +21,7 @@ export function TimeControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       min={min}
       max={max}
     />

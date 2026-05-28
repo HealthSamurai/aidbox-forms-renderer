@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import { useStrings } from "@formbox/theme";
+import { useStrings, type NodePath } from "@formbox/theme";
 
 import type { IAnswer, OptionItem } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
@@ -14,6 +14,7 @@ const LEGACY_UNIT_TOKEN_PREFIX = "__legacy_unit__";
 export type QuantityUnitInputProperties = {
   answer: IAnswer<"quantity">;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -22,6 +23,7 @@ export type QuantityUnitInputProperties = {
 export const QuantityUnitInput = observer(function QuantityUnitInput({
   answer,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -83,10 +85,12 @@ export const QuantityUnitInput = observer(function QuantityUnitInput({
             onChange={(coding) => unitSelection.setCustomCoding(coding)}
             disabled={disabled}
             supplementalSystem={supplementalSystem}
+            path={path}
           />
         ) : (
           <TextInput
             id={buildId(id, "custom")}
+            path={path}
             ariaLabelledBy={ariaLabelledBy}
             ariaDescribedBy={ariaDescribedBy}
             value={unitSelection.customText}
@@ -112,9 +116,11 @@ export const QuantityUnitInput = observer(function QuantityUnitInput({
           : options.find((entry) => entry.token === unitSelection.selectedToken)
       }
       onChange={(token) => unitSelection.select(token)}
+      searchQuery=""
       specifyOtherOption={specifyOtherOption}
       customOptionForm={customForm}
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={Boolean(disabled)}

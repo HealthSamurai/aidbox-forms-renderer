@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useStrings } from "@formbox/theme";
+import { useStrings, type NodePath } from "@formbox/theme";
 
 import type { IAnswer } from "../../../../types.ts";
 import { useTheme } from "../../../../ui/theme.tsx";
@@ -13,6 +13,7 @@ export type QuantityInputProperties = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  path?: NodePath | undefined;
 };
 
 // todo: avoid direct access to answer
@@ -23,6 +24,7 @@ export const QuantityInput = observer(function QuantityInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  path,
 }: QuantityInputProperties) {
   const strings = useStrings();
   const { InputGroup, NumberInput } = useTheme();
@@ -38,6 +40,7 @@ export const QuantityInput = observer(function QuantityInput({
     <InputGroup spans={[8, 4]}>
       <NumberInput
         id={id}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={answer.value?.value ?? undefined}
@@ -51,6 +54,7 @@ export const QuantityInput = observer(function QuantityInput({
       <QuantityUnitInput
         answer={answer}
         id={buildId(id, "unit")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={disabled}

@@ -14,6 +14,7 @@ import { renderErrors } from "../../node/errors.tsx";
 export const SingleDropdownSelectControl = observer(
   function SingleDropdownSelectControl<T extends AnswerType>({
     answer,
+    path,
     ariaDescribedBy,
     ariaLabelledBy,
     id,
@@ -35,6 +36,7 @@ export const SingleDropdownSelectControl = observer(
           content={
             <Control
               answer={answer}
+              path={path}
               id={id}
               ariaLabelledBy={ariaLabelledBy}
               ariaDescribedBy={ariaDescribedBy}
@@ -92,11 +94,13 @@ export const SingleDropdownSelectControl = observer(
       <SelectInput
         options={options}
         selectedOption={selectedOption}
+        searchQuery={store.searchQuery}
         onChange={(token) => store.selectOptionForAnswer(answer, token)}
         onSearch={store.setSearchQuery}
         specifyOtherOption={specifyOtherOption}
         customOptionForm={customOptionForm}
         id={id}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={node.readOnly}

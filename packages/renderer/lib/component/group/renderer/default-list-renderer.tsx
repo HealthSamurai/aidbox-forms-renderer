@@ -5,6 +5,7 @@ import { NodeHeader } from "../../node/node-header.tsx";
 import { GroupScaffold } from "../group-scaffold.tsx";
 import { useTheme } from "../../../ui/theme.tsx";
 import { Node } from "../../node/node.tsx";
+import { renderErrors } from "../../node/errors.tsx";
 
 export const DefaultListRenderer = observer(function DefaultListRenderer({
   node,
@@ -18,8 +19,11 @@ export const DefaultListRenderer = observer(function DefaultListRenderer({
     <ThemedGroupList
       linkId={node.linkId}
       header={header}
+      errors={renderErrors(node)}
       onAdd={() => node.addNode()}
       canAdd={node.canAdd}
+      path={node.path}
+      customExtensions={node.customExtensions}
     >
       {node.visibleNodes.map((child) => {
         return (

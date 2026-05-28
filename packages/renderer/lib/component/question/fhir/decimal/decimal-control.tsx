@@ -3,6 +3,7 @@ import { DecimalInput } from "./decimal-input.tsx";
 
 export function DecimalControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -19,6 +20,7 @@ export function DecimalControl({
       value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       unitLabel={answer.question.unitDisplay}
       min={min}
       max={max}

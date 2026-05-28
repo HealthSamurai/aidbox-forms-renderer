@@ -44,6 +44,7 @@ export const Form = observer(function Form({
   const signature = store.signatureRequired ? (
     <SignatureInput
       id={buildId(store.token, "signature")}
+      path={[]}
       value={store.signature}
       onChange={(value) => {
         store.setSignature(value);
@@ -61,6 +62,7 @@ export const Form = observer(function Form({
       before={<NodeList nodes={store.headerNodes} />}
       after={<NodeList nodes={store.footerNodes} />}
       signature={signature}
+      customExtensions={store.customExtensions}
       onSubmit={onSubmit}
       onCancel={() => store.reset()}
       pagination={store.pagination}

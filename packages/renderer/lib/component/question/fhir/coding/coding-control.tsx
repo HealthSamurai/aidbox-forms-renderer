@@ -3,6 +3,7 @@ import { CodingInput } from "./coding-input.tsx";
 
 export function CodingControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -15,6 +16,7 @@ export function CodingControl({
       value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
     />
   );
 }

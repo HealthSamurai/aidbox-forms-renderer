@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import type { Attachment as ThemeAttachment } from "@formbox/theme";
+import type { Attachment as ThemeAttachment, NodePath } from "@formbox/theme";
 
 import type { Attachment } from "@formbox/fhir";
 import {
@@ -14,6 +14,7 @@ export type AttachmentInputProperties = {
   adapter: IFhirAdapter;
   onChange: (value?: Attachment) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
@@ -25,6 +26,7 @@ export function AttachmentInput({
   adapter,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   disabled,
@@ -55,6 +57,7 @@ export function AttachmentInput({
   return (
     <ThemedFileInput
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={disabled}

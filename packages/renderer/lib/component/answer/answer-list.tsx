@@ -18,7 +18,7 @@ export const AnswerList = observer(function AnswerList<T extends AnswerType>({
   const canAdd = node.repeats ? node.canAdd : undefined;
 
   return (
-    <ThemedAnswerList onAdd={onAdd} canAdd={canAdd}>
+    <ThemedAnswerList onAdd={onAdd} canAdd={canAdd} path={node.path}>
       {answers.map((answer) => (
         <AnswerScaffold key={answer.token} answer={answer} control={control} />
       ))}

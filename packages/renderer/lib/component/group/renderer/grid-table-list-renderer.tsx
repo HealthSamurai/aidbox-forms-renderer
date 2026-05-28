@@ -21,11 +21,15 @@ export const GridTableListRenderer = observer(function GridTableListRenderer({
       header={header}
       isExpanded={node.isExpanded}
       errors={renderErrors(node)}
+      customExtensions={node.customExtensions}
     >
       <ThemedGroupList
         linkId={node.linkId}
         onAdd={() => node.addNode()}
         canAdd={node.canAdd}
+        path={node.path}
+        count={node.nodes.length}
+        customExtensions={node.customExtensions}
       >
         <GridTableControl list={node} />
       </ThemedGroupList>

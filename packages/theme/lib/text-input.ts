@@ -1,7 +1,9 @@
 import type { ComponentType, HTMLAttributes } from "react";
+import type { NodePath } from "./path.ts";
 
 export type TextInputProperties = {
   id: string;
+  path?: NodePath | undefined;
   type?: string | undefined;
   value: string;
   onChange: (v: string) => void;

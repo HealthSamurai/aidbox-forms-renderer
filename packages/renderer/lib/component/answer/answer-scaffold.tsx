@@ -46,6 +46,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
             getIssueErrorId(answer),
           )}
           answer={answer as IAnswer<T>}
+          path={answer.path}
         />
       }
       onRemove={answer.question.repeats ? handleRemove : undefined}
@@ -54,6 +55,7 @@ export const AnswerScaffold = observer(function AnswerScaffold<
       }
       errors={renderErrors(answer)}
       children={<NodeList nodes={answer.nodes} />}
+      path={answer.path}
     />
   );
 });

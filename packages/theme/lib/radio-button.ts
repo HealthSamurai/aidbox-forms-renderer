@@ -1,7 +1,9 @@
 import type { ComponentType, ReactNode } from "react";
+import type { NodePath } from "./path.ts";
 
 export type RadioButtonProperties = {
   id: string;
+  path?: NodePath | undefined;
   groupName: string;
   value: string;
   checked: boolean;

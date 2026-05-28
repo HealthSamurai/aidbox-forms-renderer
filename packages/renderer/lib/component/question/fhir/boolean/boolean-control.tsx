@@ -4,6 +4,7 @@ import { BooleanInput } from "./boolean-input.tsx";
 
 export function BooleanControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -16,6 +17,7 @@ export function BooleanControl({
       value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       label={<NodeHeader node={answer.question} as="text" />}
     />
   );

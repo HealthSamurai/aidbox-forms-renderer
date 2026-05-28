@@ -1,5 +1,5 @@
 import type { Reference } from "@formbox/fhir";
-import { useStrings } from "@formbox/theme";
+import { useStrings, type NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { buildId } from "../../../../utilities.ts";
 
@@ -11,6 +11,7 @@ export type ReferenceInputProperties = {
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  path?: NodePath | undefined;
 };
 
 export function ReferenceInput({
@@ -21,6 +22,7 @@ export function ReferenceInput({
   ariaDescribedBy,
   placeholder,
   disabled,
+  path,
 }: ReferenceInputProperties) {
   const strings = useStrings();
   const { InputGroup, TextInput } = useTheme();
@@ -37,6 +39,7 @@ export function ReferenceInput({
     <InputGroup spans={[6, 6]}>
       <TextInput
         id={id}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={reference.reference ?? ""}
@@ -46,6 +49,7 @@ export function ReferenceInput({
       />
       <TextInput
         id={buildId(id, "display")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={reference.display ?? ""}

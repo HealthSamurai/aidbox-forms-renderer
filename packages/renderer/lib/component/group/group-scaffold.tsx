@@ -26,14 +26,13 @@ export const GroupScaffold = observer(function GroupScaffold({
   const header = node.isHeaderless ? undefined : (
     <NodeHeader node={node} as="legend" />
   );
-  const hideSignatureForRepeatingGroupChild =
+  const repeatedGroupChildScaffold =
     canRemove === undefined && isGroupListStore(node.parentStore);
   const signature =
-    !hideSignature &&
-    !hideSignatureForRepeatingGroupChild &&
-    node.signatureRequired ? (
+    !hideSignature && !repeatedGroupChildScaffold && node.signatureRequired ? (
       <SignatureInput
         id={buildId(node.token, "signature")}
+        path={node.path}
         value={node.signature}
         onChange={(value) => {
           node.setSignature(value);
@@ -46,12 +45,16 @@ export const GroupScaffold = observer(function GroupScaffold({
 
   return (
     <ThemedGroupScaffold
+      linkId={node.linkId}
       header={header}
+      isExpandable={node.isExpandable}
       isExpanded={node.isExpanded}
-      errors={renderErrors(node)}
+      errors={repeatedGroupChildScaffold ? undefined : renderErrors(node)}
       signature={signature}
       onRemove={onRemove}
       canRemove={canRemove}
+      path={node.path}
+      customExtensions={node.customExtensions}
     >
       {children}
     </ThemedGroupScaffold>

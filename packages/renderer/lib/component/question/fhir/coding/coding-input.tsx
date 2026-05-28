@@ -1,5 +1,5 @@
 import type { Coding } from "@formbox/fhir";
-import { useStrings } from "@formbox/theme";
+import { useStrings, type NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 import { buildId } from "../../../../utilities.ts";
 
@@ -11,6 +11,7 @@ export type CodingInputProperties = {
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;
   supplementalSystem?: string | undefined;
+  path?: NodePath | undefined;
 };
 
 export function CodingInput({
@@ -21,6 +22,7 @@ export function CodingInput({
   ariaDescribedBy,
   disabled,
   supplementalSystem,
+  path,
 }: CodingInputProperties) {
   const strings = useStrings();
   const { InputGroup, TextInput } = useTheme();
@@ -44,6 +46,7 @@ export function CodingInput({
     <InputGroup spans={[4, 4, 4]}>
       <TextInput
         id={id}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.system ?? ""}
@@ -53,6 +56,7 @@ export function CodingInput({
       />
       <TextInput
         id={buildId(id, "code")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.code ?? ""}
@@ -62,6 +66,7 @@ export function CodingInput({
       />
       <TextInput
         id={buildId(id, "display")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         value={coding.display ?? ""}

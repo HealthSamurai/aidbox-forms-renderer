@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { NodePath } from "./path.ts";
 
 export type Attachment = {
   title?: string | undefined;
@@ -11,6 +12,7 @@ export type Attachment = {
 export type FileInputProperties = {
   value: Attachment | undefined;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;

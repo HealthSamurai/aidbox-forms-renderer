@@ -1,9 +1,11 @@
+import type { NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export type TimeInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -16,6 +18,7 @@ export function TimeInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -27,6 +30,7 @@ export function TimeInput({
   return (
     <ThemedTimeInput
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

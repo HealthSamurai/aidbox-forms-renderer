@@ -1,9 +1,11 @@
+import type { NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export type UrlInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -16,6 +18,7 @@ export function UrlInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -27,6 +30,7 @@ export function UrlInput({
   return (
     <ThemedTextInput
       id={id}
+      path={path}
       type="url"
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}

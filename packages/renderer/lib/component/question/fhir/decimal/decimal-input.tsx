@@ -1,9 +1,11 @@
+import type { NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export type DecimalInputProperties = {
   value: number | undefined;
   onChange: (value: number | undefined) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -18,6 +20,7 @@ export function DecimalInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -31,6 +34,7 @@ export function DecimalInput({
   return (
     <ThemedNumberInput
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

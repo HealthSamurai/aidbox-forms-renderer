@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import type { NodePath } from "./path.ts";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 import type { ChoiceOrientation } from "./radio-button-list.ts";
 
@@ -11,6 +12,7 @@ export type CheckboxListProperties = {
   specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;

@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import type { CustomExtensionValues } from "./custom-extension.tsx";
 
 export type FormProperties = {
   onSubmit?: (() => void) | undefined;
@@ -12,6 +13,7 @@ export type FormProperties = {
   before?: ReactNode;
   after?: ReactNode;
   signature?: ReactNode;
+  customExtensions?: CustomExtensionValues | undefined;
 };
 
 export type FormComponent = ComponentType<FormProperties>;

@@ -45,6 +45,7 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
       content={
         <CustomControl
           answer={formState.answer}
+          path={formState.answer.path}
           id={buildId(formState.answer.token, "custom-input")}
           ariaLabelledBy={ariaLabelledBy}
           ariaDescribedBy={customAriaDescribedBy}
@@ -87,6 +88,7 @@ export const MultiListSelectControl = observer(function MultiListSelectControl<
       orientation={node.choiceOrientation}
       specifyOtherOption={specifyOtherOption}
       id={buildId(node.token, "multi-select")}
+      path={node.path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       disabled={node.readOnly}

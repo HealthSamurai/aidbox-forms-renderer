@@ -1,15 +1,18 @@
 import type { ComponentType, ReactNode } from "react";
+import type { NodePath } from "./path.ts";
 import type { OptionItem, SelectedOptionItem } from "./option-item.ts";
 
 export type MultiSelectInputProperties = {
   options: readonly OptionItem[];
   selectedOptions: readonly SelectedOptionItem[];
+  searchQuery: string;
   onSelect: (token: string) => void;
   onDeselect: (token: string) => void;
   onSearch?: (query: string) => void;
   specifyOtherOption?: OptionItem | undefined;
   customOptionForm?: ReactNode;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   disabled?: boolean | undefined;

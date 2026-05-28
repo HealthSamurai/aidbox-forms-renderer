@@ -7,6 +7,7 @@ import { QuantityUnitInput } from "../fhir/quantity/quantity-unit-input.tsx";
 
 export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -28,6 +29,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
     <InputGroup spans={[8, 4]}>
       <SpinnerInput
         id={id}
+        path={path}
         value={getNumericValue(answer.value)}
         onChange={handleValueChange}
         min={getNumericValue(min) ?? undefined}
@@ -41,6 +43,7 @@ export const QuantitySpinnerControl = observer(function QuantitySpinnerControl({
       <QuantityUnitInput
         answer={answer}
         id={buildId(id, "unit")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={disabled}

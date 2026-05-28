@@ -45,6 +45,7 @@ export const MultiDropdownSelectControl = observer(
         content={
           <CustomControl
             answer={formState.answer}
+            path={formState.answer.path}
             id={buildId(formState.answer.token, "custom-input")}
             ariaLabelledBy={getNodeLabelId(node)}
             ariaDescribedBy={getIssueErrorId(formState.answer)}
@@ -82,11 +83,13 @@ export const MultiDropdownSelectControl = observer(
     return (
       <MultiSelectInput
         options={options}
+        searchQuery={store.searchQuery}
         onSelect={store.selectOption}
         onDeselect={store.deselectOption}
         onSearch={store.setSearchQuery}
         specifyOtherOption={specifyOtherOption}
         id={buildId(node.token, "multi-select")}
+        path={node.path}
         ariaLabelledBy={getNodeLabelId(node)}
         ariaDescribedBy={concatIds(getNodeHelpId(node), getIssueErrorId(node))}
         disabled={node.readOnly}

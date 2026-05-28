@@ -21,6 +21,7 @@ export const QuestionScaffold = observer(function QuestionScaffold({
   const signature = node.signatureRequired ? (
     <SignatureInput
       id={buildId(node.token, "signature")}
+      path={node.path}
       value={node.signature}
       onChange={(value) => {
         node.setSignature(value);
@@ -34,12 +35,15 @@ export const QuestionScaffold = observer(function QuestionScaffold({
   return (
     <ThemedQuestionScaffold
       linkId={node.linkId}
+      path={node.path}
       header={
         node.isHeaderless ? undefined : <NodeHeader node={node} as="label" />
       }
+      isExpandable={node.isExpandable}
       isExpanded={node.isExpanded}
       errors={renderErrors(node)}
       signature={signature}
+      customExtensions={node.customExtensions}
     >
       {children}
     </ThemedQuestionScaffold>

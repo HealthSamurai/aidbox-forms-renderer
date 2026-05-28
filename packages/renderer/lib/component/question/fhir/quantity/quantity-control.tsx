@@ -3,6 +3,7 @@ import { QuantityInput } from "./quantity-input.tsx";
 
 export function QuantityControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -15,6 +16,7 @@ export function QuantityControl({
       ariaDescribedBy={ariaDescribedBy}
       placeholder={answer.question.placeholder}
       disabled={answer.question.readOnly}
+      path={path}
     />
   );
 }

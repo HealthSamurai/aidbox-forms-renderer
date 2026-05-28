@@ -34,6 +34,8 @@ export const SelectionTableCell = observer(function SelectionTableCell({
   return question.repeats ? (
     <Checkbox
       id={buildId(question.token, option.token, "control")}
+      path={question.path}
+      checkedValue={option.token}
       checked={cell.selected}
       disabled={cell.disabled}
       onChange={toggleCell}
@@ -46,6 +48,7 @@ export const SelectionTableCell = observer(function SelectionTableCell({
   ) : (
     <RadioButton
       id={buildId(question.token, option.token, "control")}
+      path={question.path}
       groupName={buildId(question.token, "table")}
       value={option.token}
       checked={cell.selected}

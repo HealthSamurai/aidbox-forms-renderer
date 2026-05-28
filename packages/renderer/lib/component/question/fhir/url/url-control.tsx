@@ -3,6 +3,7 @@ import { UrlInput } from "./url-input.tsx";
 
 export function UrlControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -19,6 +20,7 @@ export function UrlControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       minLength={minLength}
       maxLength={maxLength}
     />

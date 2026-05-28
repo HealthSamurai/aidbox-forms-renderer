@@ -47,20 +47,20 @@ export type InferCustomExtensionValues<
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CustomExtensionValueRegistry {}
 
-type ExtensionValues = Readonly<Record<string, unknown>>;
+export type CustomExtensionValues = Readonly<Record<string, unknown>>;
 
 const CustomQuestionnaireExtensionsContext = createContext<
-  ExtensionValues | undefined
+  CustomExtensionValues | undefined
 >(undefined);
 
-const CustomItemExtensionsContext = createContext<ExtensionValues | undefined>(
-  undefined,
-);
+const CustomItemExtensionsContext = createContext<
+  CustomExtensionValues | undefined
+>(undefined);
 
 export function CustomQuestionnaireExtensionsProvider({
   value,
   children,
-}: PropsWithChildren<{ value: ExtensionValues | undefined }>) {
+}: PropsWithChildren<{ value: CustomExtensionValues | undefined }>) {
   return (
     <CustomQuestionnaireExtensionsContext.Provider value={value}>
       {children}
@@ -71,7 +71,7 @@ export function CustomQuestionnaireExtensionsProvider({
 export function CustomItemExtensionsProvider({
   value,
   children,
-}: PropsWithChildren<{ value: ExtensionValues | undefined }>) {
+}: PropsWithChildren<{ value: CustomExtensionValues | undefined }>) {
   return (
     <CustomItemExtensionsContext.Provider value={value}>
       {children}

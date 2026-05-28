@@ -3,6 +3,7 @@ import { StringInput } from "./string-input.tsx";
 
 export function StringControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -19,6 +20,7 @@ export function StringControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       inputMode={answer.question.keyboardType}
       minLength={minLength}
       maxLength={maxLength}

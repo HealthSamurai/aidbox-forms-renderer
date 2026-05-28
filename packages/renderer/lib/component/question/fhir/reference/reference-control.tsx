@@ -3,6 +3,7 @@ import { ReferenceInput } from "./reference-input.tsx";
 
 export function ReferenceControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -16,6 +17,7 @@ export function ReferenceControl({
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
       placeholder={answer.question.placeholder}
+      path={path}
     />
   );
 }

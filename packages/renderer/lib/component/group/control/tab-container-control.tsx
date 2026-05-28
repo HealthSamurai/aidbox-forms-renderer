@@ -28,6 +28,7 @@ export const TabContainerControl = observer(function TabContainerControl({
 
   return (
     <TabContainer
+      path={node.path}
       header={header}
       items={items}
       value={activeIndex}

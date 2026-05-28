@@ -10,6 +10,7 @@ import { QuantityUnitInput } from "../fhir/quantity/quantity-unit-input.tsx";
 
 export const QuantitySliderControl = observer(function QuantitySliderControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -29,6 +30,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
     <InputGroup spans={[8, 4]}>
       <SliderInput
         id={id}
+        path={path}
         value={getNumericValue(answer.value)}
         onChange={handleValueChange}
         min={getNumericValue(min) ?? undefined}
@@ -44,6 +46,7 @@ export const QuantitySliderControl = observer(function QuantitySliderControl({
       <QuantityUnitInput
         answer={answer}
         id={buildId(id, "unit")}
+        path={path}
         ariaLabelledBy={ariaLabelledBy}
         ariaDescribedBy={ariaDescribedBy}
         disabled={disabled}

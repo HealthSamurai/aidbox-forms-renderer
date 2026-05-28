@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import type { NodePath } from "./path.ts";
 
 export type TabItem = {
   token: string;
@@ -9,6 +10,7 @@ export type TabItem = {
 };
 
 export type TabContainerProperties = {
+  path?: NodePath | undefined;
   header?: ReactNode;
   items: TabItem[];
   value: number;

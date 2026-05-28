@@ -1,9 +1,11 @@
+import type { NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export type IntegerInputProperties = {
   value: number | undefined;
   onChange: (value: number | undefined) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -17,6 +19,7 @@ export function IntegerInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -29,6 +32,7 @@ export function IntegerInput({
   return (
     <ThemedNumberInput
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

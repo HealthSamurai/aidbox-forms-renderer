@@ -3,6 +3,7 @@ import { IntegerInput } from "./integer-input.tsx";
 
 export function IntegerControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -18,6 +19,7 @@ export function IntegerControl({
       value={answer.value}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       unitLabel={answer.question.unitDisplay}
       min={min}
       max={max}

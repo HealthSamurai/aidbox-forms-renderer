@@ -1,10 +1,12 @@
 import type { HTMLAttributes } from "react";
+import type { NodePath } from "@formbox/theme";
 import { useTheme } from "../../../../ui/theme.tsx";
 
 export type TextInputProperties = {
   value: string;
   onChange: (value: string) => void;
   id: string;
+  path?: NodePath | undefined;
   ariaLabelledBy: string;
   ariaDescribedBy?: string | undefined;
   placeholder?: string | undefined;
@@ -18,6 +20,7 @@ export function TextInput({
   value,
   onChange,
   id,
+  path,
   ariaLabelledBy,
   ariaDescribedBy,
   placeholder,
@@ -30,6 +33,7 @@ export function TextInput({
   return (
     <ThemedTextArea
       id={id}
+      path={path}
       ariaLabelledBy={ariaLabelledBy}
       ariaDescribedBy={ariaDescribedBy}
       placeholder={placeholder}

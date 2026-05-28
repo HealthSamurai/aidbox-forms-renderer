@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import type { NodePath } from "./path.ts";
 
 export type TableColumn = {
   token: string;
@@ -15,6 +16,7 @@ export type TableCell = {
 
 export type TableRow = {
   token: string;
+  path?: NodePath | undefined;
   content?: ReactNode | undefined;
   errors?: ReactNode | undefined;
   isLoading?: boolean | undefined;

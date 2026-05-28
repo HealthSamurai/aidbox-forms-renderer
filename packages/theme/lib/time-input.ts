@@ -1,7 +1,9 @@
 import type { ComponentType } from "react";
+import type { NodePath } from "./path.ts";
 
 export type TimeInputProperties = {
   id: string;
+  path?: NodePath | undefined;
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean | undefined;

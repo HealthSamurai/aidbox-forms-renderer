@@ -3,6 +3,7 @@ import { DateInput } from "./date-input.tsx";
 
 export function DateControl({
   answer,
+  path,
   id,
   ariaLabelledBy,
   ariaDescribedBy,
@@ -20,6 +21,7 @@ export function DateControl({
       value={answer.value ?? ""}
       onChange={(value) => answer.setValueByUser(value)}
       disabled={answer.question.readOnly}
+      path={path}
       min={min}
       max={max}
     />

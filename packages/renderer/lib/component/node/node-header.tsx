@@ -40,7 +40,7 @@ function getPrimaryControlId(node: IPresentableNode): string | undefined {
     if (token) return buildId(token, "control");
   }
 
-  return undefined;
+  return;
 }
 
 export const NodeHeader = observer(function NodeHeader({
