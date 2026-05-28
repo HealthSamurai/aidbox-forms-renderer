@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useCallback, useMemo, useState } from "react";
 import bundledStrings from "@formbox/strings";
 import type {
@@ -10,6 +11,7 @@ import ControlledRenderer from "./controlled.tsx";
 import type { LaunchContext, RenderMode } from "./types.ts";
 
 export type RendererProperties<V extends FhirVersion> = {
+  token?: string | undefined;
   questionnaire: QuestionnaireOf<V>;
   defaultQuestionnaireResponse?: QuestionnaireResponseOf<V> | undefined;
   defaultLanguage?: string | undefined;
@@ -31,6 +33,7 @@ function resolveBundledStrings(language: string | undefined) {
 }
 
 function Renderer<V extends FhirVersion>({
+  token,
   questionnaire,
   defaultQuestionnaireResponse,
   defaultLanguage,
@@ -66,6 +69,7 @@ function Renderer<V extends FhirVersion>({
 
   return (
     <ControlledRenderer
+      token={token}
       questionnaire={questionnaire}
       defaultQuestionnaireResponse={defaultQuestionnaireResponse}
       language={language}
@@ -84,6 +88,27 @@ function Renderer<V extends FhirVersion>({
 
 export default Renderer;
 
+export { FormStore } from "./store/form/form-store.ts";
+export { Form } from "./component/form/form.tsx";
+export { ThemeProvider } from "./ui/theme.tsx";
+export {
+  CustomQuestionnaireExtensionsProvider,
+  StringsContext,
+  useStrings,
+} from "@formbox/theme";
+export { isGroupListStore } from "./store/group/group-list-store.ts";
+export { isGroupNode } from "./store/group/group-store.ts";
+export { isQuestionNode } from "./store/question/question-store.ts";
+export {
+  ANSWER_TYPE_TO_DATA_TYPE,
+  DATA_TYPE_TO_SUFFIX,
+  EXT,
+  asAnswerFragment,
+  getIssueMessage,
+  getValue,
+  prepareDataUrlFromSignature,
+  prepareSignatureFromDataUrl,
+} from "./utilities.ts";
 export { R4Adapter } from "./fhir/r4-adapter.ts";
 export { R5Adapter } from "./fhir/r5-adapter.ts";
 
@@ -107,9 +132,22 @@ export type {
   ReferenceOf,
 } from "@formbox/fhir";
 
-export type { Strings } from "@formbox/theme";
+export type { NodePath, NodePathSegment, Strings } from "@formbox/theme";
 export type {
+  AnswerType,
+  AnswerTypeToDataType,
+  DataType,
+  DataTypeToType,
+  HasNodePath,
+  IAnswer,
+  IForm,
+  IGroupList,
+  IGroupNode,
+  INode,
+  IPresentableNode,
+  IQuestionNode,
   LaunchContext,
+  NodeVisitor,
   QuestionnaireUsageMode,
   RenderMode,
 } from "./types.ts";

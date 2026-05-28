@@ -7,7 +7,7 @@ import {
   R4QuestionnaireResponseAdapter,
 } from "@formbox/fhir";
 import type { Model } from "fhirpath";
-import r4Model from "fhirpath/fhir-context/r4";
+import r4Model from "fhirpath/fhir-context/r4/index.js";
 
 export class R4Adapter implements IFhirAdapter {
   readonly version: FhirVersion = "r4";
