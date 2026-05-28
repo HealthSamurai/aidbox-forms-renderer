@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.4.1
+
+### Patch Changes
+
+- [`3546a2b`](https://github.com/HealthSamurai/formbox-renderer/commit/3546a2b6bdcadb8ba5bafd3283c9f86d07ee09a8) Thanks [@olimsaidov](https://github.com/olimsaidov)! - Rename the documented template loader to `loadDefaultTemplates`.
+
 ## 0.4.0
 
 ### Minor Changes
