@@ -85,9 +85,7 @@ describe("item.answer.item", () => {
       const parentQuestionStore = getParentStore();
       assertQuestionNode(parentQuestionStore);
       const childStore = parentQuestionStore.answers.at(0)?.nodes?.at(0);
-      expect(childStore?.token).toMatch(
-        /^form__\w+__parent-question__0__child-follow-up$/,
-      );
+      expect(childStore?.token).toBe("form__parent-question__child-follow-up");
     });
 
     it("hydrates nested child answers", () => {
@@ -224,8 +222,8 @@ describe("item.answer.item", () => {
         expect(group && isGroupNode(group)).toBe(true);
         assertGroupNode(group);
         const grandchild = group.nodes.at(0);
-        expect(grandchild?.token).toMatch(
-          /^form__\w+__parent-question__0__child-group__grandchild-question$/,
+        expect(grandchild?.token).toBe(
+          "form__parent-question__child-group__grandchild-question",
         );
       });
 
@@ -310,7 +308,7 @@ describe("item.answer.item", () => {
     assertQuestionNode(scopedFirst);
     assertQuestionNode(scopedSecond);
     expect(scopedFirst.token).toMatch(
-      /^form__\w+__repeating-question__\d+__follow-up$/,
+      /^form__repeating-question__\d+__follow-up$/,
     );
     expect(scopedFirst.token).not.toBe(scopedSecond.token);
     expect(scopedFirst.answers.at(0)?.value).toBe("alice@example.org");

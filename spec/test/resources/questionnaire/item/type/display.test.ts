@@ -30,7 +30,7 @@ describe("type.display", () => {
     const form = createStore();
     const introStore = form.scope.lookupNode("intro");
     assertDisplayNode(introStore);
-    expect(introStore.token).toMatch(/^form__\w+__intro$/);
+    expect(introStore.token).toBe("form__intro");
   });
 
   it("ignores nested items under display entries", () => {

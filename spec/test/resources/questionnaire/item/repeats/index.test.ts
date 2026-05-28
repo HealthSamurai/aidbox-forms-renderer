@@ -193,9 +193,7 @@ describe("repeats", () => {
         .filter((path): path is string => !!path);
       expect(childPaths).toHaveLength(2);
       childPaths.forEach((path) => {
-        expect(path).toMatch(
-          /^form__\w+__repeating-group__\d+__repeat-question$/,
-        );
+        expect(path).toMatch(/^form__repeating-group__\d+__repeat-question$/);
       });
       expect(new Set(childPaths).size).toBe(childPaths.length);
     });
