@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.4.2
+
+### Patch Changes
+
+- [`ba32171`](https://github.com/HealthSamurai/formbox-renderer/commit/ba321711bf89e46ee144a622fea4eec810a263fd) Thanks [@olimsaidov](https://github.com/olimsaidov)! - Remove the deprecated `loadNativeTemplates` export.
+
 ## 0.4.1
 
 ### Patch Changes
