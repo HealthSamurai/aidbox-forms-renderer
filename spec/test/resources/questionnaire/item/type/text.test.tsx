@@ -48,7 +48,14 @@ describe("type.text", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const question = getTextQuestion(form, "notes");
 
     render(<StringRenderer node={question} />);

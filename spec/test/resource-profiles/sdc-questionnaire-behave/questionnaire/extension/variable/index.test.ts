@@ -25,7 +25,14 @@ describe("questionnaire variable extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
 
     const collision = form.issues.find((issue) => {
       const diagnostics = issue.diagnostics?.toLowerCase();
@@ -53,7 +60,14 @@ describe("questionnaire variable extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const rootVariable = form.scope.lookupVariable("globalValue");
     assertDefined(rootVariable);
 
@@ -79,7 +93,14 @@ describe("questionnaire variable extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const slot = form.scope.lookupVariable(
       "badVar",
     ) as unknown as IExpressionSlot;
@@ -107,7 +128,14 @@ describe("questionnaire variable extension", () => {
       extension: [makeVariable("qitem", "'not-allowed'")],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const issue = form.issues.find((entry) =>
       entry.diagnostics?.includes('Variable name "qitem" is reserved'),
     );

@@ -62,7 +62,7 @@ describe("item.item", () => {
   };
 
   const createStore = () =>
-    new FormStore(en, "r5", questionnaire, response, undefined);
+    new FormStore(en, "r5", "form", questionnaire, response, undefined);
 
   const getGroupStore = () => {
     const form = createStore();
@@ -120,7 +120,14 @@ describe("item.item", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = form.scope.lookupNode("demographics");
     expect(group && isGroupNode(group)).toBe(true);
     assertGroupNode(group);
@@ -182,6 +189,7 @@ describe("item.item", () => {
       new FormStore(
         en,
         "r5",
+        "form",
         questionnaireMissingResponse,
         responseMissingGroup,
         undefined,

@@ -32,7 +32,14 @@ describe("minLength", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("nickname");
     assertQuestionNode(question);
     const answer = question.answers[0];
@@ -66,7 +73,14 @@ describe("minLength", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("passcode");
     assertQuestionNode(question);
     const answer = question.answers[0];
@@ -91,7 +105,14 @@ describe("minLength", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("nickname");
     assertQuestionNode(question);
 
@@ -118,7 +139,14 @@ describe("minLength", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("call-sign");
     assertQuestionNode(question);
 

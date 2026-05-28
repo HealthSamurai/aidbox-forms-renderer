@@ -34,7 +34,14 @@ describe("answerOption.initialSelected", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const node = form.scope.lookupNode("color");
     expect(node && isQuestionNode(node)).toBe(true);
     assertQuestionNode(node);
@@ -62,7 +69,14 @@ describe("answerOption.initialSelected", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const node = form.scope.lookupNode("symptoms");
     expect(node && isQuestionNode(node)).toBe(true);
     assertQuestionNode(node);
@@ -102,7 +116,14 @@ describe("answerOption.initialSelected", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const node = form.scope.lookupNode("food");
     expect(node && isQuestionNode(node)).toBe(true);
     assertQuestionNode(node);
@@ -129,7 +150,14 @@ describe("answerOption.initialSelected", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const node = form.scope.lookupNode("pet");
     expect(node && isQuestionNode(node)).toBe(true);
     assertQuestionNode(node);

@@ -68,7 +68,14 @@ describe("itemMaxOccurs", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const gate = form.scope.lookupNode("gate");
     const target = form.scope.lookupNode("target");
 
@@ -142,7 +149,14 @@ describe("itemMaxOccurs", () => {
     };
 
     const createEmptyGroupStore = () =>
-      new FormStore(en, "r5", questionnaire, responseWithoutItems, undefined);
+      new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        responseWithoutItems,
+        undefined,
+      );
 
     const getEmptyGroupList = () => {
       const form = createEmptyGroupStore();
@@ -207,7 +221,14 @@ describe("itemMaxOccurs", () => {
     };
 
     const createMaxGroupStore = () =>
-      new FormStore(en, "r5", questionnaireAtMax, responseAtMax, undefined);
+      new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaireAtMax,
+        responseAtMax,
+        undefined,
+      );
 
     it("prevents adding new nodes when maxOccurs reached", () => {
       const form = createMaxGroupStore();
@@ -251,6 +272,7 @@ describe("itemMaxOccurs", () => {
       const form = new FormStore(
         en,
         "r5",
+        "form",
         questionnaireMissingAnswers,
         responseMissingAnswers,
         undefined,
@@ -287,7 +309,14 @@ describe("itemMaxOccurs", () => {
     };
 
     const createAtMaxStore = () =>
-      new FormStore(en, "r5", questionnaireAtMax, responseAtMax, undefined);
+      new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaireAtMax,
+        responseAtMax,
+        undefined,
+      );
 
     it("prevents adding new answers beyond maxOccurs", () => {
       const form = createAtMaxStore();

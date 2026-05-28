@@ -151,7 +151,14 @@ describe("answerValueSetExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const toggle = form.scope.lookupNode("use-contact-methods");
     const selection = form.scope.lookupNode("selection");
 
@@ -202,7 +209,14 @@ describe("answerValueSetExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const selection = form.scope.lookupNode("selection");
 
     assertQuestionNode<"coding">(selection);

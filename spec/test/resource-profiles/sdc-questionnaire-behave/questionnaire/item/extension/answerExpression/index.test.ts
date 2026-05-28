@@ -27,7 +27,14 @@ describe("answerExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const color = form.scope.lookupNode("color");
 
     assertQuestionNode(color);
@@ -74,7 +81,14 @@ describe("answerExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const source = form.scope.lookupNode("source");
     const mirror = form.scope.lookupNode("mirror");
 

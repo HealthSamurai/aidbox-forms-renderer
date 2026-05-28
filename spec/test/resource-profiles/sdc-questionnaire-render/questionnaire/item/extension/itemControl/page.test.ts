@@ -42,7 +42,14 @@ describe("itemControl.page", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
 
     expect(getGroupNode(form, "page-1").control).toBe("page");
     expect(form.pagination?.current).toBe(1);

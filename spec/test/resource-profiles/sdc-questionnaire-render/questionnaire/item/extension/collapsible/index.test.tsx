@@ -62,7 +62,14 @@ describe("collapsible", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = getGroup(form, "demographics");
     const user = userEvent.setup();
 
@@ -108,7 +115,14 @@ describe("collapsible", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "symptom");
     const user = userEvent.setup();
 
@@ -154,7 +168,14 @@ describe("collapsible", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "issue");
     const user = userEvent.setup();
 
@@ -203,7 +224,14 @@ describe("collapsible", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "invalid");
 
     expect(question.isExpandable).toBe(true);

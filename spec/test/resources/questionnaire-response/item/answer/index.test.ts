@@ -39,7 +39,7 @@ describe("item.answer", () => {
   };
 
   const createStore = () =>
-    new FormStore(en, "r5", questionnaire, response, undefined);
+    new FormStore(en, "r5", "form", questionnaire, response, undefined);
 
   const getQuestionStore = () => {
     const form = createStore();
@@ -84,6 +84,7 @@ describe("item.answer", () => {
       new FormStore(
         en,
         "r5",
+        "form",
         questionnaireMissingAnswer,
         responseMissingAnswer,
         undefined,
@@ -121,7 +122,14 @@ describe("item.answer", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("allergies");
     expect(question && isQuestionNode(question)).toBe(true);
     assertQuestionNode(question);

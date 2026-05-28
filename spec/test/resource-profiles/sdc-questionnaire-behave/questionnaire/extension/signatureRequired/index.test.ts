@@ -24,7 +24,14 @@ const questionnaire: Questionnaire = {
 
 describe("signatureRequired", () => {
   it("requires questionnaire signature when the response has content", () => {
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("encounter-note");
     assertQuestionNode(question);
 

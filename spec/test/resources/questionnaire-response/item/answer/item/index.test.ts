@@ -62,7 +62,7 @@ describe("item.answer.item", () => {
     };
 
     const createStore = () =>
-      new FormStore(en, "r5", questionnaire, response, undefined);
+      new FormStore(en, "r5", "form", questionnaire, response, undefined);
 
     const getParentStore = () => {
       const form = createStore();
@@ -130,6 +130,7 @@ describe("item.answer.item", () => {
         new FormStore(
           en,
           "r5",
+          "form",
           questionnaireNoParentAnswer,
           responseNoParentAnswer,
           undefined,
@@ -208,6 +209,7 @@ describe("item.answer.item", () => {
         new FormStore(
           en,
           "r5",
+          "form",
           questionnaireDeepNesting,
           responseDeepNesting,
           undefined,
@@ -291,6 +293,7 @@ describe("item.answer.item", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       nestedQuestionnaire,
       nestedResponse,
       undefined,
@@ -335,7 +338,14 @@ describe("item.answer.item", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("follow-up");
     expect(question && isQuestionNode(question)).toBe(true);
     assertQuestionNode(question);

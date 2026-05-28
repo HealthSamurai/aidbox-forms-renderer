@@ -30,7 +30,14 @@ describe("type.group", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = form.scope.lookupNode("section");
     expect(group && isGroupNode(group)).toBe(true);
     assertGroupNode(group);

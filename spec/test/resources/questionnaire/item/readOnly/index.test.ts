@@ -41,7 +41,14 @@ describe("readOnly", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const node = form.scope.lookupNode("readonly");
     expect(node && isQuestionNode(node)).toBe(true);
     assertQuestionNode(node);
@@ -66,7 +73,14 @@ describe("readOnly", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     expect(form.validateAll()).toBe(true);
     const question = form.scope.lookupNode("readonly-question");
     assertQuestionNode(question);

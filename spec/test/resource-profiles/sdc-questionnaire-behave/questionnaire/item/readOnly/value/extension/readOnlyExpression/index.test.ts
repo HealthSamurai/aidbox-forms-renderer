@@ -47,7 +47,14 @@ describe("readOnlyExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const lock = form.scope.lookupNode("lock");
     const detail = form.scope.lookupNode("detail");
 
@@ -101,7 +108,14 @@ describe("readOnlyExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const section = form.scope.lookupNode("section");
     const lock = form.scope.lookupNode("lock");
     const child = form.scope.lookupNode("child");
@@ -140,7 +154,14 @@ describe("readOnlyExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const detail = form.scope.lookupNode("detail");
 
     assertQuestionNode(detail);

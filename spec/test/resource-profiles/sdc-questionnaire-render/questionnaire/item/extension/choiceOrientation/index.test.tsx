@@ -55,7 +55,14 @@ describe("choiceOrientation", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "color");
 
     render(<ListSelectRenderer node={question} />);
@@ -98,7 +105,14 @@ describe("choiceOrientation", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "fruit");
 
     render(<ListSelectRenderer node={question} />);
@@ -142,7 +156,14 @@ describe("choiceOrientation", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "allergy");
 
     render(<ListSelectRenderer node={question} />);

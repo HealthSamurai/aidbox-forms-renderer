@@ -25,7 +25,14 @@ describe("itemControl.text-box", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestionNode(form, "notes") as IQuestionNode<"text">;
 
     expect(question.control).toBe("text-box");

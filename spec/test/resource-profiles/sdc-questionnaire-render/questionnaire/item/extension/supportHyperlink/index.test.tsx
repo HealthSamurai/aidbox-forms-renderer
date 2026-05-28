@@ -66,7 +66,14 @@ describe("supportHyperlink", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "instructions");
 
     expect(question.supportHyperlinks).toEqual([
@@ -117,7 +124,14 @@ describe("supportHyperlink", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "instructions");
 
     render(<StringRenderer node={question} />);

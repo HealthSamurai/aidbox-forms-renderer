@@ -43,7 +43,14 @@ describe("type.decimal", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getDecimalQuestion(form, "weight");
 
     expect(question.unitDisplay).toBe("kg");
@@ -82,7 +89,14 @@ describe("type.decimal", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getDecimalQuestion(form, "dosage");
 
     render(<DecimalRenderer node={question} />);
@@ -111,7 +125,14 @@ describe("type.decimal", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getDecimalQuestion(form, "glucose");
 
     render(<DecimalRenderer node={question} />);

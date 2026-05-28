@@ -181,7 +181,14 @@ describe("itemWeight", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const q1 = getCodingQuestion(form, "q1");
     const q2 = getCodingQuestion(form, "q2");
     const total = form.scope.lookupNode("total");
@@ -247,7 +254,14 @@ describe("itemWeight", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const scoreInput = getCodingQuestion(form, "score-input");
     const total = form.scope.lookupNode("total");
     assertQuestionNode<"integer">(total);
@@ -289,7 +303,14 @@ describe("itemWeight", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const scoreInput = getCodingQuestion(form, "score-input");
     const total = form.scope.lookupNode("total");
     assertQuestionNode<"integer">(total);
@@ -357,7 +378,14 @@ describe("itemWeight", () => {
         ],
       };
 
-      const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+      const form = new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        undefined,
+        undefined,
+      );
       const frequency = getCodingQuestion(form, "frequency");
       const total = form.scope.lookupNode("total");
       assertQuestionNode<"integer">(total);

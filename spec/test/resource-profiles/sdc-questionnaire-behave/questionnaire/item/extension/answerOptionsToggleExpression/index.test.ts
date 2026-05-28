@@ -75,7 +75,14 @@ describe("answerOptionsToggleExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const toggle = form.scope.lookupNode("toggle");
     const color = form.scope.lookupNode("color");
 
@@ -133,7 +140,14 @@ describe("answerOptionsToggleExpression", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const color = form.scope.lookupNode("color");
 
     assertQuestionNode(color);

@@ -28,7 +28,7 @@ describe("linkId", () => {
   };
 
   const createStore = () =>
-    new FormStore(en, "r5", questionnaire, undefined, undefined);
+    new FormStore(en, "r5", "form", questionnaire, undefined, undefined);
 
   it("creates node stores for each top-level item", () => {
     const form = createStore();

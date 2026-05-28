@@ -41,7 +41,14 @@ describe("mimeType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("photo");
     assertQuestionNode(question);
     const answer = question.answers[0];
@@ -89,7 +96,14 @@ describe("mimeType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("document");
     assertQuestionNode(question);
 
@@ -123,7 +137,14 @@ describe("mimeType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("upload");
     assertQuestionNode(question);
 
@@ -158,7 +179,14 @@ describe("mimeType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("notes");
     assertQuestionNode(question);
 

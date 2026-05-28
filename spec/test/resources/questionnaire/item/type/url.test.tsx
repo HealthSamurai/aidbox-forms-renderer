@@ -48,7 +48,14 @@ describe("type.url", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const question = getUrlQuestion(form, "website");
 
     render(<StringRenderer node={question} />);

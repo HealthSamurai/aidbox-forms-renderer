@@ -32,7 +32,14 @@ describe("type.quantity", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuantityQuestion(form, "volume");
 
     const { container } = render(<QuantityRenderer node={question} />);
@@ -56,7 +63,14 @@ describe("type.quantity", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuantityQuestion(form, "volume");
 
     render(<QuantityRenderer node={question} />);

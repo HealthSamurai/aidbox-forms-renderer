@@ -73,6 +73,7 @@ export function Renderer<V extends FhirVersion = "r5">({
       new FormStore(
         en,
         fhirVersion,
+        "form",
         questionnaire,
         defaultQuestionnaireResponse,
       ),

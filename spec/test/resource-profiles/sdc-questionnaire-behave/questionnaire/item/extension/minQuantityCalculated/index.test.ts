@@ -49,7 +49,14 @@ describe("minQuantityCalculated", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const limit = form.scope.lookupNode("limit");
     const dose = form.scope.lookupNode("dose");
 
@@ -116,7 +123,14 @@ describe("minQuantityCalculated", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const dose = form.scope.lookupNode("dose");
 
     assertQuestionNode(dose);

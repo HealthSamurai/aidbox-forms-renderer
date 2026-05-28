@@ -70,7 +70,14 @@ describe("itemShortText", () => {
         ],
       };
 
-      const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+      const form = new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        undefined,
+        undefined,
+      );
       const question = getStringQuestion(form, "age");
 
       render(<StringRenderer node={question} />);
@@ -105,7 +112,14 @@ describe("itemShortText", () => {
         ],
       };
 
-      const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+      const form = new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        undefined,
+        undefined,
+      );
       const question = getStringQuestion(form, "age");
 
       render(<StringRenderer node={question} />);
@@ -134,7 +148,14 @@ describe("itemShortText", () => {
         ],
       };
 
-      const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+      const form = new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        undefined,
+        undefined,
+      );
       const question = getStringQuestion(form, "age");
 
       render(<StringRenderer node={question} />);

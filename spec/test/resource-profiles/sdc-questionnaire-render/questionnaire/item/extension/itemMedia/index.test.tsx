@@ -55,7 +55,14 @@ describe("itemMedia", () => {
       data: "AAAA",
     });
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "q1");
 
     render(<StringRenderer node={question} />);
@@ -73,7 +80,14 @@ describe("itemMedia", () => {
       url: "https://example.com/prompt.mp3",
     });
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "q1");
 
     const { container } = render(<StringRenderer node={question} />);
@@ -90,7 +104,14 @@ describe("itemMedia", () => {
       url: "https://example.com/prompt.mp4",
     });
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "q1");
 
     const { container } = render(<StringRenderer node={question} />);
@@ -107,7 +128,14 @@ describe("itemMedia", () => {
       url: "https://example.com/instructions.pdf",
     });
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "q1");
 
     render(<StringRenderer node={question} />);
@@ -124,7 +152,14 @@ describe("itemMedia", () => {
       contentType: "application/json",
     });
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getStringQuestion(form, "q1");
 
     render(<StringRenderer node={question} />);

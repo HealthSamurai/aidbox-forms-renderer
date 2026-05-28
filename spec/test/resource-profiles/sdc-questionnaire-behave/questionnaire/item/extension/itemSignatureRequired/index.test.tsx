@@ -88,7 +88,14 @@ const questionQuestionnaire: Questionnaire = {
 
 describe("itemSignatureRequired", () => {
   it("renders group signature input only after answer content exists", () => {
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
 
     const { rerender } = render(<Form store={form} />);
     expect(screen.queryByRole("button", { name: /sign/i })).toBeNull();
@@ -101,7 +108,14 @@ describe("itemSignatureRequired", () => {
   });
 
   it("writes ItemSignature extension to response when group signature is set", () => {
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     setStringAnswer(form, "consent-text", "I consent");
     const group = getGroup(form, "consent-group");
     group.setSignature(makeSignature());
@@ -140,7 +154,14 @@ describe("itemSignatureRequired", () => {
   });
 
   it("updates full form response when a group-level signature is set", () => {
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     setStringAnswer(form, "consent-text", "I consent");
     const group = getGroup(form, "consent-group");
     group.setSignature(makeSignature());
@@ -157,6 +178,7 @@ describe("itemSignatureRequired", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       repeatingGroupQuestionnaire,
       undefined,
       undefined,
@@ -188,6 +210,7 @@ describe("itemSignatureRequired", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       repeatingGroupQuestionnaire,
       undefined,
       undefined,
@@ -219,6 +242,7 @@ describe("itemSignatureRequired", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionQuestionnaire,
       undefined,
       undefined,
@@ -240,6 +264,7 @@ describe("itemSignatureRequired", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       {
         resourceType: "Questionnaire",
         status: "active",
@@ -277,6 +302,7 @@ describe("itemSignatureRequired", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       {
         resourceType: "Questionnaire",
         status: "active",
@@ -305,6 +331,41 @@ describe("itemSignatureRequired", () => {
     assertQuestionNode(details);
 
     const answer = details.answers[0];
+    assertDefined(answer);
+    answer.setValueByUser("Accepted");
+
+    expect(form.validateAll()).toBe(false);
+    expect(
+      group.issues.some((issue) =>
+        issue.diagnostics?.includes("Signature is required."),
+      ),
+    ).toBe(true);
+
+    group.setSignature(makeSignature());
+    expect(form.validateAll()).toBe(true);
+  });
+
+  it("requires signature when a repeating group has responses", () => {
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      repeatingGroupQuestionnaire,
+      undefined,
+      undefined,
+    );
+    const groupList = form.nodes[0];
+    expect(isGroupListStore(groupList)).toBe(true);
+    assertDefined(groupList);
+    if (!isGroupListStore(groupList)) {
+      throw new TypeError("Expected a repeating group list node.");
+    }
+    const group = groupList.nodes[0];
+    assertDefined(group);
+    const details = group.nodes[0];
+    assertQuestionNode(details);
+
+    const answer = details.answers[0] ?? details.addAnswer();
     assertDefined(answer);
     answer.setValueByUser("Accepted");
 

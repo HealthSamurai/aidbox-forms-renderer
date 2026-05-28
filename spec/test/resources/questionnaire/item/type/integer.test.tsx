@@ -33,7 +33,14 @@ describe("type.integer", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getIntegerQuestion(form, "count");
 
     render(<IntegerRenderer node={question} />);
@@ -65,7 +72,14 @@ describe("type.integer", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getIntegerQuestion(form, "pills");
 
     render(<IntegerRenderer node={question} />);

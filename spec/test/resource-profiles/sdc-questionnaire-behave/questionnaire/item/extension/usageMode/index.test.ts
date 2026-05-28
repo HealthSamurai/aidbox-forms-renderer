@@ -30,6 +30,7 @@ function createForm(
   return new FormStore(
     en,
     "r5",
+    "form",
     questionnaire,
     response,
     undefined,
@@ -294,6 +295,7 @@ describe("usageMode", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionnaire,
       response,
       undefined,

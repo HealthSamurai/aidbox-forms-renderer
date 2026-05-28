@@ -29,7 +29,14 @@ describe("itemControl.inline", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestionNode(form, "name");
 
     expect(question.answers.at(0)?.nodes.map((node) => node.linkId)).toContain(

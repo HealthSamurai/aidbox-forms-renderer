@@ -107,7 +107,7 @@ describe("renderer.language", () => {
   });
 
   it("updates translated content when language is changed", () => {
-    const form = new FormStore(en, "r5", translatedQuestionnaire);
+    const form = new FormStore(en, "r5", "form", translatedQuestionnaire);
     const question = getQuestion(form, "name");
 
     expect(question.text).toBe("Patient name");
@@ -118,7 +118,7 @@ describe("renderer.language", () => {
   });
 
   it("reacts to language changes", () => {
-    const form = new FormStore(en, "r5", translatedQuestionnaire);
+    const form = new FormStore(en, "r5", "form", translatedQuestionnaire);
     const seen: Array<string | undefined> = [];
 
     const dispose = autorun(() => {

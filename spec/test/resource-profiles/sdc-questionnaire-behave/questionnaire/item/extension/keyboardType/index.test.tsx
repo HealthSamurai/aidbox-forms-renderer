@@ -42,7 +42,14 @@ describe("keyboardType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "contact-phone");
 
     expect(question.keyboardType).toBe("tel");
@@ -75,7 +82,14 @@ describe("keyboardType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "chat-text");
 
     expect(question.keyboardType).toBe("text");
@@ -109,7 +123,14 @@ describe("keyboardType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "other");
 
     expect(question.keyboardType).toBeUndefined();
@@ -149,7 +170,14 @@ describe("keyboardType", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const child = getQuestion(form, "child");
 
     expect(child.keyboardType).toBeUndefined();

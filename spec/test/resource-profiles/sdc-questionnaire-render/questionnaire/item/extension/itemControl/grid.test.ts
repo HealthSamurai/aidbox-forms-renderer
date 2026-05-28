@@ -48,7 +48,14 @@ describe("itemControl.grid", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = getGroupNode(form, "grid");
 
     expect(group.control).toBe("grid");

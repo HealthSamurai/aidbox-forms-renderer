@@ -128,6 +128,7 @@ describe("custom extensions", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionnaire,
       undefined,
       undefined,

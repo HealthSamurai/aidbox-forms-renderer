@@ -18,7 +18,14 @@ describe("fhirVersion.r4", () => {
       ],
     };
 
-    const form = new FormStore(en, "r4", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r4",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const item = form.expressionResponse.item?.[0];
     expect(item).toBeDefined();
 

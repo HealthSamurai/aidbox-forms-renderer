@@ -51,7 +51,14 @@ describe("maxValue", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const birth = form.scope.lookupNode("birth");
     assertQuestionNode(birth);
     const checkIn = form.scope.lookupNode("check-in");

@@ -24,7 +24,14 @@ describe("required", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("first-name");
     assertQuestionNode(question);
 
@@ -61,7 +68,14 @@ describe("required", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("email");
     assertQuestionNode(question);
 
@@ -90,7 +104,14 @@ describe("required", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const display = form.scope.lookupNode("intro");
     expect(display && isDisplayNode(display)).toBe(true);
 
@@ -123,7 +144,14 @@ describe("required", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const toggle = form.scope.lookupNode("toggle");
     const details = form.scope.lookupNode("details");
     assertQuestionNode(toggle);
@@ -165,7 +193,14 @@ describe("required", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = form.scope.lookupNode("group");
     const child = form.scope.lookupNode("child");
     assertGroupNode(group);

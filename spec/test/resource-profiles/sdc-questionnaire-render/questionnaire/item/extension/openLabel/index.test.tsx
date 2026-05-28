@@ -79,7 +79,14 @@ describe("openLabel", () => {
   it("uses openLabel for unrestricted entry option", () => {
     const questionnaire = buildQuestionnaire("Other, please specify");
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getCodingQuestion(form, "symptom");
 
     render(<ListSelectRenderer node={question} />);
@@ -91,7 +98,14 @@ describe("openLabel", () => {
   it("falls back to default unrestricted entry label when openLabel is absent", () => {
     const questionnaire = buildQuestionnaire();
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getCodingQuestion(form, "symptom");
 
     render(<ListSelectRenderer node={question} />);

@@ -48,7 +48,14 @@ describe("type.string", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const question = getStringQuestion(form, "full-name");
 
     render(<StringRenderer node={question} />);

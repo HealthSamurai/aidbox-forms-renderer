@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { FormStore } from "@formbox/renderer/store/form/form-store.ts";
 import en from "@formbox/strings/en";
+import { assertGroupListStore } from "@formbox/renderer/store/group/group-list-store.ts";
+import { assertGroupNode } from "@formbox/renderer/store/group/group-store.ts";
 import { assertQuestionNode } from "@formbox/renderer/store/question/question-store.ts";
 import { assertDefined } from "@formbox/renderer/utilities.ts";
 
@@ -67,7 +69,14 @@ describe("item constraint extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("nickname");
     assertQuestionNode(question);
 
@@ -106,7 +115,14 @@ describe("item constraint extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("optional-note");
     assertQuestionNode(question);
 
@@ -141,7 +157,14 @@ describe("item constraint extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("given-name");
     assertQuestionNode(question);
 
@@ -156,5 +179,63 @@ describe("item constraint extension", () => {
 
     expect(form.validateAll()).toBe(true);
     expect(question.hasErrors).toBe(false);
+  });
+
+  it("enforces repeated group constraints only on submit", () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      item: [
+        {
+          linkId: "visit",
+          text: "Visit",
+          type: "group",
+          repeats: true,
+          required: true,
+          extension: [
+            targetConstraint({
+              key: "visit-note-required",
+              human: "Provide a visit note.",
+              expression: "item.where(linkId='note').answer.exists()",
+            }),
+          ],
+          item: [{ linkId: "note", text: "Note", type: "string" }],
+        },
+      ],
+    };
+
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
+    const groupList = form.nodes[0];
+    assertGroupListStore(groupList);
+
+    expect(form.validateAll()).toBe(false);
+    expect(groupList.hasErrors).toBe(true);
+
+    const group = groupList.nodes[0];
+    assertDefined(group);
+    assertGroupNode(group);
+    expect(
+      groupList.issues.some((issue) =>
+        issue.diagnostics?.includes("visit note"),
+      ),
+    ).toBe(false);
+    expect(group.issues.at(0)?.diagnostics).toContain("visit note");
+    expect(group.hasErrors).toBe(true);
+
+    const question = group.nodes[0];
+    assertQuestionNode(question);
+    const answer = question.answers[0] ?? question.addAnswer();
+    assertDefined(answer);
+    answer.setValueByUser("Seen today");
+
+    expect(form.validateAll()).toBe(true);
+    expect(groupList.hasErrors).toBe(false);
   });
 });

@@ -55,7 +55,14 @@ describe("maxQuantity", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("dose");
     assertQuestionNode(question);
     const answer = question.answers[0];
@@ -147,7 +154,14 @@ describe("maxQuantity", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("weight");
     assertQuestionNode(question);
 
@@ -173,7 +187,14 @@ describe("maxQuantity", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("dose");
     assertQuestionNode(question);
     const answer = question.answers[0];

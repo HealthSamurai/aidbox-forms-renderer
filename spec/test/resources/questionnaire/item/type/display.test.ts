@@ -17,7 +17,7 @@ describe("type.display", () => {
   };
 
   const createStore = () =>
-    new FormStore(en, "r5", questionnaire, undefined, undefined);
+    new FormStore(en, "r5", "form", questionnaire, undefined, undefined);
 
   it("creates a display store for display items", () => {
     const form = createStore();
@@ -56,6 +56,7 @@ describe("type.display", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionnaireWithChild,
       undefined,
       undefined,

@@ -38,7 +38,14 @@ describe("itemControl.gtable", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const list = getGroupListNode(form, "visits");
 
     expect(list.control).toBe("gtable");

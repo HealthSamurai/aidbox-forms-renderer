@@ -74,6 +74,7 @@ describe("questionnaire launchContext extension", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionnaire,
       undefined,
       undefined,
@@ -116,6 +117,7 @@ describe("questionnaire launchContext extension", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       questionnaire,
       undefined,
       undefined,
@@ -154,7 +156,14 @@ describe("questionnaire launchContext extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const collision = form.issues.find((issue) =>
       issue.diagnostics?.includes('Variable name collision for "patient"'),
     );
@@ -171,7 +180,14 @@ describe("questionnaire launchContext extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const diagnostics = form.issues
       .map((issue) => issue.diagnostics)
       .filter((value): value is string => value != undefined);
@@ -194,7 +210,14 @@ describe("questionnaire launchContext extension", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const diagnostics = form.issues
       .map((issue) => issue.diagnostics)
       .filter((value): value is string => value != undefined);
@@ -220,7 +243,14 @@ describe("questionnaire launchContext extension", () => {
       extension: [makeLaunchContext({ code: "context", types: ["Patient"] })],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const diagnostics = form.issues
       .map((issue) => issue.diagnostics)
       .filter((value): value is string => value != undefined);

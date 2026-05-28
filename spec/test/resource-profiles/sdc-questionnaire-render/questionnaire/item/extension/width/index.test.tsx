@@ -90,7 +90,14 @@ describe("width", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "q-px");
 
     expect(question.columnWidth).toBe("180px");
@@ -110,7 +117,14 @@ describe("width", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "q-percent");
 
     expect(question.columnWidth).toBe("35%");
@@ -152,7 +166,14 @@ describe("width", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const group = getGroup(form, "htable-group");
 
     render(<SelectionTableControl node={group} />);
@@ -195,7 +216,14 @@ describe("width", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const list = getGroupList(form, "gtable-group");
 
     render(<GridTableControl list={list} />);

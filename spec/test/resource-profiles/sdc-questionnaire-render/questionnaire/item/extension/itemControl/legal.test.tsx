@@ -32,6 +32,7 @@ describe("itemControl.legal", () => {
     const form = new FormStore(
       en,
       "r5",
+      "form",
       {
         resourceType: "Questionnaire",
         status: "active",

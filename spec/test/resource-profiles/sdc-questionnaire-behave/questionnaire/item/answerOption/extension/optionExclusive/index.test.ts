@@ -51,7 +51,14 @@ describe("optionExclusive", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "symptoms");
     const selection = question.answerOption.select;
 
@@ -95,7 +102,14 @@ describe("optionExclusive", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestion(form, "symptoms");
     const selection = question.answerOption.select;
 

@@ -25,7 +25,14 @@ describe("questionnaire", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = form.scope.lookupNode("nickname");
     expect(question && isQuestionNode(question)).toBe(true);
     assertQuestionNode(question);

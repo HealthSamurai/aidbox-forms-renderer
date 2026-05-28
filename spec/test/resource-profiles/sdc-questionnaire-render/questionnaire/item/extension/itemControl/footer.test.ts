@@ -20,7 +20,14 @@ describe("itemControl.footer", () => {
       ],
     };
 
-    const store = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const store = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
 
     expect(
       store.issues.some((issue) =>

@@ -158,7 +158,14 @@ describe("item.answer.value[x]", () => {
         ],
       };
 
-      const form = new FormStore(en, "r5", questionnaire, response, undefined);
+      const form = new FormStore(
+        en,
+        "r5",
+        "form",
+        questionnaire,
+        response,
+        undefined,
+      );
       const question = form.scope.lookupNode(linkId);
       expect(question && isQuestionNode(question)).toBe(true);
       assertQuestionNode(question);
@@ -311,6 +318,7 @@ describe("item.answer.value[x]", () => {
         const form = new FormStore(
           en,
           "r5",
+          "form",
           questionnaire,
           undefined,
           undefined,

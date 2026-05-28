@@ -49,7 +49,14 @@ describe("type.date", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, response, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      response,
+      undefined,
+    );
     const question = getDateQuestion(form, "dob");
 
     render(<DateRenderer node={question} />);
@@ -76,7 +83,14 @@ describe("type.date", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getDateQuestion(form, "visit");
 
     render(<DateRenderer node={question} />);

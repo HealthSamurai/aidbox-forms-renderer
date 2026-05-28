@@ -42,7 +42,14 @@ describe("sliderStepValue", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestionNode(
       form,
       "pain-score",
@@ -74,7 +81,14 @@ describe("sliderStepValue", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestionNode(form, "dose") as IQuestionNode<"quantity">;
 
     const { container } = render(<QuantitySliderRenderer node={question} />);

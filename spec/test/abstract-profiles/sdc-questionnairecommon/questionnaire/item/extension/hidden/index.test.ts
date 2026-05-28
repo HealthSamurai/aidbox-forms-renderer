@@ -31,7 +31,14 @@ describe("hidden", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const flag = form.scope.lookupNode("internal-flag");
     expect(flag && isQuestionNode(flag)).toBe(true);
     assertQuestionNode(flag);

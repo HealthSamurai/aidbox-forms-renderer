@@ -53,7 +53,14 @@ describe("itemControl.prompt", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getTextQuestion(form, "notes");
 
     render(<StringRenderer node={question} />);

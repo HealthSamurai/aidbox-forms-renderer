@@ -23,7 +23,14 @@ describe("maxValueCalculated", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const score = form.scope.lookupNode("score");
     assertQuestionNode(score);
 

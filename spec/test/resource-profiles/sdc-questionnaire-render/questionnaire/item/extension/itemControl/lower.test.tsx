@@ -33,7 +33,14 @@ describe("itemControl.lower", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getQuestionNode(form, "pain") as IQuestionNode<"integer">;
 
     expect(question.lower).toBe("No pain");

@@ -40,7 +40,14 @@ describe("type.attachment", () => {
         },
       ],
     };
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getAttachmentQuestion(form, "report");
 
     render(<AttachmentRenderer node={question} />);
@@ -73,7 +80,14 @@ describe("type.attachment", () => {
       ],
     };
 
-    const form = new FormStore(en, "r5", questionnaire, undefined, undefined);
+    const form = new FormStore(
+      en,
+      "r5",
+      "form",
+      questionnaire,
+      undefined,
+      undefined,
+    );
     const question = getAttachmentQuestion(form, "upload");
 
     const { container } = render(<AttachmentRenderer node={question} />);
