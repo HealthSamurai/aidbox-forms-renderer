@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { QuestionnaireRenderer } from "../lib/index.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type { CodingOf, QuestionnaireOf } from "@formbox/fhir";
 
@@ -29,7 +29,7 @@ function deprecatedPreferredTerminologyServer(url: string) {
 async function render(questionnaire: Questionnaire): Promise<string> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     fhirVersion: "r5",
     terminologyServerUrl: "https://terminology.example/default",

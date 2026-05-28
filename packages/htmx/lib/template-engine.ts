@@ -71,17 +71,19 @@ export function compileTemplates(sources: TemplateSources): Templates {
   ) as Templates;
 }
 
-export async function loadNativeTemplates(): Promise<RequiredTemplates> {
+export async function loadDefaultTemplates(): Promise<RequiredTemplates> {
   const templates = await loadTemplates(
     new URL(/* @vite-ignore */ "templates/", import.meta.url),
   );
   const missing = templateNames.filter((name) => templates[name] === undefined);
   if (missing.length > 0) {
-    throw new Error(`Missing native template files: ${missing.join(", ")}`);
+    throw new Error(`Missing default template files: ${missing.join(", ")}`);
   }
 
   return templates as RequiredTemplates;
 }
+
+export const loadNativeTemplates = loadDefaultTemplates;
 
 export async function loadTemplates(
   directory: string | URL,

@@ -14,6 +14,7 @@ export { htmlAttributes } from "./template.ts";
 export {
   compileTemplate,
   compileTemplates,
+  loadDefaultTemplates,
   loadNativeTemplates,
   loadTemplates,
   type TemplateSource,

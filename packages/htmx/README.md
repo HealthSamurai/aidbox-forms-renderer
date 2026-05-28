@@ -9,10 +9,10 @@ React, hydrate React, or manage MobX.
 The main API is built around a short-lived renderer instance:
 
 ```ts
-import { QuestionnaireRenderer, loadNativeTemplates } from "@formbox/htmx";
+import { QuestionnaireRenderer, loadDefaultTemplates } from "@formbox/htmx";
 
 const route = "/questionnaire";
-const templates = await loadNativeTemplates();
+const templates = await loadDefaultTemplates();
 const renderer = new QuestionnaireRenderer({
   token: "encounter-questionnaire",
   templates,
@@ -55,9 +55,9 @@ field encoding and parses the submitted payload in `renderer.process()`.
 ## Basic Integration
 
 ```ts
-import { QuestionnaireRenderer, loadNativeTemplates } from "@formbox/htmx";
+import { QuestionnaireRenderer, loadDefaultTemplates } from "@formbox/htmx";
 
-const templates = await loadNativeTemplates();
+const templates = await loadDefaultTemplates();
 
 async function renderQuestionnaire(request: Request): Promise<Response> {
   const route = "/questionnaire";
@@ -89,6 +89,59 @@ async function renderQuestionnaire(request: Request): Promise<Response> {
   }
 }
 ```
+
+## HTMX Integration
+
+The renderer does not own your page shell. If a POST should update more than
+the form itself, such as a status label or a rendered `QuestionnaireResponse`
+preview beside the form, target an application-owned wrapper and return that
+same wrapper for HTMX requests:
+
+```ts
+import {
+  compileTemplates,
+  loadDefaultTemplates,
+  loadTemplates,
+} from "@formbox/htmx";
+
+const templates = {
+  ...(await loadDefaultTemplates()),
+  ...(await loadTemplates("./questionnaire-templates")),
+  ...compileTemplates({
+    Form: `
+      <form{{{attrs attributes}}} hx-target="#questionnaire-app">
+        {{{fields}}}
+      </form>
+    `,
+  }),
+};
+
+async function handler(request: Request): Promise<Response> {
+  const rendered = await renderQuestionnaire(request);
+  const body =
+    request.headers.get("hx-request") === "true"
+      ? questionnaireApp(rendered)
+      : layout(questionnaireApp(rendered));
+
+  return html(body);
+}
+
+function questionnaireApp(rendered: {
+  form: string;
+  response: unknown;
+}): string {
+  return `
+    <div id="questionnaire-app">
+      ${rendered.form}
+      <pre>${JSON.stringify(rendered.response, null, 2)}</pre>
+    </div>
+  `;
+}
+```
+
+Use the default form swap when the form is the only dynamic region. Use an
+application wrapper when the result of `renderer.process(formData)` affects
+nearby UI outside the form.
 
 ## Lifecycle
 
@@ -129,8 +182,8 @@ const renderer = new QuestionnaireRenderer({
 
 `questionnaireResponse` is optional initial state.
 `token` is required and must be unique for each rendered form on the same page.
-`templates` is required; call `await loadNativeTemplates()` for the built-in
-file templates, or merge those templates with application overrides.
+`templates` is required; call `await loadDefaultTemplates()` for the package
+defaults, or merge those templates with application overrides.
 
 ### `renderer.process(formData)`
 
@@ -182,10 +235,10 @@ Use a custom `Form` template when the application needs to add shell markup or
 adjust attributes:
 
 ```ts
-import { compileTemplates, loadNativeTemplates } from "@formbox/htmx";
+import { compileTemplates, loadDefaultTemplates } from "@formbox/htmx";
 
 const templates = {
-  ...(await loadNativeTemplates()),
+  ...(await loadDefaultTemplates()),
   ...compileTemplates({
     Form: `
       <form{{{attrs attributes}}}>
@@ -245,22 +298,22 @@ const templates = compileTemplates({
 });
 ```
 
-Load the native templates explicitly:
+Load the default templates explicitly:
 
 ```ts
-import { loadNativeTemplates } from "@formbox/htmx";
+import { loadDefaultTemplates } from "@formbox/htmx";
 
-const templates = await loadNativeTemplates();
+const templates = await loadDefaultTemplates();
 ```
 
 If you prefer overrides as files, load a directory of `*.html.hbs` files and
-merge the result with the native templates:
+merge the result with the default templates:
 
 ```ts
-import { loadNativeTemplates, loadTemplates } from "@formbox/htmx";
+import { loadDefaultTemplates, loadTemplates } from "@formbox/htmx";
 
 const templates = {
-  ...(await loadNativeTemplates()),
+  ...(await loadDefaultTemplates()),
   ...(await loadTemplates("./questionnaire-templates")),
 };
 ```
@@ -285,7 +338,7 @@ Available Handlebars helpers:
 Use triple braces for renderer-provided HTML slots such as `fields`, `children`,
 `label`, `errors`, and `customOptionForm`.
 
-Native templates and user templates use the same data shape. The package does
+Default templates and user templates use the same data shape. The package does
 not keep a separate JSX fallback path.
 
 ### `renderer.getQuestionnaireResponse()`

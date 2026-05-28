@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { QuestionnaireRenderer } from "../lib/index.ts";
 import { countName, valueName } from "../lib/template.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type {
   CodingOf,
@@ -31,7 +31,7 @@ async function processAndRender(
 ): Promise<string> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     fhirVersion: "r5",
   });
@@ -49,7 +49,7 @@ async function processResponse(
 ) {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     fhirVersion: "r5",
   });

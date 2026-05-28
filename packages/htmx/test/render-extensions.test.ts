@@ -6,7 +6,7 @@ import {
   type QuestionnaireRendererOptions,
 } from "../lib/index.ts";
 import { searchName } from "../lib/template.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type {
   ElementOf,
@@ -188,7 +188,7 @@ async function render(
   const { templates, ...rendererOptions } = options ?? {};
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: { ...nativeTemplates, ...templates },
+    templates: { ...defaultTemplates, ...templates },
     questionnaire,
     fhirVersion: "r5",
     ...rendererOptions,
@@ -215,7 +215,7 @@ async function processAndRender(
   const { templates, ...rendererOptions } = options ?? {};
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: { ...nativeTemplates, ...templates },
+    templates: { ...defaultTemplates, ...templates },
     questionnaire,
     fhirVersion: "r5",
     ...rendererOptions,
@@ -243,7 +243,7 @@ async function processResponse(
   const { templates, ...rendererOptions } = options ?? {};
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: { ...nativeTemplates, ...templates },
+    templates: { ...defaultTemplates, ...templates },
     questionnaire,
     fhirVersion: "r5",
     ...rendererOptions,
@@ -1923,7 +1923,7 @@ describe("@formbox/htmx render extension parity", () => {
     };
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
       language: "es",
@@ -2042,7 +2042,7 @@ describe("@formbox/htmx render extension parity", () => {
     };
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });

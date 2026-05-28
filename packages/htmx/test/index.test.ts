@@ -9,12 +9,12 @@ import {
   QuestionnaireRenderer,
   compileTemplates,
   htmlAttributes,
-  loadNativeTemplates,
+  loadDefaultTemplates,
   loadTemplates,
   type QuestionnaireRendererOptions,
 } from "../lib/index.ts";
 import { templateNames } from "../lib/template.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type { QuestionnaireOf, QuestionnaireResponseOf } from "@formbox/fhir";
 
@@ -64,7 +64,7 @@ function withRenderer<T>(
   const { templates, ...rendererOptions } = options;
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: { ...nativeTemplates, ...templates },
+    templates: { ...defaultTemplates, ...templates },
     ...rendererOptions,
   });
   return Promise.resolve()
@@ -356,7 +356,7 @@ describe("@formbox/htmx", () => {
   it("supports renderer instances through the class API", async () => {
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire: baseQuestionnaire,
       fhirVersion: "r5",
     });
@@ -394,7 +394,7 @@ describe("@formbox/htmx", () => {
       fhirVersion: "r5",
       action: "/questionnaire",
       templates: {
-        ...nativeTemplates,
+        ...defaultTemplates,
         Form(properties) {
           const { attributes, fields } = properties;
           expect(attributes).toEqual({
@@ -504,8 +504,8 @@ describe("@formbox/htmx", () => {
     }
   });
 
-  it("loads native templates through the file template loader", async () => {
-    const templates = await loadNativeTemplates();
+  it("loads default templates through the file template loader", async () => {
+    const templates = await loadDefaultTemplates();
     const html = templates.TextInput({
       id: "patient-name",
       inputType: "text",
@@ -611,7 +611,7 @@ describe("@formbox/htmx", () => {
       questionnaire: baseQuestionnaire,
       fhirVersion: "r5",
       templates: {
-        ...nativeTemplates,
+        ...defaultTemplates,
         TextInput(properties) {
           return `<input data-custom-input="true" name="${String(properties.name)}">`;
         },
@@ -644,7 +644,7 @@ describe("@formbox/htmx", () => {
     };
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });

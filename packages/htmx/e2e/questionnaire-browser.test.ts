@@ -20,7 +20,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import {
   QuestionnaireRenderer,
-  loadNativeTemplates,
+  loadDefaultTemplates,
   type RenderMode,
 } from "../dist/index.js";
 
@@ -37,7 +37,7 @@ type TestServerOptions<V extends FhirVersion = "r5"> = {
 
 const require = createRequire(import.meta.url);
 const htmxScriptPath = require.resolve("htmx.org/dist/htmx.min.js");
-const nativeTemplates = await loadNativeTemplates();
+const defaultTemplates = await loadDefaultTemplates();
 const usageModeUrl =
   "http://hl7.org/fhir/StructureDefinition/questionnaire-usageMode";
 const hiddenUrl =
@@ -3352,7 +3352,7 @@ async function renderForm(
     fhirVersion: options.fhirVersion ?? "r5",
     mode: options.mode,
     templates: {
-      ...nativeTemplates,
+      ...defaultTemplates,
       Form({ fields }) {
         return [
           `<div id="questionnaire">`,

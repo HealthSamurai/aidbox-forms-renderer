@@ -1,12 +1,12 @@
 import {
   QuestionnaireRenderer,
   htmlAttributes,
-  loadNativeTemplates,
+  loadDefaultTemplates,
 } from "../lib/index.ts";
 
 import type { DemoExample } from "./examples.ts";
 
-const nativeTemplates = await loadNativeTemplates();
+const defaultTemplates = await loadDefaultTemplates();
 
 export async function renderIndex(
   examples: readonly DemoExample[],
@@ -55,7 +55,7 @@ export async function renderExampleForm(
     fhirVersion: "r5",
     action: route,
     templates: {
-      ...nativeTemplates,
+      ...defaultTemplates,
       Form({ attributes, fields }) {
         return `<form${htmlAttributes({ ...attributes, "hx-swap": "morphdom" })}>${fields}</form>`;
       },

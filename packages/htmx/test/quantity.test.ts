@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import strings from "@formbox/strings";
 
 import { QuestionnaireRenderer } from "../lib/index.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type {
   CodingOf,
@@ -55,7 +55,7 @@ const rateUnitOptions: Coding[] = [
 async function render(questionnaire: Questionnaire): Promise<string> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     fhirVersion: "r5",
   });
@@ -72,7 +72,7 @@ async function renderWithResponse(
 ): Promise<string> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     questionnaireResponse,
     fhirVersion: "r5",
@@ -91,7 +91,7 @@ async function process(
 ): Promise<QuestionnaireResponse> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     questionnaireResponse,
     fhirVersion: "r5",
@@ -111,7 +111,7 @@ async function processAndRender(
 ): Promise<string> {
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: nativeTemplates,
+    templates: defaultTemplates,
     questionnaire,
     questionnaireResponse,
     fhirVersion: "r5",
@@ -224,7 +224,7 @@ describe("@formbox/htmx quantity parity", () => {
     );
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });
@@ -280,7 +280,7 @@ describe("@formbox/htmx quantity parity", () => {
     );
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });
@@ -675,7 +675,7 @@ describe("@formbox/htmx quantity parity", () => {
     );
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });
@@ -741,7 +741,7 @@ describe("@formbox/htmx quantity parity", () => {
     );
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });
@@ -921,7 +921,7 @@ describe("@formbox/htmx quantity parity", () => {
     };
     const renderer = new QuestionnaireRenderer({
       token: "form",
-      templates: nativeTemplates,
+      templates: defaultTemplates,
       questionnaire,
       fhirVersion: "r5",
     });

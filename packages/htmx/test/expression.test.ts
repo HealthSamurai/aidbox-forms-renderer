@@ -4,7 +4,7 @@ import {
   QuestionnaireRenderer,
   type QuestionnaireRendererOptions,
 } from "../lib/index.ts";
-import { nativeTemplates } from "./native-templates.ts";
+import { defaultTemplates } from "./default-templates.ts";
 
 import type {
   ExtensionOf,
@@ -99,7 +99,7 @@ function withRenderer<T>(
   const { templates, ...rendererOptions } = options;
   const renderer = new QuestionnaireRenderer({
     token: "form",
-    templates: { ...nativeTemplates, ...templates },
+    templates: { ...defaultTemplates, ...templates },
     ...rendererOptions,
   });
   return Promise.resolve()
