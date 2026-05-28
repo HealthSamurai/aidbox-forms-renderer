@@ -1,6 +1,6 @@
 {
   "name": "@formbox/htmx",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Server-rendered HTMX HTML renderer for Formbox FHIR Questionnaires",
   "private": false,
   "type": "module",
