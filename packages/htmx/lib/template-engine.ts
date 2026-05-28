@@ -83,8 +83,6 @@ export async function loadDefaultTemplates(): Promise<RequiredTemplates> {
   return templates as RequiredTemplates;
 }
 
-export const loadNativeTemplates = loadDefaultTemplates;
-
 export async function loadTemplates(
   directory: string | URL,
 ): Promise<Templates> {

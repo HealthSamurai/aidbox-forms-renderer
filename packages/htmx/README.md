@@ -95,7 +95,10 @@ async function renderQuestionnaire(request: Request): Promise<Response> {
 The renderer does not own your page shell. If a POST should update more than
 the form itself, such as a status label or a rendered `QuestionnaireResponse`
 preview beside the form, target an application-owned wrapper and return that
-same wrapper for HTMX requests:
+same wrapper for HTMX requests.
+
+For dynamic questionnaires, prefer morphdom swaps so focus and nearby DOM state
+survive server-rendered updates better than plain `outerHTML` replacement:
 
 ```ts
 import {
@@ -109,7 +112,7 @@ const templates = {
   ...(await loadTemplates("./questionnaire-templates")),
   ...compileTemplates({
     Form: `
-      <form{{{attrs attributes}}} hx-target="#questionnaire-app">
+      <form{{{attrs attributes}}} hx-target="#questionnaire-app" hx-swap="morphdom">
         {{{fields}}}
       </form>
     `,
@@ -137,6 +140,16 @@ function questionnaireApp(rendered: {
     </div>
   `;
 }
+```
+
+Include the HTMX morphdom extension in the application shell:
+
+```html
+<script src="https://unpkg.com/morphdom@2.7.8/dist/morphdom-umd.min.js"></script>
+<script src="https://unpkg.com/htmx-ext-morphdom-swap@2.0.0/morphdom-swap.js"></script>
+<body hx-ext="morphdom-swap">
+  <div id="questionnaire-app">...</div>
+</body>
 ```
 
 Use the default form swap when the form is the only dynamic region. Use an

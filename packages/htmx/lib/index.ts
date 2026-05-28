@@ -15,7 +15,6 @@ export {
   compileTemplate,
   compileTemplates,
   loadDefaultTemplates,
-  loadNativeTemplates,
   loadTemplates,
   type TemplateSource,
   type TemplateSources,
