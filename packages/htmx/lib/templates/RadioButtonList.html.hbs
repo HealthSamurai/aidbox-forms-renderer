@@ -1,0 +1,27 @@
+{{!--
+Template: RadioButtonList
+
+Inputs:
+- id: fieldset id.
+- options: items with token, label, checked, and disabled.
+- selectedOption: current selected option state.
+- hiddenValue: hidden mirror value for disabled or preserved selections.
+- baselineName/baselineValue: hidden original value for protected selection state.
+- specifyOtherOption/customOptionForm: custom option entry controls.
+- orientation/disabled/isLoading: list presentation and state.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+<fieldset{{{attr "id" id}}} role="radiogroup"{{{attr "data-orientation" orientation}}}{{{attr "aria-labelledby" ariaLabelledBy}}}>
+  {{#if hiddenValue}}
+    <input type="hidden"{{{attr "name" name}}}{{{attr "value" hiddenValue}}}>
+  {{/if}}
+  {{#if baselineValue}}
+    <input type="hidden"{{{attr "name" baselineName}}}{{{attr "value" baselineValue}}}>
+  {{/if}}
+  {{#each options}}
+    <label><input{{{fieldAttributes ..}}} type="radio"{{{attr "value" token}}}{{{attr "checked" checked}}}{{{attr "disabled" disabled}}}{{{attr "aria-describedby" ../ariaDescribedBy}}}>{{{label}}}</label>
+  {{/each}}
+  {{{customOptionForm}}}
+</fieldset>

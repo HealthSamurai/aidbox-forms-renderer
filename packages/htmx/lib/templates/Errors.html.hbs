@@ -1,0 +1,15 @@
+{{!--
+Template: Errors
+
+Inputs:
+- id: error container id.
+- messages: escaped validation messages as html entries.
+- hasMessages: true when messages should render.
+--}}
+{{#if hasMessages}}
+  <ul{{{attr "id" id}}} class="fb-errors">
+    {{#each messages}}
+      <li>{{{html}}}</li>
+    {{/each}}
+  </ul>
+{{/if}}

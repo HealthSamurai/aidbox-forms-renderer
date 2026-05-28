@@ -1,0 +1,16 @@
+{{!--
+Template: NumberInput
+
+Inputs:
+- id: control id.
+- value/inputValue: numeric answer value prepared for the native input.
+- unitLabel/unitId/describedBy: optional rendered unit text and combined aria description.
+- disabled/placeholder/step/min/max: native input state and constraints.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+<input{{{fieldAttributes}}}{{{attr "id" id}}} type="number"{{{attr "value" inputValue}}}{{{attr "readonly" disabled}}}{{{attr "placeholder" placeholder}}}{{{attr "step" step}}}{{{attr "min" min}}}{{{attr "max" max}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" describedBy}}}>
+{{#if unitLabel}}
+  <span{{{attr "id" unitId}}}>{{unitLabel}}</span>
+{{/if}}

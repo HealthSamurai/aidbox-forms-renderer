@@ -1,0 +1,32 @@
+{{!--
+Template: SelectInput
+
+Inputs:
+- id: select id.
+- value: selected option token.
+- options: items with token, label, selected, disabled, and exclusive.
+- selectedOption: current selected option state.
+- hiddenValue: true when the selected token needs a hidden mirror.
+- baselineName/baselineValue: hidden original value for protected selection state.
+- searchName/searchLabel: server-side option search state.
+- placeholder/specifyOtherOption/customOptionForm: option presentation and custom entry controls.
+- disabled/isLoading/isBusy: select state.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+{{#if hiddenValue}}
+  <input type="hidden"{{{attr "name" name}}}{{{attr "value" value}}}>
+{{/if}}
+{{#if baselineValue}}
+  <input type="hidden"{{{attr "name" baselineName}}}{{{attr "value" baselineValue}}}>
+{{/if}}
+<select{{{fieldAttributes}}}{{{attr "id" id}}}{{{attr "disabled" disabled}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" ariaDescribedBy}}}{{{attr "aria-busy" isBusy}}}>
+  {{#unless placeholder}}
+    <option value=""></option>
+  {{/unless}}
+  {{#each options}}
+    <option{{{attr "value" token}}}{{{attr "disabled" disabled}}}{{{attr "selected" selected}}}>{{{label}}}</option>
+  {{/each}}
+</select>
+{{{customOptionForm}}}

@@ -1,0 +1,14 @@
+{{!--
+Template: DateInput
+
+Inputs:
+- id: control id.
+- inputType: date or text fallback input type.
+- step: date step attribute, currently undefined.
+- value: submitted date string.
+- disabled/placeholder/min/max: native input state and constraints.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+<input{{{fieldAttributes}}}{{{attr "id" id}}}{{{attr "type" inputType}}}{{{attr "step" step}}}{{{attr "value" value}}}{{{attr "readonly" disabled}}}{{{attr "placeholder" placeholder}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" ariaDescribedBy}}}{{{attr "min" min}}}{{{attr "max" max}}}>

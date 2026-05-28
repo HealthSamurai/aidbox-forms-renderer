@@ -1,0 +1,39 @@
+{{!--
+Template: Table
+
+Inputs:
+- hasRowHeader: true when rows need a header column.
+- columns: column items with token, content, errors, width, widthStyle, and isLoading.
+- rows: row items with token, content, errors, cells, remove action fields, and isLoading.
+- rows[].cells: cell items with token and content.
+--}}
+<table>
+  <thead>
+    <tr>
+      {{#if hasRowHeader}}
+        <th></th>
+      {{/if}}
+      {{#each columns}}
+        <th{{{attr "style" widthStyle}}}>{{{content}}}{{{errors}}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each rows}}
+      <tr>
+        {{#if ../hasRowHeader}}
+          <th>
+            {{{content}}}
+            {{{errors}}}
+            {{#if removeAction}}
+              <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{{removeLabelHtml}}}</button>
+            {{/if}}
+          </th>
+        {{/if}}
+        {{#each cells}}
+          <td>{{{content}}}</td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

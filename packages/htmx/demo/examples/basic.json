@@ -1,0 +1,98 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-basic",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-basic",
+  "title": "Basic Form",
+  "description": "Required fields, repeated answers, repeated groups, choice options, and enableWhen.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "patient",
+      "text": "Patient",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "name",
+          "text": "Patient name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "linkId": "birth-date",
+          "text": "Birth date",
+          "type": "date"
+        },
+        {
+          "linkId": "alias",
+          "text": "Alias",
+          "type": "string",
+          "repeats": true
+        }
+      ]
+    },
+    {
+      "linkId": "symptom",
+      "text": "Symptom",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "symptom-name",
+          "text": "Symptom",
+          "type": "string",
+          "required": true
+        },
+        {
+          "linkId": "severity",
+          "text": "Severity",
+          "type": "coding",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "https://formbox.healthsamurai.dev/CodeSystem/severity",
+                "code": "mild",
+                "display": "Mild"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://formbox.healthsamurai.dev/CodeSystem/severity",
+                "code": "moderate",
+                "display": "Moderate"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://formbox.healthsamurai.dev/CodeSystem/severity",
+                "code": "severe",
+                "display": "Severe"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "onset",
+          "text": "Onset",
+          "type": "date"
+        }
+      ]
+    },
+    {
+      "linkId": "follow-up-needed",
+      "text": "Follow-up needed",
+      "type": "boolean"
+    },
+    {
+      "linkId": "follow-up-note",
+      "text": "Follow-up note",
+      "type": "text",
+      "enableWhen": [
+        {
+          "question": "follow-up-needed",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ]
+    }
+  ]
+}

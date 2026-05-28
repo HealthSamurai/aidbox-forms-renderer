@@ -1,0 +1,70 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-visibility",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-visibility",
+  "title": "Visibility And Read-only",
+  "description": "Hidden fields, protected disabled display, readOnly fields, and usageMode.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "gate",
+      "text": "Enable protected fields",
+      "type": "boolean"
+    },
+    {
+      "linkId": "readonly",
+      "text": "Read only",
+      "type": "string",
+      "readOnly": true,
+      "initial": [{ "valueString": "server-readonly" }]
+    },
+    {
+      "linkId": "secret",
+      "text": "Secret",
+      "type": "string",
+      "initial": [{ "valueString": "hidden-in-response" }],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "protected",
+      "text": "Protected until enabled",
+      "type": "string",
+      "disabledDisplay": "protected",
+      "initial": [{ "valueString": "protected initial" }],
+      "enableWhen": [
+        {
+          "question": "gate",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "capture-only",
+      "text": "Capture only",
+      "type": "string",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-usageMode",
+          "valueCode": "capture"
+        }
+      ]
+    },
+    {
+      "linkId": "display-only",
+      "text": "Display only",
+      "type": "string",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-usageMode",
+          "valueCode": "display"
+        }
+      ]
+    }
+  ]
+}

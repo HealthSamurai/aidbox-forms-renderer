@@ -1,0 +1,14 @@
+{{!--
+Template: RadioButton
+
+Inputs:
+- id: control id.
+- groupName: source radio group name, if supplied.
+- value/hiddenValue: submitted radio value and hidden mirror.
+- checked/disabled: current radio state.
+- label: rendered inline label html.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+<label>{{#if hiddenValue}}<input type="hidden"{{{attr "name" name}}}{{{attr "value" hiddenValue}}}>{{/if}}<input{{{fieldAttributes}}}{{{attr "id" id}}} type="radio"{{{attr "value" value}}}{{{attr "checked" checked}}}{{{attr "disabled" disabled}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" ariaDescribedBy}}}>{{{label}}}</label>

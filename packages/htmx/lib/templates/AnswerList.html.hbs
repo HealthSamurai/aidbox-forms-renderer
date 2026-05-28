@@ -1,0 +1,17 @@
+{{!--
+Template: AnswerList
+
+Inputs:
+- children: rendered repeated answer rows.
+- hasCount/countName/count: hidden occurrence count state.
+- actionName/addAction/addLabel: add-answer submit action.
+- linkId: current question link id for data attributes.
+- path: renderer node path, when present.
+--}}
+{{#if hasCount}}
+  <input type="hidden"{{{attr "name" countName}}}{{{attr "value" count}}}>
+{{/if}}
+{{{children}}}
+{{#if addAction}}
+  <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="add-action"{{{attr "name" actionName}}}{{{attr "value" addAction}}}>{{addLabel}}</button>
+{{/if}}

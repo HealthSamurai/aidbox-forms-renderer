@@ -1,0 +1,10 @@
+{{!--
+Template: OptionDisplay
+
+Inputs:
+- children: rendered option text.
+- prefix: optional option prefix.
+- media: rendered attachment media html.
+- attachmentLabel: accessible text used while rendering media.
+--}}
+<span>{{{media}}}{{#if prefix}}{{{prefix}}} {{/if}}{{{children}}}</span>

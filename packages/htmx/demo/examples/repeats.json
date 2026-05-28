@@ -1,0 +1,46 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-repeats",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-repeats",
+  "title": "Repeats And Occurrence",
+  "description": "Repeated questions, repeated groups, minOccurs, maxOccurs, add, and remove actions.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "symptom",
+      "text": "Symptoms",
+      "type": "string",
+      "repeats": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+          "valueInteger": 2
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "linkId": "visit",
+      "text": "Visit",
+      "type": "group",
+      "repeats": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs",
+          "valueInteger": 2
+        }
+      ],
+      "item": [
+        { "linkId": "visit-note", "text": "Visit note", "type": "string" },
+        { "linkId": "visit-score", "text": "Visit score", "type": "integer" }
+      ]
+    }
+  ]
+}

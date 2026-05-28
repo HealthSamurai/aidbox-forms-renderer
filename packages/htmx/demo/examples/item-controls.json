@@ -1,0 +1,239 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-item-controls",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-item-controls",
+  "title": "Item Controls",
+  "description": "Question and group controls rendered through the shared HTMX templates.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "dropdown",
+      "text": "Drop-down",
+      "type": "coding",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "drop-down"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "alpha",
+            "display": "Alpha"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "bravo",
+            "display": "Bravo"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "radio",
+      "text": "Radio",
+      "type": "coding",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "low",
+            "display": "Low"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "high",
+            "display": "High"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "checkbox",
+      "text": "Check-box",
+      "type": "coding",
+      "repeats": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "check-box"
+              }
+            ]
+          }
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "a",
+            "display": "A"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://example.test/demo-control",
+            "code": "b",
+            "display": "B"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "slider",
+      "text": "Slider",
+      "type": "integer",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "slider"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 10
+        }
+      ]
+    },
+    {
+      "linkId": "spinner",
+      "text": "Spinner",
+      "type": "decimal",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "spinner"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "text-box",
+      "text": "Text box",
+      "type": "text",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "text-box"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "text-box-prompt",
+          "text": "Prompt text",
+          "type": "display",
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "prompt"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "tabs",
+      "text": "Tabs",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "tab-container"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "tab-one",
+          "text": "Tab one",
+          "type": "group",
+          "item": [
+            {
+              "linkId": "tab-one-note",
+              "text": "Tab one note",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "linkId": "tab-two",
+          "text": "Tab two",
+          "type": "group",
+          "item": [
+            {
+              "linkId": "tab-two-note",
+              "text": "Tab two note",
+              "type": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

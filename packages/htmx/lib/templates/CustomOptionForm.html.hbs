@@ -1,0 +1,16 @@
+{{!--
+Template: CustomOptionForm
+
+Inputs:
+- content: rendered custom option fields.
+- errors: rendered validation errors.
+- actionName: submit action field name.
+- submitLabel/cancelLabel: button labels.
+- canSubmit: source theme state, if supplied.
+--}}
+<fieldset>
+  {{{content}}}
+  {{{errors}}}
+  <button type="submit"{{{attr "name" actionName}}} value="submit-custom">{{submitLabel}}</button>
+  <button type="submit"{{{attr "name" actionName}}} value="cancel-custom">{{cancelLabel}}</button>
+</fieldset>

@@ -1,0 +1,97 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-pages",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-pages",
+  "title": "Pages",
+  "description": "Header, footer, page navigation, and off-page answer preservation.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "header",
+      "text": "Page header",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "header"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "page-one",
+      "text": "Page one",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "page"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "page-name",
+          "text": "Page name",
+          "type": "string",
+          "item": [
+            {
+              "linkId": "page-name-detail",
+              "text": "Page name detail",
+              "type": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "page-two",
+      "text": "Page two",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "page"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [{ "linkId": "page-note", "text": "Page note", "type": "string" }]
+    },
+    {
+      "linkId": "footer",
+      "text": "Page footer",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "footer"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

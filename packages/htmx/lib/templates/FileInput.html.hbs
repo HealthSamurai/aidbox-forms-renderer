@@ -1,0 +1,20 @@
+{{!--
+Template: FileInput
+
+Inputs:
+- id: control id.
+- value/hiddenValue: current attachment and hidden JSON mirror.
+- clearAction/clearLabel: clear-file submit control state.
+- dataLinkId/hxInclude: clear button HTMX attributes.
+- disabled/accept: native file input state.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+{{#if hiddenValue}}
+  <input type="hidden"{{{attr "name" name}}}{{{attr "value" hiddenValue}}}>
+{{/if}}
+<input{{{fieldAttributes}}}{{{attr "id" id}}} type="file"{{{attr "disabled" disabled}}}{{{attr "accept" accept}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" ariaDescribedBy}}}>
+{{#if clearAction}}
+  <button type="submit"{{{attr "data-fb-link-id" dataLinkId}}} data-fb-field="value"{{{attr "name" name}}} value=""{{{attr "hx-include" hxInclude}}}>{{clearLabel}}</button>
+{{/if}}

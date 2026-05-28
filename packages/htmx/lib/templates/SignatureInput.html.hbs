@@ -1,0 +1,12 @@
+{{!--
+Template: SignatureInput
+
+Inputs:
+- id: control id.
+- value/inputValue: serialized signature value.
+- disabled: source disabled state, if supplied.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+<input{{{fieldAttributes}}}{{{attr "id" id}}} type="hidden"{{{attr "value" inputValue}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" ariaDescribedBy}}}>

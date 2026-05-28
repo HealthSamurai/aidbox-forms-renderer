@@ -28,6 +28,8 @@
       "@formbox/strings": ["packages/strings/lib"],
       "@formbox/strings/*": ["packages/strings/lib/*"],
       "@formbox/theme": ["packages/theme/lib"],
+      "@formbox/htmx": ["packages/htmx/lib"],
+      "@formbox/htmx/*": ["packages/htmx/lib/*"],
       "@formbox/antd-theme": ["themes/antd-theme/lib"],
       "@formbox/mantine-theme": ["themes/mantine-theme/lib"],
       "@formbox/hs-theme": ["themes/hs-theme/lib"],

@@ -1,0 +1,27 @@
+{{!--
+Template: TabContainer
+
+Inputs:
+- linkId: tab group link id.
+- header/errors: rendered tab group sections.
+- items: tab items with token, label, content, buttonId, panelId, selected, ariaSelected, and tabAction.
+- active: currently selected item.
+- value: active item index.
+- actionName/tabName: submit fields for tab selection.
+- path: renderer node path, when present.
+--}}
+<section{{{attr "data-fb-link-id" linkId}}}>
+  {{#if tabName}}
+    <input type="hidden"{{{attr "name" tabName}}}{{{attr "value" value}}}>
+  {{/if}}
+  {{{header}}}
+  {{{errors}}}
+  <div role="tablist">
+    {{#each items}}
+      <button type="submit" role="tab"{{{attr "id" buttonId}}}{{{attr "aria-controls" panelId}}}{{{attr "aria-selected" ariaSelected}}}{{{attr "data-fb-link-id" ../linkId}}} data-fb-field="tab-action"{{{attr "name" ../actionName}}}{{{attr "value" tabAction}}}>{{{label}}}</button>
+    {{/each}}
+  </div>
+  {{#if active}}
+    <section role="tabpanel"{{{attr "id" active.panelId}}}{{{attr "aria-labelledby" active.buttonId}}}>{{{active.content}}}</section>
+  {{/if}}
+</section>

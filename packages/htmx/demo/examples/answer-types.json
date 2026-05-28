@@ -1,0 +1,23 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-answer-types",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-answer-types",
+  "title": "Answer Types",
+  "description": "Native controls for the answer types currently rendered by the HTMX package.",
+  "status": "active",
+  "item": [
+    { "linkId": "string", "text": "String", "type": "string" },
+    { "linkId": "text", "text": "Text", "type": "text" },
+    { "linkId": "url", "text": "URL", "type": "url" },
+    { "linkId": "integer", "text": "Integer", "type": "integer" },
+    { "linkId": "decimal", "text": "Decimal", "type": "decimal" },
+    { "linkId": "boolean", "text": "Boolean", "type": "boolean" },
+    { "linkId": "date", "text": "Date", "type": "date" },
+    { "linkId": "date-time", "text": "Date time", "type": "dateTime" },
+    { "linkId": "time", "text": "Time", "type": "time" },
+    { "linkId": "coding", "text": "Coding", "type": "coding" },
+    { "linkId": "quantity", "text": "Quantity", "type": "quantity" },
+    { "linkId": "reference", "text": "Reference", "type": "reference" },
+    { "linkId": "attachment", "text": "Attachment", "type": "attachment" }
+  ]
+}

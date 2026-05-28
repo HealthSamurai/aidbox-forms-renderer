@@ -9,7 +9,15 @@ import unicorn from "eslint-plugin-unicorn";
 const tsconfigRootDirection = new URL("./", import.meta.url).pathname;
 
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/storybook-static/**"] },
+  {
+    ignores: [
+      "**/dist/**",
+      "**/storybook-static/**",
+      "demo.ts",
+      "packages/htmx/demo.ts",
+      "packages/htmx/demo/**",
+    ],
+  },
   unicorn.configs["flat/recommended"],
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],

@@ -1,0 +1,12 @@
+{{!--
+Template: Legal
+
+Inputs:
+- id: dialog id.
+- children: rendered legal content.
+- ariaLabel: button accessible label.
+--}}
+<span>
+  <button type="button"{{{attr "aria-describedby" id}}}{{{attr "aria-label" ariaLabel}}}>!</button>
+  <span{{{attr "id" id}}} role="dialog">{{{children}}}</span>
+</span>

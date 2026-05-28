@@ -1,0 +1,57 @@
+{
+  "name": "@formbox/htmx",
+  "version": "0.3.0",
+  "description": "Server-rendered HTMX HTML renderer for Formbox FHIR Questionnaires",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HealthSamurai/formbox-renderer"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b ./tsconfig.lib.json && vite build",
+    "demo": "bun run ./demo/server.ts",
+    "dev": "bun run ./demo/server.ts",
+    "lint": "eslint .",
+    "test:e2e": "pnpm run build && playwright test e2e",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@formbox/fhir": "workspace:*",
+    "@formbox/renderer": "workspace:*",
+    "@formbox/strings": "workspace:*",
+    "@formbox/theme": "workspace:*",
+    "@lhncbc/ucum-lhc": "7.1.3",
+    "fhirpath": "^4.6.0",
+    "handlebars": "^4.7.9",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^4.1.1",
+    "mobx-utils": "^6.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "htmx.org": "^2.0.10",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.17"
+  }
+}

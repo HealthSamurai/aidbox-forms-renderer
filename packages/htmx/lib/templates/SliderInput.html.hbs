@@ -1,0 +1,23 @@
+{{!--
+Template: SliderInput
+
+Inputs:
+- id: control id.
+- value/inputValue: numeric answer value prepared for the native range input.
+- lowerLabel/upperLabel: rendered range end labels.
+- unitLabel/unitId/describedBy: optional rendered unit text and combined aria description.
+- disabled/step/min/max: native range state and constraints.
+- ariaLabelledBy/ariaDescribedBy: accessibility references.
+- field/name/data-fb-link-id/data-fb-field/hx-include: generated form field attributes.
+- path: renderer node path, when present.
+--}}
+{{#if lowerLabel}}
+  <span>{{lowerLabel}}</span>
+{{/if}}
+<input{{{fieldAttributes}}}{{{attr "id" id}}} type="range"{{{attr "value" inputValue}}}{{{attr "disabled" disabled}}}{{{attr "step" step}}}{{{attr "min" min}}}{{{attr "max" max}}}{{{attr "aria-labelledby" ariaLabelledBy}}}{{{attr "aria-describedby" describedBy}}}>
+{{#if upperLabel}}
+  <span>{{upperLabel}}</span>
+{{/if}}
+{{#if unitLabel}}
+  <span{{{attr "id" unitId}}}>{{unitLabel}}</span>
+{{/if}}
