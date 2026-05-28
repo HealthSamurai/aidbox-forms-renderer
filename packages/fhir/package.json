@@ -1,6 +1,6 @@
 {
   "name": "@formbox/fhir",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "FHIR R4/R5 adapters and shared types for Formbox",
   "private": false,
   "type": "module",

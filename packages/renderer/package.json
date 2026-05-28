@@ -1,6 +1,6 @@
 {
   "name": "@formbox/renderer",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Formbox Renderer for FHIR R4 and R5 Questionnaires",
   "type": "module",
   "license": "MIT",
