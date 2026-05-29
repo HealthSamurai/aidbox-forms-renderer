@@ -661,6 +661,64 @@ describe("@formbox/htmx", () => {
     }
   });
 
+  it("keeps submit validation live after a non-submit post", async () => {
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      url: "Questionnaire/live-validation",
+      item: [
+        {
+          linkId: "required-name",
+          text: "Required name",
+          type: "string",
+          required: true,
+        },
+        {
+          linkId: "note",
+          text: "Note",
+          type: "string",
+        },
+      ],
+    };
+    const submit = hiddenFormData(
+      await renderQuestionnaire({ questionnaire, fhirVersion: "r5" }),
+    );
+    submit.set("fb[action]", "submit");
+    const invalidHtml = await processAndRender(submit, {
+      questionnaire,
+      fhirVersion: "r5",
+    });
+
+    expect(invalidHtml).toContain("At least one");
+    expect(invalidHtml).toContain('name="fb[submitAttempted]" value="true"');
+
+    const changed = hiddenFormData(invalidHtml);
+    changed.set(attributeFrom(invalidHtml, "note", "name"), "Changed");
+    const stillInvalidHtml = await processAndRender(changed, {
+      questionnaire,
+      fhirVersion: "r5",
+    });
+
+    expect(stillInvalidHtml).toContain("At least one");
+    expect(stillInvalidHtml).toContain(
+      'name="fb[submitAttempted]" value="true"',
+    );
+
+    const valid = hiddenFormData(stillInvalidHtml);
+    valid.set(
+      attributeFrom(stillInvalidHtml, "required-name", "name"),
+      "Alice",
+    );
+    valid.set(attributeFrom(stillInvalidHtml, "note", "name"), "Changed");
+    const validHtml = await processAndRender(valid, {
+      questionnaire,
+      fhirVersion: "r5",
+    });
+
+    expect(validHtml).not.toContain("At least one");
+    expect(validHtml).not.toContain('name="fb[submitAttempted]" value="true"');
+  });
+
   it("renders initial Questionnaire HTML fields", async () => {
     const html = await renderQuestionnaire();
 

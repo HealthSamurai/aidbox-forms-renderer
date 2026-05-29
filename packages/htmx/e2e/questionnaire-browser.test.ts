@@ -16,10 +16,17 @@ import type {
   QuestionnaireResponseOf,
 } from "@formbox/fhir";
 import strings from "@formbox/strings";
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import {
+  expect,
+  test,
+  type Locator,
+  type Page,
+  type Response,
+} from "@playwright/test";
 
 import {
   QuestionnaireRenderer,
+  htmlAttributes,
   loadDefaultTemplates,
   type RenderMode,
 } from "../dist/index.js";
@@ -275,6 +282,32 @@ const questionnaire = {
           answerBoolean: true,
         },
       ],
+    },
+  ],
+} satisfies QuestionnaireOf<"r5">;
+
+const liveValidationQuestionnaire = {
+  resourceType: "Questionnaire",
+  id: "browser-live-validation-e2e",
+  url: "https://formbox.healthsamurai.dev/Questionnaire/browser-live-validation-e2e",
+  title: "Browser Live Validation E2E Questionnaire",
+  status: "active",
+  item: [
+    {
+      linkId: "note",
+      text: "Note",
+      type: "string",
+    },
+    {
+      linkId: "required-name",
+      text: "Required name",
+      type: "string",
+      required: true,
+    },
+    {
+      linkId: "after",
+      text: "After",
+      type: "string",
     },
   ],
 } satisfies QuestionnaireOf<"r5">;
@@ -1538,6 +1571,39 @@ test("loads, validates, posts HTMX actions, preserves repeats, and renders a Que
     expect(
       firstAnswer(findItem(response.item, "follow-up-note")).valueString,
     ).toBe("Needs follow-up");
+    expect(failures()).toEqual([]);
+  } finally {
+    await server.close();
+  }
+});
+
+test("keeps validation errors live after change-triggered HTMX posts", async ({
+  page,
+}) => {
+  const server = await startServer({
+    questionnaire: liveValidationQuestionnaire,
+  });
+  const failures = collectFailures(page);
+
+  try {
+    await page.goto(server.url);
+    await page.waitForFunction(() => "htmx" in globalThis);
+
+    await htmxPost(page, page.getByRole("button", { name: "Submit" }));
+    await expect(page.locator("[data-testid='response']")).toHaveAttribute(
+      "data-valid",
+      "false",
+    );
+    await expect(page.getByText("At least one")).toBeVisible();
+
+    await htmxFill(page, page.getByLabel("Note"), "Changed");
+    await expect(page.locator("[data-testid='response']")).toHaveCount(0);
+    await expect(page.getByText("At least one")).toBeVisible();
+
+    await htmxFill(page, page.getByLabel("Required name"), "Alice");
+    await expect(page.locator("[data-testid='response']")).toHaveCount(0);
+    await expect(page.getByText("At least one")).toHaveCount(0);
+
     expect(failures()).toEqual([]);
   } finally {
     await server.close();
@@ -3156,14 +3222,46 @@ async function setSignatureValue(
 }
 
 async function htmxPost(page: Page, locator: Locator): Promise<void> {
-  const responsePromise = page.waitForResponse(
+  const responsePromise = waitForHtmxResponse(page);
+  const settledPromise = waitForHtmxSettle(page);
+  await locator.click();
+  const response = await responsePromise;
+  expect(response.status()).toBe(200);
+  await settledPromise;
+}
+
+async function htmxFill(
+  page: Page,
+  locator: Locator,
+  value: string,
+): Promise<void> {
+  const responsePromise = waitForHtmxResponse(page);
+  const settledPromise = waitForHtmxSettle(page);
+  await locator.focus();
+  await locator.fill(value);
+  await page.keyboard.press("Tab");
+  const response = await responsePromise;
+  expect(response.status()).toBe(200);
+  await settledPromise;
+}
+
+function waitForHtmxResponse(page: Page): Promise<Response> {
+  return page.waitForResponse(
     (response) =>
       response.url().endsWith("/questionnaire") &&
       response.request().method() === "POST",
   );
-  await locator.click();
-  const response = await responsePromise;
-  expect(response.status()).toBe(200);
+}
+
+function waitForHtmxSettle(page: Page): Promise<void> {
+  return page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        document.body.addEventListener("htmx:afterSettle", () => resolve(), {
+          once: true,
+        });
+      }),
+  );
 }
 
 async function readQuestionnaireResponse<V extends FhirVersion = "r5">(
@@ -3346,6 +3444,7 @@ async function renderForm(
   let responseHtml = "";
   const renderer = new QuestionnaireRenderer({
     token: "form",
+    action: "/questionnaire",
     questionnaire: options.questionnaire,
     questionnaireResponse:
       formData === undefined ? options.questionnaireResponse : undefined,
@@ -3353,10 +3452,14 @@ async function renderForm(
     mode: options.mode,
     templates: {
       ...defaultTemplates,
-      Form({ fields }) {
+      Form({ fields, attributes }) {
         return [
           `<div id="questionnaire">`,
-          `<form method="post" action="/questionnaire" enctype="multipart/form-data" hx-post="/questionnaire" hx-encoding="multipart/form-data" hx-target="#questionnaire" hx-swap="outerHTML" hx-include="closest form">`,
+          `<form${htmlAttributes({
+            ...attributes,
+            "hx-target": "#questionnaire",
+            "hx-swap": "outerHTML",
+          })}>`,
           fields,
           "</form>",
           responseHtml,

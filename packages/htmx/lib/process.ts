@@ -33,6 +33,7 @@ import {
   ACTION_FIELD,
   LANGUAGE_FIELD,
   PAGE_FIELD,
+  SUBMIT_ATTEMPTED_FIELD,
   calculatedName,
   countName,
   customUnitFormName,
@@ -72,10 +73,16 @@ async function processStoreFormDataAsync(
   const actions = getActions(formData);
   actions.forEach((action) => applyAction(store, action));
 
-  if (actions.includes("submit")) {
+  const submitted = actions.includes("submit");
+  if (submitted || readSubmitAttempted(formData)) {
+    const valid = store.validateAll();
+    if (!submitted) {
+      return { submitted: false };
+    }
+
     return {
       submitted: true,
-      valid: store.validateAll(),
+      valid,
     };
   }
 
@@ -1588,6 +1595,10 @@ function getActions(formData: FormData): string[] {
   return formData
     .getAll(ACTION_FIELD)
     .filter((value): value is string => typeof value === "string");
+}
+
+function readSubmitAttempted(formData: FormData): boolean {
+  return getLastString(formData, SUBMIT_ATTEMPTED_FIELD) === "true";
 }
 
 function getLastString(formData: FormData, name: string): string | undefined {

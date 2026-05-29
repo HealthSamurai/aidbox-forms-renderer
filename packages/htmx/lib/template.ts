@@ -706,6 +706,7 @@ export const templateNames = [
 export const ACTION_FIELD = "fb[action]";
 export const LANGUAGE_FIELD = "fb[language]";
 export const PAGE_FIELD = "fb[page]";
+export const SUBMIT_ATTEMPTED_FIELD = "fb[submitAttempted]";
 
 export type ActionKind =
   | "add-group"

@@ -30,6 +30,7 @@ import {
   optionValueName,
   readOnlyName,
   signatureName,
+  SUBMIT_ATTEMPTED_FIELD,
   unitValueName,
   valueName,
 } from "./template.ts";
@@ -118,6 +119,9 @@ function renderHiddenFieldsForStore(store: IForm): string {
   ]);
 
   return [
+    store.isSubmitAttempted
+      ? `<input type="hidden" name="${SUBMIT_ATTEMPTED_FIELD}" value="true">`
+      : "",
     store.nodes
       .map((node) =>
         renderHiddenFieldsForNode(node, [], renderedNodes.has(node)),
