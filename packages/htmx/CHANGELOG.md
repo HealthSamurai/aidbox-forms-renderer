@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.4.3
+
+### Patch Changes
+
+- Keep validation errors visible after a submitted form is updated by HTMX change posts.
+
 ## 0.4.2
 
 ### Patch Changes
