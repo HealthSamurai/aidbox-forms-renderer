@@ -56,6 +56,7 @@ export function renderStoreFields(
   const theme = createTheme();
   const htmxTheme = {
     templates,
+    token: store.token,
     hiddenFields: renderHiddenFieldsForStore(store),
     activeTabValue: activeTab,
     action,

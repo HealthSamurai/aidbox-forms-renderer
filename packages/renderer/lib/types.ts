@@ -294,6 +294,7 @@ export type AnswerOption<T extends AnswerType> = {
 };
 
 export type ValueDisplayProperties<T extends AnswerType> = {
+  id?: string | undefined;
   value: DataTypeToType<AnswerTypeToDataType<T>>;
 };
 

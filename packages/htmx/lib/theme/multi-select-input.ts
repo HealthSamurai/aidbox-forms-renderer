@@ -6,6 +6,7 @@ import {
   isPreservedOptionToken,
   searchName,
   selectedName,
+  stableId,
   valueName,
   type MultiSelectInputTemplateProperties,
   type TemplateOptionItem,
@@ -76,6 +77,7 @@ export function MultiSelectInput(properties: MultiSelectInputProperties) {
     baselineName,
     options: options.map((option) => ({
       ...option,
+      id: stableId(properties.id, "option", option.token) ?? option.token,
       selected: selectedTokens.has(option.token),
       disabled: Boolean(properties.disabled) || option.disabled,
       hiddenInput:

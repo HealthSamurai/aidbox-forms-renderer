@@ -6,6 +6,7 @@ export type LanguageOption = {
 };
 
 export type LanguageSelectorProperties = {
+  id?: string | undefined;
   options: readonly LanguageOption[];
   value: string;
   onChange: (value: string) => void;

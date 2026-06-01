@@ -3,7 +3,7 @@ Template: RadioButtonList
 
 Inputs:
 - id: fieldset id.
-- options: items with token, label, checked, and disabled.
+- options: items with id, token, label, checked, and disabled.
 - selectedOption: current selected option state.
 - hiddenValue: hidden mirror value for disabled or preserved selections.
 - baselineName/baselineValue: hidden original value for protected selection state.
@@ -21,7 +21,7 @@ Inputs:
     <input type="hidden"{{{attr "name" baselineName}}}{{{attr "value" baselineValue}}}>
   {{/if}}
   {{#each options}}
-    <label><input{{{fieldAttributes ..}}} type="radio"{{{attr "value" token}}}{{{attr "checked" checked}}}{{{attr "disabled" disabled}}}{{{attr "aria-describedby" ../ariaDescribedBy}}}>{{{label}}}</label>
+    <label><input{{{fieldAttributes ..}}}{{{attr "id" id}}} type="radio"{{{attr "value" token}}}{{{attr "checked" checked}}}{{{attr "disabled" disabled}}}{{{attr "aria-describedby" ../ariaDescribedBy}}}>{{{label}}}</label>
   {{/each}}
   {{{customOptionForm}}}
 </fieldset>

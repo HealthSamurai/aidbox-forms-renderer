@@ -1459,19 +1459,19 @@ describe("@formbox/htmx render extension parity", () => {
 
     expect(html).toMatch(
       new RegExp(
-        `<button type="button" aria-describedby="[^"]+" aria-label="${strings.en.aria.help}">`,
+        `<button type="button"[^>]* aria-describedby="[^"]+" aria-label="${strings.en.aria.help}">`,
         "u",
       ),
     );
     expect(html).toMatch(
       new RegExp(
-        `<button type="button" aria-describedby="[^"]+" aria-label="${strings.en.aria.legal}">`,
+        `<button type="button"[^>]* aria-describedby="[^"]+" aria-label="${strings.en.aria.legal}">`,
         "u",
       ),
     );
     expect(html).toMatch(
       new RegExp(
-        `<button type="button" aria-describedby="[^"]+" aria-label="${strings.en.aria.flyover}">`,
+        `<button type="button"[^>]* aria-describedby="[^"]+" aria-label="${strings.en.aria.flyover}">`,
         "u",
       ),
     );
@@ -1580,11 +1580,11 @@ describe("@formbox/htmx render extension parity", () => {
     };
     const html = await render(questionnaire);
 
-    expect(html).toContain(
-      '<audio controls src="https://example.com/prompt.mp3">',
+    expect(html).toMatch(
+      /<audio controls[^>]* src="https:\/\/example\.com\/prompt\.mp3"><\/audio>/u,
     );
-    expect(html).toContain(
-      '<video controls src="https://example.com/prompt.mp4">',
+    expect(html).toMatch(
+      /<video controls[^>]* src="https:\/\/example\.com\/prompt\.mp4"><\/video>/u,
     );
     expect(html).toContain("Attachment details");
     expect(html).not.toContain('href="Attachment details"');

@@ -5,7 +5,7 @@ Inputs:
 - linkId: question link id.
 - header/children/expandedChildren/errors/signature: rendered question sections.
 - isExpandable/isExpanded/expandedName/expandedValue: collapsible question state.
-- summaryLabel/collapseLabel/expandLabel/toggleAction: collapsible submit control state.
+- summaryLabel/collapseLabel/expandLabel/toggleAction/toggleId: collapsible submit control state.
 - actionName: submit action field name.
 - path: renderer node path, when present.
 - customExtensions: source extension values, if supplied.
@@ -17,7 +17,7 @@ Inputs:
       <input type="hidden"{{{attr "name" expandedName}}}{{{attr "value" expandedValue}}}>
     {{/if}}
     <details{{{attr "data-fb-collapsible" linkId}}}{{{attr "open" isExpanded}}}>
-      <summary>{{#if toggleAction}}<button type="submit"{{{attr "name" actionName}}}{{{attr "value" toggleAction}}}>{{summaryLabel}}</button>{{else}}{{summaryLabel}}{{/if}}</summary>
+      <summary>{{#if toggleAction}}<button type="submit"{{{attr "id" toggleId}}}{{{attr "name" actionName}}}{{{attr "value" toggleAction}}}>{{summaryLabel}}</button>{{else}}{{summaryLabel}}{{/if}}</summary>
       {{{expandedChildren}}}
     </details>
     {{{errors}}}

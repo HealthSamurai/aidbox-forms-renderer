@@ -7,10 +7,12 @@ import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function Table(properties: TableProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
-  const rows = properties.rows.map((row) => tableRow(row, renderHtml, strings));
+  const rows = properties.rows.map((row) =>
+    tableRow(row, renderHtml, strings, token),
+  );
   return renderTemplate(templates.Table, {
     columns: properties.columns.map((column) =>
       tableColumn(column, renderHtml),

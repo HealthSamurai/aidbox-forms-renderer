@@ -4,7 +4,7 @@ Template: Table
 Inputs:
 - hasRowHeader: true when rows need a header column.
 - columns: column items with token, content, errors, width, widthStyle, and isLoading.
-- rows: row items with token, content, errors, cells, remove action fields, and isLoading.
+- rows: row items with token, content, errors, cells, remove action fields, removeId, and isLoading.
 - rows[].cells: cell items with token and content.
 --}}
 <table>
@@ -26,7 +26,7 @@ Inputs:
             {{{content}}}
             {{{errors}}}
             {{#if removeAction}}
-              <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{{removeLabelHtml}}}</button>
+              <button type="submit"{{{attr "id" removeId}}}{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{{removeLabelHtml}}}</button>
             {{/if}}
           </th>
         {{/if}}

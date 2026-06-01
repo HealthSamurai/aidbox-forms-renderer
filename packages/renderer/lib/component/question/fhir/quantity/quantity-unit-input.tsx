@@ -67,14 +67,19 @@ export const QuantityUnitInput = observer(function QuantityUnitInput({
       exclusive: false,
       label: (
         <OptionDisplay>
-          <ValueDisplay type="coding" value={entry.coding} />
+          <ValueDisplay
+            id={buildId(id, "option", entry.token, "display")}
+            type="coding"
+            value={entry.coding}
+          />
         </OptionDisplay>
       ),
     }));
-  }, [OptionDisplay, unitSelection.entries]);
+  }, [OptionDisplay, id, unitSelection.entries]);
 
   const customForm = isCustomFormActive && (
     <CustomForm
+      id={buildId(id, "custom-form")}
       content={
         answer.question.unitOption.effectiveUnitOpen === "optionsOrType" ? (
           <CodingInput

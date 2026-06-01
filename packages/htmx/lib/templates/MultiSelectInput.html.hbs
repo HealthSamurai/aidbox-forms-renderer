@@ -3,7 +3,7 @@ Template: MultiSelectInput
 
 Inputs:
 - id: fieldset id.
-- options: items with token, label, selected, disabled, and hiddenInput.
+- options: items with id, token, label, selected, disabled, and hiddenInput.
 - selectedOptions/selectedName: selected option state and hidden selected-token field name.
 - hiddenInputs/trailingHiddenInputs: hidden values that preserve disabled or off-list selections.
 - searchQuery/searchName/searchLabel: server-side option search state.
@@ -21,7 +21,7 @@ Inputs:
     {{#if hiddenInput}}
       <input type="hidden"{{{attr "name" hiddenInput.name}}}{{{attr "value" hiddenInput.value}}}>
     {{/if}}
-    <label><input{{{fieldAttributes ..}}} type="checkbox"{{{attr "value" token}}}{{{attr "checked" selected}}}{{{attr "disabled" disabled}}}{{{attr "aria-describedby" ../ariaDescribedBy}}}>{{{label}}}</label>
+    <label><input{{{fieldAttributes ..}}}{{{attr "id" id}}} type="checkbox"{{{attr "value" token}}}{{{attr "checked" selected}}}{{{attr "disabled" disabled}}}{{{attr "aria-describedby" ../ariaDescribedBy}}}>{{{label}}}</label>
   {{/each}}
   {{#each trailingHiddenInputs}}
     <input type="hidden"{{{attr "name" name}}}{{{attr "value" value}}}>

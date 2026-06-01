@@ -6,13 +6,14 @@ import {
   ACTION_FIELD,
   actionValue,
   countName,
+  pathControlId,
   type GroupListTemplateProperties,
 } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function GroupList(properties: GroupListProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
   const groups = Children.toArray(properties.children);
@@ -31,6 +32,7 @@ export function GroupList(properties: GroupListProperties) {
       properties.onAdd !== undefined && properties.canAdd && path
         ? actionValue("add-group", path)
         : undefined,
+    addId: pathControlId(token, path, "add-group"),
     addLabel: strings.group.addSection,
     count: path ? count : undefined,
     countName: path ? countName(path) : undefined,

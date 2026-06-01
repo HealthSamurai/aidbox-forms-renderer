@@ -2,6 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 import type { CustomExtensionValues } from "./custom-extension.tsx";
 
 export type FormProperties = {
+  id?: string | undefined;
   onSubmit?: (() => void) | undefined;
   onCancel?: (() => void) | undefined;
   children: ReactNode;

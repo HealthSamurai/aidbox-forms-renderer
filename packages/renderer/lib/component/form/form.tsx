@@ -32,6 +32,7 @@ export const Form = observer(function Form({
     store.language &&
     onLanguageChange ? (
       <ThemedLanguageSelector
+        id={buildId(store.token, "language")}
         value={store.language}
         onChange={(value) => onLanguageChange(value)}
         options={store.availableLanguages.map((language) => ({
@@ -55,6 +56,7 @@ export const Form = observer(function Form({
 
   return (
     <ThemedForm
+      id={store.token}
       title={store.title}
       description={store.description}
       languageSelector={languageSelector}

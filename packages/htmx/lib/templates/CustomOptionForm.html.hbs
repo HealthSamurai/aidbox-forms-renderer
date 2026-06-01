@@ -5,12 +5,14 @@ Inputs:
 - content: rendered custom option fields.
 - errors: rendered validation errors.
 - actionName: submit action field name.
-- submitLabel/cancelLabel: button labels.
+- id: fieldset id.
+- submitId/submitLabel: submit button id and label.
+- cancelId/cancelLabel: cancel button id and label.
 - canSubmit: source theme state, if supplied.
 --}}
-<fieldset>
+<fieldset{{{attr "id" id}}}>
   {{{content}}}
   {{{errors}}}
-  <button type="submit"{{{attr "name" actionName}}} value="submit-custom">{{submitLabel}}</button>
-  <button type="submit"{{{attr "name" actionName}}} value="cancel-custom">{{cancelLabel}}</button>
+  <button type="submit"{{{attr "id" submitId}}}{{{attr "name" actionName}}} value="submit-custom">{{submitLabel}}</button>
+  <button type="submit"{{{attr "id" cancelId}}}{{{attr "name" actionName}}} value="cancel-custom">{{cancelLabel}}</button>
 </fieldset>

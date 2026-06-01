@@ -10,6 +10,7 @@ import { useTheme } from "../../../ui/theme.tsx";
 import { getValueControl } from "../fhir/value-control.ts";
 import { ValueDisplay } from "../fhir/value-display.tsx";
 import { renderErrors } from "../../node/errors.tsx";
+import { buildId } from "../../../utilities.ts";
 
 export const SingleListSelectControl = observer(
   function SingleListSelectControl<T extends AnswerType>({
@@ -33,6 +34,7 @@ export const SingleListSelectControl = observer(
     const customOptionForm =
       isCustomActive && store.customOptionFormState ? (
         <CustomOptionForm
+          id={buildId(id, "custom-form")}
           content={
             <Control
               answer={answer}
@@ -54,13 +56,17 @@ export const SingleListSelectControl = observer(
         token: entry.token,
         label: (
           <OptionDisplay prefix={entry.prefix} media={entry.media}>
-            <ValueDisplay type={entry.answerType} value={entry.value} />
+            <ValueDisplay
+              id={buildId(id, "option", entry.token, "display")}
+              type={entry.answerType}
+              value={entry.value}
+            />
           </OptionDisplay>
         ),
         disabled: entry.disabled,
         exclusive: entry.exclusive === true,
       }));
-    }, [OptionDisplay, store.filteredOptions]);
+    }, [OptionDisplay, id, store.filteredOptions]);
     const specifyOtherOption = store.allowCustom
       ? {
           token: store.specifyOtherToken,
@@ -82,7 +88,11 @@ export const SingleListSelectControl = observer(
         exclusive: selection.exclusive === true,
         label: (
           <OptionDisplay prefix={selection.prefix} media={selection.media}>
-            <ValueDisplay type={selection.answerType} value={selection.value} />
+            <ValueDisplay
+              id={buildId(id, "selected", selection.token, "display")}
+              type={selection.answerType}
+              value={selection.value}
+            />
           </OptionDisplay>
         ),
       };

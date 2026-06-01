@@ -5,13 +5,14 @@ import {
   ACTION_FIELD,
   actionValue,
   expandedName as expandedFieldName,
+  pathControlId,
   type QuestionScaffoldTemplateProperties,
 } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function QuestionScaffold(properties: QuestionScaffoldProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
   const path = properties.path;
@@ -41,6 +42,7 @@ export function QuestionScaffold(properties: QuestionScaffoldProperties) {
       : undefined,
     expandLabel: strings.collapsible.expand,
     toggleAction,
+    toggleId: pathControlId(token, path, "toggle-expanded"),
     summaryLabel: properties.isExpanded
       ? strings.collapsible.collapse
       : strings.collapsible.expand,

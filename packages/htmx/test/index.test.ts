@@ -190,6 +190,20 @@ function callbackTextInput(): string {
   return "<input data-callback-template>";
 }
 
+function focusableElementsWithoutId(html: string): string[] {
+  const focusables = html.match(
+    /<(?:button|select|textarea|a\b(?=[^>]*\bhref=)|audio\b(?=[^>]*\bcontrols\b)|video\b(?=[^>]*\bcontrols\b)|input)(?=\s|>)[^>]*>/giu,
+  );
+
+  return (focusables ?? []).filter((element) => {
+    if (/\bid="/iu.test(element)) {
+      return false;
+    }
+
+    return !/<input\b[^>]*\btype="hidden"/iu.test(element);
+  });
+}
+
 describe("@formbox/htmx", () => {
   it("uses materialized store path references", () => {
     const questionnaire: Questionnaire = {
@@ -398,6 +412,7 @@ describe("@formbox/htmx", () => {
         Form(properties) {
           const { attributes, fields } = properties;
           expect(attributes).toEqual({
+            id: "form",
             method: "post",
             action: "/questionnaire",
             enctype: "multipart/form-data",
@@ -435,6 +450,105 @@ describe("@formbox/htmx", () => {
       '<label id="form__name__label" for="form__name__0__control"',
     );
     expect(first).toContain('aria-labelledby="form__name__label"');
+  });
+
+  it("renders stable ids for every focusable form control", async () => {
+    const questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      url: "Questionnaire/focusable-ids",
+      item: [
+        {
+          linkId: "repeated-name",
+          text: "Repeated name",
+          type: "string",
+          repeats: true,
+        },
+        {
+          linkId: "repeated-group",
+          text: "Repeated group",
+          type: "group",
+          repeats: true,
+          item: [{ linkId: "child", text: "Child", type: "string" }],
+        },
+        {
+          linkId: "choice",
+          text: "Choice",
+          type: "coding",
+          answerOption: [
+            { valueCoding: { code: "a", display: "A" } },
+            { valueCoding: { code: "b", display: "B" } },
+          ],
+        },
+        {
+          linkId: "url-choice",
+          text: "URL choice",
+          type: "url",
+          answerOption: [
+            { valueUri: "https://example.com/a" },
+            { valueUri: "https://example.com/b" },
+          ],
+        },
+        {
+          linkId: "multi-choice",
+          text: "Multi choice",
+          type: "coding",
+          repeats: true,
+          answerOption: [
+            { valueCoding: { code: "x", display: "X" } },
+            { valueCoding: { code: "y", display: "Y" } },
+          ],
+        },
+        {
+          linkId: "upload",
+          text: "Upload",
+          type: "attachment",
+          extension: [
+            {
+              url: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemMedia",
+              valueAttachment: {
+                title: "Upload instructions",
+                contentType: "audio/mpeg",
+                url: "https://example.com/upload.mp3",
+              },
+            },
+          ],
+        },
+      ],
+    } satisfies Questionnaire;
+    const questionnaireResponse = {
+      resourceType: "QuestionnaireResponse",
+      status: "in-progress",
+      questionnaire: "Questionnaire/focusable-ids",
+      item: [
+        {
+          linkId: "repeated-name",
+          answer: [{ valueString: "Ada" }],
+        },
+        {
+          linkId: "repeated-group",
+          item: [{ linkId: "child", answer: [{ valueString: "Nested" }] }],
+        },
+        {
+          linkId: "upload",
+          answer: [
+            {
+              valueAttachment: {
+                contentType: "text/plain",
+                data: "SGVsbG8=",
+              },
+            },
+          ],
+        },
+      ],
+    } satisfies QuestionnaireResponse;
+
+    const html = await renderQuestionnaire({
+      questionnaire,
+      questionnaireResponse,
+    });
+
+    expect(focusableElementsWithoutId(html)).toEqual([]);
   });
 
   it("keeps generated hidden fields inside custom Form template output", async () => {

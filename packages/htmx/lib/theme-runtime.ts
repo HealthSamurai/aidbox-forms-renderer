@@ -20,6 +20,7 @@ export type ActiveTabValue = (path: NodePath, total: number) => number;
 
 export type HtmxThemeValue = {
   readonly templates: RequiredTemplates;
+  readonly token: string;
   readonly hiddenFields: string;
   readonly activeTabValue: ActiveTabValue;
   readonly action: string | undefined;

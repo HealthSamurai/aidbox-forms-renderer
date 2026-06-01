@@ -6,13 +6,14 @@ import {
   actionValue,
   expandedName as expandedFieldName,
   lastLinkId,
+  pathControlId,
   type GroupScaffoldTemplateProperties,
 } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function GroupScaffold(properties: GroupScaffoldProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
   const path = properties.path;
@@ -46,8 +47,10 @@ export function GroupScaffold(properties: GroupScaffoldProperties) {
       properties.onRemove !== undefined && properties.canRemove && path
         ? actionValue("remove-group", path)
         : undefined,
+    removeId: pathControlId(token, path, "remove-group"),
     removeLabel: strings.group.removeSection,
     toggleAction,
+    toggleId: pathControlId(token, path, "toggle-expanded"),
     summaryLabel: properties.isExpanded
       ? strings.collapsible.collapse
       : strings.collapsible.expand,

@@ -5,8 +5,8 @@ Inputs:
 - linkId: group link id.
 - header/children/expandedChildren/errors/signature: rendered group sections.
 - isExpandable/isExpanded/expandedName/expandedValue: collapsible group state.
-- summaryLabel/collapseLabel/expandLabel/toggleAction: collapsible submit control state.
-- actionName/removeAction/removeLabel: remove-group submit action.
+- summaryLabel/collapseLabel/expandLabel/toggleAction/toggleId: collapsible submit control state.
+- actionName/removeAction/removeId/removeLabel: remove-group submit action.
 - path/canRemove: repeat group state used to derive removeAction.
 - customExtensions: source extension values, if supplied.
 --}}
@@ -17,20 +17,20 @@ Inputs:
       <input type="hidden"{{{attr "name" expandedName}}}{{{attr "value" expandedValue}}}>
     {{/if}}
     <details{{{attr "data-fb-collapsible" linkId}}}{{{attr "open" isExpanded}}}>
-      <summary>{{#if toggleAction}}<button type="submit"{{{attr "name" actionName}}}{{{attr "value" toggleAction}}}>{{summaryLabel}}</button>{{else}}{{summaryLabel}}{{/if}}</summary>
+      <summary>{{#if toggleAction}}<button type="submit"{{{attr "id" toggleId}}}{{{attr "name" actionName}}}{{{attr "value" toggleAction}}}>{{summaryLabel}}</button>{{else}}{{summaryLabel}}{{/if}}</summary>
       {{{expandedChildren}}}
     </details>
     {{{errors}}}
     {{{signature}}}
     {{#if removeAction}}
-      <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
+      <button type="submit"{{{attr "id" removeId}}}{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
     {{/if}}
   {{else}}
     {{{errors}}}
     {{{children}}}
     {{{signature}}}
     {{#if removeAction}}
-      <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
+      <button type="submit"{{{attr "id" removeId}}}{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
     {{/if}}
   {{/if}}
 </fieldset>

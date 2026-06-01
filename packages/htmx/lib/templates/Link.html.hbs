@@ -2,8 +2,9 @@
 Template: Link
 
 Inputs:
+- id: link id.
 - href: link target.
 - target/rel: link browsing attributes.
 - children: rendered link content.
 --}}
-<a{{{attr "href" href}}}{{{attr "target" target}}}{{{attr "rel" rel}}}>{{{children}}}</a>
+<a{{{attr "id" id}}}{{{attr "href" href}}}{{{attr "target" target}}}{{{attr "rel" rel}}}>{{{children}}}</a>

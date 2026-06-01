@@ -5,13 +5,14 @@ import {
   ACTION_FIELD,
   actionValue,
   lastLinkId,
+  pathControlId,
   type AnswerScaffoldTemplateProperties,
 } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function AnswerScaffold(properties: AnswerScaffoldProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
   const path = properties.path;
@@ -26,6 +27,7 @@ export function AnswerScaffold(properties: AnswerScaffoldProperties) {
       properties.onRemove !== undefined && properties.canRemove && path
         ? actionValue("remove-answer", path)
         : undefined,
+    removeId: pathControlId(token, path, "remove-answer"),
     removeLabel: strings.group.removeSection,
   } satisfies AnswerScaffoldTemplateProperties);
 }

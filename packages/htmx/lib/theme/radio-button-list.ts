@@ -3,6 +3,7 @@ import type { RadioButtonListProperties } from "@formbox/theme";
 import {
   isDefined,
   isPreservedOptionToken,
+  stableId,
   valueName,
   type RadioButtonListTemplateProperties,
   type TemplateOptionItem,
@@ -57,6 +58,7 @@ export function RadioButtonList(properties: RadioButtonListProperties) {
         : undefined,
     options: options.map((option) => ({
       ...option,
+      id: stableId(properties.id, "option", option.token) ?? option.token,
       checked: option.token === selectedToken,
       disabled: Boolean(properties.disabled) || Boolean(option.disabled),
     })),

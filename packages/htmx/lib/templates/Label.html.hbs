@@ -6,18 +6,18 @@ Inputs:
 - as/isLegend/isText: rendered label element kind.
 - content: rendered label text, prefix, required marker, and help/legal/flyover html.
 - children/prefix/required/shortText: source label text state.
-- supportHyperlinks: links with href and labelHtml.
+- supportHyperlinks: links with id, href, and labelHtml.
 - media: rendered attachment media html.
 - help/legal/flyover: rendered extension slots.
 - isExpanded: source expansion state, if supplied.
 - attachmentLabel: accessible text used while rendering media.
 --}}
 {{#if isLegend}}
-  <legend{{{attr "id" id}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</legend>
+  <legend{{{attr "id" id}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "id" id}}}{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</legend>
 {{else}}
   {{#if isText}}
-    <span{{{attr "id" id}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</span>
+    <span{{{attr "id" id}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "id" id}}}{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</span>
   {{else}}
-    <label{{{attr "id" id}}}{{{attr "for" htmlFor}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</label>
+    <label{{{attr "id" id}}}{{{attr "for" htmlFor}}}{{{attr "data-short-text" shortText}}}>{{{content}}}{{#if supportHyperlinks.length}}<div>{{#each supportHyperlinks}}<a{{{attr "id" id}}}{{{attr "href" href}}} target="_blank" rel="noreferrer">{{{labelHtml}}}</a>{{/each}}</div>{{/if}}{{{media}}}</label>
   {{/if}}
 {{/if}}

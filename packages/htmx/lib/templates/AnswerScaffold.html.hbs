@@ -5,7 +5,7 @@ Inputs:
 - control: rendered answer control.
 - errors: rendered answer errors.
 - children: rendered answer child items.
-- actionName/removeAction/removeLabel: remove-answer submit action.
+- actionName/removeAction/removeId/removeLabel: remove-answer submit action.
 - linkId: current question link id for data attributes.
 - path/canRemove: repeat answer state used to derive removeAction.
 --}}
@@ -14,6 +14,6 @@ Inputs:
   {{{errors}}}
   {{{children}}}
   {{#if removeAction}}
-    <button type="submit"{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
+    <button type="submit"{{{attr "id" removeId}}}{{{attr "data-fb-link-id" linkId}}} data-fb-field="remove-action"{{{attr "name" actionName}}}{{{attr "value" removeAction}}}>{{removeLabel}}</button>
   {{/if}}
 </div>

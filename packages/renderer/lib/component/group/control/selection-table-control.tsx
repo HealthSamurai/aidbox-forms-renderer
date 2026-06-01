@@ -28,7 +28,11 @@ export const SelectionTableControl = observer(function SelectionTableControl({
         content: (
           <Label id={buildId(node.token, option.token)} isExpanded={true}>
             <OptionDisplay prefix={option.prefix} media={option.media}>
-              <ValueDisplay type={option.answerType} value={option.value} />
+              <ValueDisplay
+                id={buildId(node.token, option.token, "display")}
+                type={option.answerType}
+                value={option.value}
+              />
             </OptionDisplay>
           </Label>
         ),
@@ -52,7 +56,11 @@ export const SelectionTableControl = observer(function SelectionTableControl({
         content: (
           <Label id={buildId(node.token, option.token)} isExpanded={true}>
             <OptionDisplay prefix={option.prefix} media={option.media}>
-              <ValueDisplay type={option.answerType} value={option.value} />
+              <ValueDisplay
+                id={buildId(node.token, option.token, "display")}
+                type={option.answerType}
+                value={option.value}
+              />
             </OptionDisplay>
           </Label>
         ),

@@ -8,6 +8,7 @@ export function Link(properties: LinkProperties) {
   const { templates } = useHtmxTheme();
   const renderHtml = useHtml();
   return renderTemplate(templates.Link, {
+    id: properties.id,
     href: properties.href,
     target: properties.target,
     rel: properties.rel,

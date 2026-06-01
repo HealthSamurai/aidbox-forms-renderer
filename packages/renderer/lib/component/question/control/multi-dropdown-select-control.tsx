@@ -29,7 +29,16 @@ export const MultiDropdownSelectControl = observer(
       token: selection.token,
       label: (
         <OptionDisplay prefix={selection.prefix} media={selection.media}>
-          <ValueDisplay type={selection.answerType} value={selection.value} />
+          <ValueDisplay
+            id={buildId(
+              selection.answer.token,
+              "selected",
+              selection.token,
+              "display",
+            )}
+            type={selection.answerType}
+            value={selection.value}
+          />
         </OptionDisplay>
       ),
       ariaDescribedBy: getIssueErrorId(selection.answer),
@@ -42,6 +51,7 @@ export const MultiDropdownSelectControl = observer(
 
     const customOptionForm = formState ? (
       <CustomOptionForm
+        id={buildId(formState.answer.token, "custom-form")}
         content={
           <CustomControl
             answer={formState.answer}
@@ -65,11 +75,21 @@ export const MultiDropdownSelectControl = observer(
         exclusive: entry.exclusive === true,
         label: (
           <OptionDisplay prefix={entry.prefix} media={entry.media}>
-            <ValueDisplay type={entry.answerType} value={entry.value} />
+            <ValueDisplay
+              id={buildId(
+                node.token,
+                "multi-select",
+                "option",
+                entry.token,
+                "display",
+              )}
+              type={entry.answerType}
+              value={entry.value}
+            />
           </OptionDisplay>
         ),
       }));
-    }, [OptionDisplay, store.filteredOptions]);
+    }, [OptionDisplay, node.token, store.filteredOptions]);
 
     const specifyOtherOption = store.allowCustom
       ? {

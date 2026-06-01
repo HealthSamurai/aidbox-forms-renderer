@@ -4,9 +4,9 @@ Template: Help
 Inputs:
 - id: tooltip id.
 - children: rendered help content.
-- ariaLabel: button accessible label.
+- buttonId/ariaLabel: button id and accessible label.
 --}}
 <span>
-  <button type="button"{{{attr "aria-describedby" id}}}{{{attr "aria-label" ariaLabel}}}>?</button>
+  <button type="button"{{{attr "id" buttonId}}}{{{attr "aria-describedby" id}}}{{{attr "aria-label" ariaLabel}}}>?</button>
   <span{{{attr "id" id}}} role="tooltip">{{{children}}}</span>
 </span>

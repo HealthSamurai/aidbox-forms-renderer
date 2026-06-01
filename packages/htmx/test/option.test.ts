@@ -1571,7 +1571,7 @@ describe("@formbox/htmx option parity", () => {
       questionnaire,
     );
 
-    expect(secondHtml).toContain("<fieldset>");
+    expect(secondHtml).toContain("<fieldset ");
     expect(response.item).toEqual([
       {
         linkId: "color",
@@ -1648,7 +1648,7 @@ describe("@formbox/htmx option parity", () => {
       await renderer.process(formData);
       const html = await renderer.render();
 
-      expect(html).toContain("<fieldset>");
+      expect(html).toContain("<fieldset ");
       expect(html).toContain(`>${strings.en.dialog.submit}</button>`);
       expect(renderer.getQuestionnaireResponse().item).toBeUndefined();
     } finally {

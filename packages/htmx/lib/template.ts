@@ -199,6 +199,7 @@ export type RadioButtonListTemplateProperties = Omit<
 };
 
 export type RadioOptionTemplateItem = TemplateOptionItem & {
+  readonly id: string;
   readonly checked: boolean;
   readonly disabled?: boolean | undefined;
 };
@@ -247,6 +248,7 @@ export type HiddenTemplateInput = {
 };
 
 export type CheckboxOptionTemplateItem = TemplateOptionItem & {
+  readonly id: string;
   readonly selected: boolean;
   readonly disabled?: boolean | undefined;
   readonly hiddenInput?: HiddenTemplateInput | undefined;
@@ -258,8 +260,10 @@ export type CustomOptionFormTemplateProperties = Omit<
 > & {
   readonly actionName: string;
   readonly cancelLabel: string;
+  readonly cancelId?: string | undefined;
   readonly content: string;
   readonly errors?: string | undefined;
+  readonly submitId?: string | undefined;
   readonly submitLabel: string;
 };
 
@@ -287,6 +291,7 @@ export type LabelTemplateProperties = Omit<
   readonly media: string;
   readonly supportHyperlinks?: ReadonlyArray<
     NonNullable<LabelProperties["supportHyperlinks"]>[number] & {
+      readonly id: string;
       readonly labelHtml: string;
     }
   >;
@@ -315,6 +320,7 @@ export type HelpTemplateProperties = Omit<
   "children"
 > & {
   readonly ariaLabel: string;
+  readonly buttonId?: string | undefined;
   readonly children: string;
 };
 
@@ -323,6 +329,7 @@ export type LegalTemplateProperties = Omit<
   "children"
 > & {
   readonly ariaLabel: string;
+  readonly buttonId?: string | undefined;
   readonly children: string;
 };
 
@@ -331,6 +338,7 @@ export type FlyoverTemplateProperties = Omit<
   "children"
 > & {
   readonly ariaLabel: string;
+  readonly buttonId?: string | undefined;
   readonly children: string;
 };
 
@@ -352,7 +360,9 @@ export type TemplateFormPagination = Omit<
   FormPagination,
   "onNext" | "onPrev"
 > & {
+  readonly nextId?: string | undefined;
   readonly nextLabel: string;
+  readonly previousId?: string | undefined;
   readonly previousLabel: string;
 };
 
@@ -388,6 +398,7 @@ export type StackTemplateProperties = Omit<
 export type AddActionProperties = {
   readonly actionName: string;
   readonly addAction?: string | undefined;
+  readonly addId?: string | undefined;
   readonly addLabel: string;
   readonly count?: number | undefined;
   readonly countName?: string | undefined;
@@ -398,6 +409,7 @@ export type RemoveActionProperties = {
   readonly actionName: string;
   readonly linkId?: string | undefined;
   readonly removeAction?: string | undefined;
+  readonly removeId?: string | undefined;
   readonly removeLabel: string;
 };
 
@@ -407,6 +419,7 @@ export type CollapsibleActionProperties = {
   readonly expandedName?: string | undefined;
   readonly expandLabel?: string | undefined;
   readonly toggleAction?: string | undefined;
+  readonly toggleId?: string | undefined;
 };
 
 export type AnswerListTemplateProperties = Omit<
@@ -488,6 +501,7 @@ export type InputGroupTemplateProperties = Omit<
 
 export type FileInputTemplateProperties =
   FieldTemplateProperties<FileInputProperties> & {
+    readonly clearId?: string | undefined;
     readonly clearLabel: string;
     readonly hiddenValue?: string | undefined;
     readonly clearAction: boolean;
@@ -540,6 +554,7 @@ export type LanguageSelectorTemplateProperties = Omit<
   TemplateBase<LanguageSelectorProperties>,
   "options"
 > & {
+  readonly id?: string | undefined;
   readonly name: string;
   readonly options: ReadonlyArray<
     LanguageSelectorProperties["options"][number] & {
@@ -784,6 +799,40 @@ export function actionValue(kind: ActionKind, path: NodePath): string {
     .join("")}`;
 }
 
+export function stableId(
+  base: string | undefined,
+  ...parts: Array<string | number | undefined>
+): string | undefined {
+  if (base === undefined) {
+    return undefined;
+  }
+
+  return [base, ...parts]
+    .filter((part): part is string | number => part !== undefined)
+    .map(String)
+    .join("__");
+}
+
+export function pathControlId(
+  token: string,
+  path: NodePath | undefined,
+  ...parts: Array<string | number | undefined>
+): string | undefined {
+  if (path === undefined) {
+    return undefined;
+  }
+
+  return stableId(
+    token,
+    ...path.flatMap((segment) =>
+      segment.index === undefined
+        ? [segment.linkId]
+        : [segment.linkId, segment.index],
+    ),
+    ...parts,
+  );
+}
+
 export function lastLinkId(path: NodePath): string {
   return path.at(-1)?.linkId ?? "";
 }
@@ -836,6 +885,7 @@ export function isPreservedOptionToken(token: string): boolean {
 export function mediaHtml(
   attachment: Attachment | undefined,
   fallbackLabel: string,
+  id?: string | undefined,
 ): string {
   if (attachment === undefined) {
     return "";
@@ -854,14 +904,14 @@ export function mediaHtml(
   }
 
   if (contentType?.startsWith("audio/")) {
-    return `<audio controls${attribute("src", source)}></audio>`;
+    return `<audio controls${attribute("id", id)}${attribute("src", source)}></audio>`;
   }
 
   if (contentType?.startsWith("video/")) {
-    return `<video controls${attribute("src", source)}></video>`;
+    return `<video controls${attribute("id", id)}${attribute("src", source)}></video>`;
   }
 
-  return `<a${attribute("href", source)} target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
+  return `<a${attribute("id", id)}${attribute("href", source)} target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
 }
 
 type FormFieldsProperties = Omit<
@@ -888,7 +938,7 @@ export function formFieldsTemplate(properties: FormFieldsProperties): string {
     properties.after ?? "",
     properties.signature ?? "",
     renderPagination(properties),
-    `<button type="submit" name="${ACTION_FIELD}" value="submit">${escapeHtml(properties.submitLabel)}</button>`,
+    `<button type="submit"${attribute("id", stableId(properties.id, "submit"))} name="${ACTION_FIELD}" value="submit">${escapeHtml(properties.submitLabel)}</button>`,
   ].join("");
 }
 
@@ -1088,6 +1138,7 @@ export function tableRow(
   row: TableRow,
   renderHtml: RenderHtml,
   strings: Strings,
+  token: string,
 ): TemplateTableRow {
   const path = row.path;
   return {
@@ -1103,6 +1154,7 @@ export function tableRow(
       row.onRemove !== undefined && row.canRemove === true && path
         ? actionValue("remove-group", path)
         : undefined,
+    removeId: pathControlId(token, path, "remove-group"),
     removeLabel: strings.group.removeSection,
     removeLabelHtml: escapeHtml(strings.group.removeSection),
   };
@@ -1131,11 +1183,11 @@ function renderPagination(properties: FormFieldsProperties): string {
     "<nav>",
     pagination.disabledPrev
       ? ""
-      : `<button type="submit" name="${ACTION_FIELD}" value="page-prev">${escapeHtml(pagination.previousLabel)}</button>`,
+      : `<button type="submit"${attribute("id", pagination.previousId)} name="${ACTION_FIELD}" value="page-prev">${escapeHtml(pagination.previousLabel)}</button>`,
     `<span>${String(pagination.current)} / ${String(pagination.total)}</span>`,
     pagination.disabledNext
       ? ""
-      : `<button type="submit" name="${ACTION_FIELD}" value="page-next">${escapeHtml(pagination.nextLabel)}</button>`,
+      : `<button type="submit"${attribute("id", pagination.nextId)} name="${ACTION_FIELD}" value="page-next">${escapeHtml(pagination.nextLabel)}</button>`,
     "</nav>",
   ].join("");
 }

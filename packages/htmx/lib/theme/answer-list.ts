@@ -7,13 +7,14 @@ import {
   actionValue,
   countName,
   lastLinkId,
+  pathControlId,
   type AnswerListTemplateProperties,
 } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtml, useHtmxTheme } from "../theme-runtime.ts";
 
 export function AnswerList(properties: AnswerListProperties) {
-  const { templates } = useHtmxTheme();
+  const { templates, token } = useHtmxTheme();
   const renderHtml = useHtml();
   const strings = useStrings();
   const children = Children.toArray(properties.children);
@@ -26,6 +27,7 @@ export function AnswerList(properties: AnswerListProperties) {
       properties.onAdd !== undefined && properties.canAdd && path
         ? actionValue("add-answer", path)
         : undefined,
+    addId: pathControlId(token, path, "add-answer"),
     addLabel: strings.selection.addAnother,
     count: path ? children.length : undefined,
     countName: path ? countName(path) : undefined,

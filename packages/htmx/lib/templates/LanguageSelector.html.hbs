@@ -2,11 +2,12 @@
 Template: LanguageSelector
 
 Inputs:
+- id: select id.
 - name: generated language field name.
 - value: current language code.
 - options: language options with value, label, and selected.
 --}}
-<select{{{attr "name" name}}}>
+<select{{{attr "id" id}}}{{{attr "name" name}}}>
   {{#each options}}
     <option{{{attr "value" value}}}{{{attr "selected" selected}}}>{{label}}</option>
   {{/each}}

@@ -20,6 +20,7 @@ import { CodingDisplay } from "./coding/coding-display.tsx";
 import { AttachmentDisplay } from "./attachment/attachment-display.tsx";
 
 type ValueDisplayProperties<T extends AnswerType> = {
+  id?: string | undefined;
   type: T;
   value: DataTypeToType<AnswerTypeToDataType<T>> | undefined;
 };
@@ -43,6 +44,7 @@ const VALUE_DISPLAY_BY_TYPE: {
 };
 
 export function ValueDisplay<T extends AnswerType>({
+  id,
   type,
   value,
 }: ValueDisplayProperties<T>) {
@@ -52,6 +54,6 @@ export function ValueDisplay<T extends AnswerType>({
     return strings.value.unanswered;
   } else {
     const Component = VALUE_DISPLAY_BY_TYPE[type] as ValueDisplayComponent<T>;
-    return <Component value={value} />;
+    return <Component id={id} value={value} />;
   }
 }

@@ -4,6 +4,7 @@ import {
   isDefined,
   isPreservedOptionToken,
   selectedName,
+  stableId,
   valueName,
   type CheckboxListTemplateProperties,
   type TemplateOptionItem,
@@ -69,6 +70,7 @@ export function CheckboxList(properties: CheckboxListProperties) {
     orientation: properties.orientation,
     options: options.map((option) => ({
       ...option,
+      id: stableId(properties.id, "option", option.token) ?? option.token,
       selected: selectedTokens.has(option.token),
       disabled: Boolean(properties.disabled) || option.disabled,
       hiddenInput:

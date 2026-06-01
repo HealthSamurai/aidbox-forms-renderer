@@ -1,7 +1,7 @@
 import { useStrings } from "@formbox/renderer";
 import type { FileInputProperties } from "@formbox/theme";
 
-import { type FileInputTemplateProperties } from "../template.ts";
+import { stableId, type FileInputTemplateProperties } from "../template.ts";
 import { fieldAttributes } from "../template.ts";
 import { renderTemplate } from "../theme-runtime.ts";
 import { useHtmxTheme } from "../theme-runtime.ts";
@@ -19,6 +19,7 @@ export function FileInput(properties: FileInputProperties) {
     disabled: properties.disabled,
     accept: properties.accept,
     clearLabel: strings.file.clearAction,
+    clearId: stableId(properties.id, "clear"),
     hiddenValue:
       properties.value && attributes.name
         ? JSON.stringify(properties.value)
