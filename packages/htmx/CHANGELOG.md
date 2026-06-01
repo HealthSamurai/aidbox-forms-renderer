@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.5.0
+
+### Minor Changes
+
+- Render the HTMX server-side runtime with Preact so the published package no longer depends on React or React DOM at runtime.
+
 ## 0.4.4
 
 ### Patch Changes

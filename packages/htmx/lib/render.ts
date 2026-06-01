@@ -20,7 +20,7 @@ import {
   type IQuestionNode,
 } from "@formbox/renderer";
 import { createElement, type ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server.node";
+import { renderToStaticMarkup } from "preact-render-to-string";
 
 import { appendPath, withLastIndex } from "./path.ts";
 import {
@@ -79,6 +79,8 @@ function renderReactNode(
   renderHtml: (node: ReactNode) => string,
   node: ReactNode,
 ): string {
+  type PreactServerNode = Parameters<typeof renderToStaticMarkup>[0];
+
   return stripHtmlTag(
     renderToStaticMarkup(
       createElement(
@@ -97,7 +99,7 @@ function renderReactNode(
             ),
           ),
         ),
-      ),
+      ) as unknown as PreactServerNode,
     ),
   );
 }
