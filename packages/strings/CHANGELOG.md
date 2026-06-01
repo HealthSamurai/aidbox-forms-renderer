@@ -1,5 +1,12 @@
 # @formbox/strings
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [[`545682a`](https://github.com/HealthSamurai/formbox-renderer/commit/545682a0239ccef04a6dd4db1cff5c9c02b9a26e)]:
+  - @formbox/theme@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes

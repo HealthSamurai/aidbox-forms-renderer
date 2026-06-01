@@ -1,5 +1,17 @@
 # @formbox/htmx
 
+## 0.4.4
+
+### Patch Changes
+
+- [`545682a`](https://github.com/HealthSamurai/formbox-renderer/commit/545682a0239ccef04a6dd4db1cff5c9c02b9a26e) Thanks [@olimsaidov](https://github.com/olimsaidov)! - Add stable ids for rendered focusable controls so HTMX swaps can preserve focus and scroll position.
+
+- Updated dependencies [[`545682a`](https://github.com/HealthSamurai/formbox-renderer/commit/545682a0239ccef04a6dd4db1cff5c9c02b9a26e)]:
+  - @formbox/renderer@0.4.1
+  - @formbox/theme@0.4.1
+  - @formbox/strings@0.4.1
+  - @formbox/fhir@0.4.1
+
 ## 0.4.3
 
 ### Patch Changes
