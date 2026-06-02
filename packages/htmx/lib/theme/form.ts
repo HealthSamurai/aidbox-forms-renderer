@@ -3,7 +3,6 @@ import type { FormProperties } from "@formbox/theme";
 
 import {
   ACTION_FIELD,
-  formFieldsTemplate,
   pageHiddenField,
   stableId,
   type FormTemplateProperties,
@@ -94,12 +93,10 @@ export function Form(properties: FormProperties) {
     signature: renderHtml(properties.signature),
     submitLabel,
     submitButton,
-  } satisfies Omit<FormTemplateProperties, "attributes" | "fields">;
-  const fields = formFieldsTemplate(formProperties);
+  } satisfies Omit<FormTemplateProperties, "attributes">;
   return renderTemplate(templates.Form, {
     ...formProperties,
     attributes: { id, ...defaultAttributes(action) },
-    fields,
   } satisfies FormTemplateProperties);
 }
 

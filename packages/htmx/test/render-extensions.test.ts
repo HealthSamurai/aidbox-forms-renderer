@@ -2163,7 +2163,7 @@ describe("@formbox/htmx render extension parity", () => {
       },
       templates: {
         Form: (properties) =>
-          `${properties.fields}<p>${properties.customExtensions?.formNote}</p>`,
+          `${properties.hiddenFields}${properties.shortTextStyle}${properties.titleHtml ?? ""}${properties.descriptionHtml ?? ""}${properties.languageSelector ?? ""}${properties.errors ?? ""}${properties.before ?? ""}${properties.children}${properties.after ?? ""}${properties.signature ?? ""}${properties.paginationHtml ?? ""}${properties.submitButton}<p>${properties.customExtensions?.formNote}</p>`,
         QuestionScaffold: (properties) =>
           `<section>${properties.header ?? ""}${properties.children}<p>${properties.customExtensions?.itemNote}</p></section>`,
         GroupScaffold: (properties) =>

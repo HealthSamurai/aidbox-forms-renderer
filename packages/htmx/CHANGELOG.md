@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.7.0
+
+### Minor Changes
+
+- Remove the opaque `fields` property from the `Form` template contract. Custom form templates now compose explicit renderer slots such as `hiddenFields`, `children`, `paginationHtml`, and `submitButton`.
+
 ## 0.6.0
 
 ### Minor Changes

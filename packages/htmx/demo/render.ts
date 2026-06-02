@@ -56,8 +56,21 @@ export async function renderExampleForm(
     action: route,
     templates: {
       ...defaultTemplates,
-      Form({ attributes, fields }) {
-        return `<form${htmlAttributes({ ...attributes, "hx-swap": "morphdom" })}>${fields}</form>`;
+      Form(properties) {
+        return `<form${htmlAttributes({ ...properties.attributes, "hx-swap": "morphdom" })}>${[
+          properties.hiddenFields,
+          properties.shortTextStyle,
+          properties.titleHtml ?? "",
+          properties.descriptionHtml ?? "",
+          properties.languageSelector ?? "",
+          properties.errors ?? "",
+          properties.before ?? "",
+          properties.children,
+          properties.after ?? "",
+          properties.signature ?? "",
+          properties.paginationHtml ?? "",
+          properties.submitButton,
+        ].join("")}</form>`;
       },
     },
   });

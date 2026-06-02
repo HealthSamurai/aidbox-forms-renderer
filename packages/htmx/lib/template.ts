@@ -434,7 +434,6 @@ export type FormTemplateProperties = Omit<
   readonly before?: string | undefined;
   readonly children: string;
   readonly errors?: string | undefined;
-  readonly fields: string;
   readonly hiddenFields: string;
   readonly attributes: HtmlAttributes;
   readonly titleHtml?: string | undefined;
@@ -1004,28 +1003,6 @@ export function mediaHtml(
     isVideo: kind === "video",
     isLink: kind === "link",
   });
-}
-
-type FormFieldsProperties = Omit<
-  FormTemplateProperties,
-  "attributes" | "fields"
->;
-
-export function formFieldsTemplate(properties: FormFieldsProperties): string {
-  return [
-    properties.hiddenFields,
-    properties.shortTextStyle,
-    properties.titleHtml ?? "",
-    properties.descriptionHtml ?? "",
-    properties.languageSelector ?? "",
-    properties.errors ?? "",
-    properties.before ?? "",
-    properties.children,
-    properties.after ?? "",
-    properties.signature ?? "",
-    properties.paginationHtml ?? "",
-    properties.submitButton,
-  ].join("");
 }
 
 export function pageHiddenField(currentPage: number | undefined): string {

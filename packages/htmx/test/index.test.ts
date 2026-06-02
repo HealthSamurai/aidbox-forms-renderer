@@ -401,7 +401,7 @@ describe("@formbox/htmx", () => {
     }
   });
 
-  it("wraps generated fields through the Form template", async () => {
+  it("wraps explicit form slots through the Form template", async () => {
     const renderer = new QuestionnaireRenderer({
       token: "form",
       questionnaire: baseQuestionnaire,
@@ -410,7 +410,22 @@ describe("@formbox/htmx", () => {
       templates: {
         ...defaultTemplates,
         Form(properties) {
-          const { attributes, fields } = properties;
+          const {
+            attributes,
+            hiddenFields,
+            shortTextStyle,
+            titleHtml,
+            descriptionHtml,
+            languageSelector,
+            errors,
+            before,
+            children,
+            after,
+            signature,
+            paginationHtml,
+            submitButton,
+          } = properties;
+          expect("fields" in properties).toBe(false);
           expect(attributes).toEqual({
             id: "form",
             method: "post",
@@ -422,7 +437,20 @@ describe("@formbox/htmx", () => {
             "hx-swap": "outerHTML",
             "hx-include": "closest form",
           });
-          return `<form${htmlAttributes(attributes)}>${fields}</form>`;
+          return `<form${htmlAttributes(attributes)}>${[
+            hiddenFields,
+            shortTextStyle,
+            titleHtml ?? "",
+            descriptionHtml ?? "",
+            languageSelector ?? "",
+            errors ?? "",
+            before ?? "",
+            children,
+            after ?? "",
+            signature ?? "",
+            paginationHtml ?? "",
+            submitButton,
+          ].join("")}</form>`;
         },
       },
     });
@@ -575,8 +603,35 @@ describe("@formbox/htmx", () => {
       questionnaire,
       questionnaireResponse,
       templates: {
-        Form({ attributes, fields }) {
-          return `<form${htmlAttributes(attributes)}>${fields}</form>`;
+        Form({
+          attributes,
+          hiddenFields,
+          shortTextStyle,
+          titleHtml,
+          descriptionHtml,
+          languageSelector,
+          errors,
+          before,
+          children,
+          after,
+          signature,
+          paginationHtml,
+          submitButton,
+        }) {
+          return `<form${htmlAttributes(attributes)}>${[
+            hiddenFields,
+            shortTextStyle,
+            titleHtml ?? "",
+            descriptionHtml ?? "",
+            languageSelector ?? "",
+            errors ?? "",
+            before ?? "",
+            children,
+            after ?? "",
+            signature ?? "",
+            paginationHtml ?? "",
+            submitButton,
+          ].join("")}</form>`;
         },
       },
     });
@@ -783,7 +838,7 @@ describe("@formbox/htmx", () => {
   it("preserves callback templates when compiling template sources", () => {
     const templates = compileTemplates({
       TextInput: callbackTextInput,
-      Form: `<form{{{attrs attributes}}}>{{{fields}}}</form>`,
+      Form: `<form{{{attrs attributes}}}>{{{hiddenFields}}}{{{children}}}{{{submitButton}}}</form>`,
     });
 
     expect(templates.TextInput).toBe(callbackTextInput);
@@ -793,10 +848,9 @@ describe("@formbox/htmx", () => {
           method: "post",
           action: "/questionnaire",
         },
-        fields: "<input>",
         hiddenFields: "",
         shortTextStyle: "",
-        children: "",
+        children: "<input>",
         submitLabel: "Submit",
         submitButton: "",
       }),

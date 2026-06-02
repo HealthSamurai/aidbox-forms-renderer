@@ -113,7 +113,18 @@ const templates = {
   ...compileTemplates({
     Form: `
       <form{{{attrs attributes}}} hx-target="#questionnaire-app" hx-swap="morphdom">
-        {{{fields}}}
+        {{{hiddenFields}}}
+        {{{shortTextStyle}}}
+        {{{titleHtml}}}
+        {{{descriptionHtml}}}
+        {{{languageSelector}}}
+        {{{errors}}}
+        {{{before}}}
+        {{{children}}}
+        {{{after}}}
+        {{{signature}}}
+        {{{paginationHtml}}}
+        {{{submitButton}}}
       </form>
     `,
   }),
@@ -162,7 +173,7 @@ Create one renderer instance for one request/render cycle:
 
 1. `new QuestionnaireRenderer(options)` creates a request-local renderer.
 2. `await renderer.process(formData)` applies submitted form state and returns submit result.
-3. `await renderer.render()` returns HTML fields for the current renderer state.
+3. `await renderer.render()` returns form HTML for the current renderer state.
 4. `renderer.getQuestionnaireResponse()` reads the current FHIR response.
 5. `renderer.dispose()` releases the underlying renderer store.
 
@@ -256,7 +267,18 @@ const templates = {
     Form: `
       <form{{{attrs attributes}}}>
         ${csrf}
-        {{{fields}}}
+        {{{hiddenFields}}}
+        {{{shortTextStyle}}}
+        {{{titleHtml}}}
+        {{{descriptionHtml}}}
+        {{{languageSelector}}}
+        {{{errors}}}
+        {{{before}}}
+        {{{children}}}
+        {{{after}}}
+        {{{signature}}}
+        {{{paginationHtml}}}
+        {{{submitButton}}}
       </form>
     `,
   }),
@@ -305,8 +327,21 @@ Callbacks and Handlebars strings can be mixed:
 ```ts
 const templates = compileTemplates({
   TextInput: `<input{{{fieldAttributes}}}{{{attr "id" id}}}>`,
-  Form({ attributes, fields }) {
-    return `<form${htmlAttributes(attributes)}>${fields}</form>`;
+  Form(properties) {
+    return `<form${htmlAttributes(properties.attributes)}>${[
+      properties.hiddenFields,
+      properties.shortTextStyle,
+      properties.titleHtml ?? "",
+      properties.descriptionHtml ?? "",
+      properties.languageSelector ?? "",
+      properties.errors ?? "",
+      properties.before ?? "",
+      properties.children,
+      properties.after ?? "",
+      properties.signature ?? "",
+      properties.paginationHtml ?? "",
+      properties.submitButton,
+    ].join("")}</form>`;
   },
 });
 ```
@@ -348,8 +383,9 @@ Available Handlebars helpers:
 - `{{{attrs attributes}}}` renders an object of escaped HTML attributes.
 - `{{{fieldAttributes}}}` renders `data-fb-link-id`, `data-fb-field`, `name`, and `hx-include` for the current field.
 
-Use triple braces for renderer-provided HTML slots such as `fields`, `children`,
-`label`, `errors`, and `customOptionForm`.
+Use triple braces for renderer-provided HTML slots such as `hiddenFields`,
+`children`, `paginationHtml`, `submitButton`, `label`, `errors`, and
+`customOptionForm`.
 
 Default templates and user templates use the same data shape. The package does
 not keep a separate JSX fallback path.
