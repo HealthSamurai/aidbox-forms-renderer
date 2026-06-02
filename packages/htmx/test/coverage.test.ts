@@ -2235,6 +2235,148 @@ describe("@formbox/htmx spec coverage", () => {
     });
   });
 
+  it("renders and submits R5 choice questions in table and htable controls", async () => {
+    const answerOption = [
+      { valueCoding: { code: "never", display: "Never" } },
+      { valueCoding: { code: "sometimes", display: "Sometimes" } },
+      { valueCoding: { code: "often", display: "Often" } },
+    ];
+    const questionnaire: Questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      url: "Questionnaire/choice-table-submit",
+      item: [
+        {
+          linkId: "table",
+          text: "Table",
+          type: "group",
+          extension: [itemControl("table")],
+          item: [
+            {
+              linkId: "table-q1",
+              text: "Sleep",
+              type: "coding",
+              answerOption,
+            },
+            {
+              linkId: "table-q2",
+              text: "Appetite",
+              type: "coding",
+              answerOption,
+            },
+          ],
+        },
+        {
+          linkId: "htable",
+          text: "HTable",
+          type: "group",
+          extension: [itemControl("htable")],
+          item: [
+            {
+              linkId: "htable-q1",
+              text: "Mood",
+              type: "coding",
+              answerOption,
+            },
+            {
+              linkId: "htable-q2",
+              text: "Energy",
+              type: "coding",
+              answerOption,
+            },
+          ],
+        },
+      ],
+    };
+    const html = await renderQuestionnaire({
+      questionnaire,
+      fhirVersion: "r5",
+    });
+
+    const tableQ1Values = inputValuesFrom(html, "table-q1", "radio");
+    const tableQ2Values = inputValuesFrom(html, "table-q2", "radio");
+    const htableQ1Values = inputValuesFrom(html, "htable-q1", "radio");
+    const htableQ2Values = inputValuesFrom(html, "htable-q2", "radio");
+    expect(tableQ1Values).toHaveLength(3);
+    expect(tableQ2Values).toHaveLength(3);
+    expect(htableQ1Values).toHaveLength(3);
+    expect(htableQ2Values).toHaveLength(3);
+    expect(html).toContain("Never");
+    expect(html).toContain("Sometimes");
+    expect(html).toContain("Often");
+
+    const tableQ1Often = tableQ1Values[2];
+    const tableQ2Sometimes = tableQ2Values[1];
+    const htableQ1Never = htableQ1Values[0];
+    const htableQ2Often = htableQ2Values[2];
+    if (
+      !tableQ1Often ||
+      !tableQ2Sometimes ||
+      !htableQ1Never ||
+      !htableQ2Often
+    ) {
+      throw new Error(`Expected table option tokens in ${html}`);
+    }
+
+    const formData = hiddenFormData(html);
+    formData.set(attributeFrom(html, "table-q1", "name"), tableQ1Often);
+    formData.set(attributeFrom(html, "table-q2", "name"), tableQ2Sometimes);
+    formData.set(attributeFrom(html, "htable-q1", "name"), htableQ1Never);
+    formData.set(attributeFrom(html, "htable-q2", "name"), htableQ2Often);
+
+    expect(
+      await responseFromFormData(formData, {
+        questionnaire,
+        fhirVersion: "r5",
+      }),
+    ).toEqual({
+      resourceType: "QuestionnaireResponse",
+      status: "in-progress",
+      questionnaire: "Questionnaire/choice-table-submit",
+      item: [
+        {
+          linkId: "table",
+          text: "Table",
+          item: [
+            {
+              linkId: "table-q1",
+              text: "Sleep",
+              answer: [{ valueCoding: { code: "often", display: "Often" } }],
+            },
+            {
+              linkId: "table-q2",
+              text: "Appetite",
+              answer: [
+                {
+                  valueCoding: {
+                    code: "sometimes",
+                    display: "Sometimes",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          linkId: "htable",
+          text: "HTable",
+          item: [
+            {
+              linkId: "htable-q1",
+              text: "Mood",
+              answer: [{ valueCoding: { code: "never", display: "Never" } }],
+            },
+            {
+              linkId: "htable-q2",
+              text: "Energy",
+              answer: [{ valueCoding: { code: "often", display: "Often" } }],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it("applies usageMode variants to capture and display rendering", async () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

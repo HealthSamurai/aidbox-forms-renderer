@@ -4,9 +4,10 @@ import { renderExampleForm, renderExamplePage, renderIndex } from "./render.ts";
 const htmxScript = Bun.file(
   new URL("../node_modules/htmx.org/dist/htmx.min.js", import.meta.url),
 );
+const port = Number(Bun.env["PORT"] ?? 46892);
 
 Bun.serve({
-  port: Number(Bun.env["PORT"] ?? 3000),
+  port,
   async fetch(request) {
     const url = new URL(request.url);
 
@@ -45,7 +46,7 @@ Bun.serve({
   },
 });
 
-console.log("Formbox HTMX demo: http://localhost:3000/");
+console.log(`Formbox HTMX demo: http://localhost:${port}/`);
 
 function html(value: string): Response {
   return new Response(value, {

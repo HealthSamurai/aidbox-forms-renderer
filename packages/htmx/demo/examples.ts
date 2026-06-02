@@ -11,6 +11,7 @@ const exampleIds = [
   "expressions",
   "visibility",
   "repeats",
+  "selection-tables",
 ] as const;
 
 export async function loadExamples(): Promise<readonly DemoExample[]> {

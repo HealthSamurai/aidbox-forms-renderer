@@ -1,0 +1,90 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "demo-selection-tables",
+  "url": "https://formbox.healthsamurai.dev/Questionnaire/demo-selection-tables",
+  "title": "Selection Tables",
+  "description": "R5 coding questions rendered as table and htable matrices.",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "table-demo",
+      "text": "Vertical answer table",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "table"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "sleep",
+          "type": "coding",
+          "text": "Sleep",
+          "answerOption": [
+            { "valueCoding": { "code": "never", "display": "Never" } },
+            { "valueCoding": { "code": "sometimes", "display": "Sometimes" } },
+            { "valueCoding": { "code": "often", "display": "Often" } }
+          ]
+        },
+        {
+          "linkId": "appetite",
+          "type": "coding",
+          "text": "Appetite",
+          "answerOption": [
+            { "valueCoding": { "code": "never", "display": "Never" } },
+            { "valueCoding": { "code": "sometimes", "display": "Sometimes" } },
+            { "valueCoding": { "code": "often", "display": "Often" } }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "htable-demo",
+      "text": "Horizontal answer table",
+      "type": "group",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "htable"
+              }
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "mood",
+          "type": "coding",
+          "text": "Mood",
+          "answerOption": [
+            { "valueCoding": { "code": "never", "display": "Never" } },
+            { "valueCoding": { "code": "sometimes", "display": "Sometimes" } },
+            { "valueCoding": { "code": "often", "display": "Often" } }
+          ]
+        },
+        {
+          "linkId": "energy",
+          "type": "coding",
+          "text": "Energy",
+          "answerOption": [
+            { "valueCoding": { "code": "never", "display": "Never" } },
+            { "valueCoding": { "code": "sometimes", "display": "Sometimes" } },
+            { "valueCoding": { "code": "often", "display": "Often" } }
+          ]
+        }
+      ]
+    }
+  ]
+}

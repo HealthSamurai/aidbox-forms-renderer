@@ -23,8 +23,8 @@
   ],
   "scripts": {
     "build": "tsc -b ./tsconfig.lib.json && vite build",
-    "demo": "bun run ./demo/server.ts",
-    "dev": "bun run ./demo/server.ts",
+    "demo": "bun run build && bun ./demo/server.ts",
+    "dev": "bun run build && bun ./demo/server.ts",
     "lint": "eslint .",
     "test:e2e": "pnpm run build && playwright test e2e",
     "typecheck": "tsc --noEmit -p tsconfig.lib.json",

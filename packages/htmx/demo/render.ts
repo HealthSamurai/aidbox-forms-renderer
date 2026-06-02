@@ -2,7 +2,7 @@ import {
   QuestionnaireRenderer,
   htmlAttributes,
   loadDefaultTemplates,
-} from "../lib/index.ts";
+} from "../dist/index.js";
 
 import type { DemoExample } from "./examples.ts";
 
