@@ -39,6 +39,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@microsoft/api-extractor": "7.58.7",
       "react": "19.2.3",
       "react-dom": "19.2.3"
     }
