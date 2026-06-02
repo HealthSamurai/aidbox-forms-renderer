@@ -17,16 +17,19 @@ export function Label(properties: LabelProperties) {
   const children = renderHtml(properties.children);
   const prefix =
     properties.prefix === undefined ? undefined : renderHtml(properties.prefix);
-  const content = [
-    prefix === undefined ? "" : `<span>${prefix} </span>`,
-    properties.shortText === undefined
-      ? children
-      : `<span data-fb-label-full>${children}</span><span data-fb-label-short>${escapeHtml(properties.shortText)}</span>`,
-    properties.required ? '<span aria-hidden="true"> *</span>' : "",
-    renderHtml(properties.help),
-    renderHtml(properties.legal),
-    renderHtml(properties.flyover),
-  ].join("");
+  const help = renderHtml(properties.help);
+  const legal = renderHtml(properties.legal);
+  const flyover = renderHtml(properties.flyover);
+  const content = templates.LabelContent({
+    children,
+    prefix,
+    shortText: properties.shortText,
+    required: properties.required,
+    help,
+    legal,
+    flyover,
+    hasShortText: properties.shortText !== undefined,
+  });
 
   return renderTemplate(templates.Label, {
     shortText: properties.shortText,
@@ -41,10 +44,11 @@ export function Label(properties: LabelProperties) {
     content,
     isLegend: properties.as === "legend",
     isText: properties.as === "text",
-    help: renderHtml(properties.help),
-    legal: renderHtml(properties.legal),
-    flyover: renderHtml(properties.flyover),
+    help,
+    legal,
+    flyover,
     media: mediaHtml(
+      templates,
       properties.media,
       strings.inputs.attachmentLabel,
       stableId(properties.id, "media"),

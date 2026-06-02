@@ -1,0 +1,24 @@
+{{!--
+Template: Pagination
+
+Purpose:
+- Renders page navigation controls for paginated questionnaires.
+
+Inputs:
+- current/total: current page number and total page count.
+- disabledPrev/disabledNext: whether each navigation action is unavailable.
+- actionName: form action field name.
+- previousAction/nextAction: submitted action values for page navigation.
+- previousId/nextId: stable button ids.
+- previousLabel/nextLabel: visible button labels.
+- navigationLabel/currentLabel/previousTargetLabel/nextTargetLabel: accessible pagination labels.
+--}}
+<nav>
+  {{#unless disabledPrev}}
+    <button type="submit"{{{attr "id" previousId}}}{{{attr "name" actionName}}}{{{attr "value" previousAction}}}>{{previousLabel}}</button>
+  {{/unless}}
+  <span>{{current}} / {{total}}</span>
+  {{#unless disabledNext}}
+    <button type="submit"{{{attr "id" nextId}}}{{{attr "name" actionName}}}{{{attr "value" nextAction}}}>{{nextLabel}}</button>
+  {{/unless}}
+</nav>

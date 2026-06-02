@@ -42,7 +42,10 @@ import {
   stripHtmlTag,
   type HtmxThemeValue,
 } from "./theme/index.ts";
-import type { RequiredTemplates } from "./template.ts";
+import type {
+  ErrorsTemplateProperties,
+  RequiredTemplates,
+} from "./template.ts";
 import type { AnswerValue, PathSegment } from "./types.ts";
 
 export function renderStoreFields(
@@ -57,7 +60,7 @@ export function renderStoreFields(
   const htmxTheme = {
     templates,
     token: store.token,
-    hiddenFields: renderHiddenFieldsForStore(store),
+    hiddenFields: renderHiddenFieldsForStore(store, templates),
     activeTabValue: activeTab,
     action,
   } satisfies HtmxThemeValue;
@@ -114,7 +117,10 @@ function ensureServerRenderableRepeatQuestions(store: IForm): void {
   });
 }
 
-function renderHiddenFieldsForStore(store: IForm): string {
+function renderHiddenFieldsForStore(
+  store: IForm,
+  templates: RequiredTemplates,
+): string {
   const renderedNodes = new Set([
     ...store.headerNodes,
     ...store.contentNodes,
@@ -130,11 +136,14 @@ function renderHiddenFieldsForStore(store: IForm): string {
         renderHiddenFieldsForNode(node, [], renderedNodes.has(node)),
       )
       .join(""),
-    renderHiddenNodeIssues(store),
+    renderHiddenNodeIssues(store, templates),
   ].join("");
 }
 
-function renderHiddenNodeIssues(store: IForm): string {
+function renderHiddenNodeIssues(
+  store: IForm,
+  templates: RequiredTemplates,
+): string {
   const messages: string[] = [];
 
   store.walkNodes({
@@ -150,9 +159,11 @@ function renderHiddenNodeIssues(store: IForm): string {
     },
   });
 
-  return messages.length === 0
-    ? ""
-    : `<ul class="fb-errors">${messages.map((message) => `<li>${escapeHtml(message)}</li>`).join("")}</ul>`;
+  return templates.Errors({
+    id: `${store.token}__hidden-node-issues`,
+    hasMessages: messages.length > 0,
+    messages: messages.map((message) => ({ html: escapeHtml(message) })),
+  } satisfies ErrorsTemplateProperties);
 }
 
 function hiddenNodeIssues(node: IPresentableNode) {

@@ -1,0 +1,29 @@
+{{!--
+Template: Media
+
+Purpose:
+- Renders item or answer-option attachment media and fallback links.
+
+Inputs:
+- attachment: source attachment object.
+- id: stable media id when available.
+- label: accessible fallback label.
+- source: resolved URL or data URL, if available.
+- contentType: lower-cased attachment content type, if available.
+- kind/isFallback/isImage/isAudio/isVideo/isLink: selected media rendering branch.
+--}}
+{{#if isFallback}}
+  <span>{{label}}</span>
+{{/if}}
+{{#if isImage}}
+  <img{{{attr "src" source}}}{{{attr "alt" label}}}>
+{{/if}}
+{{#if isAudio}}
+  <audio controls{{{attr "id" id}}}{{{attr "src" source}}}></audio>
+{{/if}}
+{{#if isVideo}}
+  <video controls{{{attr "id" id}}}{{{attr "src" source}}}></video>
+{{/if}}
+{{#if isLink}}
+  <a{{{attr "id" id}}}{{{attr "href" source}}} target="_blank" rel="noreferrer">{{label}}</a>
+{{/if}}

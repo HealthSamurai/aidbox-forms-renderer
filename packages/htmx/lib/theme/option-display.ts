@@ -18,7 +18,11 @@ export function OptionDisplay(properties: OptionDisplayProperties) {
       properties.prefix === undefined
         ? undefined
         : escapeHtml(properties.prefix),
-    media: mediaHtml(properties.media, strings.inputs.attachmentLabel),
+    media: mediaHtml(
+      templates,
+      properties.media,
+      strings.inputs.attachmentLabel,
+    ),
     attachmentLabel: strings.inputs.attachmentLabel,
     children: renderHtml(properties.children),
   } satisfies OptionDisplayTemplateProperties);

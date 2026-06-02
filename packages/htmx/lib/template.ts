@@ -247,6 +247,22 @@ export type HiddenTemplateInput = {
   readonly value: string;
 };
 
+export type MediaKind = "fallback" | "image" | "audio" | "video" | "link";
+
+export type MediaTemplateProperties = {
+  readonly attachment: Attachment;
+  readonly id?: string | undefined;
+  readonly label: string;
+  readonly source?: string | undefined;
+  readonly contentType?: string | undefined;
+  readonly kind: MediaKind;
+  readonly isFallback: boolean;
+  readonly isImage: boolean;
+  readonly isAudio: boolean;
+  readonly isVideo: boolean;
+  readonly isLink: boolean;
+};
+
 export type CheckboxOptionTemplateItem = TemplateOptionItem & {
   readonly id: string;
   readonly selected: boolean;
@@ -295,6 +311,17 @@ export type LabelTemplateProperties = Omit<
       readonly labelHtml: string;
     }
   >;
+};
+
+export type LabelContentTemplateProperties = {
+  readonly children: string;
+  readonly prefix?: string | undefined;
+  readonly shortText?: string | undefined;
+  readonly required?: boolean | undefined;
+  readonly help?: string | undefined;
+  readonly legal?: string | undefined;
+  readonly flyover?: string | undefined;
+  readonly hasShortText: boolean;
 };
 
 export type QuestionScaffoldTemplateProperties = Omit<
@@ -366,6 +393,33 @@ export type TemplateFormPagination = Omit<
   readonly previousLabel: string;
 };
 
+export type FormTitleTemplateProperties = {
+  readonly title: string;
+};
+
+export type FormDescriptionTemplateProperties = {
+  readonly description: string;
+};
+
+export type PaginationTemplateProperties = TemplateFormPagination & {
+  readonly actionName: string;
+  readonly previousAction: "page-prev";
+  readonly nextAction: "page-next";
+  readonly navigationLabel: string;
+  readonly currentLabel: string;
+  readonly previousTargetLabel: string;
+  readonly nextTargetLabel: string;
+};
+
+export type SubmitButtonTemplateProperties = {
+  readonly id?: string | undefined;
+  readonly actionName: string;
+  readonly value: "submit";
+  readonly label: string;
+};
+
+export type ShortTextStyleTemplateProperties = Record<string, never>;
+
 export type FormTemplateProperties = Omit<
   TemplateBase<FormProperties>,
   | "after"
@@ -381,11 +435,17 @@ export type FormTemplateProperties = Omit<
   readonly children: string;
   readonly errors?: string | undefined;
   readonly fields: string;
+  readonly hiddenFields: string;
   readonly attributes: HtmlAttributes;
+  readonly titleHtml?: string | undefined;
+  readonly descriptionHtml?: string | undefined;
   readonly languageSelector?: string | undefined;
   readonly pagination?: TemplateFormPagination | undefined;
+  readonly paginationHtml?: string | undefined;
+  readonly shortTextStyle: string;
   readonly signature?: string | undefined;
   readonly submitLabel: string;
+  readonly submitButton: string;
 };
 
 export type StackTemplateProperties = Omit<
@@ -580,8 +640,10 @@ export type TemplateProperties =
   | CheckboxListTemplateProperties
   | MultiSelectInputTemplateProperties
   | CustomOptionFormTemplateProperties
+  | MediaTemplateProperties
   | ErrorsTemplateProperties
   | LabelTemplateProperties
+  | LabelContentTemplateProperties
   | QuestionScaffoldTemplateProperties
   | OptionsLoadingTemplateProperties
   | HelpTemplateProperties
@@ -589,6 +651,11 @@ export type TemplateProperties =
   | FlyoverTemplateProperties
   | HeaderTemplateProperties
   | FooterTemplateProperties
+  | FormTitleTemplateProperties
+  | FormDescriptionTemplateProperties
+  | PaginationTemplateProperties
+  | SubmitButtonTemplateProperties
+  | ShortTextStyleTemplateProperties
   | FormTemplateProperties
   | StackTemplateProperties
   | AnswerListTemplateProperties
@@ -631,8 +698,10 @@ export interface Templates {
   readonly CustomOptionForm?:
     | Template<CustomOptionFormTemplateProperties>
     | undefined;
+  readonly Media?: Template<MediaTemplateProperties> | undefined;
   readonly Errors?: Template<ErrorsTemplateProperties> | undefined;
   readonly Label?: Template<LabelTemplateProperties> | undefined;
+  readonly LabelContent?: Template<LabelContentTemplateProperties> | undefined;
   readonly QuestionScaffold?:
     | Template<QuestionScaffoldTemplateProperties>
     | undefined;
@@ -644,6 +713,15 @@ export interface Templates {
   readonly Flyover?: Template<FlyoverTemplateProperties> | undefined;
   readonly Header?: Template<HeaderTemplateProperties> | undefined;
   readonly Footer?: Template<FooterTemplateProperties> | undefined;
+  readonly FormTitle?: Template<FormTitleTemplateProperties> | undefined;
+  readonly FormDescription?:
+    | Template<FormDescriptionTemplateProperties>
+    | undefined;
+  readonly Pagination?: Template<PaginationTemplateProperties> | undefined;
+  readonly SubmitButton?: Template<SubmitButtonTemplateProperties> | undefined;
+  readonly ShortTextStyle?:
+    | Template<ShortTextStyleTemplateProperties>
+    | undefined;
   readonly Form?: Template<FormTemplateProperties> | undefined;
   readonly Stack?: Template<StackTemplateProperties> | undefined;
   readonly AnswerList?: Template<AnswerListTemplateProperties> | undefined;
@@ -693,8 +771,10 @@ export const templateNames = [
   "CheckboxList",
   "MultiSelectInput",
   "CustomOptionForm",
+  "Media",
   "Errors",
   "Label",
+  "LabelContent",
   "QuestionScaffold",
   "OptionsLoading",
   "Help",
@@ -702,6 +782,11 @@ export const templateNames = [
   "Flyover",
   "Header",
   "Footer",
+  "FormTitle",
+  "FormDescription",
+  "Pagination",
+  "SubmitButton",
+  "ShortTextStyle",
   "Form",
   "Stack",
   "AnswerList",
@@ -883,6 +968,7 @@ export function isPreservedOptionToken(token: string): boolean {
 }
 
 export function mediaHtml(
+  templates: Pick<RequiredTemplates, "Media">,
   attachment: Attachment | undefined,
   fallbackLabel: string,
   id?: string | undefined,
@@ -894,24 +980,30 @@ export function mediaHtml(
   const label = attachment.title ?? attachment.url ?? fallbackLabel;
   const source = attachment.url ?? attachmentSource(attachment);
   const contentType = attachment.contentType?.toLowerCase();
+  const kind: MediaKind =
+    source === undefined
+      ? "fallback"
+      : contentType?.startsWith("image/")
+        ? "image"
+        : contentType?.startsWith("audio/")
+          ? "audio"
+          : contentType?.startsWith("video/")
+            ? "video"
+            : "link";
 
-  if (source === undefined) {
-    return `<span>${escapeHtml(label)}</span>`;
-  }
-
-  if (contentType?.startsWith("image/")) {
-    return `<img${attribute("src", source)}${attribute("alt", label)}>`;
-  }
-
-  if (contentType?.startsWith("audio/")) {
-    return `<audio controls${attribute("id", id)}${attribute("src", source)}></audio>`;
-  }
-
-  if (contentType?.startsWith("video/")) {
-    return `<video controls${attribute("id", id)}${attribute("src", source)}></video>`;
-  }
-
-  return `<a${attribute("id", id)}${attribute("href", source)} target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
+  return templates.Media({
+    attachment,
+    id,
+    label,
+    source,
+    contentType,
+    kind,
+    isFallback: kind === "fallback",
+    isImage: kind === "image",
+    isAudio: kind === "audio",
+    isVideo: kind === "video",
+    isLink: kind === "link",
+  });
 }
 
 type FormFieldsProperties = Omit<
@@ -920,26 +1012,24 @@ type FormFieldsProperties = Omit<
 >;
 
 export function formFieldsTemplate(properties: FormFieldsProperties): string {
-  const shortTextStyle = properties.children.includes("data-fb-label-short")
-    ? "<style>[data-fb-label-short]{display:none}@media (max-width:40rem){[data-fb-label-full]{display:none}[data-fb-label-short]{display:inline}}</style>"
-    : undefined;
-
   return [
-    shortTextStyle ?? "",
-    `<input type="hidden" name="${PAGE_FIELD}" value="${String(properties.pagination?.current ?? 1)}">`,
-    properties.title ? `<h1>${escapeHtml(properties.title)}</h1>` : "",
-    properties.description
-      ? `<p>${escapeHtml(properties.description)}</p>`
-      : "",
+    properties.hiddenFields,
+    properties.shortTextStyle,
+    properties.titleHtml ?? "",
+    properties.descriptionHtml ?? "",
     properties.languageSelector ?? "",
     properties.errors ?? "",
     properties.before ?? "",
     properties.children,
     properties.after ?? "",
     properties.signature ?? "",
-    renderPagination(properties),
-    `<button type="submit"${attribute("id", stableId(properties.id, "submit"))} name="${ACTION_FIELD}" value="submit">${escapeHtml(properties.submitLabel)}</button>`,
+    properties.paginationHtml ?? "",
+    properties.submitButton,
   ].join("");
+}
+
+export function pageHiddenField(currentPage: number | undefined): string {
+  return `<input type="hidden" name="${PAGE_FIELD}" value="${String(currentPage ?? 1)}">`;
 }
 
 export function fieldAttributes(
@@ -1171,25 +1261,6 @@ export function defaultAttributes(action: string | undefined): HtmlAttributes {
     "hx-swap": "outerHTML",
     "hx-include": "closest form",
   };
-}
-
-function renderPagination(properties: FormFieldsProperties): string {
-  const pagination = properties.pagination;
-  if (!pagination) {
-    return "";
-  }
-
-  return [
-    "<nav>",
-    pagination.disabledPrev
-      ? ""
-      : `<button type="submit"${attribute("id", pagination.previousId)} name="${ACTION_FIELD}" value="page-prev">${escapeHtml(pagination.previousLabel)}</button>`,
-    `<span>${String(pagination.current)} / ${String(pagination.total)}</span>`,
-    pagination.disabledNext
-      ? ""
-      : `<button type="submit"${attribute("id", pagination.nextId)} name="${ACTION_FIELD}" value="page-next">${escapeHtml(pagination.nextLabel)}</button>`,
-    "</nav>",
-  ].join("");
 }
 
 function tableCell(cell: TableCell, renderHtml: RenderHtml): TemplateTableCell {

@@ -366,6 +366,49 @@ describe("@formbox/htmx render extension parity", () => {
     expect(html).toContain("footer");
   });
 
+  it("renders hidden item issues through the form-level Errors template", async () => {
+    const html = await render(
+      {
+        resourceType: "Questionnaire",
+        status: "active",
+        url: "Questionnaire/htmx-custom-hidden-issues",
+        item: [
+          {
+            linkId: "show",
+            text: "Show matrix",
+            type: "boolean",
+          },
+          {
+            linkId: "matrix",
+            text: "Broken hidden matrix",
+            type: "group",
+            extension: [itemControl("table")],
+            enableWhen: [
+              {
+                question: "show",
+                operator: "=",
+                answerBoolean: true,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        templates: {
+          Errors({ hasMessages, messages }) {
+            return hasMessages
+              ? `<section data-custom-form-issues>${messages.map(({ html }) => `<p>${html}</p>`).join("")}</section>`
+              : "";
+          },
+        },
+      },
+    );
+
+    expect(html).toContain("<section data-custom-form-issues>");
+    expect(html).toContain("matrix");
+    expect(html).not.toContain('class="fb-errors"');
+  });
+
   it("renders choiceOrientation on radio-button and check-box lists", async () => {
     const questionnaire: Questionnaire = {
       resourceType: "Questionnaire",

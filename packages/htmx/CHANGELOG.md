@@ -1,5 +1,11 @@
 # @formbox/htmx
 
+## 0.6.0
+
+### Minor Changes
+
+- Render `table` and `htable` choice matrices with answer cells, and expose visible HTMX form chrome through overridable templates with documented template purposes.
+
 ## 0.5.0
 
 ### Minor Changes

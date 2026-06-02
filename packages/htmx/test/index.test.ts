@@ -588,6 +588,124 @@ describe("@formbox/htmx", () => {
     expect(form).toContain('value="server"');
   });
 
+  it("renders visible form chrome through dedicated templates while preserving hidden state", async () => {
+    const questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      url: "Questionnaire/custom-visible-form-chrome",
+      title: "Clinical intake",
+      description: "Visible introduction",
+      item: [
+        {
+          linkId: "page-1",
+          text: "Page 1",
+          type: "group",
+          extension: [itemControlExtension("page")],
+          item: [{ linkId: "first", text: "First question", type: "string" }],
+        },
+        {
+          linkId: "page-2",
+          text: "Page 2",
+          type: "group",
+          extension: [itemControlExtension("page")],
+          item: [{ linkId: "second", text: "Second question", type: "string" }],
+        },
+      ],
+    } satisfies Questionnaire;
+
+    const html = await renderQuestionnaire({
+      questionnaire,
+      templates: {
+        FormTitle({ title }) {
+          return `<section data-custom-title>${title}</section>`;
+        },
+        FormDescription({ description }) {
+          return `<section data-custom-description>${description}</section>`;
+        },
+        Pagination({
+          actionName,
+          current,
+          disabledNext,
+          nextAction,
+          nextLabel,
+          total,
+        }) {
+          return `<section data-custom-pagination data-current="${String(current)}" data-total="${String(total)}">${disabledNext ? "" : `<button name="${actionName}" value="${nextAction}">${nextLabel}</button>`}</section>`;
+        },
+        SubmitButton({ actionName, label, value }) {
+          return `<button data-custom-submit name="${actionName}" value="${value}">${label}</button>`;
+        },
+      },
+    });
+
+    expect(html).toContain(
+      "<section data-custom-title>Clinical intake</section>",
+    );
+    expect(html).toContain(
+      "<section data-custom-description>Visible introduction</section>",
+    );
+    expect(html).toContain(
+      '<section data-custom-pagination data-current="1" data-total="2">',
+    );
+    expect(html).toContain(
+      'data-custom-submit name="fb[action]" value="submit"',
+    );
+    expect(html).toContain('name="fb[page]" value="1"');
+    expect(html).not.toContain("<h1>Clinical intake</h1>");
+    expect(html).not.toContain("<p>Visible introduction</p>");
+    expect(html).not.toContain("<nav>");
+  });
+
+  it("renders label content and attachment media through dedicated templates", async () => {
+    const questionnaire = {
+      resourceType: "Questionnaire",
+      status: "active",
+      url: "Questionnaire/custom-label-and-media",
+      item: [
+        {
+          linkId: "photo",
+          text: "Upload photo",
+          type: "string",
+          required: true,
+          extension: [
+            {
+              url: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-shortText",
+              valueString: "Photo",
+            },
+            {
+              url: "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-itemMedia",
+              valueAttachment: {
+                title: "Photo example",
+                contentType: "image/png",
+                data: "AAAA",
+              },
+            },
+          ],
+        },
+      ],
+    } satisfies Questionnaire;
+
+    const html = await renderQuestionnaire({
+      questionnaire,
+      templates: {
+        LabelContent({ children, required, shortText }) {
+          return `<strong data-custom-label-content data-required="${String(required)}" data-short="${shortText ?? ""}">${children}</strong>`;
+        },
+        Media({ kind, label, source }) {
+          return `<figure data-custom-media data-kind="${kind}" data-source="${source ?? ""}">${label}</figure>`;
+        },
+      },
+    });
+
+    expect(html).toContain(
+      '<strong data-custom-label-content data-required="true" data-short="Photo">Upload photo</strong>',
+    );
+    expect(html).toContain(
+      '<figure data-custom-media data-kind="image" data-source="data:image/png;base64,AAAA">Photo example</figure>',
+    );
+    expect(html).not.toContain("<img");
+  });
+
   it("keeps built-in template markup in .html.hbs files", async () => {
     const files = await readdir(new URL("../lib/templates/", import.meta.url));
 
@@ -607,7 +725,7 @@ describe("@formbox/htmx", () => {
 
       expect(source, name).toMatch(
         new RegExp(
-          String.raw`^\{\{!--\nTemplate: ${name}\n\nInputs:\n(?:- .+\n)+--\}\}\n`,
+          String.raw`^\{\{!--\nTemplate: ${name}\n\nPurpose:\n- .+\n\nInputs:\n(?:- .+\n)+--\}\}\n`,
           "u",
         ),
       );
@@ -676,8 +794,11 @@ describe("@formbox/htmx", () => {
           action: "/questionnaire",
         },
         fields: "<input>",
+        hiddenFields: "",
+        shortTextStyle: "",
         children: "",
         submitLabel: "Submit",
+        submitButton: "",
       }),
     ).toBe('<form method="post" action="/questionnaire"><input></form>');
   });
